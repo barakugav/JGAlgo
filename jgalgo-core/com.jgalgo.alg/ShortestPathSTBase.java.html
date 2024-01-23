@@ -43,7 +43,7 @@ interface ShortestPathSTBase extends ShortestPathST {
 
 <span class="fc" id="L44">			IPath indexPath = NegativeCycleException</span>
 <span class="fc" id="L45">					.runAndConvertException(g, () -&gt; computeShortestPath(iGraph, iw, iSource, iTarget));</span>
-<span class="fc" id="L46">			return PathImpl.pathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L46">			return Paths.pathFromIndexPath(g, indexPath);</span>
 		}
 	}
 

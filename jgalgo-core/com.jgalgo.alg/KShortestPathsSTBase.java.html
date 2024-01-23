@@ -46,7 +46,7 @@ interface KShortestPathsSTBase extends KShortestPathsST {
 <span class="fc" id="L46">			int iTarget = viMap.idToIndex(target);</span>
 <span class="fc" id="L47">			List&lt;IPath&gt; indexResult = NegativeCycleException</span>
 <span class="fc" id="L48">					.runAndConvertException(g, () -&gt; computeKShortestPaths(iGraph, iw, iSource, iTarget, k));</span>
-<span class="fc" id="L49">			return indexResult.stream().map(p -&gt; PathImpl.pathFromIndexPath(g, p)).collect(toList());</span>
+<span class="fc" id="L49">			return indexResult.stream().map(p -&gt; Paths.pathFromIndexPath(g, p)).collect(toList());</span>
 		}
 	}
 

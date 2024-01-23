@@ -53,7 +53,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, AlgorithmWithDiagnostics {
+class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase {
 
 <span class="fc" id="L58">	private ShortestPathSingleSource positiveSsspAlgo = ShortestPathSingleSource.newInstance();</span>
 <span class="fc" id="L59">	private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();</span>
@@ -124,7 +124,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 
 <span class="fc bfc" id="L125" title="All 2 branches covered.">		for (int e : Graphs.selfEdges(g))</span>
 <span class="fc bfc" id="L126" title="All 2 branches covered.">			if (w0.weightInt(e) &lt; 0)</span>
-<span class="fc" id="L127">				throw new NegativeCycleException(g, new PathImpl(g, g.edgeSource(e), g.edgeTarget(e), IntList.of(e)));</span>
+<span class="fc" id="L127">				throw new NegativeCycleException(g, IPath.valueOf(g, g.edgeSource(e), g.edgeTarget(e), IntList.of(e)));</span>
 
 <span class="fc" id="L129">		Bitmap connected = new Bitmap(n);</span>
 <span class="fc" id="L130">		int[] layerSize = new int[n + 1];</span>
@@ -203,7 +203,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 <span class="fc bfc" id="L203" title="All 2 branches covered.">							for (int e2 : negCycle0.edges())</span>
 <span class="fc" id="L204">								negCycle.add(gNegEdgeRefs[e2]);</span>
 <span class="fc" id="L205">							negCycle.add(gNegEdgeRefs[e]);</span>
-<span class="fc" id="L206">							throw new NegativeCycleException(g, new PathImpl(g, v, v, negCycle));</span>
+<span class="fc" id="L206">							throw new NegativeCycleException(g, IPath.valueOf(g, v, v, negCycle));</span>
 						}
 <span class="fc" id="L208">					}</span>
 <span class="fc" id="L209">				}</span>
@@ -334,9 +334,8 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 <span class="fc" id="L334">		return new ShortestPathSingleSourceUtils.IndexResult(g, source, distances, backtrack);</span>
 	}
 
-	@Override
-	public Object getDiagnostic(String key) {
-<span class="nc" id="L339">		return Long.valueOf(diagnostics.get(key));</span>
+	Object getDiagnostic(String key) {
+<span class="nc" id="L338">		return Long.valueOf(diagnostics.get(key));</span>
 	}
 
 	private static class Diagnostics {
@@ -352,42 +351,42 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 		void runBegin() {
 			if (Enable)
 				runCount++;
-<span class="fc" id="L355">		}</span>
+<span class="fc" id="L354">		}</span>
 
 		void scalingIteration() {
 			if (Enable)
 				scalingIterations++;
-<span class="fc" id="L360">		}</span>
+<span class="fc" id="L359">		}</span>
 
 		void potentialIteration() {
 			if (Enable)
 				potentialIterations++;
-<span class="fc" id="L365">		}</span>
+<span class="fc" id="L364">		}</span>
 
 		void bigLayer() {
 			if (Enable)
 				bigLayer++;
-<span class="fc" id="L370">		}</span>
+<span class="fc" id="L369">		}</span>
 
 		void longPath() {
 			if (Enable)
 				longPath++;
-<span class="fc" id="L375">		}</span>
+<span class="fc" id="L374">		}</span>
 
 		long get(String key) {
-<span class="nc bnc" id="L378" title="All 6 branches missed.">			switch (key) {</span>
+<span class="nc bnc" id="L377" title="All 6 branches missed.">			switch (key) {</span>
 				case &quot;runCount&quot;:
-<span class="nc" id="L380">					return runCount;</span>
+<span class="nc" id="L379">					return runCount;</span>
 				case &quot;scalingIterations&quot;:
-<span class="nc" id="L382">					return scalingIterations;</span>
+<span class="nc" id="L381">					return scalingIterations;</span>
 				case &quot;potentialIterations&quot;:
-<span class="nc" id="L384">					return potentialIterations;</span>
+<span class="nc" id="L383">					return potentialIterations;</span>
 				case &quot;bigLayer&quot;:
-<span class="nc" id="L386">					return bigLayer;</span>
+<span class="nc" id="L385">					return bigLayer;</span>
 				case &quot;longPath&quot;:
-<span class="nc" id="L388">					return longPath;</span>
+<span class="nc" id="L387">					return longPath;</span>
 				default:
-<span class="nc" id="L390">					throw new IllegalArgumentException(&quot;unknown diagnostic key: &quot; + key);</span>
+<span class="nc" id="L389">					throw new IllegalArgumentException(&quot;unknown diagnostic key: &quot; + key);</span>
 			}
 		}
 

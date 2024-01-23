@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="pc bpc" id="L36" title="1 of 2 branches missed.">		if (!g.vertices().contains(target))</span>
 <span class="nc" id="L37">			throw NoSuchVertexException.ofIndex(target);</span>
 <span class="fc bfc" id="L38" title="All 2 branches covered.">		if (source == target)</span>
-<span class="fc" id="L39">			return new PathImpl(g, source, target, IntLists.emptyList());</span>
+<span class="fc" id="L39">			return IPath.valueOf(g, source, target, IntLists.emptyList());</span>
 <span class="fc" id="L40">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
 
 <span class="fc" id="L42">		DoubleIntReferenceableHeap heapS = DoubleIntReferenceableHeap.newInstance();</span>
@@ -149,7 +149,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc bfc" id="L149" title="All 2 branches covered.">			for (int u = middle, e; u != target; u = g.edgeEndpoint(e, u))</span>
 <span class="fc" id="L150">				path.add(e = infoT.get(u).backtrack);</span>
 		}
-<span class="fc" id="L152">		return new PathImpl(g, source, target, path);</span>
+<span class="fc" id="L152">		return IPath.valueOf(g, source, target, path);</span>
 	}
 
 <span class="fc" id="L155">	static class Info {</span>

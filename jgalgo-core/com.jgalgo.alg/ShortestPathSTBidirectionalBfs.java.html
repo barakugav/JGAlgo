@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="pc bpc" id="L38" title="1 of 2 branches missed.">		if (!g.vertices().contains(target))</span>
 <span class="nc" id="L39">			throw NoSuchVertexException.ofIndex(target);</span>
 <span class="fc bfc" id="L40" title="All 2 branches covered.">		if (source == target)</span>
-<span class="fc" id="L41">			return new PathImpl(g, source, target, IntLists.emptyList());</span>
+<span class="fc" id="L41">			return IPath.valueOf(g, source, target, IntLists.emptyList());</span>
 <span class="fc" id="L42">		Assertions.onlyCardinality(w);</span>
 
 <span class="fc" id="L44">		final long InfoNone = info(-2, -1);</span>
@@ -121,7 +121,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc bfc" id="L121" title="All 2 branches covered.">			for (int u = middle, e; u != target; u = g.edgeEndpoint(e, u))</span>
 <span class="fc" id="L122">				path.add(e = backtrack(infoT.get(u)));</span>
 		}
-<span class="fc" id="L124">		return new PathImpl(g, source, target, path);</span>
+<span class="fc" id="L124">		return IPath.valueOf(g, source, target, path);</span>
 	}
 
 	static long info(int backtrack, int distance) {

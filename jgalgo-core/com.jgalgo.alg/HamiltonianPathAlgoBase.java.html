@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HamiltonianPathAlgoBase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">HamiltonianPathAlgoBase.java</span></div><h1>HamiltonianPathAlgoBase.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Collections;
+import java.util.Iterator;
+import com.jgalgo.graph.EdgeSet;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.IterTools;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.ObjectIterators;
+
+interface HamiltonianPathAlgoBase extends HamiltonianPathAlgo {
+
+	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+	@Override
+	default &lt;V, E&gt; Iterator&lt;Path&lt;V, E&gt;&gt; hamiltonianPathsIter(Graph&lt;V, E&gt; g) {
+<span class="fc bfc" id="L38" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L39">			return (Iterator) hamiltonianPathsIter((IndexGraph) g);</span>
+		} else {
+<span class="fc" id="L41">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L42">			Iterator&lt;IPath&gt; indexIter = hamiltonianPathsIter(ig);</span>
+<span class="fc" id="L43">			return IterTools.map(indexIter, iPath -&gt; Paths.pathFromIndexPath(g, iPath));</span>
+		}
+	}
+
+	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+	@Override
+	default &lt;V, E&gt; Iterator&lt;Path&lt;V, E&gt;&gt; hamiltonianPathsIter(Graph&lt;V, E&gt; g, V source, V target) {
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L51">			int src = ((Integer) source).intValue(), trg = ((Integer) target).intValue();</span>
+<span class="fc" id="L52">			return (Iterator) hamiltonianPathsIter((IndexGraph) g, src, trg);</span>
+		} else {
+<span class="fc" id="L54">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L55">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L56">			int src = viMap.idToIndex(source), trg = viMap.idToIndex(target);</span>
+<span class="fc" id="L57">			Iterator&lt;IPath&gt; indexIter = hamiltonianPathsIter(ig, src, trg);</span>
+<span class="fc" id="L58">			return IterTools.map(indexIter, iPath -&gt; Paths.pathFromIndexPath(g, iPath));</span>
+		}
+	}
+
+	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+	@Override
+	default &lt;V, E&gt; Iterator&lt;Path&lt;V, E&gt;&gt; hamiltonianCyclesIter(Graph&lt;V, E&gt; g) {
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L66">			return (Iterator) hamiltonianCyclesIter((IndexGraph) g);</span>
+		} else {
+<span class="fc" id="L68">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L69">			Iterator&lt;IPath&gt; indexIter = hamiltonianCyclesIter(ig);</span>
+<span class="fc" id="L70">			return IterTools.map(indexIter, iPath -&gt; Paths.pathFromIndexPath(g, iPath));</span>
+		}
+	}
+
+	Iterator&lt;IPath&gt; hamiltonianPathsIter(IndexGraph g);
+
+	Iterator&lt;IPath&gt; hamiltonianPathsIter(IndexGraph g, int source, int target);
+
+	Iterator&lt;IPath&gt; hamiltonianCyclesIter(IndexGraph g);
+
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">	static interface CycleBased extends HamiltonianPathAlgoBase {</span>
+
+		@Override
+		default Iterator&lt;IPath&gt; hamiltonianPathsIter(IndexGraph g) {
+<span class="fc" id="L84">			final int n = g.vertices().size();</span>
+<span class="fc" id="L85">			final int m = g.edges().size();</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">			if (n == 0)</span>
+<span class="fc" id="L87">				return Collections.emptyIterator();</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			if (n == 1)</span>
+<span class="fc" id="L89">				return ObjectIterators.singleton(IPath.valueOf(g, 0, 0, IntList.of()));</span>
+
+			/*
+			 * We find all Hamiltonian paths using a reduction to the problem of finding all Hamiltonian cycles. We
+			 * create a graph, g0, with all the vertices and edges of the original graph, and we add another auxillary
+			 * vertex x connected to all other vertices. If the graph is directed, x is connected to each vertex with
+			 * two edges, one in each direction. If the graph is undirected, x is connected to each vertex with a single
+			 * edge. We compute the Hamiltonian cycles in the new graph, and we map each such cycle to an Hamiltonian
+			 * path by deleting x from the cycle.
+			 */
+
+<span class="fc" id="L100">			IndexGraphBuilder b = IndexGraphBuilder.newInstance(g.isDirected());</span>
+<span class="fc" id="L101">			b.ensureVertexCapacity(n + 1);</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">			b.ensureEdgeCapacity(m + n * (g.isDirected() ? 2 : 1));</span>
+<span class="fc" id="L103">			b.addVertices(g.vertices());</span>
+<span class="fc" id="L104">			b.addEdges(EdgeSet.allOf(g));</span>
+<span class="fc" id="L105">			final int x = b.addVertexInt();</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">				for (int v : range(n)) {</span>
+<span class="fc" id="L108">					b.addEdge(x, v);</span>
+<span class="fc" id="L109">					b.addEdge(v, x);</span>
+<span class="fc" id="L110">				}</span>
+			} else {
+<span class="fc bfc" id="L112" title="All 2 branches covered.">				for (int v : range(n))</span>
+<span class="fc" id="L113">					b.addEdge(x, v);</span>
+			}
+<span class="fc" id="L115">			IndexGraph g0 = b.build();</span>
+
+<span class="fc" id="L117">			Iterator&lt;IPath&gt; cyclesIter = hamiltonianCyclesIter(g0);</span>
+<span class="fc" id="L118">			return IterTools.map(cyclesIter, cycle -&gt; {</span>
+<span class="fc" id="L119">				IntList path = new IntArrayList(n - 1);</span>
+<span class="fc" id="L120">				int xIdx = cycle.vertices().indexOf(x);</span>
+<span class="pc bpc" id="L121" title="3 of 4 branches missed.">				assert xIdx &gt;= 0;</span>
+<span class="fc" id="L122">				IntList cEdges = cycle.edges();</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">				if (xIdx &lt; cEdges.size() - 1)</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">					path.addAll(cEdges.subList(xIdx + 1, cEdges.size() - (xIdx == 0 ? 1 : 0)));</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">				if (xIdx &gt; 1)</span>
+<span class="fc" id="L126">					path.addAll(cEdges.subList(0, xIdx - 1));</span>
+
+<span class="fc" id="L128">				int source = g0.edgeEndpoint(/* xToSourceEdge */ cEdges.getInt(xIdx), x);</span>
+<span class="fc" id="L129">				int target =</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">						g0.edgeEndpoint(/* targetToXEdge */ cEdges.getInt(xIdx &gt; 0 ? xIdx - 1 : cEdges.size() - 1), x);</span>
+<span class="fc" id="L131">				return IPath.valueOf(g, source, target, path);</span>
+			});
+		}
+
+		@Override
+		default Iterator&lt;IPath&gt; hamiltonianPathsIter(IndexGraph g, int source, int target) {
+<span class="fc" id="L137">			final int n = g.vertices().size();</span>
+<span class="fc" id="L138">			final int m = g.edges().size();</span>
+<span class="fc" id="L139">			Assertions.checkVertex(source, n);</span>
+<span class="fc" id="L140">			Assertions.checkVertex(target, n);</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			if (n == 1)</span>
+<span class="fc" id="L142">				return ObjectIterators.singleton(IPath.valueOf(g, 0, 0, IntList.of()));</span>
+
+			/* if source and target are the same vertex, we actually want an Hamiltonian cycle */
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			if (source == target) {</span>
+<span class="fc" id="L146">				Iterator&lt;IPath&gt; cyclesIter = hamiltonianCyclesIter(g);</span>
+<span class="fc" id="L147">				return IterTools.map(cyclesIter, cycle -&gt; {</span>
+<span class="fc" id="L148">					IntList path = new IntArrayList(n);</span>
+<span class="fc" id="L149">					int srcIdx = cycle.vertices().indexOf(source);</span>
+<span class="pc bpc" id="L150" title="3 of 4 branches missed.">					assert srcIdx &gt;= 0;</span>
+<span class="fc" id="L151">					path.addAll(cycle.edges().subList(srcIdx, cycle.edges().size()));</span>
+<span class="fc" id="L152">					path.addAll(cycle.edges().subList(0, srcIdx));</span>
+<span class="fc" id="L153">					return IPath.valueOf(g, source, target, path);</span>
+				});
+			}
+
+			/*
+			 * We find all Hamiltonian paths between the given source and target vertices using a reduction to the
+			 * problem of finding all Hamiltonian cycles. We create a graph, g0, with all the vertices and edges of the
+			 * original graph, and we add another auxillary vertex x, and two additional edges (x, source) (target, x).
+			 * We compute the Hamiltonian cycles in the new graph, and we map each such cycle to an Hamiltonian path
+			 * between the source and target by deleting the edges (x, source) (target, x), which are require in any
+			 * Hamiltonian cycle in g0, from the computed cycle.
+			 */
+
+<span class="fc" id="L166">			IndexGraphBuilder b = IndexGraphBuilder.newInstance(g.isDirected());</span>
+<span class="fc" id="L167">			b.ensureVertexCapacity(n + 1);</span>
+<span class="fc" id="L168">			b.ensureEdgeCapacity(m + 2);</span>
+<span class="fc" id="L169">			b.addVertices(g.vertices());</span>
+<span class="fc" id="L170">			b.addEdges(EdgeSet.allOf(g));</span>
+<span class="fc" id="L171">			final int x = b.addVertexInt();</span>
+<span class="fc" id="L172">			b.addEdge(x, source);</span>
+<span class="fc" id="L173">			b.addEdge(target, x);</span>
+<span class="fc" id="L174">			IndexGraph g0 = b.build();</span>
+
+<span class="fc" id="L176">			Iterator&lt;IPath&gt; cyclesIter = hamiltonianCyclesIter(g0);</span>
+<span class="fc" id="L177">			return IterTools.map(cyclesIter, cycle -&gt; {</span>
+<span class="fc" id="L178">				IntArrayList path = new IntArrayList(n - 1);</span>
+<span class="fc" id="L179">				int xIdx = cycle.vertices().indexOf(x);</span>
+<span class="pc bpc" id="L180" title="3 of 4 branches missed.">				assert xIdx &gt;= 0;</span>
+
+<span class="fc" id="L182">				IntList cEdges = cycle.edges();</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">				if (xIdx &lt; cEdges.size() - 1)</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">					path.addAll(cEdges.subList(xIdx + 1, cEdges.size() - (xIdx == 0 ? 1 : 0)));</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">				if (xIdx &gt; 1)</span>
+<span class="fc" id="L186">					path.addAll(cEdges.subList(0, xIdx - 1));</span>
+
+<span class="fc bfc" id="L188" title="All 2 branches covered.">				if (g.isDirected()) {</span>
+<span class="pc bpc" id="L189" title="3 of 4 branches missed.">					assert source == g0.edgeTarget(/* xToSourceEdge */ cEdges.getInt(xIdx));</span>
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">					assert target == g0</span>
+<span class="nc bnc" id="L191" title="All 4 branches missed.">							.edgeSource(/* targetToXEdge */ cEdges.getInt(xIdx &gt; 0 ? xIdx - 1 : cEdges.size() - 1));</span>
+				} else {
+<span class="fc" id="L193">					int edgeAfterX = cEdges.getInt(xIdx);</span>
+<span class="fc" id="L194">					int vertexAfterX = g0.edgeEndpoint(edgeAfterX, x);</span>
+
+<span class="fc bfc" id="L196" title="All 2 branches covered.">					if (source != vertexAfterX) {</span>
+<span class="pc bpc" id="L197" title="3 of 4 branches missed.">						assert target == vertexAfterX;</span>
+<span class="fc" id="L198">						IntArrays.reverse(path.elements(), 0, path.size());</span>
+					}
+<span class="pc bpc" id="L200" title="3 of 4 branches missed.">					assert (source == vertexAfterX ? target : source) == g0</span>
+<span class="nc bnc" id="L201" title="All 4 branches missed.">							.edgeEndpoint(/* targetToXEdge */ cEdges.getInt(xIdx &gt; 0 ? xIdx - 1 : cEdges.size() - 1),</span>
+									x);
+				}
+
+<span class="fc" id="L205">				return IPath.valueOf(g, source, target, path);</span>
+			});
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

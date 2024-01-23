@@ -87,7 +87,7 @@ class CyclesEnumeratorTarjan implements CyclesEnumeratorBase {
 <span class="fc" id="L87">								continue;</span>
 <span class="fc bfc" id="L88" title="All 2 branches covered.">							if (v == startV) {</span>
 <span class="fc" id="L89">								path.push(e);</span>
-<span class="fc" id="L90">								nextCycle = new PathImpl(g, startV, startV, new IntArrayList(path));</span>
+<span class="fc" id="L90">								nextCycle = IPath.valueOf(g, startV, startV, new IntArrayList(path));</span>
 <span class="fc" id="L91">								path.popInt();</span>
 <span class="fc" id="L92">								cycleFoundDepth = path.size();</span>
 <span class="fc" id="L93">								return;</span>

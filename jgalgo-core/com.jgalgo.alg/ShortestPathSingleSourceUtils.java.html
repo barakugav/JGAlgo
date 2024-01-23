@@ -100,7 +100,7 @@ class ShortestPathSingleSourceUtils {
 <span class="fc" id="L100">				}</span>
 			}
 <span class="fc" id="L102">			IntArrays.reverse(path.elements(), 0, path.size());</span>
-<span class="fc" id="L103">			return new PathImpl(g, source, target, path);</span>
+<span class="fc" id="L103">			return IPath.valueOf(g, source, target, path);</span>
 		}
 
 		@Override
@@ -157,7 +157,7 @@ class ShortestPathSingleSourceUtils {
 
 		@Override
 		public Path&lt;V, E&gt; getPath(V target) {
-<span class="fc" id="L160">			return PathImpl.objPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));</span>
+<span class="fc" id="L160">			return Paths.objPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));</span>
 		}
 
 		@Override
@@ -235,7 +235,7 @@ class ShortestPathSingleSourceUtils {
 
 		@Override
 		public IPath getPath(int target) {
-<span class="fc" id="L238">			return PathImpl.intPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));</span>
+<span class="fc" id="L238">			return Paths.intPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));</span>
 		}
 
 		@Override

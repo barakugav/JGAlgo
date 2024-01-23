@@ -99,18 +99,22 @@ public class SubSets {
 <span class="fc" id="L99">		return StreamSupport.stream(SubSets.of(set).spliterator(), false);</span>
 	}
 
+	public static &lt;T&gt; Stream&lt;List&lt;T&gt;&gt; stream(Collection&lt;T&gt; set, int k) {
+<span class="fc" id="L103">		return StreamSupport.stream(SubSets.of(set, k).spliterator(), false);</span>
+	}
+
 	public static Stream&lt;IntList&gt; stream(IntCollection set) {
-<span class="fc" id="L103">		return StreamSupport.stream(SubSets.of(set).spliterator(), false);</span>
+<span class="fc" id="L107">		return StreamSupport.stream(SubSets.of(set).spliterator(), false);</span>
 	}
 
 	public static Stream&lt;IntList&gt; stream(IntCollection set, int k) {
-<span class="fc" id="L107">		return StreamSupport.stream(SubSets.of(set, k).spliterator(), false);</span>
+<span class="fc" id="L111">		return StreamSupport.stream(SubSets.of(set, k).spliterator(), false);</span>
 	}
 
 	private static void checkSubsetsSize(Collection&lt;?&gt; set, int k) {
-<span class="fc bfc" id="L111" title="All 4 branches covered.">		if (!(0 &lt;= k &amp;&amp; k &lt;= set.size()))</span>
-<span class="fc" id="L112">			throw new IllegalArgumentException(&quot;k must be in [0, set.size()]&quot;);</span>
-<span class="fc" id="L113">	}</span>
+<span class="fc bfc" id="L115" title="All 4 branches covered.">		if (!(0 &lt;= k &amp;&amp; k &lt;= set.size()))</span>
+<span class="fc" id="L116">			throw new IllegalArgumentException(&quot;k must be in [0, set.size()]&quot;);</span>
+<span class="fc" id="L117">	}</span>
 
 	private static class SubSetsKIterBase {
 
@@ -120,33 +124,33 @@ public class SubSets {
 		int nextDeviationIdx;
 		boolean hasNext;
 
-<span class="fc" id="L123">		SubSetsKIterBase(int n, int k) {</span>
-<span class="fc" id="L124">			this.subset = new int[k];</span>
-<span class="fc" id="L125">			this.k = k;</span>
+<span class="fc" id="L127">		SubSetsKIterBase(int n, int k) {</span>
+<span class="fc" id="L128">			this.subset = new int[k];</span>
+<span class="fc" id="L129">			this.k = k;</span>
 
-<span class="fc bfc" id="L127" title="All 2 branches covered.">			for (int i : range(k))</span>
-<span class="fc" id="L128">				subset[i] = n - k + i;</span>
-<span class="fc" id="L129">			nextDeviationIdx = k;</span>
-<span class="fc bfc" id="L130" title="All 2 branches covered.">			hasNext = k &gt; 0;</span>
-<span class="fc" id="L131">		}</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">			for (int i : range(k))</span>
+<span class="fc" id="L132">				subset[i] = n - k + i;</span>
+<span class="fc" id="L133">			nextDeviationIdx = k;</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">			hasNext = k &gt; 0;</span>
+<span class="fc" id="L135">		}</span>
 
 		public boolean hasNext() {
-<span class="fc" id="L134">			return hasNext;</span>
+<span class="fc" id="L138">			return hasNext;</span>
 		}
 
 		void advance() {
-<span class="fc bfc" id="L138" title="All 2 branches covered.">			for (int i : range(k)) {</span>
-<span class="fc bfc" id="L139" title="All 2 branches covered.">				if (subset[i] &gt; i) {</span>
-<span class="fc" id="L140">					nextDeviationIdx = i + 1;</span>
-<span class="fc" id="L141">					subset[i]--;</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">					while (i-- &gt; 0)</span>
-<span class="fc" id="L143">						subset[i] = subset[i + 1] - 1;</span>
-<span class="fc" id="L144">					hasNext = true;</span>
-<span class="fc" id="L145">					return;</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">			for (int i : range(k)) {</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">				if (subset[i] &gt; i) {</span>
+<span class="fc" id="L144">					nextDeviationIdx = i + 1;</span>
+<span class="fc" id="L145">					subset[i]--;</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">					while (i-- &gt; 0)</span>
+<span class="fc" id="L147">						subset[i] = subset[i + 1] - 1;</span>
+<span class="fc" id="L148">					hasNext = true;</span>
+<span class="fc" id="L149">					return;</span>
 				}
-<span class="fc" id="L147">			}</span>
-<span class="fc" id="L148">			hasNext = false;</span>
-<span class="fc" id="L149">		}</span>
+<span class="fc" id="L151">			}</span>
+<span class="fc" id="L152">			hasNext = false;</span>
+<span class="fc" id="L153">		}</span>
 	}
 
 	private static class SubSetsKIter&lt;T&gt; extends SubSetsKIterBase implements Iterator&lt;List&lt;T&gt;&gt; {
@@ -157,19 +161,19 @@ public class SubSets {
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		SubSetsKIter(Collection&lt;? extends T&gt; set, int k) {
-<span class="fc" id="L160">			super(set.size(), k);</span>
-<span class="fc" id="L161">			this.set = (T[]) set.toArray();</span>
-<span class="fc" id="L162">			next = (T[]) new Object[k];</span>
-<span class="fc" id="L163">			nextList = new ObjectImmutableList&lt;&gt;(next);</span>
-<span class="fc" id="L164">		}</span>
+<span class="fc" id="L164">			super(set.size(), k);</span>
+<span class="fc" id="L165">			this.set = (T[]) set.toArray();</span>
+<span class="fc" id="L166">			next = (T[]) new Object[k];</span>
+<span class="fc" id="L167">			nextList = new ObjectImmutableList&lt;&gt;(next);</span>
+<span class="fc" id="L168">		}</span>
 
 		@Override
 		public List&lt;T&gt; next() {
-<span class="fc" id="L168">			Assertions.hasNext(this);</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">			for (int i : range(nextDeviationIdx))</span>
-<span class="fc" id="L170">				next[i] = set[subset[i]];</span>
-<span class="fc" id="L171">			advance();</span>
-<span class="fc" id="L172">			return nextList;</span>
+<span class="fc" id="L172">			Assertions.hasNext(this);</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">			for (int i : range(nextDeviationIdx))</span>
+<span class="fc" id="L174">				next[i] = set[subset[i]];</span>
+<span class="fc" id="L175">			advance();</span>
+<span class="fc" id="L176">			return nextList;</span>
 		}
 	}
 
@@ -180,19 +184,19 @@ public class SubSets {
 		private final IntList nextList;
 
 		SubSetsKIterInt(IntCollection set, int k) {
-<span class="fc" id="L183">			super(set.size(), k);</span>
-<span class="fc" id="L184">			this.set = set.toIntArray();</span>
-<span class="fc" id="L185">			next = new int[k];</span>
-<span class="fc" id="L186">			nextList = new IntImmutableList(next);</span>
-<span class="fc" id="L187">		}</span>
+<span class="fc" id="L187">			super(set.size(), k);</span>
+<span class="fc" id="L188">			this.set = set.toIntArray();</span>
+<span class="fc" id="L189">			next = new int[k];</span>
+<span class="fc" id="L190">			nextList = new IntImmutableList(next);</span>
+<span class="fc" id="L191">		}</span>
 
 		@Override
 		public IntList next() {
-<span class="fc" id="L191">			Assertions.hasNext(this);</span>
-<span class="fc bfc" id="L192" title="All 2 branches covered.">			for (int i : range(nextDeviationIdx))</span>
-<span class="fc" id="L193">				next[i] = set[subset[i]];</span>
-<span class="fc" id="L194">			advance();</span>
-<span class="fc" id="L195">			return nextList;</span>
+<span class="fc" id="L195">			Assertions.hasNext(this);</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">			for (int i : range(nextDeviationIdx))</span>
+<span class="fc" id="L197">				next[i] = set[subset[i]];</span>
+<span class="fc" id="L198">			advance();</span>
+<span class="fc" id="L199">			return nextList;</span>
 		}
 	}
 

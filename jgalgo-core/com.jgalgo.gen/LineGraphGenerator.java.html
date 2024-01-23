@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LineGraphGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.gen</a> &gt; <span class="el_source">LineGraphGenerator.java</span></div><h1>LineGraphGenerator.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.gen;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.net.URI;
+import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IEdgeSet;
+import com.jgalgo.graph.IdBuilder;
+import com.jgalgo.graph.IdBuilderInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
+import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.WeightsObj;
+
+/**
+ * Generates the line graph given an existing graph.
+ *
+ * &lt;p&gt;
+ * Given a graph \(G=(V,E)\), the line graph \(L=(E,H)\) is the graph whose vertices are the edges of \(G\) and a pair
+ * of such two vertices are connected by an edge if the corresponding edges in the original graph share an endpoint. For
+ * directed graphs, two vertices are connected if their corresponding edges form a path of size two in the original
+ * graph. The line graph \(L\) is directed if and only if the original graph \(G\) is directed.
+ *
+ * &lt;p&gt;
+ * The generate graph will not contains self edges, and no parallel edges. Specifically, if the original graph contains
+ * two parallel edges, meaning their share two endpoints rather than one, the generated graph will contain only one edge
+ * between their corresponding vertices.
+ *
+ * &lt;p&gt;
+ * In the following example, the line graph of the original graph is generated. The vertices type of the original graph
+ * is {@link URI}, and the edges type is {@link String}. The vertices type of the generated line graph is {@link String}
+ * (the edges type of the original graph), and the edges type is {@link Integer}. The edges of the generated line graph
+ * are generated using the default edge builder provided by {@link IdBuilderInt#defaultBuilder()}.
+ *
+ * &lt;pre&gt; {@code
+ * Graph&lt;URI, String&gt; origGraph = ...;
+ * Graph&lt;String, Integer&gt; lineGraph = new LineGraphGenerator&lt;String, Integer&gt;()
+ * 		.graph(origGraph)
+ * 		.edges(IdBuilderInt.defaultBuilder())
+ * 		.generate();
+ * } &lt;/pre&gt;
+ *
+ * @param  &lt;V&gt; the vertices type, which is the edges type of the input graph
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
+ */
+<span class="fc" id="L67">public class LineGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {</span>
+
+	private final GraphFactory&lt;V, E&gt; factory;
+	private Graph&lt;Object, V&gt; graph;
+	private IdBuilder&lt;E&gt; edgeBuilder;
+	private String commonVertexWeightsKey;
+
+	/**
+	 * Create a new line graph generator that will use the default graph factory.
+	 *
+	 * &lt;p&gt;
+	 * The graph factory will be used to create the generated graph(s) and it will also provide an edge builder if one
+	 * was no explicitly set using {@link #edges(IdBuilder)}. The default graph builder does not have an edge builder,
+	 * therefore it must be set manually.
+	 */
+	public LineGraphGenerator() {
+<span class="fc" id="L83">		this(GraphFactory.undirected());</span>
+
+<span class="fc" id="L85">	}</span>
+
+	/**
+	 * Create a new line graph generator that will use the given graph factory.
+	 *
+	 * &lt;p&gt;
+	 * The graph factory will be used to create the generated graph(s) and it will also provide an edge builder if one
+	 * was no explicitly set using {@link #edges(IdBuilder)}.
+	 *
+	 * &lt;p&gt;
+	 * To generate {@linkplain IntGraph int graphs}, pass an instance of {@linkplain IntGraphFactory} to this
+	 * constructor.
+	 *
+	 * @param factory the graph factory that will be used to create the generated graph(s)
+	 */
+<span class="fc" id="L100">	public LineGraphGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
+<span class="fc" id="L101">		this.factory = Objects.requireNonNull(factory);</span>
+<span class="fc" id="L102">	}</span>
+
+	/**
+	 * Get the graph factory that will be used to create the generated graph(s).
+	 *
+	 * &lt;p&gt;
+	 * It's possible to customize the factory before generating the graph(s), for example by using
+	 * {@link GraphFactory#addHint(GraphFactory.Hint)} to optimize the generated graph(s) for a specific algorithm. If
+	 * the factory has an edge builder it will be used to generate the edges of the generated graph(s) if it will not be
+	 * overridden by {@link #edges(IdBuilder)}.
+	 *
+	 * &lt;p&gt;
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration.
+	 *
+	 * @return the graph factory that will be used to create the generated graph(s)
+	 */
+	public GraphFactory&lt;V, E&gt; graphFactory() {
+<span class="fc" id="L120">		return factory;</span>
+	}
+
+	/**
+	 * Set the input graph whose line graph this generator should generate.
+	 *
+	 * &lt;p&gt;
+	 * Given a graph \(G=(V,E)\), the line graph \(L=(E,H)\) is the graph whose vertices are the edges of \(G\) and a
+	 * pair of such two vertices are connected by an edge if the corresponding edges in the original graph share an
+	 * endpoint. For directed graphs, two vertices are connected if their corresponding edges form a path of size two in
+	 * the original graph. The line graph \(L\) is directed if and only if the original graph \(G\) is directed. This
+	 * method sets the input graph \(G\), and the generator will generate the line graph \(L\).
+	 *
+	 * &lt;p&gt;
+	 * The edges type of the input graph are the vertices type of the generated line graph. The vertices type of the
+	 * input graph is not reflected in the output graph.
+	 *
+	 * @param  graph                the input graph for the generator, whose line graph should be generated. The
+	 *                                  generated graph(s) will be directed if and only if this input graph is directed
+	 * @return                      this generator
+	 * @throws NullPointerException if {@code graph} is {@code null}
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public LineGraphGenerator&lt;V, E&gt; graph(Graph&lt;?, V&gt; graph) {
+<span class="fc" id="L144">		this.graph = (Graph&lt;Object, V&gt;) Objects.requireNonNull(graph);</span>
+<span class="fc" id="L145">		return this;</span>
+	}
+
+	/**
+	 * Set the edge builder that will be used to generate edges.
+	 *
+	 * &lt;p&gt;
+	 * The edges will be generated using the provided edge builder, and the edge generator provided by the
+	 * {@linkplain #graphFactory() graph factory} (if exists) will be ignored. The generation will happen independently
+	 * for each graph generated. If this method is not called, or called with a {@code null} argument, the edge builder
+	 * of the graph factory will be used. If the graph factory does not have an edge builder, an exception will be
+	 * thrown during generation.
+	 *
+	 * @param  edgeBuilder the edge builder, or {@code null} to use the edge builder of the {@linkplain #graphFactory()
+	 *                         graph factory}
+	 * @return             this generator
+	 */
+	public LineGraphGenerator&lt;V, E&gt; edges(IdBuilder&lt;E&gt; edgeBuilder) {
+<span class="fc" id="L163">		this.edgeBuilder = edgeBuilder;</span>
+<span class="fc" id="L164">		return this;</span>
+	}
+
+	/**
+	 * Set the weights key that will store the common vertex between two edges.
+	 *
+	 * &lt;p&gt;
+	 * Each edge in the line graph connect two vertices if the two corresponding edges share a common endpoint. This
+	 * method cause each such common endpoint to be saved as weight of an edge in the generated line graph(s). By
+	 * default, no such weights are added to the generated graph(s). If two edges share more than one endpoints
+	 * (parallel edges), an arbitrary one will be stored as weight. The weights will be stored in the generate graph(s)
+	 * as edges {@linkplain WeightsObj object weights} by default, or as {@linkplain WeightsInt int weights} if the
+	 * input graph was an {@link IntGraph}, see the following example:
+	 *
+	 * &lt;pre&gt; {@code
+	 * Graph&lt;URI, String&gt; origGraph = ...;
+	 * Graph&lt;String, Integer&gt; lineGraph = new LineGraphGenerator&lt;String, Integer&gt;()
+	 * 		.graph(origGraph)
+	 * 		.edges(IdBuilderInt.defaultBuilder())
+	 * 		.commonVertexWeights(&quot;common-vertex&quot;)
+	 * 		.generate();
+	 *
+	 * 	WeightsObj&lt;Integer, URI&gt; commonVertexWeights = g.getEdgesWeights(&quot;common-vertex&quot;);
+	 * 	for (Integer lineEdge : g.edges()) {
+	 * 		String e1 = g.edgeSource(lineEdge);
+	 * 		String e2 = g.edgeTarget(lineEdge);
+	 * 		URI commonVertex = commonVertexWeights.get(lineEdge);
+	 * 		System.out.format(&quot;The vertex %s is a common vertex between two edges: %d %d&quot;, commonVertex, e1, e2);
+	 * 	}
+	 * } &lt;/pre&gt;
+	 *
+	 * @param  weightsKey key of the edges weights in the generated graph(s) that will store the common (original)
+	 *                        endpoint vertex that is shared between the two connected corresponding edges, or
+	 *                        {@code null} to not store these weights
+	 * @return            this generator
+	 */
+	public LineGraphGenerator&lt;V, E&gt; commonVertexWeights(String weightsKey) {
+<span class="fc" id="L201">		commonVertexWeightsKey = weightsKey;</span>
+<span class="fc" id="L202">		return this;</span>
+	}
+
+	@Override
+	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
+<span class="fc bfc" id="L207" title="All 2 branches covered.">		if (graph == null)</span>
+<span class="fc" id="L208">			throw new IllegalStateException(&quot;Input graph not provided&quot;);</span>
+
+<span class="fc" id="L210">		GraphBuilder&lt;V, E&gt; g = factory.setDirected(graph.isDirected()).newBuilder();</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">		IdBuilder&lt;E&gt; edgeBuilder = this.edgeBuilder != null ? this.edgeBuilder : g.edgeBuilder();</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
+<span class="fc" id="L213">			throw new IllegalStateException(&quot;Edge builder not provided and graph factory does not have one&quot;);</span>
+
+<span class="fc bfc" id="L215" title="All 2 branches covered.">		final boolean hasCommonVertexWeights = commonVertexWeightsKey != null;</span>
+		final Weights&lt;E, Object&gt; commonVertexWeights;
+<span class="fc bfc" id="L217" title="All 2 branches covered.">		if (!hasCommonVertexWeights) {</span>
+<span class="fc" id="L218">			commonVertexWeights = null;</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">		} else if ((Graph&lt;?, ?&gt;) graph instanceof IntGraph) {</span>
+			@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+<span class="fc" id="L221">			Weights&lt;E, Object&gt; commonVertexWeights0 = (Weights) g.addEdgesWeights(commonVertexWeightsKey, int.class);</span>
+<span class="fc" id="L222">			commonVertexWeights = commonVertexWeights0;</span>
+<span class="fc" id="L223">		} else {</span>
+<span class="fc" id="L224">			commonVertexWeights = g.addEdgesWeights(commonVertexWeightsKey, Object.class);</span>
+		}
+
+<span class="fc" id="L227">		g.addVertices(graph.edges());</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc" id="L229">			IndexGraph ig = graph.indexGraph();</span>
+<span class="fc" id="L230">			IndexIdMap&lt;Object&gt; viMap = graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L231">			IndexIdMap&lt;V&gt; eiMap = graph.indexGraphEdgesMap();</span>
+<span class="fc" id="L232">			final int maxInDegree = ig.vertices().intStream().map(v -&gt; ig.inEdges(v).size()).max().orElse(0);</span>
+<span class="fc" id="L233">			final int maxOutDegree = ig.vertices().intStream().map(v -&gt; ig.outEdges(v).size()).max().orElse(0);</span>
+<span class="fc" id="L234">			int[] intEdges = new int[maxInDegree];</span>
+<span class="fc" id="L235">			int[] outEdges = new int[maxOutDegree];</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">			for (int uIdx : ig.vertices()) {</span>
+<span class="fc" id="L237">				Object u = viMap.indexToId(uIdx);</span>
+<span class="fc" id="L238">				IEdgeSet inEs = ig.inEdges(uIdx);</span>
+<span class="fc" id="L239">				IEdgeSet outEs = ig.outEdges(uIdx);</span>
+<span class="fc" id="L240">				Object toArrRes1 = inEs.toArray(intEdges);</span>
+<span class="fc" id="L241">				Object toArrRes2 = outEs.toArray(outEdges);</span>
+<span class="pc bnc" id="L242" title="All 2 branches missed.">				assert toArrRes1 == intEdges;</span>
+<span class="pc bnc" id="L243" title="All 2 branches missed.">				assert toArrRes2 == outEdges;</span>
+<span class="fc" id="L244">				final int inEsSize = inEs.size();</span>
+<span class="fc" id="L245">				final int outEsSize = outEs.size();</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">				for (int i : range(inEsSize)) {</span>
+<span class="fc" id="L247">					int e1Idx = intEdges[i];</span>
+<span class="fc" id="L248">					V e1 = eiMap.indexToId(e1Idx);</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">					for (int j : range(outEsSize)) {</span>
+<span class="fc" id="L250">						int e2Idx = outEdges[j];</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">						if (e1Idx == e2Idx)</span>
+<span class="fc" id="L252">							continue; /* avoid generating self edge of original self edge */</span>
+<span class="fc" id="L253">						V e2 = eiMap.indexToId(e2Idx);</span>
+<span class="fc" id="L254">						E e = edgeBuilder.build(g.edges());</span>
+<span class="fc" id="L255">						g.addEdge(e1, e2, e);</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">						if (hasCommonVertexWeights)</span>
+<span class="fc" id="L257">							commonVertexWeights.setAsObj(e, u);</span>
+<span class="fc" id="L258">					}</span>
+<span class="fc" id="L259">				}</span>
+<span class="fc" id="L260">			}</span>
+
+<span class="fc" id="L262">		} else {</span>
+<span class="fc" id="L263">			IndexGraph ig = graph.indexGraph();</span>
+<span class="fc" id="L264">			IndexIdMap&lt;Object&gt; viMap = graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L265">			IndexIdMap&lt;V&gt; eiMap = graph.indexGraphEdgesMap();</span>
+<span class="fc" id="L266">			final int maxDegree = ig.vertices().intStream().map(v -&gt; ig.outEdges(v).size()).max().orElse(0);</span>
+<span class="fc" id="L267">			int[] edges = new int[maxDegree];</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">			for (int uIdx : ig.vertices()) {</span>
+<span class="fc" id="L269">				Object u = viMap.indexToId(uIdx);</span>
+<span class="fc" id="L270">				IEdgeSet es = ig.outEdges(uIdx);</span>
+<span class="fc" id="L271">				Object toArrRes = es.toArray(edges);</span>
+<span class="pc bnc" id="L272" title="All 2 branches missed.">				assert toArrRes == edges;</span>
+<span class="fc" id="L273">				final int esSize = es.size();</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">				for (int i : range(esSize)) {</span>
+<span class="fc" id="L275">					int e1Idx = edges[i];</span>
+<span class="fc" id="L276">					int v1Idx = ig.edgeEndpoint(e1Idx, uIdx);</span>
+<span class="fc" id="L277">					V e1 = eiMap.indexToId(e1Idx);</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">					for (int j : range(i + 1, esSize)) {</span>
+<span class="fc" id="L279">						int e2Idx = edges[j];</span>
+<span class="fc" id="L280">						int v2Idx = ig.edgeEndpoint(e2Idx, uIdx);</span>
+<span class="fc bfc" id="L281" title="All 4 branches covered.">						if (v1Idx == v2Idx &amp;&amp; uIdx &gt; v1Idx)</span>
+<span class="fc" id="L282">							continue; /* avoid generating two edges between parallel original edges */</span>
+<span class="fc" id="L283">						V e2 = eiMap.indexToId(e2Idx);</span>
+<span class="fc" id="L284">						E e = edgeBuilder.build(g.edges());</span>
+<span class="fc" id="L285">						g.addEdge(e1, e2, e);</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">						if (hasCommonVertexWeights)</span>
+<span class="fc" id="L287">							commonVertexWeights.setAsObj(e, u);</span>
+<span class="fc" id="L288">					}</span>
+<span class="fc" id="L289">				}</span>
+<span class="fc" id="L290">			}</span>
+		}
+<span class="fc" id="L292">		return g;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

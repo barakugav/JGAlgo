@@ -318,7 +318,7 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract implements G
 <span class="pc bpc" id="L318" title="1 of 4 branches missed.">			if (!(0 &lt;= edge &amp;&amp; edge &lt; edges().size()))</span>
 <span class="fc" id="L319">				return false;</span>
 <span class="fc" id="L320">			int u = source(edge), v = target(edge);</span>
-<span class="pc bpc" id="L321" title="2 of 8 branches missed.">			return (source == u &amp;&amp; target == v) || (source == v &amp;&amp; target == u);</span>
+<span class="fc bfc" id="L321" title="All 8 branches covered.">			return (source == u &amp;&amp; target == v) || (source == v &amp;&amp; target == u);</span>
 		}
 	}
 

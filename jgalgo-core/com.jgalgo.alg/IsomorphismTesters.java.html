@@ -40,7 +40,7 @@ class IsomorphismTesters {
 		private final IndexGraph g2;
 		private final int[] vertexMapping;
 		private final int[] edgeMapping;
-		IndexMapping inverse;
+		private IndexMapping inverse;
 		private IntSet mappedVertices;
 		private IntSet mappedEdges;
 

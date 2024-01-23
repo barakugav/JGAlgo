@@ -107,7 +107,7 @@ class CyclesEnumeratorJohnson implements CyclesEnumeratorBase {
 <span class="fc" id="L107">								continue;</span>
 <span class="fc bfc" id="L108" title="All 2 branches covered.">							if (v == startV) {</span>
 <span class="fc" id="L109">								path.push(e);</span>
-<span class="fc" id="L110">								nextCycle = new PathImpl(g, startV, startV, new IntArrayList(path));</span>
+<span class="fc" id="L110">								nextCycle = IPath.valueOf(g, startV, startV, new IntArrayList(path));</span>
 <span class="fc" id="L111">								path.popInt();</span>
 <span class="fc" id="L112">								cycleFoundDepth = path.size();</span>
 <span class="fc" id="L113">								return;</span>

@@ -177,7 +177,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L177">					.computeShortestPaths(refG, refW, Integer.valueOf(fakeV));</span>
 <span class="fc" id="L178">		} catch (NegativeCycleException e) {</span>
 <span class="fc" id="L179">			IPath p = (IPath) e.cycle();</span>
-<span class="fc" id="L180">			throw new NegativeCycleException(g, new PathImpl(g, p.sourceInt(), p.targetInt(), p.edges()));</span>
+<span class="fc" id="L180">			throw new NegativeCycleException(g, IPath.valueOf(g, p.sourceInt(), p.targetInt(), p.edges()));</span>
 <span class="fc" id="L181">		}</span>
 
 <span class="fc" id="L183">		double[] potential = new double[n];</span>

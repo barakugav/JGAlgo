@@ -17,10 +17,14 @@ package com.jgalgo.internal.util;
 
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Spliterators;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
 import java.util.function.IntUnaryOperator;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -30,20 +34,20 @@ public class IterTools {
 
 	/* syntax sugar to iterator for loops */
 	public static &lt;E&gt; Iterable&lt;E&gt; foreach(Iterator&lt;E&gt; it) {
-<span class="fc" id="L33">		return new Iterable&lt;&gt;() {</span>
+<span class="fc" id="L37">		return new Iterable&lt;&gt;() {</span>
 			@Override
 			public Iterator&lt;E&gt; iterator() {
-<span class="fc" id="L36">				return it;</span>
+<span class="fc" id="L40">				return it;</span>
 			}
 		};
 	}
 
 	/* syntax sugar to iterator for loops */
 	public static IntIterable foreach(IntIterator it) {
-<span class="fc" id="L43">		return new IntIterable() {</span>
+<span class="fc" id="L47">		return new IntIterable() {</span>
 			@Override
 			public IntIterator iterator() {
-<span class="fc" id="L46">				return it;</span>
+<span class="fc" id="L50">				return it;</span>
 			}
 		};
 	}
@@ -62,40 +66,40 @@ public class IterTools {
 
 		private final Iterator&lt;? super E&gt; it;
 		private Object nextElm;
-<span class="fc" id="L65">		private static final Object nextNone = new Object();</span>
+<span class="fc" id="L69">		private static final Object nextNone = new Object();</span>
 
-<span class="nc" id="L67">		IterPeekableImpl(Iterator&lt;? super E&gt; it) {</span>
-<span class="nc" id="L68">			this.it = Objects.requireNonNull(it);</span>
-<span class="nc" id="L69">			advance();</span>
-<span class="nc" id="L70">		}</span>
+<span class="nc" id="L71">		IterPeekableImpl(Iterator&lt;? super E&gt; it) {</span>
+<span class="nc" id="L72">			this.it = Objects.requireNonNull(it);</span>
+<span class="nc" id="L73">			advance();</span>
+<span class="nc" id="L74">		}</span>
 
 		private void advance() {
-<span class="nc bnc" id="L73" title="All 2 branches missed.">			if (it.hasNext()) {</span>
-<span class="nc" id="L74">				nextElm = it.next();</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">			if (it.hasNext()) {</span>
+<span class="nc" id="L78">				nextElm = it.next();</span>
 			} else {
-<span class="nc" id="L76">				nextElm = nextNone;</span>
+<span class="nc" id="L80">				nextElm = nextNone;</span>
 			}
-<span class="nc" id="L78">		}</span>
+<span class="nc" id="L82">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="nc bnc" id="L82" title="All 2 branches missed.">			return nextElm != null;</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">			return nextElm != null;</span>
 		}
 
 		@Override
 		public E next() {
-<span class="nc" id="L87">			Assertions.hasNext(this);</span>
+<span class="nc" id="L91">			Assertions.hasNext(this);</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="nc" id="L89">			E ret = (E) nextElm;</span>
-<span class="nc" id="L90">			advance();</span>
-<span class="nc" id="L91">			return ret;</span>
+<span class="nc" id="L93">			E ret = (E) nextElm;</span>
+<span class="nc" id="L94">			advance();</span>
+<span class="nc" id="L95">			return ret;</span>
 		}
 
 		@Override
 		@SuppressWarnings(&quot;unchecked&quot;)
 		public E peekNext() {
-<span class="nc" id="L97">			Assertions.hasNext(this);</span>
-<span class="nc" id="L98">			return (E) nextElm;</span>
+<span class="nc" id="L101">			Assertions.hasNext(this);</span>
+<span class="nc" id="L102">			return (E) nextElm;</span>
 		}
 
 		static class Int implements IterPeekable.Int {
@@ -104,33 +108,33 @@ public class IterTools {
 			private int next;
 			private boolean isNextValid;
 
-<span class="nc" id="L107">			Int(IntIterator it) {</span>
-<span class="nc" id="L108">				this.it = Objects.requireNonNull(it);</span>
-<span class="nc" id="L109">				advance();</span>
-<span class="nc" id="L110">			}</span>
+<span class="nc" id="L111">			Int(IntIterator it) {</span>
+<span class="nc" id="L112">				this.it = Objects.requireNonNull(it);</span>
+<span class="nc" id="L113">				advance();</span>
+<span class="nc" id="L114">			}</span>
 
 			private void advance() {
-<span class="nc bnc" id="L113" title="All 2 branches missed.">				if (isNextValid = it.hasNext())</span>
-<span class="nc" id="L114">					next = it.nextInt();</span>
-<span class="nc" id="L115">			}</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">				if (isNextValid = it.hasNext())</span>
+<span class="nc" id="L118">					next = it.nextInt();</span>
+<span class="nc" id="L119">			}</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="nc" id="L119">				return isNextValid;</span>
+<span class="nc" id="L123">				return isNextValid;</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="nc" id="L124">				Assertions.hasNext(this);</span>
-<span class="nc" id="L125">				int ret = next;</span>
-<span class="nc" id="L126">				advance();</span>
-<span class="nc" id="L127">				return ret;</span>
+<span class="nc" id="L128">				Assertions.hasNext(this);</span>
+<span class="nc" id="L129">				int ret = next;</span>
+<span class="nc" id="L130">				advance();</span>
+<span class="nc" id="L131">				return ret;</span>
 			}
 
 			@Override
 			public int peekNextInt() {
-<span class="nc" id="L132">				Assertions.hasNext(this);</span>
-<span class="nc" id="L133">				return next;</span>
+<span class="nc" id="L136">				Assertions.hasNext(this);</span>
+<span class="nc" id="L137">				return next;</span>
 			}
 
 		}
@@ -141,107 +145,119 @@ public class IterTools {
 		private final Iterator&lt;A&gt; it;
 		private final Function&lt;A, B&gt; map;
 
-<span class="fc" id="L144">		IterMapObjObj(Iterator&lt;A&gt; it, Function&lt;A, B&gt; map) {</span>
-<span class="fc" id="L145">			this.it = Objects.requireNonNull(it);</span>
-<span class="fc" id="L146">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L147">		}</span>
+<span class="fc" id="L148">		IterMapObjObj(Iterator&lt;A&gt; it, Function&lt;A, B&gt; map) {</span>
+<span class="fc" id="L149">			this.it = Objects.requireNonNull(it);</span>
+<span class="fc" id="L150">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L151">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L151">			return it.hasNext();</span>
+<span class="fc" id="L155">			return it.hasNext();</span>
 		}
 
 		@Override
 		public B next() {
-<span class="fc" id="L156">			return map.apply(it.next());</span>
+<span class="fc" id="L160">			return map.apply(it.next());</span>
 		}
 	}
 
 	public static &lt;A, B&gt; Iterator&lt;B&gt; map(Iterator&lt;A&gt; it, Function&lt;A, B&gt; map) {
-<span class="fc" id="L161">		return new IterMapObjObj&lt;&gt;(it, map);</span>
+<span class="fc" id="L165">		return new IterMapObjObj&lt;&gt;(it, map);</span>
 	}
 
 	private static class IterMapIntObj&lt;B&gt; implements Iterator&lt;B&gt; {
 		private final IntIterator it;
 		private final IntFunction&lt;B&gt; map;
 
-<span class="nc" id="L168">		IterMapIntObj(IntIterator it, IntFunction&lt;B&gt; map) {</span>
-<span class="nc" id="L169">			this.it = Objects.requireNonNull(it);</span>
-<span class="nc" id="L170">			this.map = Objects.requireNonNull(map);</span>
-<span class="nc" id="L171">		}</span>
+<span class="nc" id="L172">		IterMapIntObj(IntIterator it, IntFunction&lt;B&gt; map) {</span>
+<span class="nc" id="L173">			this.it = Objects.requireNonNull(it);</span>
+<span class="nc" id="L174">			this.map = Objects.requireNonNull(map);</span>
+<span class="nc" id="L175">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="nc" id="L175">			return it.hasNext();</span>
+<span class="nc" id="L179">			return it.hasNext();</span>
 		}
 
 		@Override
 		public B next() {
-<span class="nc" id="L180">			return map.apply(it.nextInt());</span>
+<span class="nc" id="L184">			return map.apply(it.nextInt());</span>
 		}
 	}
 
 	public static &lt;B&gt; Iterator&lt;B&gt; map(IntIterator it, IntFunction&lt;B&gt; map) {
-<span class="nc" id="L185">		return new IterMapIntObj&lt;&gt;(it, map);</span>
+<span class="nc" id="L189">		return new IterMapIntObj&lt;&gt;(it, map);</span>
 	}
 
 	private static class IterMapIntInt implements IntIterator {
 		private final IntIterator it;
 		private final IntUnaryOperator map;
 
-<span class="fc" id="L192">		IterMapIntInt(IntIterator it, IntUnaryOperator map) {</span>
-<span class="fc" id="L193">			this.it = Objects.requireNonNull(it);</span>
-<span class="fc" id="L194">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L195">		}</span>
+<span class="fc" id="L196">		IterMapIntInt(IntIterator it, IntUnaryOperator map) {</span>
+<span class="fc" id="L197">			this.it = Objects.requireNonNull(it);</span>
+<span class="fc" id="L198">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L199">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L199">			return it.hasNext();</span>
+<span class="fc" id="L203">			return it.hasNext();</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L204">			return map.applyAsInt(it.nextInt());</span>
+<span class="fc" id="L208">			return map.applyAsInt(it.nextInt());</span>
 		}
 	}
 
 	public static IntIterator mapInt(IntIterator it, IntUnaryOperator map) {
-<span class="fc" id="L209">		return new IterMapIntInt(it, map);</span>
+<span class="fc" id="L213">		return new IterMapIntInt(it, map);</span>
 	}
 
 	public static IntIterator filter(IntIterator it, IntPredicate pred) {
-<span class="fc" id="L213">		return new IntIterator() {</span>
+<span class="fc" id="L217">		return new IntIterator() {</span>
 
 			private int next;
 			private boolean isNextValid;
 
 			{
-<span class="fc" id="L219">				advance();</span>
-<span class="fc" id="L220">			}</span>
+<span class="fc" id="L223">				advance();</span>
+<span class="fc" id="L224">			}</span>
 
 			private void advance() {
-<span class="fc bfc" id="L223" title="All 2 branches covered.">				for (isNextValid = false; it.hasNext();) {</span>
-<span class="fc" id="L224">					next = it.nextInt();</span>
-<span class="fc bfc" id="L225" title="All 2 branches covered.">					if (pred.test(next)) {</span>
-<span class="fc" id="L226">						isNextValid = true;</span>
-<span class="fc" id="L227">						break;</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">				for (isNextValid = false; it.hasNext();) {</span>
+<span class="fc" id="L228">					next = it.nextInt();</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">					if (pred.test(next)) {</span>
+<span class="fc" id="L230">						isNextValid = true;</span>
+<span class="fc" id="L231">						break;</span>
 					}
 				}
-<span class="fc" id="L230">			}</span>
+<span class="fc" id="L234">			}</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc" id="L234">				return isNextValid;</span>
+<span class="fc" id="L238">				return isNextValid;</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="fc" id="L239">				Assertions.hasNext(this);</span>
-<span class="fc" id="L240">				int ret = next;</span>
-<span class="fc" id="L241">				advance();</span>
-<span class="fc" id="L242">				return ret;</span>
+<span class="fc" id="L243">				Assertions.hasNext(this);</span>
+<span class="fc" id="L244">				int ret = next;</span>
+<span class="fc" id="L245">				advance();</span>
+<span class="fc" id="L246">				return ret;</span>
 			}
 		};
+	}
+
+	public static &lt;T&gt; Stream&lt;T&gt; stream(Iterator&lt;T&gt; it) {
+<span class="fc" id="L252">		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(it, 0), false);</span>
+	}
+
+	public static IntStream stream(IntIterator it) {
+<span class="fc" id="L256">		return StreamSupport.intStream(Spliterators.spliteratorUnknownSize(it, 0), false);</span>
+	}
+
+	public static IntStream stream(IntIterable it) {
+<span class="fc" id="L260">		return stream(it.iterator());</span>
 	}
 
 }

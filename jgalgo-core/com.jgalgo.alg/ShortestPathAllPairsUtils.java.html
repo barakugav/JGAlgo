@@ -129,7 +129,7 @@ class ShortestPathAllPairsUtils {
 <span class="fc" id="L129">					path.add(e);</span>
 <span class="fc" id="L130">					v = g.edgeEndpoint(e, v);</span>
 <span class="fc" id="L131">				}</span>
-<span class="fc" id="L132">				return new PathImpl(g, source, target, path);</span>
+<span class="fc" id="L132">				return IPath.valueOf(g, source, target, path);</span>
 			}
 		}
 
@@ -171,7 +171,7 @@ class ShortestPathAllPairsUtils {
 <span class="fc" id="L171">					path.add(e);</span>
 <span class="fc" id="L172">					v = g.edgeTarget(e);</span>
 <span class="fc" id="L173">				}</span>
-<span class="fc" id="L174">				return new PathImpl(g, source, target, path);</span>
+<span class="fc" id="L174">				return IPath.valueOf(g, source, target, path);</span>
 			}
 		}
 
@@ -259,7 +259,7 @@ class ShortestPathAllPairsUtils {
 		@Override
 		public Path&lt;V, E&gt; getPath(V source, V target) {
 <span class="fc" id="L261">			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));</span>
-<span class="fc" id="L262">			return PathImpl.objPathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L262">			return Paths.objPathFromIndexPath(g, indexPath);</span>
 		}
 	}
 
@@ -283,7 +283,7 @@ class ShortestPathAllPairsUtils {
 		@Override
 		public IPath getPath(int source, int target) {
 <span class="fc" id="L285">			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));</span>
-<span class="fc" id="L286">			return PathImpl.intPathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L286">			return Paths.intPathFromIndexPath(g, indexPath);</span>
 		}
 	}
 

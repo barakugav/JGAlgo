@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractGraphImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">AbstractGraphImpl.java</span></div><h1>AbstractGraphImpl.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.graph;
+
+import java.util.Objects;
+import java.util.Set;
+
+abstract class AbstractGraphImpl&lt;V, E&gt; extends AbstractGraph&lt;V, E&gt; {
+
+	final IndexGraph indexGraph;
+
+<span class="fc" id="L25">	AbstractGraphImpl(IndexGraph indexGraph) {</span>
+<span class="fc" id="L26">		this.indexGraph = Objects.requireNonNull(indexGraph);</span>
+<span class="fc" id="L27">	}</span>
+
+	@Override
+	public IndexGraph indexGraph() {
+<span class="fc" id="L31">		return indexGraph;</span>
+	}
+
+	@Override
+	public Set&lt;String&gt; getVerticesWeightsKeys() {
+<span class="fc" id="L36">		return indexGraph.getVerticesWeightsKeys();</span>
+	}
+
+	@Override
+	public void removeVerticesWeights(String key) {
+<span class="fc" id="L41">		indexGraph.removeVerticesWeights(key);</span>
+<span class="fc" id="L42">	}</span>
+
+	@Override
+	public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
+			T defVal) {
+<span class="fc" id="L47">		indexGraph.addVerticesWeights(key, type, defVal);</span>
+<span class="fc" id="L48">		return getVerticesWeights(key);</span>
+	}
+
+	@Override
+	public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type, T defVal) {
+<span class="fc" id="L53">		indexGraph.addEdgesWeights(key, type, defVal);</span>
+<span class="fc" id="L54">		return getEdgesWeights(key);</span>
+	}
+
+	@Override
+	public Set&lt;String&gt; getEdgesWeightsKeys() {
+<span class="fc" id="L59">		return indexGraph.getEdgesWeightsKeys();</span>
+	}
+
+	@Override
+	public void removeEdgesWeights(String key) {
+<span class="fc" id="L64">		indexGraph.removeEdgesWeights(key);</span>
+<span class="fc" id="L65">	}</span>
+
+	@Override
+	public boolean isDirected() {
+<span class="fc" id="L69">		return indexGraph.isDirected();</span>
+	}
+
+	@Override
+	public boolean isAllowSelfEdges() {
+<span class="fc" id="L74">		return indexGraph.isAllowSelfEdges();</span>
+	}
+
+	@Override
+	public boolean isAllowParallelEdges() {
+<span class="fc" id="L79">		return indexGraph.isAllowParallelEdges();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

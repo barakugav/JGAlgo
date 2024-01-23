@@ -205,7 +205,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L205">			}</span>
 <span class="pc bpc" id="L206" title="1 of 4 branches missed.">			if (bestSelfEdge != -1 &amp;&amp; bestSelfEdgeWeight &lt; overallBestCycleMeanWeight) {</span>
 <span class="fc" id="L207">				int cycleVertex = g.edgeSource(bestSelfEdge);</span>
-<span class="fc" id="L208">				return new PathImpl(g, cycleVertex, cycleVertex, IntList.of(bestSelfEdge));</span>
+<span class="fc" id="L208">				return IPath.valueOf(g, cycleVertex, cycleVertex, IntList.of(bestSelfEdge));</span>
 			}
 		}
 
@@ -218,7 +218,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L218">			cycle.add(e);</span>
 <span class="fc" id="L219">			v = g.edgeTarget(e);</span>
 <span class="fc bfc" id="L220" title="All 2 branches covered.">			if (v == cycleVertex)</span>
-<span class="fc" id="L221">				return new PathImpl(g, cycleVertex, cycleVertex, cycle);</span>
+<span class="fc" id="L221">				return IPath.valueOf(g, cycleVertex, cycleVertex, cycle);</span>
 
 <span class="fc bfc" id="L223" title="All 2 branches covered.">			if (cycle.size() &gt; n) {</span>
 				/*

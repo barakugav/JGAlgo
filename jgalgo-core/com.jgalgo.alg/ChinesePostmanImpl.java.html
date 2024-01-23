@@ -110,7 +110,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L110">		}</span>
 
 <span class="fc" id="L112">		int pathSource = eulerianTour.sourceInt();</span>
-<span class="fc" id="L113">		return new PathImpl(g, pathSource, pathSource, path);</span>
+<span class="fc" id="L113">		return IPath.valueOf(g, pathSource, pathSource, path);</span>
 	}
 
 }

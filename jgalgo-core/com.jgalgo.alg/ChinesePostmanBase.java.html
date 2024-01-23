@@ -37,7 +37,7 @@ interface ChinesePostmanBase extends ChinesePostman {
 <span class="fc" id="L37">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
 <span class="fc" id="L38">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
 <span class="fc" id="L39">			IPath indexPath = computeShortestEdgeVisitorCircle(iGraph, iw);</span>
-<span class="fc" id="L40">			return PathImpl.pathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L40">			return Paths.pathFromIndexPath(g, indexPath);</span>
 		}
 	}
 

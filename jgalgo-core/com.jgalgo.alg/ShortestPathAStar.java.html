@@ -97,7 +97,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L97">			IPath indexPath = NegativeCycleException</span>
 <span class="fc" id="L98">					.runAndConvertException(g,</span>
 <span class="fc" id="L99">							() -&gt; computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic));</span>
-<span class="fc" id="L100">			return PathImpl.pathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L100">			return Paths.pathFromIndexPath(g, indexPath);</span>
 		}
 	}
 
@@ -119,14 +119,14 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L119">			IPath indexPath = NegativeCycleException</span>
 <span class="fc" id="L120">					.runAndConvertException(g,</span>
 <span class="fc" id="L121">							() -&gt; computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic));</span>
-<span class="fc" id="L122">			return PathImpl.intPathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L122">			return Paths.intPathFromIndexPath(g, indexPath);</span>
 		}
 
 	}
 
 	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
 <span class="fc bfc" id="L128" title="All 2 branches covered.">		if (source == target)</span>
-<span class="fc" id="L129">			return new PathImpl(g, source, target, IntLists.emptyList());</span>
+<span class="fc" id="L129">			return IPath.valueOf(g, source, target, IntLists.emptyList());</span>
 <span class="fc" id="L130">		DoubleIntReferenceableHeap heap = (DoubleIntReferenceableHeap) heapBuilder.build(double.class, int.class);</span>
 
 <span class="fc" id="L132">		Int2ObjectMap&lt;Info&gt; info = new Int2ObjectOpenHashMap&lt;&gt;();</span>
@@ -194,7 +194,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L194">			}</span>
 		}
 <span class="fc" id="L196">		IntArrays.reverse(path.elements(), 0, path.size());</span>
-<span class="fc" id="L197">		return new PathImpl(g, source, target, path);</span>
+<span class="fc" id="L197">		return IPath.valueOf(g, source, target, path);</span>
 	}
 
 <span class="fc" id="L200">	static class Info {</span>

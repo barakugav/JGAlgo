@@ -61,9 +61,9 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
 <span class="fc" id="L61">			double ew = w.weight(e);</span>
 <span class="fc bfc" id="L62" title="All 2 branches covered.">			if (ew &lt; 0) {</span>
 <span class="fc bfc" id="L63" title="All 2 branches covered.">				if (u == v) {</span>
-<span class="fc" id="L64">					throw new NegativeCycleException(g, new PathImpl(g, u, u, IntList.of(e)));</span>
+<span class="fc" id="L64">					throw new NegativeCycleException(g, IPath.valueOf(g, u, u, IntList.of(e)));</span>
 				} else {
-<span class="fc" id="L66">					throw new NegativeCycleException(g, new PathImpl(g, u, u, IntList.of(e, e)));</span>
+<span class="fc" id="L66">					throw new NegativeCycleException(g, IPath.valueOf(g, u, u, IntList.of(e, e)));</span>
 				}
 			}
 <span class="fc bfc" id="L69" title="All 2 branches covered.">			if (ew &lt; res.distance(u, v)) {</span>
@@ -105,7 +105,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
 <span class="fc" id="L105">			double ew = w.weight(e);</span>
 <span class="fc bfc" id="L106" title="All 2 branches covered.">			if (u == v) {</span>
 <span class="fc bfc" id="L107" title="All 2 branches covered.">				if (ew &lt; 0)</span>
-<span class="fc" id="L108">					throw new NegativeCycleException(g, new PathImpl(g, u, u, IntList.of(e)));</span>
+<span class="fc" id="L108">					throw new NegativeCycleException(g, IPath.valueOf(g, u, u, IntList.of(e)));</span>
 				continue;
 			}
 <span class="fc bfc" id="L111" title="All 2 branches covered.">			if (ew &lt; res.distance(u, v)) {</span>
@@ -146,7 +146,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
 <span class="fc" id="L146">				IntList negCycle = new IntArrayList();</span>
 <span class="fc" id="L147">				negCycle.addAll(res.getPath(u, k).edges());</span>
 <span class="fc" id="L148">				negCycle.addAll(res.getPath(k, u).edges());</span>
-<span class="fc" id="L149">				throw new NegativeCycleException(res.g, new PathImpl(res.g, u, u, negCycle));</span>
+<span class="fc" id="L149">				throw new NegativeCycleException(res.g, IPath.valueOf(res.g, u, u, negCycle));</span>
 			}
 <span class="fc" id="L151">		}</span>
 <span class="fc" id="L152">	}</span>

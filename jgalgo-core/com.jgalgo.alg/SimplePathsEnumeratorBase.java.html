@@ -36,7 +36,7 @@ interface SimplePathsEnumeratorBase extends SimplePathsEnumerator {
 <span class="fc" id="L36">			int iSource = viMap.idToIndex(source);</span>
 <span class="fc" id="L37">			int iTarget = viMap.idToIndex(target);</span>
 <span class="fc" id="L38">			Iterator&lt;IPath&gt; indexResult = simplePathsIter(iGraph, iSource, iTarget);</span>
-<span class="fc" id="L39">			return IterTools.map(indexResult, iPath -&gt; PathImpl.pathFromIndexPath(g, iPath));</span>
+<span class="fc" id="L39">			return IterTools.map(indexResult, iPath -&gt; Paths.pathFromIndexPath(g, iPath));</span>
 		}
 	}
 

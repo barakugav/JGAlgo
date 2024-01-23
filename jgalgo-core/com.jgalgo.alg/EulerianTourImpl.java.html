@@ -91,7 +91,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 			/* Graph is not connected */
 <span class="fc" id="L92">			return Optional.empty();</span>
 
-<span class="fc" id="L94">		return Optional.of(new PathImpl(g, start, end, tour));</span>
+<span class="fc" id="L94">		return Optional.of(IPath.valueOf(g, start, end, tour));</span>
 	}
 
 	private static int degreeWithoutSelfLoops(IndexGraph g, int u) {
@@ -177,7 +177,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L177">			return Optional.empty();</span>
 
 <span class="fc" id="L179">		IntArrays.reverse(tour.elements(), 0, tour.size());</span>
-<span class="fc" id="L180">		return Optional.of(new PathImpl(g, start, end, tour));</span>
+<span class="fc" id="L180">		return Optional.of(IPath.valueOf(g, start, end, tour));</span>
 	}
 
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
@@ -189,7 +189,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 		} else {
 <span class="fc" id="L190">			IndexGraph iGraph = g.indexGraph();</span>
 <span class="fc" id="L191">			Optional&lt;IPath&gt; indexPath = computeEulerianTour(iGraph);</span>
-<span class="fc" id="L192">			return indexPath.map(path -&gt; PathImpl.pathFromIndexPath(g, path));</span>
+<span class="fc" id="L192">			return indexPath.map(path -&gt; Paths.pathFromIndexPath(g, path));</span>
 		}
 	}
 

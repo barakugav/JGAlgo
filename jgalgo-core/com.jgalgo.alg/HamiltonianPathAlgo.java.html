@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HamiltonianPathAlgo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">HamiltonianPathAlgo.java</span></div><h1>HamiltonianPathAlgo.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchVertexException;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+
+/**
+ * Hamiltonian path/cycle algorithm.
+ *
+ * &lt;p&gt;
+ * Given a graph \(G = (V, E)\), a path is a sequence of edges \(e_1, e_2, \ldots, e_k\) such that for each pair of
+ * consecutive edges \(e_i, e_{i+1}\), the target of \(e_i\) is the source of \(e_{i+1}\). A cycle is a path where the
+ * source of the first edge is the target of the last edge. We says that a path/cycle &lt;i&gt;visits&lt;/i&gt; a vertex \(v\) if
+ * \(v\) is the source or target of some edge in the path/cycle. A path/cycle is &lt;i&gt;Hamiltonian&lt;/i&gt; if it visits each
+ * vertex exactly once.
+ *
+ * &lt;p&gt;
+ * There are few problems related to Hamiltonian paths/cycles:
+ * &lt;ul&gt;
+ * &lt;li&gt;Given a graph, find one/all Hamiltonian path/s.&lt;/li&gt;
+ * &lt;li&gt;Given a graph, find one/all Hamiltonian path/s that start and end at two given vertices.&lt;/li&gt;
+ * &lt;li&gt;Given a graph, find one/all Hamiltonian cycle/s.&lt;/li&gt;
+ * &lt;/ul&gt;
+ *
+ * &lt;p&gt;
+ * This interface provides algorithms for solving all the above problems. All of the above problems are NP-complete, so
+ * the algorithms provided here are exponential in the worst case, and expect them to be useful on small graphs.
+ *
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface.
+ *
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Hamiltonian_path&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">public interface HamiltonianPathAlgo {</span>
+
+	/**
+	 * Find a Hamiltonian path in the given graph.
+	 *
+	 * &lt;p&gt;
+	 * An Hamiltonian path is a path that visits each vertex of the graph exactly once. This method returns an
+	 * Hamiltonian path if one exists, or {@link Optional#empty()} otherwise. The returned path will start and end at
+	 * two arbitrary vertices.
+	 *
+	 * &lt;p&gt;
+	 * If the graph has no vertices, this methods return {@link Optional#empty()}. If the graph has only one vertex,
+	 * this method returns an empty path (which is actually a cycle).
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned path will an instance of {@link IPath}.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   the graph
+	 * @return     an Hamiltonian path if one exists, or {@link Optional#empty()} otherwise
+	 */
+	default &lt;V, E&gt; Optional&lt;Path&lt;V, E&gt;&gt; hamiltonianPath(Graph&lt;V, E&gt; g) {
+<span class="fc" id="L82">		Iterator&lt;Path&lt;V, E&gt;&gt; hamiltonianPaths = hamiltonianPathsIter(g);</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		return hamiltonianPaths.hasNext() ? Optional.of(hamiltonianPaths.next()) : Optional.empty();</span>
+	}
+
+	/**
+	 * Find a Hamiltonian path in the given graph that start and end at two given vertices.
+	 *
+	 * &lt;p&gt;
+	 * An Hamiltonian path is a path that visits each vertex of the graph exactly once. This method returns an
+	 * Hamiltonian path that start at {@code source} and end at {@code target} if one exists, or
+	 * {@link Optional#empty()} otherwise.
+	 *
+	 * &lt;p&gt;
+	 * If the source and target are the same vertex, the return path will actually be an Hamiltonian cycle.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned path will an instance of {@link IPath}.
+	 *
+	 * @param  &lt;V&gt;                   the vertices type
+	 * @param  &lt;E&gt;                   the edges type
+	 * @param  g                     the graph
+	 * @param  source                the source vertex
+	 * @param  target                the target vertex
+	 * @return                       an Hamiltonian path that start at {@code source} and end at {@code target} if one
+	 *                               exists, or {@link Optional#empty()} otherwise
+	 * @throws NoSuchVertexException if {@code source} or {@code target} are not vertices in {@code g}
+	 */
+	default &lt;V, E&gt; Optional&lt;Path&lt;V, E&gt;&gt; hamiltonianPath(Graph&lt;V, E&gt; g, V source, V target) {
+<span class="fc" id="L110">		Iterator&lt;Path&lt;V, E&gt;&gt; hamiltonianPaths = hamiltonianPathsIter(g, source, target);</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">		return hamiltonianPaths.hasNext() ? Optional.of(hamiltonianPaths.next()) : Optional.empty();</span>
+	}
+
+	/**
+	 * Iterate over all Hamiltonian paths in the given graph.
+	 *
+	 * &lt;p&gt;
+	 * An Hamiltonian path is a path that visits each vertex of the graph exactly once. This method returns an iterator
+	 * that iterate over all Hamiltonian paths in the graph. Each returned path will start and end at two arbitrary
+	 * vertices.
+	 *
+	 * &lt;p&gt;
+	 * If the graph has no vertices, this methods returns an empty iterator. If the graph has only one vertex, this
+	 * method returns an iterator that iterate over a single empty path (which is actually a cycle).
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned iterator will iterate over {@link IPath} objects.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   the graph
+	 * @return     an iterator that iterate over all Hamiltonian paths in the graph
+	 */
+	&lt;V, E&gt; Iterator&lt;Path&lt;V, E&gt;&gt; hamiltonianPathsIter(Graph&lt;V, E&gt; g);
+
+	/**
+	 * Iterate over all Hamiltonian paths in the given graph that start and end at two given vertices.
+	 *
+	 * &lt;p&gt;
+	 * An Hamiltonian path is a path that visits each vertex of the graph exactly once. This method returns an iterator
+	 * that iterate over all Hamiltonian paths in the graph that start at {@code source} and end at {@code target}.
+	 *
+	 * &lt;p&gt;
+	 * If the source and target are the same vertex, the returned iterator will iterate over all Hamiltonian cycles in
+	 * the graph.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned iterator will iterate over {@link IPath} objects.
+	 *
+	 * @param  &lt;V&gt;                   the vertices type
+	 * @param  &lt;E&gt;                   the edges type
+	 * @param  g                     the graph
+	 * @param  source                the source vertex
+	 * @param  target                the target vertex
+	 * @return                       an iterator that iterate over all Hamiltonian paths in the graph that start at
+	 *                               {@code source} and end at {@code target}
+	 * @throws NoSuchVertexException if {@code source} or {@code target} are not vertices in {@code g}
+	 */
+	&lt;V, E&gt; Iterator&lt;Path&lt;V, E&gt;&gt; hamiltonianPathsIter(Graph&lt;V, E&gt; g, V source, V target);
+
+	/**
+	 * Find a Hamiltonian cycle in the given graph.
+	 *
+	 * &lt;p&gt;
+	 * An Hamiltonian cycle is a cycle that visits each vertex of the graph exactly once. This method returns an
+	 * Hamiltonian cycle if one exists, or {@link Optional#empty()} otherwise.
+	 *
+	 * &lt;p&gt;
+	 * If the graph has no vertices, this methods return {@link Optional#empty()}. If the graph has only one vertex,
+	 * this method returns an empty cycle.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned cycle will an instance of {@link IPath}.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   the graph
+	 * @return     an Hamiltonian cycle if one exists, or {@link Optional#empty()} otherwise
+	 */
+	default &lt;V, E&gt; Optional&lt;Path&lt;V, E&gt;&gt; hamiltonianCycle(Graph&lt;V, E&gt; g) {
+<span class="fc" id="L181">		Iterator&lt;Path&lt;V, E&gt;&gt; hamiltonianPaths = hamiltonianCyclesIter(g);</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">		return hamiltonianPaths.hasNext() ? Optional.of(hamiltonianPaths.next()) : Optional.empty();</span>
+	}
+
+	/**
+	 * Iterate over all Hamiltonian cycles in the given graph.
+	 *
+	 * &lt;p&gt;
+	 * An Hamiltonian cycle is a cycle that visits each vertex of the graph exactly once. This method returns an
+	 * iterator that iterate over all Hamiltonian cycles in the graph.
+	 *
+	 * &lt;p&gt;
+	 * If the graph has no vertices, this methods returns an empty iterator. If the graph has only one vertex, this
+	 * method returns an iterator that iterate over a single empty cycle.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned iterator will iterate over {@link IPath} objects.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   the graph
+	 * @return     an iterator that iterate over all Hamiltonian cycles in the graph
+	 */
+	&lt;V, E&gt; Iterator&lt;Path&lt;V, E&gt;&gt; hamiltonianCyclesIter(Graph&lt;V, E&gt; g);
+
+	/**
+	 * Check whether the given path is a Hamiltonian path (or cycle) in the given graph.
+	 *
+	 * &lt;p&gt;
+	 * Given a graph \(G = (V, E)\), a path is a sequence of edges \(e_1, e_2, \ldots, e_k\) such that for each pair of
+	 * consecutive edges \(e_i, e_{i+1}\), the target of \(e_i\) is the source of \(e_{i+1}\). A path is
+	 * &lt;i&gt;Hamiltonian&lt;/i&gt; if it visits each vertex exactly once. An hamiltonian cycle is a path with \(|V|\) edges that
+	 * visit every vertex exactly once, but return to the first vertex with the last edge to form a cycle.
+	 *
+	 * &lt;p&gt;
+	 * This methods accept a graph and list of edges, and check whether the list of edges is a Hamiltonian path in the
+	 * graph. It first validate that the list of edges is a valid path in the graph, and then check whether the path is
+	 * Hamiltonian.
+	 *
+	 * @param  &lt;V&gt;  the vertices type
+	 * @param  &lt;E&gt;  the edges type
+	 * @param  g    the graph
+	 * @param  path a list of edges in the graph
+	 * @return      {@code true} if the list of edges is a Hamiltonian path (or cycle) in the graph, {@code false} if
+	 *              the list of edges is not a valid path in the graph or if the path is not Hamiltonian
+	 */
+	static &lt;V, E&gt; boolean isHamiltonianPath(Graph&lt;V, E&gt; g, List&lt;E&gt; path) {
+		IndexGraph ig;
+		IntList ipath;
+<span class="fc bfc" id="L230" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L231">			ig = (IndexGraph) g;</span>
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L233">			IntList ipath0 = IntAdapters.asIntList((List&lt;Integer&gt;) path);</span>
+<span class="fc" id="L234">			ipath = ipath0;</span>
+<span class="fc" id="L235">		} else {</span>
+<span class="fc" id="L236">			ig = g.indexGraph();</span>
+<span class="fc" id="L237">			ipath = IndexIdMaps.idToIndexList(path, g.indexGraphEdgesMap());</span>
+		}
+
+<span class="fc" id="L240">		final int n = ig.vertices().size();</span>
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">		if (n &lt;= 1)</span>
+<span class="nc" id="L242">			return ipath.isEmpty();</span>
+<span class="pc bpc" id="L243" title="1 of 4 branches missed.">		if (ipath.size() != n &amp;&amp; ipath.size() != n - 1)</span>
+<span class="nc" id="L244">			return false;</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">		boolean cycle = ipath.size() == n;</span>
+
+<span class="fc" id="L247">		Bitmap visited = new Bitmap(n);</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">		if (ig.isDirected()) {</span>
+<span class="fc" id="L249">			int source = ig.edgeSource(ipath.getInt(0));</span>
+<span class="fc" id="L250">			visited.set(source);</span>
+
+<span class="fc" id="L252">			int v = source;</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">			for (IntIterator it = ipath.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L254">				int e = it.nextInt();</span>
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">				if (v != ig.edgeSource(e))</span>
+<span class="nc" id="L256">					return false;</span>
+<span class="fc" id="L257">				v = ig.edgeTarget(e);</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">				if (!visited.set(v)) {</span>
+<span class="pc bpc" id="L259" title="3 of 6 branches missed.">					if (it.hasNext() || !cycle || v != source)</span>
+<span class="nc" id="L260">						return false;</span>
+					break;
+				}
+<span class="fc" id="L263">			}</span>
+<span class="pc bpc" id="L264" title="3 of 4 branches missed.">			assert visited.cardinality() == n;</span>
+<span class="fc" id="L265">			return true;</span>
+
+		} else {
+<span class="fc" id="L268">			int firstEdge = ipath.getInt(0);</span>
+<span class="pc bpc" id="L269" title="1 of 2 branches missed.">			srcLoop: for (int source : IntList.of(ig.edgeSource(firstEdge), ig.edgeTarget(firstEdge))) {</span>
+<span class="fc" id="L270">				visited.clear();</span>
+<span class="fc" id="L271">				visited.set(source);</span>
+
+<span class="fc" id="L273">				int v = source;</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">				for (IntIterator it = ipath.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L275">					int e = it.nextInt();</span>
+<span class="fc" id="L276">					int eu = ig.edgeSource(e), ev = ig.edgeTarget(e);</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">					if (v == eu) {</span>
+<span class="fc" id="L278">						v = ev;</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">					} else if (v == ev) {</span>
+<span class="fc" id="L280">						v = eu;</span>
+					} else {
+						continue srcLoop;
+					}
+<span class="fc bfc" id="L284" title="All 2 branches covered.">					if (!visited.set(v)) {</span>
+<span class="pc bpc" id="L285" title="3 of 6 branches missed.">						if (it.hasNext() || !cycle || v != source)</span>
+<span class="nc" id="L286">							continue srcLoop;</span>
+						break;
+					}
+<span class="fc" id="L289">				}</span>
+<span class="pc bpc" id="L290" title="3 of 4 branches missed.">				assert visited.cardinality() == n;</span>
+<span class="fc" id="L291">				return true;</span>
+			}
+<span class="nc" id="L293">			return false;</span>
+		}
+	}
+
+	/**
+	 * Create a new Hamiltonian path algorithm.
+	 *
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link HamiltonianPathAlgo} object.
+	 *
+	 * @return a default implementation of {@link HamiltonianPathAlgo}
+	 */
+	static HamiltonianPathAlgo newInstance() {
+<span class="nc" id="L306">		return new HamiltonianPathRubin();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
