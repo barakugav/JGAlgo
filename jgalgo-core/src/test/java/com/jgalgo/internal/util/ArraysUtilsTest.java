@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 public class ArraysUtilsTest extends TestBase {
 
 	@Test
-	public void testIntGetKthElementRandArrayUnique() {
+	public void testIntKthElementRandArrayUnique() {
 		final long seed = 0xedf92ed1b59ae1e1L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
@@ -41,12 +41,12 @@ public class ArraysUtilsTest extends TestBase {
 		tester.addPhase().withArgs(4567).repeat(2);
 		tester.run(n -> {
 			int[] a = randPermutation(n, seedGen.nextSeed());
-			testGetKthElement(a, seedGen.nextSeed());
+			testKthElement(a, seedGen.nextSeed());
 		});
 	}
 
 	@Test
-	public void testObjGetKthElementRandArrayUnique() {
+	public void testObjKthElementRandArrayUnique() {
 		final long seed = 0x7f7871365f84b52eL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
@@ -58,12 +58,12 @@ public class ArraysUtilsTest extends TestBase {
 		tester.addPhase().withArgs(4567).repeat(2);
 		tester.run(n -> {
 			Integer[] a = toIntegerArr(randPermutation(n, seedGen.nextSeed()));
-			testGetKthElement(a, seedGen.nextSeed());
+			testKthElement(a, seedGen.nextSeed());
 		});
 	}
 
 	@Test
-	public void testIntGetKthElementRandArrayNonUnique() {
+	public void testIntKthElementRandArrayNonUnique() {
 		final long seed = 0x97e45458f8daefd2L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
@@ -75,12 +75,12 @@ public class ArraysUtilsTest extends TestBase {
 		tester.addPhase().withArgs(4567).repeat(2);
 		tester.run(n -> {
 			int[] a = randArray(n, 0, n / 4, seedGen.nextSeed());
-			testGetKthElement(a, seedGen.nextSeed());
+			testKthElement(a, seedGen.nextSeed());
 		});
 	}
 
 	@Test
-	public void testObjGetKthElementRandArrayNonUnique() {
+	public void testObjKthElementRandArrayNonUnique() {
 		final long seed = 0x6ee2228e9064ab3eL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
@@ -92,12 +92,12 @@ public class ArraysUtilsTest extends TestBase {
 		tester.addPhase().withArgs(4567).repeat(2);
 		tester.run(n -> {
 			Integer[] a = toIntegerArr(randArray(n, 0, n / 4, seedGen.nextSeed()));
-			testGetKthElement(a, seedGen.nextSeed());
+			testKthElement(a, seedGen.nextSeed());
 		});
 	}
 
 	@Test
-	public void testIntGetKthElementRandArraySameElm() {
+	public void testIntKthElementRandArraySameElm() {
 		final long seed = 0x77b8bdd802380333L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
@@ -110,12 +110,12 @@ public class ArraysUtilsTest extends TestBase {
 		tester.run(n -> {
 			int[] a = new int[n];
 			Arrays.fill(a, 6);
-			testGetKthElement(a, seedGen.nextSeed());
+			testKthElement(a, seedGen.nextSeed());
 		});
 	}
 
 	@Test
-	public void testObjGetKthElementRandArraySameElm() {
+	public void testObjKthElementRandArraySameElm() {
 		final long seed = 0x656f2a7fcad2e9e8L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
@@ -128,21 +128,21 @@ public class ArraysUtilsTest extends TestBase {
 		tester.run(n -> {
 			int[] a = new int[n];
 			Arrays.fill(a, 6);
-			testGetKthElement(toIntegerArr(a), seedGen.nextSeed());
+			testKthElement(toIntegerArr(a), seedGen.nextSeed());
 		});
 	}
 
-	private static void testGetKthElement(int[] a, long seed) {
+	private static void testKthElement(int[] a, long seed) {
 		int k = new Random(seed).nextInt(a.length);
-		int actual = ArraysUtils.getKthElement(a, k, null);
+		int actual = ArraysUtils.kthElement(a, k, null);
 
 		java.util.Arrays.sort(a);
 		assertEquals(a[k], actual);
 	}
 
-	private static void testGetKthElement(Integer[] a, long seed) {
+	private static void testKthElement(Integer[] a, long seed) {
 		int k = new Random(seed).nextInt(a.length);
-		int actual = ArraysUtils.getKthElement(a, k, null);
+		int actual = ArraysUtils.kthElement(a, k, null);
 
 		java.util.Arrays.sort(a);
 		assertEquals(a[k], actual);
@@ -273,10 +273,10 @@ public class ArraysUtilsTest extends TestBase {
 	@Test
 	public void invalidIndex() {
 		int[] a = range(100).toIntArray();
-		assertThrows(IndexOutOfBoundsException.class, () -> ArraysUtils.getKthElement(a, -1, 100, 7, null, false));
-		assertThrows(IndexOutOfBoundsException.class, () -> ArraysUtils.getKthElement(a, 0, 101, 7, null, false));
-		assertThrows(IndexOutOfBoundsException.class, () -> ArraysUtils.getKthElement(a, 57, 57, 0, null, false));
-		assertThrows(IndexOutOfBoundsException.class, () -> ArraysUtils.getKthElement(a, 57, 56, 0, null, false));
+		assertThrows(IndexOutOfBoundsException.class, () -> ArraysUtils.kthElement(a, -1, 100, 7, null, false));
+		assertThrows(IndexOutOfBoundsException.class, () -> ArraysUtils.kthElement(a, 0, 101, 7, null, false));
+		assertThrows(IndexOutOfBoundsException.class, () -> ArraysUtils.kthElement(a, 57, 57, 0, null, false));
+		assertThrows(IndexOutOfBoundsException.class, () -> ArraysUtils.kthElement(a, 57, 56, 0, null, false));
 	}
 
 }

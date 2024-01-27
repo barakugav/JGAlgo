@@ -69,7 +69,7 @@ class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutUtils.AbstractIm
 		/* Get (n-k)-th element in-place. After the computation the last k elements have the highest degrees */
 		IndexGraph g0 = g;
 		ArraysUtils
-				.getKthElement(vertices, 0, n, n - k,
+				.kthElement(vertices, 0, n, n - k,
 						(v1, v2) -> Integer.compare(g0.outEdges(v1).size(), g0.outEdges(v2).size()), true);
 		IntSet kVertices = ImmutableIntArraySet.withBitmap(Bitmap.fromOnes(n, IntIterators.wrap(vertices, n - k, k)));
 

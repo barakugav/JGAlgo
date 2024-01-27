@@ -27,19 +27,19 @@ public class ArraysUtils {
 
 	private ArraysUtils() {}
 
-	static <E> E getKthElement(E[] a, int k, Comparator<? super E> c) {
-		return getKthElement(a, 0, a.length, k, c, false);
+	static <E> E kthElement(E[] a, int k, Comparator<? super E> c) {
+		return kthElement(a, 0, a.length, k, c, false);
 	}
 
-	static int getKthElement(int[] a, int k, IntComparator c) {
-		return getKthElement(a, 0, a.length, k, c, false);
+	static int kthElement(int[] a, int k, IntComparator c) {
+		return kthElement(a, 0, a.length, k, c, false);
 	}
 
 	/**
 	 * Get the K'th element in the array if it was sorted.
 	 *
 	 * <p>
-	 * For example, getKthElement([10, 13, 14, 11, 12], 3) = 13
+	 * For example, kthElement([10, 13, 14, 11, 12], 3) = 13
 	 *
 	 * <p>
 	 * \(O(n)\)
@@ -54,7 +54,7 @@ public class ArraysUtils {
 	 *                     the Kth element
 	 * @return         the Kth element
 	 */
-	static <E> E getKthElement(E[] a, int from, int to, int k, Comparator<? super E> c, boolean inPlace) {
+	static <E> E kthElement(E[] a, int from, int to, int k, Comparator<? super E> c, boolean inPlace) {
 		Assertions.checkArrayFromTo(from, to, a.length);
 		Assertions.checkArrayIndex(k, from, to);
 		if (!inPlace) {
@@ -64,7 +64,7 @@ public class ArraysUtils {
 		}
 		c = c != null ? c : JGAlgoUtils.getDefaultComparator();
 
-		getKthElement0(a, from, to, k, c);
+		kthElement0(a, from, to, k, c);
 		return a[k];
 	}
 
@@ -72,7 +72,7 @@ public class ArraysUtils {
 	 * Get the K'th element in the array if it was sorted.
 	 *
 	 * <p>
-	 * For example, getKthElement([10, 13, 14, 11, 12], 3) = 13
+	 * For example, kthElement([10, 13, 14, 11, 12], 3) = 13
 	 *
 	 * <p>
 	 * \(O(n)\)
@@ -86,7 +86,7 @@ public class ArraysUtils {
 	 *                     the Kth element
 	 * @return         the Kth element
 	 */
-	public static int getKthElement(int[] a, int from, int to, int k, IntComparator c, boolean inPlace) {
+	public static int kthElement(int[] a, int from, int to, int k, IntComparator c, boolean inPlace) {
 		Assertions.checkArrayFromTo(from, to, a.length);
 		Assertions.checkArrayIndex(k, from, to);
 		if (!inPlace) {
@@ -96,11 +96,11 @@ public class ArraysUtils {
 		}
 		c = c != null ? c : Integer::compare;
 
-		getKthElement0(a, from, to, k, c);
+		kthElement0(a, from, to, k, c);
 		return a[k];
 	}
 
-	private static <E> void getKthElement0(E[] a, int from, int to, int k, Comparator<? super E> c) {
+	private static <E> void kthElement0(E[] a, int from, int to, int k, Comparator<? super E> c) {
 		for (;;) {
 			if (from == to + 1)
 				return;
@@ -119,7 +119,7 @@ public class ArraysUtils {
 		}
 	}
 
-	private static void getKthElement0(int[] a, int from, int to, int k, IntComparator c) {
+	private static void kthElement0(int[] a, int from, int to, int k, IntComparator c) {
 		for (;;) {
 			if (from == to + 1)
 				return;
@@ -245,7 +245,7 @@ public class ArraysUtils {
 		}
 
 		int mid = from + blockNum / 2;
-		getKthElement0(a, from, from + blockNum, mid, c);
+		kthElement0(a, from, from + blockNum, mid, c);
 		return mid;
 	}
 
@@ -263,7 +263,7 @@ public class ArraysUtils {
 		}
 
 		int mid = from + blockNum / 2;
-		getKthElement0(a, from, from + blockNum, mid, c);
+		kthElement0(a, from, from + blockNum, mid, c);
 		return mid;
 	}
 
@@ -326,7 +326,7 @@ public class ArraysUtils {
 		if (to - from <= bucketSize)
 			return;
 		int idx = from + (((to - from) / 2 - 1) / bucketSize + 1) * bucketSize;
-		getKthElement0(a, from, to, idx, c);
+		kthElement0(a, from, to, idx, c);
 		bucketPartition0(a, from, idx, c, bucketSize);
 		bucketPartition0(a, idx, to, c, bucketSize);
 	}
@@ -335,7 +335,7 @@ public class ArraysUtils {
 		if (to - from <= bucketSize)
 			return;
 		int idx = from + (((to - from) / 2 - 1) / bucketSize + 1) * bucketSize;
-		getKthElement0(a, from, to, idx, c);
+		kthElement0(a, from, to, idx, c);
 		bucketPartition0(a, from, idx, c, bucketSize);
 		bucketPartition0(a, idx, to, c, bucketSize);
 	}
