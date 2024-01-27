@@ -45,7 +45,7 @@ class GraphFormats {
 
 	// private static String getFileExtension(String path) {
 	// int dotIdx = path.lastIndexOf('.');
-	// return dotIdx == -1 ? null : path.substring(dotIdx + 1);
+	// return dotIdx < 0 ? null : path.substring(dotIdx + 1);
 	// }
 
 	// static final Map<String, GraphFormat> Formats;

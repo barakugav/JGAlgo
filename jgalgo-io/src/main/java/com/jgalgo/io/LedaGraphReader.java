@@ -181,13 +181,13 @@ public class LedaGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 				throw new IllegalArgumentException("Expected more edge lines");
 
 			int sourceEnd = line.indexOf(' ');
-			if (sourceEnd == -1)
+			if (sourceEnd < 0)
 				throw new IllegalArgumentException("edge line error. Expected 'source target twinEdge weight'");
 			int targetEnd = line.indexOf(' ', sourceEnd + 1);
-			if (targetEnd == -1)
+			if (targetEnd < 0)
 				throw new IllegalArgumentException("edge line error. Expected 'source target twinEdge weight'");
 			int twinEdgeEnd = line.indexOf(' ', targetEnd + 1);
-			if (twinEdgeEnd == -1)
+			if (twinEdgeEnd < 0)
 				throw new IllegalArgumentException("edge line error. Expected 'source target twinEdge weight'");
 
 			int source, target, twinEdge;
