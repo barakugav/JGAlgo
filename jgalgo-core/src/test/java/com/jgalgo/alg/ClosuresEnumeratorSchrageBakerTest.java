@@ -53,9 +53,9 @@ public class ClosuresEnumeratorSchrageBakerTest extends TestBase {
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(3, 2).repeat(32);
 		tester.addPhase().withArgs(6, 6).repeat(32);
-		tester.addPhase().withArgs(16, 18).repeat(8);
+		tester.addPhase().withArgs(16, 20).repeat(8);
 		tester.addPhase().withArgs(16, 32).repeat(8);
-		tester.addPhase().withArgs(32, 46).repeat(4);
+		tester.addPhase().withArgs(32, 52).repeat(4);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g;
 			if (dag) {
