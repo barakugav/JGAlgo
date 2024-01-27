@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComplementGraphGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.gen</a> &gt; <span class="el_source">ComplementGraphGenerator.java</span></div><h1>ComplementGraphGenerator.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.gen;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IdBuilder;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
+import com.jgalgo.internal.util.Bitmap;
+
+/**
+ * Generates the complement graph of a given graph.
+ *
+ * &lt;p&gt;
+ * The complement graph of a graph \(G\) is a graph \(H\) on the same vertices such that \((u,v) \in E(H)\) if and only
+ * if \((u,v) \notin E(G)\). If \(G\) is a directed graph, then \(H\) is also directed. Whether or not self edges are
+ * generated is controlled by {@link #selfEdges(boolean)}.
+ *
+ * &lt;p&gt;
+ * In the following example, the complement graph of a given graph is generated. For each edge in the complement graph,
+ * it is asserted that an edge with the same endpoints does not exist in the original graph:
+ *
+ * &lt;pre&gt; {@code
+ * Graph&lt;Integer, Integer&gt; origGraph = null;
+ * Graph&lt;Integer, Integer&gt; complement = new ComplementGraphGenerator&lt;Integer, Integer&gt;()
+ * 		.selfEdges(true)
+ * 		.edges(IdBuilderInt.defaultBuilder())
+ * 		.generate();
+ * for (Integer u : origGraph.vertices())
+ * 	for (Integer v : origGraph.vertices())
+ * 		assert origGraph.containsEdge(u, v) != complement.containsEdge(u, v);
+ * }&lt;/pre&gt;
+ *
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
+ */
+public class ComplementGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {
+
+	private final GraphFactory&lt;V, E&gt; factory;
+	private Graph&lt;V, Object&gt; graph;
+	private IdBuilder&lt;E&gt; edgeBuilder;
+	private boolean selfEdges;
+
+	/**
+	 * Create a new complement graph generator that will use the default graph factory.
+	 *
+	 * &lt;p&gt;
+	 * The graph factory will be used to create the generated graph(s) and it will also provide an edge builder if one
+	 * was no explicitly set using {@link #edges(IdBuilder)}. The default graph builder does not have an edge builder,
+	 * therefore it must be set manually.
+	 */
+	public ComplementGraphGenerator() {
+<span class="fc" id="L73">		this(GraphFactory.undirected());</span>
+<span class="fc" id="L74">	}</span>
+
+	/**
+	 * Create a new complement graph generator that will use the given graph factory.
+	 *
+	 * &lt;p&gt;
+	 * The graph factory will be used to create the generated graph(s) and it will also provide an edge builder if one
+	 * was no explicitly set using {@link #edges(IdBuilder)}.
+	 *
+	 * &lt;p&gt;
+	 * To generate {@linkplain IntGraph int graphs}, pass an instance of {@linkplain IntGraphFactory} to this
+	 * constructor.
+	 *
+	 * @param factory the graph factory that will be used to create the generated graph(s)
+	 */
+<span class="fc" id="L89">	public ComplementGraphGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
+<span class="fc" id="L90">		this.factory = Objects.requireNonNull(factory);</span>
+<span class="fc" id="L91">	}</span>
+
+	/**
+	 * Get the graph factory that will be used to create the generated graph(s).
+	 *
+	 * &lt;p&gt;
+	 * It's possible to customize the factory before generating the graph(s), for example by using
+	 * {@link GraphFactory#addHint(GraphFactory.Hint)} to optimize the generated graph(s) for a specific algorithm. If
+	 * the factory has an edge builder it will be used to generate the edges of the generated graph(s) if it will not be
+	 * overridden by {@link #edges(IdBuilder)}.
+	 *
+	 * &lt;p&gt;
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration. If self edges are generated, the method
+	 * {@link GraphFactory#allowSelfEdges()} will be called as well (see {@link #selfEdges(boolean)}).
+	 *
+	 * @return the graph factory that will be used to create the generated graph(s)
+	 */
+	public GraphFactory&lt;V, E&gt; graphFactory() {
+<span class="fc" id="L110">		return factory;</span>
+	}
+
+	/**
+	 * Set the input graph whose complement graph will be generated.
+	 *
+	 * &lt;p&gt;
+	 * Given a graph \(G\), the complement graph \(H\) is a graph on the same vertices such that \((u,v) \in E(H)\) if
+	 * and only if \((u,v) \notin E(G)\). This method sets the input graph \(G\).
+	 *
+	 * &lt;p&gt;
+	 * This method must be called before the graph(s) generation.
+	 *
+	 * &lt;p&gt;
+	 * The edges type of the input graph is not reflected in the generated graph(s), as new edges will be generated
+	 * which can be of any type.
+	 *
+	 * @param  graph the input graph whose complement graph will be generated
+	 * @return       this generator
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public ComplementGraphGenerator&lt;V, E&gt; graph(Graph&lt;V, ?&gt; graph) {
+<span class="fc" id="L132">		this.graph = (Graph&lt;V, Object&gt;) Objects.requireNonNull(graph);</span>
+<span class="fc" id="L133">		return this;</span>
+	}
+
+	/**
+	 * Set the edge builder that will be used to generate edges.
+	 *
+	 * &lt;p&gt;
+	 * The edges will be generated using the provided edge builder, and the edge generator provided by the
+	 * {@linkplain #graphFactory() graph factory} (if exists) will be ignored. The generation will happen independently
+	 * for each graph generated. If this method is not called, or called with a {@code null} argument, the edge builder
+	 * of the graph factory will be used. If the graph factory does not have an edge builder, an exception will be
+	 * thrown during generation.
+	 *
+	 * @param  edgeBuilder the edge builder, or {@code null} to use the edge builder of the {@linkplain #graphFactory()
+	 *                         graph factory}
+	 * @return             this generator
+	 */
+	public ComplementGraphGenerator&lt;V, E&gt; edges(IdBuilder&lt;E&gt; edgeBuilder) {
+<span class="fc" id="L151">		this.edgeBuilder = edgeBuilder;</span>
+<span class="fc" id="L152">		return this;</span>
+	}
+
+	/**
+	 * Set whether or not to generate self edges.
+	 *
+	 * &lt;p&gt;
+	 * By default, self edges are not generated.
+	 *
+	 * @param  selfEdges if {@code true}, self edges will be generated
+	 * @return           this generator
+	 */
+	public ComplementGraphGenerator&lt;V, E&gt; selfEdges(boolean selfEdges) {
+<span class="fc" id="L165">		this.selfEdges = selfEdges;</span>
+<span class="fc" id="L166">		return this;</span>
+	}
+
+	@Override
+	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
+<span class="fc bfc" id="L171" title="All 2 branches covered.">		if (graph == null)</span>
+<span class="fc" id="L172">			throw new IllegalStateException(&quot;Input graph not provided&quot;);</span>
+
+<span class="fc bfc" id="L174" title="All 2 branches covered.">		if (selfEdges)</span>
+<span class="fc" id="L175">			factory.allowSelfEdges();</span>
+<span class="fc" id="L176">		GraphBuilder&lt;V, E&gt; complement = factory.setDirected(graph.isDirected()).newBuilder();</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">		IdBuilder&lt;E&gt; edgeBuilder = this.edgeBuilder != null ? this.edgeBuilder : complement.edgeBuilder();</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
+<span class="fc" id="L179">			throw new IllegalStateException(&quot;Edge builder not provided and graph factory does not have one&quot;);</span>
+
+<span class="fc" id="L181">		IndexGraph ig = graph.indexGraph();</span>
+<span class="fc" id="L182">		final int n = ig.vertices().size();</span>
+<span class="fc" id="L183">		Bitmap edges = new Bitmap(n * n);</span>
+<span class="fc" id="L184">		final boolean directed = ig.isDirected();</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">		for (int e : range(ig.edges().size())) {</span>
+<span class="fc" id="L186">			int u = ig.edgeSource(e);</span>
+<span class="fc" id="L187">			int v = ig.edgeTarget(e);</span>
+<span class="fc bfc" id="L188" title="All 4 branches covered.">			if (!directed &amp;&amp; u &gt; v) {</span>
+<span class="fc" id="L189">				int tmp = u;</span>
+<span class="fc" id="L190">				u = v;</span>
+<span class="fc" id="L191">				v = tmp;</span>
+			}
+<span class="fc" id="L193">			edges.set(u * n + v);</span>
+<span class="fc" id="L194">		}</span>
+
+		/*
+		 * if no self edges are generated, clear these edges from the bitmap, to count how many edges we are expected to
+		 * generate correctly
+		 */
+<span class="fc bfc" id="L200" title="All 2 branches covered.">		if (!selfEdges)</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">			for (int v : range(n))</span>
+<span class="fc" id="L202">				edges.clear(v * n + v);</span>
+
+<span class="fc" id="L204">		complement.addVertices(graph.vertices());</span>
+<span class="fc" id="L205">		int maxEdgesNum = n * (n - 1);</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">		if (!graph.isDirected())</span>
+<span class="fc" id="L207">			maxEdgesNum /= 2;</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">		if (selfEdges)</span>
+<span class="fc" id="L209">			maxEdgesNum += n;</span>
+<span class="fc" id="L210">		complement.ensureEdgeCapacity(maxEdgesNum - edges.cardinality());</span>
+
+<span class="fc" id="L212">		IndexIdMap&lt;V&gt; viMap = graph.indexGraphVerticesMap();</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">		for (int uIdx : range(n)) {</span>
+<span class="fc bfc" id="L214" title="All 4 branches covered.">			for (int vIdx = directed ? 0 : uIdx; vIdx &lt; uIdx; vIdx++) {</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">				if (!edges.get(uIdx * n + vIdx)) {</span>
+<span class="fc" id="L216">					V u = viMap.indexToId(uIdx);</span>
+<span class="fc" id="L217">					V v = viMap.indexToId(vIdx);</span>
+<span class="fc" id="L218">					complement.addEdge(u, v, edgeBuilder.build(complement.edges()));</span>
+				}
+			}
+<span class="fc bfc" id="L221" title="All 4 branches covered.">			for (int vIdx : range(uIdx + (selfEdges ? 0 : 1), n)) {</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">				if (!edges.get(uIdx * n + vIdx)) {</span>
+<span class="fc" id="L223">					V u = viMap.indexToId(uIdx);</span>
+<span class="fc" id="L224">					V v = viMap.indexToId(vIdx);</span>
+<span class="fc" id="L225">					complement.addEdge(u, v, edgeBuilder.build(complement.edges()));</span>
+				}
+<span class="fc" id="L227">			}</span>
+<span class="fc" id="L228">		}</span>
+
+<span class="fc" id="L230">		return complement;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

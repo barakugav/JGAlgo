@@ -96,10 +96,14 @@ public interface EdgeSet&lt;V, E&gt; extends Set&lt;E&gt; {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; EdgeSet&lt;V, E&gt; of(Set&lt;E&gt; edges, Graph&lt;V, E&gt; g) {
-<span class="fc bfc" id="L99" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L100">			return (EdgeSet&lt;V, E&gt;) IEdgeSet.of(IntAdapters.asIntSet((Set&lt;Integer&gt;) edges), (IntGraph) g);</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L100">			IntSet edges0 = IntAdapters.asIntSet((Set&lt;Integer&gt;) edges);</span>
+<span class="fc" id="L101">			return (EdgeSet&lt;V, E&gt;) new IEdgeSetView(edges0, (IndexGraph) g);</span>
 		} else {
-<span class="fc" id="L102">			return new EdgeSetView&lt;&gt;(edges, g);</span>
+<span class="fc" id="L103">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L104">			IntSet iEdges = IndexIdMaps.idToIndexSet(edges, g.indexGraphEdgesMap());</span>
+<span class="fc" id="L105">			IEdgeSet iEdgeSet = new IEdgeSetView(iEdges, ig);</span>
+<span class="fc" id="L106">			return IndexIdMaps.indexToIdEdgeSet(iEdgeSet, g);</span>
 		}
 	}
 
@@ -143,7 +147,14 @@ public interface EdgeSet&lt;V, E&gt; extends Set&lt;E&gt; {
 	 * @return     an {@link EdgeSet} of all the edges in the graph
 	 */
 	static &lt;V, E&gt; EdgeSet&lt;V, E&gt; allOf(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L146">		return of(g.edges(), g);</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L151">			return EdgeSet.of(g.edges(), g);</span>
+		} else {
+<span class="fc" id="L153">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L154">			IntSet iEdges = ig.edges();</span>
+<span class="fc" id="L155">			IEdgeSet iEdgeSet = new IEdgeSetView(iEdges, ig);</span>
+<span class="fc" id="L156">			return IndexIdMaps.indexToIdEdgeSet(iEdgeSet, g);</span>
+		}
 	}
 
 }

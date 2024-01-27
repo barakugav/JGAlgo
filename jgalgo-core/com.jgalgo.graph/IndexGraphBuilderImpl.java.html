@@ -149,226 +149,224 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		final Set&lt;Integer&gt; edgesIds;
 <span class="fc bfc" id="L150" title="All 2 branches covered.">		if (edges instanceof IEdgeSetView) {</span>
 <span class="fc" id="L151">			edgesIds = ((IEdgeSetView) edges).idsSet();</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">		} else if (edges instanceof EdgeSetView) {</span>
-<span class="fc" id="L153">			edgesIds = ((EdgeSetView&lt;Integer, Integer&gt;) edges0).idsSet();</span>
 		} else {
-<span class="fc" id="L155">			edgesIds = edges0;</span>
+<span class="fc" id="L153">			edgesIds = edges0;</span>
 		}
-<span class="fc bfc" id="L157" title="All 2 branches covered.">		if (GraphBaseMutable.isSortedRange(this.edges.size, edgesIds)) {</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">			if (edges instanceof IEdgeSet) {</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">		if (GraphBaseMutable.isSortedRange(this.edges.size, edgesIds)) {</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">			if (edges instanceof IEdgeSet) {</span>
 				/* the variant with 're-assign ids' assigns indices by the iteration order */
-<span class="fc" id="L160">				addEdgesReassignIds((IEdgeSet) edges);</span>
-<span class="fc" id="L161">				return;</span>
+<span class="fc" id="L158">				addEdgesReassignIds((IEdgeSet) edges);</span>
+<span class="fc" id="L159">				return;</span>
 			}
 
-<span class="fc" id="L164">			checkEndpoints(edges0);</span>
-<span class="fc" id="L165">			int eIdx = this.edges.size;</span>
-<span class="fc" id="L166">			this.edges.addAll(edges.size());</span>
-<span class="fc" id="L167">			ensureEdgeCapacity(this.edges.size);</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">			for (EdgeIter&lt;Integer, Integer&gt; iter = edges0.iterator(); iter.hasNext();) {</span>
-<span class="fc" id="L169">				Integer e = iter.next();</span>
-<span class="pc bnc" id="L170" title="All 2 branches missed.">				assert e.intValue() == eIdx; /* isSortedRange() */</span>
-<span class="fc" id="L171">				int source = iter.source().intValue();</span>
-<span class="fc" id="L172">				int target = iter.target().intValue();</span>
-<span class="fc" id="L173">				setEdgeEndpoints(eIdx++, source, target);</span>
-<span class="fc" id="L174">			}</span>
+<span class="fc" id="L162">			checkEndpoints(edges0);</span>
+<span class="fc" id="L163">			int eIdx = this.edges.size;</span>
+<span class="fc" id="L164">			this.edges.addAll(edges.size());</span>
+<span class="fc" id="L165">			ensureEdgeCapacity(this.edges.size);</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">			for (EdgeIter&lt;Integer, Integer&gt; iter = edges0.iterator(); iter.hasNext();) {</span>
+<span class="fc" id="L167">				Integer e = iter.next();</span>
+<span class="pc bnc" id="L168" title="All 2 branches missed.">				assert e.intValue() == eIdx; /* isSortedRange() */</span>
+<span class="fc" id="L169">				int source = iter.source().intValue();</span>
+<span class="fc" id="L170">				int target = iter.target().intValue();</span>
+<span class="fc" id="L171">				setEdgeEndpoints(eIdx++, source, target);</span>
+<span class="fc" id="L172">			}</span>
 
-<span class="fc" id="L176">		} else {</span>
+<span class="fc" id="L174">		} else {</span>
 			/* The edges are not a sorted range. They may still be the valid range, simply unsorted. */
 			/* Unfortunately, the following implementation requires an allocation. */
 
-<span class="fc" id="L180">			int currentNum = this.edges.size();</span>
-<span class="fc" id="L181">			int[] newEdgesEndpoints = new int[edges.size() * 2];</span>
-<span class="fc" id="L182">			Arrays.fill(newEdgesEndpoints, -1);</span>
-<span class="fc" id="L183">			var op = new Object() {</span>
+<span class="fc" id="L178">			int currentNum = this.edges.size();</span>
+<span class="fc" id="L179">			int[] newEdgesEndpoints = new int[edges.size() * 2];</span>
+<span class="fc" id="L180">			Arrays.fill(newEdgesEndpoints, -1);</span>
+<span class="fc" id="L181">			var op = new Object() {</span>
 				void accept(int edge, int source, int target) {
-<span class="fc" id="L185">					checkVertex(source);</span>
-<span class="fc" id="L186">					checkVertex(target);</span>
-<span class="fc" id="L187">					int eIdx = edge - currentNum;</span>
-<span class="fc bfc" id="L188" title="All 6 branches covered.">					if (eIdx &lt; 0 || eIdx * 2 &gt;= newEdgesEndpoints.length || newEdgesEndpoints[2 * eIdx] != -1)</span>
-<span class="fc" id="L189">						throw new IllegalArgumentException(</span>
+<span class="fc" id="L183">					checkVertex(source);</span>
+<span class="fc" id="L184">					checkVertex(target);</span>
+<span class="fc" id="L185">					int eIdx = edge - currentNum;</span>
+<span class="fc bfc" id="L186" title="All 6 branches covered.">					if (eIdx &lt; 0 || eIdx * 2 &gt;= newEdgesEndpoints.length || newEdgesEndpoints[2 * eIdx] != -1)</span>
+<span class="fc" id="L187">						throw new IllegalArgumentException(</span>
 								&quot;added edges must be a consecutive range of integers starting from &quot; + currentNum
 										+ &quot; but was &quot; + edges);
-<span class="fc" id="L192">					newEdgesEndpoints[eIdx * 2 + 0] = source;</span>
-<span class="fc" id="L193">					newEdgesEndpoints[eIdx * 2 + 1] = target;</span>
-<span class="fc" id="L194">				}</span>
+<span class="fc" id="L190">					newEdgesEndpoints[eIdx * 2 + 0] = source;</span>
+<span class="fc" id="L191">					newEdgesEndpoints[eIdx * 2 + 1] = target;</span>
+<span class="fc" id="L192">				}</span>
 			};
-<span class="fc bfc" id="L196" title="All 2 branches covered.">			if (edges instanceof IEdgeSet) {</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">				for (IEdgeIter iter = ((IEdgeSet) edges).iterator(); iter.hasNext();) {</span>
-<span class="fc" id="L198">					int e = iter.nextInt();</span>
-<span class="fc" id="L199">					int source = iter.sourceInt();</span>
-<span class="fc" id="L200">					int target = iter.targetInt();</span>
-<span class="fc" id="L201">					op.accept(e, source, target);</span>
-<span class="fc" id="L202">				}</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">			if (edges instanceof IEdgeSet) {</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">				for (IEdgeIter iter = ((IEdgeSet) edges).iterator(); iter.hasNext();) {</span>
+<span class="fc" id="L196">					int e = iter.nextInt();</span>
+<span class="fc" id="L197">					int source = iter.sourceInt();</span>
+<span class="fc" id="L198">					int target = iter.targetInt();</span>
+<span class="fc" id="L199">					op.accept(e, source, target);</span>
+<span class="fc" id="L200">				}</span>
 			} else {
-<span class="fc bfc" id="L204" title="All 2 branches covered.">				for (EdgeIter&lt;Integer, Integer&gt; iter = edges0.iterator(); iter.hasNext();) {</span>
-<span class="fc" id="L205">					int e = iter.next().intValue();</span>
-<span class="fc" id="L206">					int source = iter.source().intValue();</span>
-<span class="fc" id="L207">					int target = iter.target().intValue();</span>
-<span class="fc" id="L208">					op.accept(e, source, target);</span>
-<span class="fc" id="L209">				}</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">				for (EdgeIter&lt;Integer, Integer&gt; iter = edges0.iterator(); iter.hasNext();) {</span>
+<span class="fc" id="L203">					int e = iter.next().intValue();</span>
+<span class="fc" id="L204">					int source = iter.source().intValue();</span>
+<span class="fc" id="L205">					int target = iter.target().intValue();</span>
+<span class="fc" id="L206">					op.accept(e, source, target);</span>
+<span class="fc" id="L207">				}</span>
 			}
 
-<span class="fc" id="L212">			this.edges.addAll(edges.size());</span>
-<span class="fc" id="L213">			ensureEdgeCapacity(this.edges.size);</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">			for (int eIdx : range(newEdgesEndpoints.length / 2)) {</span>
-<span class="fc" id="L215">				int source = newEdgesEndpoints[eIdx * 2 + 0];</span>
-<span class="fc" id="L216">				int target = newEdgesEndpoints[eIdx * 2 + 1];</span>
-<span class="fc" id="L217">				setEdgeEndpoints(currentNum + eIdx, source, target);</span>
-<span class="fc" id="L218">			}</span>
+<span class="fc" id="L210">			this.edges.addAll(edges.size());</span>
+<span class="fc" id="L211">			ensureEdgeCapacity(this.edges.size);</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">			for (int eIdx : range(newEdgesEndpoints.length / 2)) {</span>
+<span class="fc" id="L213">				int source = newEdgesEndpoints[eIdx * 2 + 0];</span>
+<span class="fc" id="L214">				int target = newEdgesEndpoints[eIdx * 2 + 1];</span>
+<span class="fc" id="L215">				setEdgeEndpoints(currentNum + eIdx, source, target);</span>
+<span class="fc" id="L216">			}</span>
 		}
-<span class="fc" id="L220">	}</span>
+<span class="fc" id="L218">	}</span>
 
 	@Override
 	public IntSet addEdgesReassignIds(IEdgeSet edges) {
-<span class="fc" id="L224">		checkEndpoints(edges);</span>
+<span class="fc" id="L222">		checkEndpoints(edges);</span>
 
-<span class="fc" id="L226">		final int addedNum = edges.size();</span>
-<span class="fc" id="L227">		int eIdx = this.edges.size;</span>
-<span class="fc" id="L228">		this.edges.addAll(addedNum);</span>
-<span class="fc" id="L229">		ensureEdgeCapacity(this.edges.size);</span>
-<span class="fc bfc" id="L230" title="All 2 branches covered.">		for (IEdgeIter eit = edges.iterator(); eit.hasNext(); eIdx++) {</span>
-<span class="fc" id="L231">			eit.nextInt(); /* ignore edge ID */</span>
-<span class="fc" id="L232">			int source = eit.sourceInt();</span>
-<span class="fc" id="L233">			int target = eit.targetInt();</span>
-<span class="fc" id="L234">			setEdgeEndpoints(eIdx, source, target);</span>
+<span class="fc" id="L224">		final int addedNum = edges.size();</span>
+<span class="fc" id="L225">		int eIdx = this.edges.size;</span>
+<span class="fc" id="L226">		this.edges.addAll(addedNum);</span>
+<span class="fc" id="L227">		ensureEdgeCapacity(this.edges.size);</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">		for (IEdgeIter eit = edges.iterator(); eit.hasNext(); eIdx++) {</span>
+<span class="fc" id="L229">			eit.nextInt(); /* ignore edge ID */</span>
+<span class="fc" id="L230">			int source = eit.sourceInt();</span>
+<span class="fc" id="L231">			int target = eit.targetInt();</span>
+<span class="fc" id="L232">			setEdgeEndpoints(eIdx, source, target);</span>
 		}
-<span class="fc" id="L236">		return range(this.edges.size - addedNum, this.edges.size);</span>
+<span class="fc" id="L234">		return range(this.edges.size - addedNum, this.edges.size);</span>
 	}
 
 	private void checkEndpoints(EdgeSet&lt;Integer, Integer&gt; edges) {
-<span class="fc bfc" id="L240" title="All 2 branches covered.">		if (edges instanceof IEdgeSet) {</span>
-<span class="fc bfc" id="L241" title="All 2 branches covered.">			for (IEdgeIter iter = ((IEdgeSet) edges).iterator(); iter.hasNext();) {</span>
-<span class="fc" id="L242">				iter.nextInt();</span>
-<span class="fc" id="L243">				checkVertex(iter.sourceInt());</span>
-<span class="fc" id="L244">				checkVertex(iter.targetInt());</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">		if (edges instanceof IEdgeSet) {</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">			for (IEdgeIter iter = ((IEdgeSet) edges).iterator(); iter.hasNext();) {</span>
+<span class="fc" id="L240">				iter.nextInt();</span>
+<span class="fc" id="L241">				checkVertex(iter.sourceInt());</span>
+<span class="fc" id="L242">				checkVertex(iter.targetInt());</span>
 			}
 		} else {
-<span class="fc bfc" id="L247" title="All 2 branches covered.">			for (EdgeIter&lt;Integer, Integer&gt; iter = edges.iterator(); iter.hasNext();) {</span>
-<span class="fc" id="L248">				iter.next();</span>
-<span class="fc" id="L249">				checkVertex(iter.source().intValue());</span>
-<span class="fc" id="L250">				checkVertex(iter.target().intValue());</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">			for (EdgeIter&lt;Integer, Integer&gt; iter = edges.iterator(); iter.hasNext();) {</span>
+<span class="fc" id="L246">				iter.next();</span>
+<span class="fc" id="L247">				checkVertex(iter.source().intValue());</span>
+<span class="fc" id="L248">				checkVertex(iter.target().intValue());</span>
 			}
 		}
-<span class="fc" id="L253">	}</span>
+<span class="fc" id="L251">	}</span>
 
 	@Override
 	public void ensureVertexCapacity(int verticesNum) {
-<span class="fc" id="L257">		verticesUserWeights.ensureCapacity(verticesNum);</span>
-<span class="fc" id="L258">	}</span>
+<span class="fc" id="L255">		verticesUserWeights.ensureCapacity(verticesNum);</span>
+<span class="fc" id="L256">	}</span>
 
 	@Override
 	public void ensureEdgeCapacity(int edgesNum) {
-<span class="fc" id="L262">		edgesUserWeights.ensureCapacity(edgesNum);</span>
-<span class="fc bfc" id="L263" title="All 2 branches covered.">		if (edgesNum * 2 &gt; endpoints.length)</span>
-<span class="fc" id="L264">			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, edgesNum * 2)));</span>
-<span class="fc" id="L265">	}</span>
+<span class="fc" id="L260">		edgesUserWeights.ensureCapacity(edgesNum);</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">		if (edgesNum * 2 &gt; endpoints.length)</span>
+<span class="fc" id="L262">			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, edgesNum * 2)));</span>
+<span class="fc" id="L263">	}</span>
 
 	@Override
 	public void clear() {
-<span class="fc" id="L269">		vertices.clear();</span>
-<span class="fc" id="L270">		edges.clear();</span>
-<span class="fc" id="L271">		verticesUserWeights.clearContainers();</span>
-<span class="fc" id="L272">		edgesUserWeights.clearContainers();</span>
-<span class="fc" id="L273">	}</span>
+<span class="fc" id="L267">		vertices.clear();</span>
+<span class="fc" id="L268">		edges.clear();</span>
+<span class="fc" id="L269">		verticesUserWeights.clearContainers();</span>
+<span class="fc" id="L270">		edgesUserWeights.clearContainers();</span>
+<span class="fc" id="L271">	}</span>
 
 	@Override
 	public boolean isDirected() {
-<span class="fc" id="L277">		return directed;</span>
+<span class="fc" id="L275">		return directed;</span>
 	}
 
 	private void setEdgeEndpoints(int e, int source, int target) {
-<span class="fc" id="L281">		endpoints[edgeSourceIndex(e)] = source;</span>
-<span class="fc" id="L282">		endpoints[edgeTargetIndex(e)] = target;</span>
-<span class="fc" id="L283">	}</span>
+<span class="fc" id="L279">		endpoints[edgeSourceIndex(e)] = source;</span>
+<span class="fc" id="L280">		endpoints[edgeTargetIndex(e)] = target;</span>
+<span class="fc" id="L281">	}</span>
 
 	private static int edgeSourceIndex(int e) {
-<span class="fc" id="L286">		return e * 2 + 0;</span>
+<span class="fc" id="L284">		return e * 2 + 0;</span>
 	}
 
 	private static int edgeTargetIndex(int e) {
-<span class="fc" id="L290">		return e * 2 + 1;</span>
+<span class="fc" id="L288">		return e * 2 + 1;</span>
 	}
 
 	int edgeSource(int edge) {
-<span class="fc" id="L294">		checkEdge(edge);</span>
-<span class="fc" id="L295">		return endpoints[edgeSourceIndex(edge)];</span>
+<span class="fc" id="L292">		checkEdge(edge);</span>
+<span class="fc" id="L293">		return endpoints[edgeSourceIndex(edge)];</span>
 	}
 
 	int edgeTarget(int edge) {
-<span class="fc" id="L299">		checkEdge(edge);</span>
-<span class="fc" id="L300">		return endpoints[edgeTargetIndex(edge)];</span>
+<span class="fc" id="L297">		checkEdge(edge);</span>
+<span class="fc" id="L298">		return endpoints[edgeTargetIndex(edge)];</span>
 	}
 
 	@Override
 	public IndexGraph build() {
-<span class="fc" id="L305">		return immutableImpl.newFromBuilder(this);</span>
+<span class="fc" id="L303">		return immutableImpl.newFromBuilder(this);</span>
 	}
 
 	@Override
 	public IndexGraph buildMutable() {
-<span class="fc" id="L310">		return mutableImpl.newFromBuilder(this);</span>
+<span class="fc" id="L308">		return mutableImpl.newFromBuilder(this);</span>
 	}
 
 	@Override
 	public IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges) {
-<span class="fc" id="L315">		return immutableImpl.newFromBuilderWithReIndex(this, reIndexVertices, reIndexEdges);</span>
+<span class="fc" id="L313">		return immutableImpl.newFromBuilderWithReIndex(this, reIndexVertices, reIndexEdges);</span>
 	}
 
 	@Override
 	public IndexGraphBuilder.ReIndexedGraph reIndexAndBuildMutable(boolean reIndexVertices, boolean reIndexEdges) {
-<span class="fc" id="L320">		return mutableImpl.newFromBuilderWithReIndex(this, reIndexVertices, reIndexEdges);</span>
+<span class="fc" id="L318">		return mutableImpl.newFromBuilderWithReIndex(this, reIndexVertices, reIndexEdges);</span>
 	}
 
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getVerticesWeights(String key) {
-<span class="fc" id="L325">		return verticesUserWeights.getWeights(key);</span>
+<span class="fc" id="L323">		return verticesUserWeights.getWeights(key);</span>
 	}
 
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
-<span class="fc" id="L331">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, false, type, defVal);</span>
-<span class="fc" id="L332">		verticesUserWeights.addWeights(key, weights);</span>
+<span class="fc" id="L329">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, false, type, defVal);</span>
+<span class="fc" id="L330">		verticesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L334">		WeightsT weights0 = (WeightsT) weights;</span>
-<span class="fc" id="L335">		return weights0;</span>
+<span class="fc" id="L332">		WeightsT weights0 = (WeightsT) weights;</span>
+<span class="fc" id="L333">		return weights0;</span>
 	}
 
 	@Override
 	public Set&lt;String&gt; getVerticesWeightsKeys() {
-<span class="fc" id="L340">		return verticesUserWeights.weightsKeys();</span>
+<span class="fc" id="L338">		return verticesUserWeights.weightsKeys();</span>
 	}
 
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getEdgesWeights(String key) {
-<span class="fc" id="L345">		return edgesUserWeights.getWeights(key);</span>
+<span class="fc" id="L343">		return edgesUserWeights.getWeights(key);</span>
 	}
 
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
-<span class="fc" id="L351">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, true, type, defVal);</span>
-<span class="fc" id="L352">		edgesUserWeights.addWeights(key, weights);</span>
+<span class="fc" id="L349">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, true, type, defVal);</span>
+<span class="fc" id="L350">		edgesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L354">		WeightsT weights0 = (WeightsT) weights;</span>
-<span class="fc" id="L355">		return weights0;</span>
+<span class="fc" id="L352">		WeightsT weights0 = (WeightsT) weights;</span>
+<span class="fc" id="L353">		return weights0;</span>
 	}
 
 	@Override
 	public Set&lt;String&gt; getEdgesWeightsKeys() {
-<span class="fc" id="L360">		return edgesUserWeights.weightsKeys();</span>
+<span class="fc" id="L358">		return edgesUserWeights.weightsKeys();</span>
 	}
 
 	private void checkVertex(int vertex) {
-<span class="fc bfc" id="L364" title="All 2 branches covered.">		if (!vertices().contains(vertex))</span>
-<span class="fc" id="L365">			throw NoSuchVertexException.ofIndex(vertex);</span>
-<span class="fc" id="L366">	}</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">		if (!vertices().contains(vertex))</span>
+<span class="fc" id="L363">			throw NoSuchVertexException.ofIndex(vertex);</span>
+<span class="fc" id="L364">	}</span>
 
 	private void checkEdge(int edge) {
-<span class="pc bpc" id="L369" title="1 of 2 branches missed.">		if (!edges().contains(edge))</span>
-<span class="nc" id="L370">			throw NoSuchEdgeException.ofIndex(edge);</span>
-<span class="fc" id="L371">	}</span>
+<span class="pc bpc" id="L367" title="1 of 2 branches missed.">		if (!edges().contains(edge))</span>
+<span class="nc" id="L368">			throw NoSuchEdgeException.ofIndex(edge);</span>
+<span class="fc" id="L369">	}</span>
 
 	static class ReIndexedGraphImpl implements IndexGraphBuilder.ReIndexedGraph {
 
@@ -377,25 +375,25 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing;
 
 		ReIndexedGraphImpl(IndexGraph graph, Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; verticesReIndexing,
-<span class="fc" id="L380">				Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing) {</span>
-<span class="fc" id="L381">			this.graph = Objects.requireNonNull(graph);</span>
-<span class="fc" id="L382">			this.verticesReIndexing = Objects.requireNonNull(verticesReIndexing);</span>
-<span class="fc" id="L383">			this.edgesReIndexing = Objects.requireNonNull(edgesReIndexing);</span>
-<span class="fc" id="L384">		}</span>
+<span class="fc" id="L378">				Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing) {</span>
+<span class="fc" id="L379">			this.graph = Objects.requireNonNull(graph);</span>
+<span class="fc" id="L380">			this.verticesReIndexing = Objects.requireNonNull(verticesReIndexing);</span>
+<span class="fc" id="L381">			this.edgesReIndexing = Objects.requireNonNull(edgesReIndexing);</span>
+<span class="fc" id="L382">		}</span>
 
 		@Override
 		public IndexGraph graph() {
-<span class="fc" id="L388">			return graph;</span>
+<span class="fc" id="L386">			return graph;</span>
 		}
 
 		@Override
 		public Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; verticesReIndexing() {
-<span class="fc" id="L393">			return verticesReIndexing;</span>
+<span class="fc" id="L391">			return verticesReIndexing;</span>
 		}
 
 		@Override
 		public Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing() {
-<span class="fc" id="L398">			return edgesReIndexing;</span>
+<span class="fc" id="L396">			return edgesReIndexing;</span>
 		}
 	}
 
@@ -404,19 +402,19 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final int[] origToReIndexed;
 		private final int[] reIndexedToOrig;
 
-<span class="fc" id="L407">		ReIndexingMapImpl(int[] origToReIndexed, int[] reIndexedToOrig) {</span>
-<span class="fc" id="L408">			this.origToReIndexed = Objects.requireNonNull(origToReIndexed);</span>
-<span class="fc" id="L409">			this.reIndexedToOrig = Objects.requireNonNull(reIndexedToOrig);</span>
-<span class="fc" id="L410">		}</span>
+<span class="fc" id="L405">		ReIndexingMapImpl(int[] origToReIndexed, int[] reIndexedToOrig) {</span>
+<span class="fc" id="L406">			this.origToReIndexed = Objects.requireNonNull(origToReIndexed);</span>
+<span class="fc" id="L407">			this.reIndexedToOrig = Objects.requireNonNull(reIndexedToOrig);</span>
+<span class="fc" id="L408">		}</span>
 
 		@Override
 		public int origToReIndexed(int orig) {
-<span class="fc" id="L414">			return origToReIndexed[orig];</span>
+<span class="fc" id="L412">			return origToReIndexed[orig];</span>
 		}
 
 		@Override
 		public int reIndexedToOrig(int reindexed) {
-<span class="fc" id="L419">			return reIndexedToOrig[reindexed];</span>
+<span class="fc" id="L417">			return reIndexedToOrig[reindexed];</span>
 		}
 	}
 

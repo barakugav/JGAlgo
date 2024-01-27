@@ -95,7 +95,7 @@ public interface IEdgeSet extends EdgeSet&lt;Integer, Integer&gt;, IntSet {
 	 * @return       an {@link IEdgeSet} with the given edges, containing the endpoints information from the graph
 	 */
 	static IEdgeSet of(IntSet edges, IntGraph g) {
-<span class="fc" id="L98">		return new IEdgeSetView(edges, g);</span>
+<span class="fc" id="L98">		return (IEdgeSet) EdgeSet.of(edges, g);</span>
 	}
 
 	/**
@@ -132,7 +132,7 @@ public interface IEdgeSet extends EdgeSet&lt;Integer, Integer&gt;, IntSet {
 	 * @return   an {@link IEdgeSet} of all the edges in the graph
 	 */
 	static IEdgeSet allOf(IntGraph g) {
-<span class="fc" id="L135">		return of(g.edges(), g);</span>
+<span class="fc" id="L135">		return (IEdgeSet) EdgeSet.allOf(g);</span>
 	}
 
 }

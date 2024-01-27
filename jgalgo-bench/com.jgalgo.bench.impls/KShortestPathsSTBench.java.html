@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KShortestPathsSTBench.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Benchmarks</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.bench.impls</a> &gt; <span class="el_source">KShortestPathsSTBench.java</span></div><h1>KShortestPathsSTBench.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.bench.impls;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.Blackhole;
+import com.jgalgo.alg.KShortestPathsST;
+import com.jgalgo.bench.util.BenchUtils;
+import com.jgalgo.bench.util.GraphsTestUtils;
+import com.jgalgo.bench.util.TestUtils.SeedGenerator;
+import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IntGraph;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+@Fork(value = 1, warmups = 0)
+@State(Scope.Benchmark)
+<span class="fc" id="L53">public class KShortestPathsSTBench {</span>
+
+	@Param({ &quot;|V|=200 |E|=1500 k=5&quot;, &quot;|V|=800 |E|=10000 k=15&quot;, &quot;|V|=1500 |E|=3000 k=50&quot; })
+	public String args;
+
+	private List&lt;BenchArgs&gt; graphs;
+<span class="fc" id="L59">	private final int graphsNum = 31;</span>
+<span class="fc" id="L60">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
+
+	@Setup(Level.Trial)
+	public void setup() {
+<span class="fc" id="L64">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L65">		int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L66">		int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+<span class="fc" id="L67">		int k = Integer.parseInt(argsMap.get(&quot;k&quot;));</span>
+
+<span class="fc" id="L69">		final SeedGenerator seedGen = new SeedGenerator(0xb6b1a069899f9baaL);</span>
+<span class="fc" id="L70">		final Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L71">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L73">			IntGraph g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());</span>
+<span class="fc" id="L74">			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, 64, seedGen.nextSeed());</span>
+<span class="fc" id="L75">			int source = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L76">			int target = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L77">			graphs.add(new BenchArgs(g, w, source, target, k));</span>
+		}
+<span class="fc" id="L79">	}</span>
+
+	private static class BenchArgs {
+		final IntGraph g;
+		final IWeightFunction w;
+		final int source;
+		final int target;
+		final int k;
+
+<span class="fc" id="L88">		BenchArgs(IntGraph g, IWeightFunction w, int source, int target, int k) {</span>
+<span class="fc" id="L89">			this.g = g;</span>
+<span class="fc" id="L90">			this.w = w;</span>
+<span class="fc" id="L91">			this.source = source;</span>
+<span class="fc" id="L92">			this.target = target;</span>
+<span class="fc" id="L93">			this.k = k;</span>
+<span class="fc" id="L94">		}</span>
+
+	}
+
+	private void benchAlgo(KShortestPathsST algo, Blackhole blackhole) {
+<span class="fc" id="L99">		BenchArgs args = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L100">		Object res = algo.computeKShortestPaths(args.g, args.w, args.source, args.target, args.k);</span>
+<span class="fc" id="L101">		blackhole.consume(res);</span>
+<span class="fc" id="L102">	}</span>
+
+	@Benchmark
+	public void KShortestPathsSTYen(Blackhole blackhole) {
+<span class="fc" id="L106">		benchAlgo(KShortestPathsST.newInstance(), blackhole);</span>
+<span class="fc" id="L107">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
