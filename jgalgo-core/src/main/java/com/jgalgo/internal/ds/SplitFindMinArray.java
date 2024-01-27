@@ -184,7 +184,7 @@ class SplitFindMinArray<K> implements SplitFindMin<K> {
 		int min = -1;
 		for (Block blk = head;;) {
 			blk.seq = seq;
-			if (min == -1 || c.compare(keys[min], keys[blk.min]) > 0)
+			if (min < 0 || c.compare(keys[min], keys[blk.min]) > 0)
 				min = blk.min;
 			if (blk == tail || blk.to >= blocks.length)
 				break;
@@ -205,7 +205,7 @@ class SplitFindMinArray<K> implements SplitFindMin<K> {
 		int min = -1;
 		for (int i : range(from, to)) {
 			blocks[i] = blk;
-			if (min == -1 || c.compare(keys[min], keys[i]) > 0)
+			if (min < 0 || c.compare(keys[min], keys[i]) > 0)
 				min = i;
 		}
 		blk.min = min;

@@ -205,7 +205,7 @@ public class BINOMIAL_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_V
 				break;
 			}
 		}
-		if (rootIdx == -1)
+		if (rootIdx < 0)
 			throw new ConcurrentModificationException();
 
 		Node KEY_VALUE_GENERIC[] childs = tempArray(rootIdx);

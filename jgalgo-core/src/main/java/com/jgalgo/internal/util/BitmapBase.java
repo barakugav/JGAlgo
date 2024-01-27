@@ -169,7 +169,7 @@ public class BitmapBase implements IntIterable {
 
 			@Override
 			public boolean hasNext() {
-				return bit != -1;
+				return bit >= 0;
 			}
 
 			@Override
