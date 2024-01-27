@@ -18,7 +18,11 @@ package com.jgalgo.graph;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
+#if PRIMITIVE_TYPE_REAL != "boolean"
 import FASTUTIL_PACKAGE.FASTUTIL_TYPEArrays;
+#else
+import it.unimi.dsi.fastutil.longs.LongArrays;
+#endif
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class WEIGHTS_IMPL {
@@ -27,46 +31,105 @@ class WEIGHTS_IMPL {
 
 	abstract static class IndexImpl TYPE_GENERIC extends WeightsImpl.IndexAbstract<TYPE_GENERIC_CLASS> implements IWEIGHTS TYPE_GENERIC {
 
+#if PRIMITIVE_TYPE_REAL != "boolean"
 		PRIMITIVE_TYPE_REAL[] weights;
+#else
+		long[] weights;
+#endif
 		final PRIMITIVE_TYPE defaultWeight;
+
+#if PRIMITIVE_TYPE_REAL == "boolean"
+		static final int WordSize = Long.SIZE;
+#endif
 
 		IndexImpl(IntSet elements, boolean isEdges, PRIMITIVE_TYPE defVal) {
 			super(elements, isEdges);
 
-			weights = FASTUTIL_TYPEArrays.EMPTY_ARRAY;
 			defaultWeight = defVal;
+
+#if PRIMITIVE_TYPE_REAL != "boolean"
+			weights = FASTUTIL_TYPEArrays.EMPTY_ARRAY;
 			if (!elements.isEmpty()) {
 				weights = Arrays.copyOf(weights, elements.size());
 				Arrays.fill(weights, defaultWeight);
 			}
+#else
+			weights = LongArrays.EMPTY_ARRAY;
+			if (!elements.isEmpty()) {
+				weights = new long[wordsNum(elements.size())];
+				if (defaultWeight)
+					Arrays.fill(weights, ~0L);
+			}
+#endif
 		}
 
 		IndexImpl(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, IntSet elements, boolean isEdges) {
 			this(elements, isEdges, orig.defaultWeight);
 			WeightsImpl.checkSameSize(elements, orig.elements);
+#if PRIMITIVE_TYPE_REAL != "boolean"
 			weights = Arrays.copyOf(orig.weights, elements.size());
+#else
+			weights = Arrays.copyOf(orig.weights, wordsNum(elements.size()));
+#endif
 		}
 
 		IndexImpl(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, IntSet elements, boolean isEdges, IndexGraphBuilder.ReIndexingMap reIndexMap) {
 			this(elements, isEdges, orig.defaultWeight);
 			WeightsImpl.checkSameSize(elements, orig.elements);
+#if PRIMITIVE_TYPE_REAL != "boolean"
 			weights = Arrays.copyOf(weights, elements.size());
-			final int s = elements.size();
-			for (int i : range(s))
+			for (int i : range(elements.size()))
 				weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
+#else
+			if (defaultWeight) {
+				Arrays.fill(weights, ~0L);
+				for (int oldIdx : range(elements.size())) {
+					if ((orig.weights[word(oldIdx)] & bit(oldIdx)) == 0) {
+						int newIdx = reIndexMap.origToReIndexed(oldIdx);
+						weights[word(newIdx)] &= ~bit(newIdx);
+					}
+				}
+			} else {
+				Arrays.fill(weights, 0);
+				for (int oldIdx : range(elements.size())) {
+					if ((orig.weights[word(oldIdx)] & bit(oldIdx)) != 0) {
+						int newIdx = reIndexMap.origToReIndexed(oldIdx);
+						weights[word(newIdx)] |= bit(newIdx);
+					}
+				}
+			}
+#endif
 		}
 
 		SUPPRESS_WARNINGS_UNCHECKED
 		@Override
 		public PRIMITIVE_TYPE get(int idx) {
 			checkIdx(idx);
+#if PRIMITIVE_TYPE_REAL != "boolean"
 			return CAST_TO_GENERIC weights[idx];
+#else
+			return (weights[word(idx)] & bit(idx)) != 0;
+#endif
 		}
 
 		@Override
 		public PRIMITIVE_TYPE defaultWeight() {
 			return defaultWeight;
 		}
+
+#if PRIMITIVE_TYPE_REAL == "boolean"
+		static int word(int idx) {
+			return idx / WordSize;
+		}
+
+		static long bit(int idx) {
+			return 1L << (idx % WordSize);
+		}
+
+		static int wordsNum(int size) {
+			return (size + WordSize - 1) / WordSize;
+		}
+#endif
 	}
 
 	static class IndexImmutable TYPE_GENERIC extends WEIGHTS_IMPL.IndexImpl TYPE_GENERIC implements WeightsImpl.IndexImmutable<TYPE_GENERIC_CLASS> {
@@ -98,38 +161,77 @@ class WEIGHTS_IMPL {
 		@Override
 		public void set(int idx, PRIMITIVE_TYPE weight) {
 			checkIdx(idx);
+#if PRIMITIVE_TYPE_REAL != "boolean"
 			weights[idx] = weight;
+#else
+			setImpl(idx, weight);
+#endif
 		}
+
+#if PRIMITIVE_TYPE_REAL == "boolean"
+		private void setImpl(int idx, boolean weight) {
+			if (weight) {
+				weights[word(idx)] |= bit(idx);
+			} else {
+				weights[word(idx)] &= ~bit(idx);
+			}
+		}
+#endif
 
 		@Override
 		public int capacity() {
+#if PRIMITIVE_TYPE_REAL != "boolean"
 			return weights.length;
+#else
+			return weights.length * WordSize;
+#endif
 		}
 
 		@Override
 		public void expand(int newCapacity) {
-			int oldCapacity = weights.length;
+			int oldCapacity = capacity();
+#if PRIMITIVE_TYPE_REAL != "boolean"
 			assert oldCapacity < newCapacity;
 			weights = Arrays.copyOf(weights, newCapacity);
 			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
+#else
+			if (oldCapacity >= newCapacity)
+				return;
+			weights = Arrays.copyOf(weights, wordsNum(newCapacity));
+			if (defaultWeight)
+				Arrays.fill(weights, oldCapacity / WordSize, weights.length, ~0L);
+#endif
 		}
 
 		@Override
 		public void swapAndClear(int removedIdx, int swappedIdx) {
 			// checkIdx(removedIdx);
 			// checkIdx(swappedIdx);
+#if PRIMITIVE_TYPE_REAL != "boolean"
 			weights[removedIdx] = weights[swappedIdx];
 			weights[swappedIdx] = defaultWeight;
+#else
+			setImpl(removedIdx, (weights[word(swappedIdx)] & bit(swappedIdx)) != 0);
+			setImpl(swappedIdx, defaultWeight);
+#endif
 		}
 
 		@Override
 		public void clear(int idx) {
+#if PRIMITIVE_TYPE_REAL != "boolean"
 			weights[idx] = defaultWeight;
+#else
+			setImpl(idx, defaultWeight);
+#endif
 		}
 
 		@Override
 		public void clear() {
+#if PRIMITIVE_TYPE_REAL != "boolean"
 			Arrays.fill(weights, 0, size(), defaultWeight);
+#else
+			Arrays.fill(weights, 0, wordsNum(size()), defaultWeight ? ~0L : 0);
+#endif
 		}
 	}
 
