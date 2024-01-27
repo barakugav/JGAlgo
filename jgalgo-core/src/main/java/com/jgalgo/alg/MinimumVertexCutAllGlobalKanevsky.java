@@ -22,6 +22,7 @@ import com.jgalgo.alg.MinimumVertexCutUtils.AuxiliaryGraph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.ArraysUtils;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;

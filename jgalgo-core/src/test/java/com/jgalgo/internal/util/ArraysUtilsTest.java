@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jgalgo.alg;
+package com.jgalgo.internal.util;
 
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.internal.util.TestBase;
 
 @SuppressWarnings("boxing")
 public class ArraysUtilsTest extends TestBase {

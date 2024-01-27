@@ -21,6 +21,7 @@ import java.util.Arrays;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.JGAlgoConfigImpl;
+import com.jgalgo.internal.util.ArraysUtils;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;

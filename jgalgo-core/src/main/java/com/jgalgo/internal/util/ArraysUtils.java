@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package com.jgalgo.alg;
+package com.jgalgo.internal.util;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Comparator;
-import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
-class ArraysUtils {
+public class ArraysUtils {
 
 	private ArraysUtils() {}
 
@@ -88,7 +86,7 @@ class ArraysUtils {
 	 *                     the Kth element
 	 * @return         the Kth element
 	 */
-	static int getKthElement(int[] a, int from, int to, int k, IntComparator c, boolean inPlace) {
+	public static int getKthElement(int[] a, int from, int to, int k, IntComparator c, boolean inPlace) {
 		Assertions.checkArrayFromTo(from, to, a.length);
 		Assertions.checkArrayIndex(k, from, to);
 		if (!inPlace) {
@@ -316,7 +314,7 @@ class ArraysUtils {
 	 * @param c          comparator
 	 * @param bucketSize the size of the bucket. Last bucket may be smaller than the specified value.
 	 */
-	static void bucketPartition(int[] a, int from, int to, IntComparator c, int bucketSize) {
+	public static void bucketPartition(int[] a, int from, int to, IntComparator c, int bucketSize) {
 		Assertions.checkArrayFromTo(from, to, a.length);
 		if (bucketSize <= 0)
 			throw new IllegalArgumentException("invalid bucket size: " + bucketSize);
