@@ -198,7 +198,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 		boolean isOriginalEdge(int e) {
 <span class="fc" id="L200">			int eOrig = edgeRef[e];</span>
-<span class="pc bpc" id="L201" title="1 of 4 branches missed.">			return eOrig != -1 &amp;&amp; g.edgeSource(e) == gOrig.edgeSource(eOrig);</span>
+<span class="pc bpc" id="L201" title="1 of 4 branches missed.">			return eOrig &gt;= 0 &amp;&amp; g.edgeSource(e) == gOrig.edgeSource(eOrig);</span>
 		}
 
 <span class="fc" id="L204">		static class Builder {</span>

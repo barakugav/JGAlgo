@@ -72,7 +72,7 @@ public interface IMatching extends Matching&lt;Integer, Integer&gt; {
 	@Override
 	default Integer getMatchedEdge(Integer vertex) {
 <span class="fc" id="L74">		int e = getMatchedEdge(vertex.intValue());</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">		return e == -1 ? null : Integer.valueOf(e);</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">		return e &lt; 0 ? null : Integer.valueOf(e);</span>
 	}
 
 	@Override

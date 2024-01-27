@@ -85,7 +85,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc bfc" id="L85" title="All 2 branches covered.">			if (g.isDirected()) {</span>
 <span class="fc" id="L86">				for (int v = target;;) {</span>
 <span class="fc" id="L87">					int e = backtrack[v];</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">					if (e == -1) {</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">					if (e &lt; 0) {</span>
 <span class="fc" id="L89">						site = v;</span>
 <span class="fc" id="L90">						break;</span>
 					}
@@ -95,7 +95,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 			} else {
 <span class="fc" id="L96">				for (int v = target;;) {</span>
 <span class="fc" id="L97">					int e = backtrack[v];</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">					if (e == -1) {</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">					if (e &lt; 0) {</span>
 <span class="fc" id="L99">						site = v;</span>
 <span class="fc" id="L100">						break;</span>
 					}

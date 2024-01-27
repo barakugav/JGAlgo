@@ -192,7 +192,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L192" title="All 2 branches covered.">				if (u == v)</span>
 <span class="fc" id="L193">					continue;</span>
 <span class="fc" id="L194">				int resU = vToResV[u], resV = vToResV[v];</span>
-<span class="fc bfc" id="L195" title="All 4 branches covered.">				if (resU == -1 || resV == -1)</span>
+<span class="fc bfc" id="L195" title="All 4 branches covered.">				if (resU &lt; 0 || resV &lt; 0)</span>
 <span class="fc" id="L196">					continue;</span>
 <span class="fc" id="L197">				double ef = maxFlow.getFlow(e);</span>
 <span class="fc" id="L198">				double ew = w.weight(e);</span>
@@ -208,7 +208,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L208" title="All 2 branches covered.">				if (u == v)</span>
 <span class="fc" id="L209">					continue;</span>
 <span class="fc" id="L210">				int resU = vToResV[u], resV = vToResV[v];</span>
-<span class="pc bpc" id="L211" title="1 of 4 branches missed.">				if (resU == -1 || resV == -1)</span>
+<span class="pc bpc" id="L211" title="1 of 4 branches missed.">				if (resU &lt; 0 || resV &lt; 0)</span>
 <span class="nc" id="L212">					continue;</span>
 <span class="fc" id="L213">				double f = maxFlow.getFlow(e);</span>
 <span class="fc" id="L214">				double ew = w.weight(e);</span>

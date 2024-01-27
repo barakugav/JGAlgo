@@ -1079,7 +1079,7 @@ public class IndexIdMaps {
 		@Override
 		public boolean rem(int key) {
 <span class="fc" id="L1081">			int id = map.indexToIdIfExistInt(key);</span>
-<span class="fc bfc" id="L1082" title="All 4 branches covered.">			return id != -1 &amp;&amp; idList.rem(id);</span>
+<span class="fc bfc" id="L1082" title="All 4 branches covered.">			return id &gt;= 0 &amp;&amp; idList.rem(id);</span>
 		}
 
 		@Override
@@ -1095,13 +1095,13 @@ public class IndexIdMaps {
 		@Override
 		public int indexOf(int k) {
 <span class="fc" id="L1097">			int id = map.indexToIdIfExistInt(k);</span>
-<span class="fc bfc" id="L1098" title="All 2 branches covered.">			return id == -1 ? -1 : idList.indexOf(id);</span>
+<span class="fc bfc" id="L1098" title="All 2 branches covered.">			return id &lt; 0 ? -1 : idList.indexOf(id);</span>
 		}
 
 		@Override
 		public int lastIndexOf(int k) {
 <span class="fc" id="L1103">			int id = map.indexToIdIfExistInt(k);</span>
-<span class="fc bfc" id="L1104" title="All 2 branches covered.">			return id == -1 ? -1 : idList.lastIndexOf(id);</span>
+<span class="fc bfc" id="L1104" title="All 2 branches covered.">			return id &lt; 0 ? -1 : idList.lastIndexOf(id);</span>
 		}
 
 		@Override
@@ -1190,13 +1190,13 @@ public class IndexIdMaps {
 		@Override
 		public int indexOf(Object k) {
 <span class="fc" id="L1192">			int idx = map.idToIndexIfExist((K) k);</span>
-<span class="fc bfc" id="L1193" title="All 2 branches covered.">			return idx == -1 ? -1 : indexList.indexOf(idx);</span>
+<span class="fc bfc" id="L1193" title="All 2 branches covered.">			return idx &lt; 0 ? -1 : indexList.indexOf(idx);</span>
 		}
 
 		@Override
 		public int lastIndexOf(Object k) {
 <span class="fc" id="L1198">			int idx = map.idToIndexIfExist((K) k);</span>
-<span class="fc bfc" id="L1199" title="All 2 branches covered.">			return idx == -1 ? -1 : indexList.lastIndexOf(idx);</span>
+<span class="fc bfc" id="L1199" title="All 2 branches covered.">			return idx &lt; 0 ? -1 : indexList.lastIndexOf(idx);</span>
 		}
 
 		@Override
@@ -1248,13 +1248,13 @@ public class IndexIdMaps {
 		@Override
 		public int indexOf(int k) {
 <span class="fc" id="L1250">			int idx = map.idToIndexIfExist(k);</span>
-<span class="fc bfc" id="L1251" title="All 2 branches covered.">			return idx == -1 ? -1 : indexList.indexOf(idx);</span>
+<span class="fc bfc" id="L1251" title="All 2 branches covered.">			return idx &lt; 0 ? -1 : indexList.indexOf(idx);</span>
 		}
 
 		@Override
 		public int lastIndexOf(int k) {
 <span class="fc" id="L1256">			int idx = map.idToIndexIfExist(k);</span>
-<span class="fc bfc" id="L1257" title="All 2 branches covered.">			return idx == -1 ? -1 : indexList.lastIndexOf(idx);</span>
+<span class="fc bfc" id="L1257" title="All 2 branches covered.">			return idx &lt; 0 ? -1 : indexList.lastIndexOf(idx);</span>
 		}
 
 		@Override

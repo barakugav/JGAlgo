@@ -197,7 +197,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 <span class="fc" id="L197">						dt.link(U.dtVertex, V.dtVertex, getResidualCapacity(e));</span>
 <span class="fc" id="L198">						U.linkedEdge = e;</span>
 <span class="pc bnc" id="L199" title="All 4 branches missed.">						assert !children.hasNext(U.v) &amp;&amp; !children.hasPrev(U.v);</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">						if (V.firstDtChild != -1)</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">						if (V.firstDtChild &gt;= 0)</span>
 <span class="fc" id="L201">							children.connect(U.v, V.firstDtChild);</span>
 <span class="fc" id="L202">						V.firstDtChild = U.v;</span>
 <span class="fc" id="L203">						W = U;</span>
@@ -260,7 +260,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 		void cutAllChildren(Vertex U) {
 			/* cut all vertices pointing into u */
 <span class="pc bnc" id="L262" title="All 2 branches missed.">			assert U.dtVertex.getParent() == null;</span>
-<span class="fc bfc" id="L263" title="All 2 branches covered.">			if (U.firstDtChild != -1) {</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">			if (U.firstDtChild &gt;= 0) {</span>
 <span class="fc bfc" id="L264" title="All 2 branches covered.">				for (IntIterator childIt = children.iterator(U.firstDtChild); childIt.hasNext();) {</span>
 <span class="fc" id="L265">					int child = childIt.nextInt();</span>
 <span class="fc" id="L266">					Vertex childData = vertexData(child);</span>

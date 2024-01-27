@@ -225,7 +225,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 <span class="fc" id="L225">		Arrays.fill(root, -1);</span>
 <span class="fc" id="L226">		LongPriorityQueue queue = new FIFOQueueLongNoReduce();</span>
 <span class="fc bfc" id="L227" title="All 2 branches covered.">		for (int r : range(n)) {</span>
-<span class="fc bfc" id="L228" title="All 2 branches covered.">			if (root[r] != -1)</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">			if (root[r] &gt;= 0)</span>
 <span class="fc" id="L229">				continue;</span>
 <span class="fc" id="L230">			root[r] = r;</span>
 <span class="fc" id="L231">			queue.enqueue(JGAlgoUtils.longPack(r, -1));</span>

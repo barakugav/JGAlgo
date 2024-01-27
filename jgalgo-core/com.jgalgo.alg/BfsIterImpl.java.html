@@ -60,7 +60,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L60">				Assertions.checkVertex(source, n);</span>
 <span class="fc" id="L61">				visited.set(source);</span>
 <span class="fc" id="L62">				queue.enqueue(JGAlgoUtils.longPack(source, -1));</span>
-<span class="pc bpc" id="L63" title="1 of 2 branches missed.">				if (firstVInLayer == -1)</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">				if (firstVInLayer &lt; 0)</span>
 <span class="fc" id="L64">					firstVInLayer = source;</span>
 <span class="pc bpc" id="L65" title="1 of 2 branches missed.">			} while (sources.hasNext());</span>
 <span class="fc" id="L66">		}</span>
@@ -122,7 +122,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L122">					continue;</span>
 <span class="fc" id="L123">				visited.set(v);</span>
 <span class="fc" id="L124">				queue.enqueue(JGAlgoUtils.longPack(v, e));</span>
-<span class="fc bfc" id="L125" title="All 2 branches covered.">				if (firstVInLayer == -1)</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">				if (firstVInLayer &lt; 0)</span>
 <span class="fc" id="L126">					firstVInLayer = v;</span>
 <span class="fc" id="L127">			}</span>
 

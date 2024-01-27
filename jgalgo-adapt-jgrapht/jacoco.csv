@@ -9,7 +9,7 @@ JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.IndexGraphImpl
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.BaseEdgeSet.BaseIter,0,68,0,10,0,13,0,9,0,4
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.InEdges.new JGraphTWrapper.BaseEdgeSet.BaseIter() {...},0,51,0,8,0,8,0,7,0,3
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.IndexGraphImpl.EdgeSetBase.IterBase,0,71,0,8,0,17,0,9,0,5
-JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.IndexIdMapImpl,14,145,4,16,0,39,2,17,0,9
+JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.IndexIdMapImpl,13,144,4,16,0,39,2,17,0,9
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.SourceTargetEdgeSet,0,16,0,0,0,5,0,2,0,2
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.new WeightsDouble() {...},0,22,0,0,0,5,0,4,0,4
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.IndexGraphImpl.SourceTargetEdgeSet,0,19,0,0,0,6,0,2,0,2

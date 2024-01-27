@@ -75,7 +75,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycleBase {
 <span class="fc" id="L75">					bestSelfEdgeWeight = ew;</span>
 				}
 <span class="fc" id="L77">			}</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (bestSelfEdge != -1) {</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (bestSelfEdge &gt;= 0) {</span>
 				double bestCycleWeight =
 <span class="fc bfc" id="L80" title="All 2 branches covered.">						cycle != null ? w.weightSum(cycle.edges()) / cycle.edges().size() : Double.POSITIVE_INFINITY;</span>
 <span class="fc bfc" id="L81" title="All 2 branches covered.">				if (bestSelfEdgeWeight &lt; bestCycleWeight) {</span>
@@ -171,7 +171,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycleBase {
 <span class="fc" id="L171">			}</span>
 <span class="fc" id="L172">		}</span>
 
-<span class="fc bfc" id="L174" title="All 2 branches covered.">		if (bestCycleMeanWeightVertex == -1)</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">		if (bestCycleMeanWeightVertex &lt; 0)</span>
 <span class="fc" id="L175">			return null;</span>
 <span class="fc" id="L176">		final int ccIdx = cc.vertexBlock(bestCycleMeanWeightVertex);</span>
 <span class="fc" id="L177">		final int ccSize = cc.blockVertices(ccIdx).size();</span>

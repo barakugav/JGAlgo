@@ -165,9 +165,9 @@ class ArraysUtils {
 		// Find greatest element smaller than the pivot
 <span class="fc" id="L166">		int pivotIdx = -1;</span>
 <span class="fc bfc" id="L167" title="All 2 branches covered.">		for (int i : range(from, to))</span>
-<span class="fc bfc" id="L168" title="All 6 branches covered.">			if (c.compare(pivot, a[i]) &gt;= 0 &amp;&amp; (pivotIdx == -1 || c.compare(a[pivotIdx], a[i]) &lt; 0))</span>
+<span class="fc bfc" id="L168" title="All 6 branches covered.">			if (c.compare(pivot, a[i]) &gt;= 0 &amp;&amp; (pivotIdx &lt; 0 || c.compare(a[pivotIdx], a[i]) &lt; 0))</span>
 <span class="fc" id="L169">				pivotIdx = i;</span>
-<span class="pc bpc" id="L170" title="1 of 2 branches missed.">		if (pivotIdx == -1)</span>
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">		if (pivotIdx &lt; 0)</span>
 <span class="nc" id="L171">			return 0; // all elements are greater than the pivot</span>
 
 <span class="fc" id="L173">		return JGAlgoUtils.long2high(pivotPartition0(a, from, to, pivotIdx, c));</span>
@@ -197,9 +197,9 @@ class ArraysUtils {
 		// Find greatest element smaller than the pivot
 <span class="fc" id="L198">		int pivotIdx = -1;</span>
 <span class="fc bfc" id="L199" title="All 2 branches covered.">		for (int i : range(from, to))</span>
-<span class="fc bfc" id="L200" title="All 6 branches covered.">			if (c.compare(pivot, a[i]) &gt;= 0 &amp;&amp; (pivotIdx == -1 || c.compare(a[pivotIdx], a[i]) &lt; 0))</span>
+<span class="fc bfc" id="L200" title="All 6 branches covered.">			if (c.compare(pivot, a[i]) &gt;= 0 &amp;&amp; (pivotIdx &lt; 0 || c.compare(a[pivotIdx], a[i]) &lt; 0))</span>
 <span class="fc" id="L201">				pivotIdx = i;</span>
-<span class="pc bpc" id="L202" title="1 of 2 branches missed.">		if (pivotIdx == -1)</span>
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">		if (pivotIdx &lt; 0)</span>
 <span class="nc" id="L203">			return 0; // all elements are greater than the pivot</span>
 
 <span class="fc" id="L205">		return JGAlgoUtils.long2high(pivotPartition0(a, from, to, pivotIdx, c));</span>

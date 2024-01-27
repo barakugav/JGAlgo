@@ -135,7 +135,7 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract implements Gra
 <span class="fc" id="L135">			int oldVal1 = edgesIn[target].remove(swappedIdx);</span>
 <span class="fc" id="L136">			int oldVal2 = edgesIn[target].put(removedIdx, firstEdge);</span>
 <span class="pc bnc" id="L137" title="All 2 branches missed.">			assert oldVal1 == firstEdge;</span>
-<span class="pc bnc" id="L138" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
+<span class="pc bnc" id="L138" title="All 2 branches missed.">			assert oldVal2 &lt; 0;</span>
 <span class="fc" id="L139">		}</span>
 <span class="fc bfc" id="L140" title="All 2 branches covered.">		for (var entry : Int2IntMaps.fastIterable(edgesIn[swappedIdx])) {</span>
 <span class="fc" id="L141">			int source = entry.getIntKey();</span>
@@ -145,7 +145,7 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract implements Gra
 <span class="fc" id="L145">			int oldVal1 = edgesOut[source].remove(swappedIdx);</span>
 <span class="fc" id="L146">			int oldVal2 = edgesOut[source].put(removedIdx, firstEdge);</span>
 <span class="pc bnc" id="L147" title="All 2 branches missed.">			assert oldVal1 == firstEdge;</span>
-<span class="pc bnc" id="L148" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
+<span class="pc bnc" id="L148" title="All 2 branches missed.">			assert oldVal2 &lt; 0;</span>
 <span class="fc" id="L149">		}</span>
 
 <span class="fc bfc" id="L151" title="All 2 branches covered.">		if (firstSelfEdge &gt;= 0) {</span>
@@ -153,8 +153,8 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract implements Gra
 <span class="fc" id="L153">				setEndpoints(e, removedIdx, removedIdx);</span>
 <span class="fc" id="L154">			int oldVal1 = edgesOut[swappedIdx].put(removedIdx, firstSelfEdge);</span>
 <span class="fc" id="L155">			int oldVal2 = edgesIn[swappedIdx].put(removedIdx, firstSelfEdge);</span>
-<span class="pc bnc" id="L156" title="All 2 branches missed.">			assert oldVal1 == -1;</span>
-<span class="pc bnc" id="L157" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
+<span class="pc bnc" id="L156" title="All 2 branches missed.">			assert oldVal1 &lt; 0;</span>
+<span class="pc bnc" id="L157" title="All 2 branches missed.">			assert oldVal2 &lt; 0;</span>
 		}
 
 <span class="fc" id="L160">		swapAndClear(edgesOut, removedIdx, swappedIdx, EmptyEdgeMap);</span>

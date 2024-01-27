@@ -1036,18 +1036,18 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 <span class="fc" id="L1037">			Consumer&lt;Blossom&gt; processSelfLoops = b -&gt; {</span>
 <span class="fc" id="L1038">				b.setOuter(true);</span>
-<span class="fc bfc" id="L1039" title="All 2 branches covered.">				for (Edge e = b.selfLoops, next; e != null; e = next) {</span>
-<span class="fc" id="L1040">					next = e.nextOutEdge;</span>
-<span class="fc" id="L1041">					Blossom source = e.source.getPenultimateBlossom();</span>
-<span class="fc" id="L1042">					Blossom target = e.target.getPenultimateBlossom();</span>
-<span class="fc bfc" id="L1043" title="All 2 branches covered.">					if (source != target) {</span>
-<span class="fc" id="L1044">						e.nextOutEdge = null;</span>
-<span class="fc" id="L1045">						source.addEdgeOut(e);</span>
-<span class="fc" id="L1046">						target.addEdgeIn(e);</span>
-<span class="fc" id="L1047">						e.slack -= 2 * source.blossomEps;</span>
+<span class="pc bpc" id="L1039" title="1 of 2 branches missed.">				for (Edge e = b.selfLoops, next; e != null; e = next) {</span>
+<span class="nc" id="L1040">					next = e.nextOutEdge;</span>
+<span class="nc" id="L1041">					Blossom source = e.source.getPenultimateBlossom();</span>
+<span class="nc" id="L1042">					Blossom target = e.target.getPenultimateBlossom();</span>
+<span class="nc bnc" id="L1043" title="All 2 branches missed.">					if (source != target) {</span>
+<span class="nc" id="L1044">						e.nextOutEdge = null;</span>
+<span class="nc" id="L1045">						source.addEdgeOut(e);</span>
+<span class="nc" id="L1046">						target.addEdgeIn(e);</span>
+<span class="nc" id="L1047">						e.slack -= 2 * source.blossomEps;</span>
 					} else {
-<span class="fc" id="L1049">						e.nextOutEdge = source.selfLoops;</span>
-<span class="fc" id="L1050">						source.selfLoops = e;</span>
+<span class="nc" id="L1049">						e.nextOutEdge = source.selfLoops;</span>
+<span class="nc" id="L1050">						source.selfLoops = e;</span>
 					}
 				}
 <span class="fc" id="L1053">				b.selfLoops = null;</span>
@@ -1191,7 +1191,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 <span class="pc bpc" id="L1192" title="1 of 2 branches missed.">			if (B.outEdges != null)</span>
 <span class="fc" id="L1193">				B.outEdges.prevOutEdge.nextOutEdge = null;</span>
-<span class="fc bfc" id="L1194" title="All 2 branches covered.">			if (B.inEdges != null)</span>
+<span class="pc bpc" id="L1194" title="1 of 2 branches missed.">			if (B.inEdges != null)</span>
 <span class="fc" id="L1195">				B.inEdges.prevInEdge.nextInEdge = null;</span>
 <span class="fc" id="L1196">			eAugment = null;</span>
 <span class="fc bfc" id="L1197" title="All 2 branches covered.">			for (Edge e : B.outEdges()) {</span>
@@ -2089,8 +2089,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 			for (;;) {
 <span class="fc bfc" id="L2090" title="All 2 branches covered.">				if (!b.blossomGrandparent.isOuter()) {</span>
 <span class="fc" id="L2091">					b = b.blossomGrandparent;</span>
-<span class="fc bfc" id="L2092" title="All 2 branches covered.">				} else if (b.blossomGrandparent != b.blossomParent) {</span>
-<span class="fc" id="L2093">					b.blossomGrandparent = b.blossomParent;</span>
+<span class="pc bpc" id="L2092" title="1 of 2 branches missed.">				} else if (b.blossomGrandparent != b.blossomParent) {</span>
+<span class="nc" id="L2093">					b.blossomGrandparent = b.blossomParent;</span>
 				} else {
 					break;
 				}
@@ -2115,9 +2115,9 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 				}
 			}
 <span class="fc bfc" id="L2117" title="All 2 branches covered.">			if (prev != null) {</span>
-<span class="fc bfc" id="L2118" title="All 2 branches covered.">				for (Blossom p = this, next; p != prev; p = next) {</span>
-<span class="fc" id="L2119">					next = p.blossomGrandparent;</span>
-<span class="fc" id="L2120">					p.blossomGrandparent = prev;</span>
+<span class="pc bpc" id="L2118" title="1 of 2 branches missed.">				for (Blossom p = this, next; p != prev; p = next) {</span>
+<span class="nc" id="L2119">					next = p.blossomGrandparent;</span>
+<span class="nc" id="L2120">					p.blossomGrandparent = prev;</span>
 				}
 			}
 <span class="fc" id="L2123">			return b;</span>

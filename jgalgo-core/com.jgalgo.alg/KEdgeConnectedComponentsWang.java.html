@@ -162,7 +162,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 <span class="fc" id="L163">		IntStack stack = new IntArrayList();</span>
 <span class="fc bfc" id="L164" title="All 2 branches covered.">		for (int root : range(n)) {</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">			if (comp[root] != -1)</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">			if (comp[root] &gt;= 0)</span>
 <span class="fc" id="L166">				continue;</span>
 <span class="fc" id="L167">			final int compIdx = compNum++;</span>
 <span class="fc" id="L168">			stack.push(root);</span>
@@ -176,7 +176,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc bfc" id="L176" title="All 2 branches covered.">					if (auxWeights[e] &lt; k)</span>
 <span class="fc" id="L177">						continue;</span>
 <span class="fc" id="L178">					int v = eit.targetInt();</span>
-<span class="fc bfc" id="L179" title="All 2 branches covered.">					if (comp[v] != -1) {</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">					if (comp[v] &gt;= 0) {</span>
 <span class="pc bnc" id="L180" title="All 2 branches missed.">						assert comp[v] == compIdx;</span>
 						continue;
 					}

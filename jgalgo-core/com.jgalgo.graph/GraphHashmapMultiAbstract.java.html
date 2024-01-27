@@ -78,7 +78,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 	void removeAllEdgesInList(int firstEdge) {
 		for (;;) {
 <span class="fc" id="L80">			int nextEdge = edgeNext[firstEdge];</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">			if (nextEdge == -1) {</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			if (nextEdge &lt; 0) {</span>
 <span class="fc" id="L82">				removeEdge(firstEdge);</span>
 <span class="fc" id="L83">				break;</span>
 			}
@@ -141,7 +141,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 		@Override
 		public void remove() {
-<span class="pc bpc" id="L144" title="1 of 2 branches missed.">			if (prevEdge == -1)</span>
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">			if (prevEdge &lt; 0)</span>
 <span class="nc" id="L145">				throw new IllegalStateException();</span>
 
 			/*
@@ -296,7 +296,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 				@Override
 				public void remove() {
-<span class="pc bpc" id="L299" title="1 of 2 branches missed.">					if (prevEdge == -1)</span>
+<span class="pc bpc" id="L299" title="1 of 2 branches missed.">					if (prevEdge &lt; 0)</span>
 <span class="nc" id="L300">						throw new IllegalStateException();</span>
 <span class="fc" id="L301">					int lastEdge = edges().size() - 1;</span>
 <span class="pc bpc" id="L302" title="1 of 2 branches missed.">					if (nextEdge == lastEdge)</span>

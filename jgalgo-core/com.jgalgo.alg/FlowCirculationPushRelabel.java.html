@@ -144,7 +144,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L144">			final int n = g.vertices().size();</span>
 <span class="fc" id="L145">			final double lowerBound = 0;</span>
 
-<span class="fc bfc" id="L147" title="All 2 branches covered.">			mainLoop: for (int act; (act = highestActive()) != -1;) {</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">			mainLoop: for (int act; (act = highestActive()) &gt;= 0;) {</span>
 <span class="fc" id="L148">				deactivate(act);</span>
 <span class="fc" id="L149">				double exc = excess[act];</span>
 <span class="pc bnc" id="L150" title="All 2 branches missed.">				assert exc &gt; eps;</span>
@@ -283,7 +283,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L283">			final int n = g.vertices().size();</span>
 <span class="fc" id="L284">			final int lowerBound = 0;</span>
 
-<span class="fc bfc" id="L286" title="All 2 branches covered.">			mainLoop: for (int act; (act = highestActive()) != -1;) {</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">			mainLoop: for (int act; (act = highestActive()) &gt;= 0;) {</span>
 <span class="fc" id="L287">				deactivate(act);</span>
 <span class="fc" id="L288">				int exc = excess[act];</span>
 <span class="pc bnc" id="L289" title="All 2 branches missed.">				assert exc &gt; 0;</span>

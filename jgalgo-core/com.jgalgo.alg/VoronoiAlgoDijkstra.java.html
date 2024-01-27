@@ -44,7 +44,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L44">		int[] sitesArr = sites.toIntArray();</span>
 <span class="fc bfc" id="L45" title="All 2 branches covered.">		for (int siteIdx : range(sitesArr.length)) {</span>
 <span class="fc" id="L46">			int site = sitesArr[siteIdx];</span>
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">			if (cell[site] != -1)</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">			if (cell[site] &gt;= 0)</span>
 <span class="nc" id="L48">				throw new IllegalArgumentException(&quot;Duplicate site: &quot; + site);</span>
 <span class="fc" id="L49">			cell[site] = siteIdx;</span>
 <span class="fc" id="L50">			distance[site] = 0;</span>
@@ -82,7 +82,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L82">		boolean hasUnreachable = false;</span>
 <span class="fc" id="L83">		int unreachableCell = sitesArr.length;</span>
 <span class="fc bfc" id="L84" title="All 2 branches covered.">		for (int v : range(n)) {</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (cell[v] == -1) {</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (cell[v] &lt; 0) {</span>
 <span class="fc" id="L86">				hasUnreachable = true;</span>
 <span class="fc" id="L87">				cell[v] = unreachableCell;</span>
 			}

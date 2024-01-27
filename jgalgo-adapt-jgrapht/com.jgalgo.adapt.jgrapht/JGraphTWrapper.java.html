@@ -606,7 +606,7 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 <span class="fc" id="L606">			int idx = idxToId.size();</span>
 <span class="fc" id="L607">			idxToId.add(id);</span>
 <span class="fc" id="L608">			int oldVal = idToIdx.put(id, idx);</span>
-<span class="pc bnc" id="L609" title="All 2 branches missed.">			assert oldVal == -1;</span>
+<span class="pc bnc" id="L609" title="All 2 branches missed.">			assert oldVal &lt; 0;</span>
 <span class="fc" id="L610">		}</span>
 
 		void remove(K id) {
@@ -649,7 +649,7 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 		@Override
 		public int idToIndex(K id) {
 <span class="fc" id="L651">			int idx = idToIdx.getInt(id);</span>
-<span class="fc bfc" id="L652" title="All 2 branches covered.">			if (idx == -1) {</span>
+<span class="fc bfc" id="L652" title="All 2 branches covered.">			if (idx &lt; 0) {</span>
 <span class="fc bfc" id="L653" title="All 2 branches covered.">				if (isEdges) {</span>
 <span class="fc" id="L654">					throw NoSuchEdgeException.ofEdge(id);</span>
 				} else {

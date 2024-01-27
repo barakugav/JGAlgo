@@ -175,7 +175,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc bfc" id="L175" title="All 2 branches covered.">		if (g.isDirected()) {</span>
 <span class="fc" id="L176">			for (int v = target;;) {</span>
 <span class="fc" id="L177">				int e = info.get(v).backtrack;</span>
-<span class="fc bfc" id="L178" title="All 2 branches covered.">				if (e == -1) {</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">				if (e &lt; 0) {</span>
 <span class="pc bnc" id="L179" title="All 2 branches missed.">					assert v == source;</span>
 					break;
 				}
@@ -185,7 +185,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 		} else {
 <span class="fc" id="L186">			for (int v = target;;) {</span>
 <span class="fc" id="L187">				int e = info.get(v).backtrack;</span>
-<span class="fc bfc" id="L188" title="All 2 branches covered.">				if (e == -1) {</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">				if (e &lt; 0) {</span>
 <span class="pc bnc" id="L189" title="All 2 branches missed.">					assert v == source;</span>
 					break;
 				}

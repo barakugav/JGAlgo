@@ -53,7 +53,7 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 <span class="fc" id="L53">			int e0 = it.nextInt();</span>
 <span class="fc" id="L54">			int e = edgeRef[e0];</span>
 <span class="fc" id="L55">			final int u = it.sourceInt();</span>
-<span class="fc bfc" id="L56" title="All 2 branches covered.">			if (firstVertex == -1)</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">			if (firstVertex &lt; 0)</span>
 <span class="fc" id="L57">				firstVertex = u;</span>
 <span class="fc" id="L58">			visited.set(u);</span>
 <span class="fc bfc" id="L59" title="All 4 branches covered.">			while (visited.get(it.targetInt()) &amp;&amp; it.hasNext()) {</span>

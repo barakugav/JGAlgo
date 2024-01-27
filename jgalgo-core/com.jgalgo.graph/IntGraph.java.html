@@ -286,13 +286,13 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @throws NoSuchVertexException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	default boolean containsEdge(int source, int target) {
-<span class="fc bfc" id="L289" title="All 2 branches covered.">		return getEdge(source, target) != -1;</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">		return getEdge(source, target) &gt;= 0;</span>
 	}
 
 	@Deprecated
 	@Override
 	default boolean containsEdge(Integer source, Integer target) {
-<span class="fc bfc" id="L295" title="All 2 branches covered.">		return getEdge(source.intValue(), target.intValue()) != -1;</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">		return getEdge(source.intValue(), target.intValue()) &gt;= 0;</span>
 	}
 
 	/**
@@ -322,7 +322,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Override
 	default Integer getEdge(Integer source, Integer target) {
 <span class="fc" id="L324">		int e = getEdge(source.intValue(), target.intValue());</span>
-<span class="fc bfc" id="L325" title="All 2 branches covered.">		return e == -1 ? null : Integer.valueOf(e);</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">		return e &lt; 0 ? null : Integer.valueOf(e);</span>
 	}
 
 	/**

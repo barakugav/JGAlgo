@@ -147,7 +147,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 			/* add min edges to MST */
 <span class="fc bfc" id="L148" title="All 2 branches covered.">			for (int tree : range(treeNum)) {</span>
 <span class="fc" id="L149">				int e = minEdges[tree];</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">				if (e == -1)</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">				if (e &lt; 0)</span>
 <span class="fc" id="L151">					continue;</span>
 <span class="fc" id="L152">				int ut = vTree[g.edgeSource(e)];</span>
 <span class="fc bfc" id="L153" title="All 4 branches covered.">				if (tree == ut || minEdges[ut] != e)</span>
@@ -181,7 +181,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L181">					path[pathLength++] = tPtr;</span>
 <span class="fc" id="L182">					vTreeNext[tPtr] = IN_PATH;</span>
 <span class="fc" id="L183">					int minEdge = minEdges[tPtr];</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">					if (minEdge == -1) {</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">					if (minEdge &lt; 0) {</span>
 <span class="fc" id="L185">						deepestTree = tPtr;</span>
 <span class="fc" id="L186">						break;</span>
 					}

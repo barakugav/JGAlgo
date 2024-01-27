@@ -319,7 +319,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L319" title="All 2 branches covered.">			if (g.edgeSource(e) == g.edgeTarget(e))</span>
 <span class="fc" id="L320">				continue;</span>
 <span class="fc" id="L321">			int mstEdge = tpmResults.getHeaviestEdgeInt(i++);</span>
-<span class="pc bpc" id="L322" title="1 of 4 branches missed.">			if (mstEdge == -1 || w.weight(e) &lt; mstWeights[mstEdge])</span>
+<span class="pc bpc" id="L322" title="1 of 4 branches missed.">			if (mstEdge &lt; 0 || w.weight(e) &lt; mstWeights[mstEdge])</span>
 <span class="fc" id="L323">				return false;</span>
 <span class="fc" id="L324">		}</span>
 <span class="fc" id="L325">		return true;</span>

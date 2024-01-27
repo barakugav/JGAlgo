@@ -92,7 +92,7 @@ import com.jgalgo.internal.util.Assertions;
 
 		@Override
 		public void remove() {
-<span class="pc bpc" id="L95" title="1 of 2 branches missed.">			if (lastEdge == -1)</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">			if (lastEdge &lt; 0)</span>
 <span class="nc" id="L96">				throw new IllegalStateException();</span>
 <span class="fc" id="L97">			removeEdge(lastEdge);</span>
 			/*

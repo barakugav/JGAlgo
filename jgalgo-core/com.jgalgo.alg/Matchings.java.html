@@ -48,7 +48,7 @@ class Matchings {
 
 		@Override
 		public boolean isVertexMatched(int vertex) {
-<span class="fc bfc" id="L51" title="All 2 branches covered.">			return getMatchedEdge(vertex) != -1;</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">			return getMatchedEdge(vertex) &gt;= 0;</span>
 		}
 
 		@Override
@@ -56,11 +56,11 @@ class Matchings {
 <span class="fc bfc" id="L56" title="All 2 branches covered.">			if (matchedVertices == null) {</span>
 <span class="fc" id="L57">				int matchedCount = 0;</span>
 <span class="fc bfc" id="L58" title="All 2 branches covered.">				for (int v : range(matched.length))</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">					if (matched[v] != -1)</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">					if (matched[v] &gt;= 0)</span>
 <span class="fc" id="L60">						matchedCount++;</span>
 <span class="fc" id="L61">				int[] matchedVertices0 = new int[matchedCount];</span>
 <span class="fc bfc" id="L62" title="All 2 branches covered.">				for (int i = 0, v = 0; v &lt; matched.length; v++)</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">					if (matched[v] != -1)</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">					if (matched[v] &gt;= 0)</span>
 <span class="fc" id="L64">						matchedVertices0[i++] = v;</span>
 <span class="fc" id="L65">				matchedVertices = ImmutableIntArraySet</span>
 <span class="pc bpc" id="L66" title="2 of 6 branches missed.">						.newInstance(matchedVertices0, v -&gt; 0 &lt;= v &amp;&amp; v &lt; matched.length &amp;&amp; matched[v] &gt;= 0);</span>
@@ -73,11 +73,11 @@ class Matchings {
 <span class="fc bfc" id="L73" title="All 2 branches covered.">			if (unmatchedVertices == null) {</span>
 <span class="fc" id="L74">				int unmatchedCount = 0;</span>
 <span class="fc bfc" id="L75" title="All 2 branches covered.">				for (int v : range(matched.length))</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">					if (matched[v] == -1)</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">					if (matched[v] &lt; 0)</span>
 <span class="fc" id="L77">						unmatchedCount++;</span>
 <span class="fc" id="L78">				int[] unmatchedVertices0 = new int[unmatchedCount];</span>
 <span class="fc bfc" id="L79" title="All 2 branches covered.">				for (int i = 0, v = 0; v &lt; matched.length; v++)</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">					if (matched[v] == -1)</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">					if (matched[v] &lt; 0)</span>
 <span class="fc" id="L81">						unmatchedVertices0[i++] = v;</span>
 <span class="fc" id="L82">				unmatchedVertices = ImmutableIntArraySet</span>
 <span class="pc bpc" id="L83" title="2 of 6 branches missed.">						.newInstance(unmatchedVertices0, v -&gt; 0 &lt;= v &amp;&amp; v &lt; matched.length &amp;&amp; matched[v] &lt; 0);</span>
@@ -107,7 +107,7 @@ class Matchings {
 <span class="fc" id="L107">			int edgesCount = 0;</span>
 <span class="fc bfc" id="L108" title="All 2 branches covered.">			for (int v : range(g.vertices().size())) {</span>
 <span class="fc" id="L109">				int e = matched[v];</span>
-<span class="fc bfc" id="L110" title="All 4 branches covered.">				if (e != -1 &amp;&amp; v == g.edgeSource(e)) {</span>
+<span class="fc bfc" id="L110" title="All 4 branches covered.">				if (e &gt;= 0 &amp;&amp; v == g.edgeSource(e)) {</span>
 <span class="pc bnc" id="L111" title="All 2 branches missed.">					assert g.edgeSource(e) != g.edgeTarget(e);</span>
 <span class="fc" id="L112">					edgesCount++;</span>
 				}
@@ -115,7 +115,7 @@ class Matchings {
 <span class="fc" id="L115">			int[] edges0 = new int[edgesCount];</span>
 <span class="fc bfc" id="L116" title="All 2 branches covered.">			for (int i = 0, n = g.vertices().size(), v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L117">				int e = matched[v];</span>
-<span class="fc bfc" id="L118" title="All 4 branches covered.">				if (e != -1 &amp;&amp; v == g.edgeSource(e)) {</span>
+<span class="fc bfc" id="L118" title="All 4 branches covered.">				if (e &gt;= 0 &amp;&amp; v == g.edgeSource(e)) {</span>
 <span class="pc bnc" id="L119" title="All 2 branches missed.">					assert g.edgeSource(e) != g.edgeTarget(e);</span>
 <span class="fc" id="L120">					edges0[i++] = e;</span>
 				}
@@ -132,7 +132,7 @@ class Matchings {
 		@Override
 		public boolean isPerfect() {
 <span class="fc bfc" id="L134" title="All 2 branches covered.">			for (int e : matched)</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">				if (e == -1)</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">				if (e &lt; 0)</span>
 <span class="fc" id="L136">					return false;</span>
 <span class="fc" id="L137">			return true;</span>
 		}

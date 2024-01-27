@@ -92,7 +92,7 @@ public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
 	@Override
 	default Integer indexToIdIfExist(int index) {
 <span class="fc" id="L94">		int id = indexToIdIfExistInt(index);</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">		return id == -1 ? null : Integer.valueOf(id);</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		return id &lt; 0 ? null : Integer.valueOf(id);</span>
 	}
 
 	/**

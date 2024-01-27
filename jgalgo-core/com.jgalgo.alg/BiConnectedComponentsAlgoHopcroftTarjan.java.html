@@ -90,7 +90,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L90">		IntList biccEdgesTemp = new IntArrayList();</span>
 
 <span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int root : range(n)) {</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">			if (depths[root] != -1)</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			if (depths[root] &gt;= 0)</span>
 <span class="fc" id="L94">				continue;</span>
 <span class="fc" id="L95">			int depth = 0;</span>
 <span class="fc" id="L96">			depths[root] = depth;</span>
@@ -107,7 +107,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 <span class="fc" id="L108">					int v = eit.targetInt();</span>
 <span class="fc" id="L109">					final int vDepth = depths[v];</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">					if (vDepth == -1) { /* unvisited */</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">					if (vDepth &lt; 0) { /* unvisited */</span>
 <span class="fc" id="L111">						edgeStack.push(e);</span>
 <span class="fc" id="L112">						edgePath[depth] = e;</span>
 <span class="fc" id="L113">						depth++;</span>

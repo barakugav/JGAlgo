@@ -168,7 +168,7 @@ public class IntIntBinomialHeap  implements IntIntReferenceableHeap  {
 <span class="fc" id="L168">				break;</span>
 			}
 <span class="fc" id="L170">		}</span>
-<span class="pc bpc" id="L171" title="1 of 2 branches missed.">		if (rootIdx == -1)</span>
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">		if (rootIdx &lt; 0)</span>
 <span class="nc" id="L172">			throw new ConcurrentModificationException();</span>
 
 <span class="fc" id="L174">		Node [] childs = tempArray(rootIdx);</span>

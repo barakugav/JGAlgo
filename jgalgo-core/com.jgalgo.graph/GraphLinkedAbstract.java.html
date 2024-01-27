@@ -64,7 +64,7 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 
 		@Override
 		public void remove() {
-<span class="pc bpc" id="L67" title="1 of 2 branches missed.">			if (last == -1)</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">			if (last &lt; 0)</span>
 <span class="nc" id="L68">				throw new IllegalStateException();</span>
 <span class="fc bfc" id="L69" title="All 2 branches covered.">			if (last == edges.size - 1) {</span>
 <span class="fc" id="L70">				removeEdgeLast(last);</span>

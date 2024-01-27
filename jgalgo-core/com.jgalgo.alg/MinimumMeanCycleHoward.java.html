@@ -124,7 +124,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 					}
 
 					/* cycle found */
-<span class="fc bfc" id="L127" title="All 2 branches covered.">					if (cycleVertex != -1) {</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">					if (cycleVertex &gt;= 0) {</span>
 
 						/* find cycle mean weight */
 <span class="fc" id="L130">						double cycleWeight = 0;</span>
@@ -147,7 +147,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 						}
 					}
 <span class="fc" id="L149">				}</span>
-<span class="pc bnc" id="L150" title="All 2 branches missed.">				assert bestCycleVertex != -1;</span>
+<span class="pc bnc" id="L150" title="All 2 branches missed.">				assert bestCycleVertex &gt;= 0;</span>
 <span class="fc bfc" id="L151" title="All 2 branches covered.">				if (overallBestCycleMeanWeight &gt; bestCycleMeanWeight) {</span>
 <span class="fc" id="L152">					overallBestCycleMeanWeight = bestCycleMeanWeight;</span>
 <span class="fc" id="L153">					overallBestCycleVertex = bestCycleVertex;</span>
@@ -203,13 +203,13 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L203">					bestSelfEdgeWeight = w.weight(e);</span>
 				}
 <span class="fc" id="L205">			}</span>
-<span class="pc bpc" id="L206" title="1 of 4 branches missed.">			if (bestSelfEdge != -1 &amp;&amp; bestSelfEdgeWeight &lt; overallBestCycleMeanWeight) {</span>
+<span class="pc bpc" id="L206" title="1 of 4 branches missed.">			if (bestSelfEdge &gt;= 0 &amp;&amp; bestSelfEdgeWeight &lt; overallBestCycleMeanWeight) {</span>
 <span class="fc" id="L207">				int cycleVertex = g.edgeSource(bestSelfEdge);</span>
 <span class="fc" id="L208">				return IPath.valueOf(g, cycleVertex, cycleVertex, IntList.of(bestSelfEdge));</span>
 			}
 		}
 
-<span class="fc bfc" id="L212" title="All 2 branches covered.">		if (overallBestCycleVertex == -1)</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">		if (overallBestCycleVertex &lt; 0)</span>
 <span class="fc" id="L213">			return null;</span>
 
 <span class="fc" id="L215">		IntList cycle = new IntArrayList();</span>

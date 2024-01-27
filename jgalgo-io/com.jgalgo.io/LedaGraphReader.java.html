@@ -181,13 +181,13 @@ public class LedaGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 <span class="fc" id="L181">				throw new IllegalArgumentException(&quot;Expected more edge lines&quot;);</span>
 
 <span class="fc" id="L183">			int sourceEnd = line.indexOf(' ');</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">			if (sourceEnd == -1)</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">			if (sourceEnd &lt; 0)</span>
 <span class="fc" id="L185">				throw new IllegalArgumentException(&quot;edge line error. Expected 'source target twinEdge weight'&quot;);</span>
 <span class="fc" id="L186">			int targetEnd = line.indexOf(' ', sourceEnd + 1);</span>
-<span class="fc bfc" id="L187" title="All 2 branches covered.">			if (targetEnd == -1)</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">			if (targetEnd &lt; 0)</span>
 <span class="fc" id="L188">				throw new IllegalArgumentException(&quot;edge line error. Expected 'source target twinEdge weight'&quot;);</span>
 <span class="fc" id="L189">			int twinEdgeEnd = line.indexOf(' ', targetEnd + 1);</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">			if (twinEdgeEnd == -1)</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">			if (twinEdgeEnd &lt; 0)</span>
 <span class="fc" id="L191">				throw new IllegalArgumentException(&quot;edge line error. Expected 'source target twinEdge weight'&quot;);</span>
 
 			int source, target, twinEdge;

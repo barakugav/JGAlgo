@@ -140,7 +140,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		@Override
 		default Integer lastEdge() {
 <span class="fc" id="L142">			int e = lastEdgeInt();</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">			return e == -1 ? null : Integer.valueOf(e);</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">			return e &lt; 0 ? null : Integer.valueOf(e);</span>
 		}
 	}
 

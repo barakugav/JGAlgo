@@ -155,7 +155,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 
 		@Override
 		public String toString() {
-<span class="nc bnc" id="L158" title="All 4 branches missed.">			return &quot;&quot; + (root == -1 ? 'X' : isEven ? 'E' : 'O') + base;</span>
+<span class="nc bnc" id="L158" title="All 4 branches missed.">			return &quot;&quot; + (root &lt; 0 ? 'X' : isEven ? 'E' : 'O') + base;</span>
 		}
 
 		boolean isSingleton() {
@@ -215,7 +215,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 
 				@Override
 				public boolean hasNext() {
-<span class="fc bfc" id="L218" title="All 2 branches covered.">					return next != -1;</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">					return next &gt;= 0;</span>
 				}
 
 				@Override
@@ -695,7 +695,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="pc bnc" id="L695" title="All 2 branches missed.">			assert JGAlgoUtils.isEqual(delta, expandEvents.findMin().key());</span>
 <span class="fc" id="L696">			final Blossom B = expandEvents.extractMin().value();</span>
 
-<span class="pc bnc" id="L698" title="All 8 branches missed.">			assert B.root != -1 &amp;&amp; !B.isEven &amp;&amp; !B.isSingleton() &amp;&amp; dualVal(B) &lt;= 1e-5;</span>
+<span class="pc bnc" id="L698" title="All 8 branches missed.">			assert B.root &gt;= 0 &amp;&amp; !B.isEven &amp;&amp; !B.isSingleton() &amp;&amp; dualVal(B) &lt;= 1e-5;</span>
 
 <span class="fc" id="L700">			int baseV = B.base, topV = g.edgeSource(B.treeParentEdge);</span>
 <span class="fc" id="L701">			Blossom base = null;</span>
@@ -791,16 +791,16 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc bfc" id="L791" title="All 2 branches covered.">				for (int u = b == U ? bu : bv;;) {</span>
 <span class="pc bnc" id="L792" title="All 2 branches missed.">					assert b.isEven;</span>
 <span class="fc" id="L793">					augmentPath(b, u);</span>
-<span class="fc bfc" id="L794" title="All 2 branches covered.">					if (e != -1) {</span>
+<span class="fc bfc" id="L794" title="All 2 branches covered.">					if (e &gt;= 0) {</span>
 <span class="fc" id="L795">						int eu = g.edgeSource(e), ev = g.edgeTarget(e);</span>
 <span class="fc" id="L796">						matched[eu] = e;</span>
 <span class="fc" id="L797">						matched[ev] = edgeVal.get(e).twin;</span>
 
 <span class="fc" id="L799">						debug.print(&quot; &quot;, Integer.valueOf(e));</span>
-<span class="pc bnc" id="L800" title="All 2 branches missed.">						assert matched[eu] != -1;</span>
-<span class="pc bnc" id="L801" title="All 2 branches missed.">						assert matched[ev] != -1;</span>
+<span class="pc bnc" id="L800" title="All 2 branches missed.">						assert matched[eu] &gt;= 0;</span>
+<span class="pc bnc" id="L801" title="All 2 branches missed.">						assert matched[ev] &gt;= 0;</span>
 					}
-<span class="fc bfc" id="L803" title="All 2 branches covered.">					if (b.treeParentEdge == -1)</span>
+<span class="fc bfc" id="L803" title="All 2 branches covered.">					if (b.treeParentEdge &lt; 0)</span>
 <span class="fc" id="L804">						break;</span>
 					// Odd
 <span class="fc" id="L806">					b = topBlossom(g.edgeTarget(b.treeParentEdge));</span>
@@ -873,15 +873,15 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 		}
 
 		boolean isMatched(int v) {
-<span class="fc bfc" id="L876" title="All 2 branches covered.">			return matched[v] != -1;</span>
+<span class="fc bfc" id="L876" title="All 2 branches covered.">			return matched[v] &gt;= 0;</span>
 		}
 
 		boolean isInTree(int v) {
-<span class="nc bnc" id="L880" title="All 2 branches missed.">			return topBlossom(v).root != -1;</span>
+<span class="nc bnc" id="L880" title="All 2 branches missed.">			return topBlossom(v).root &gt;= 0;</span>
 		}
 
 		boolean isInTree(Blossom b) {
-<span class="pc bpc" id="L884" title="1 of 4 branches missed.">			return b.parent != null ? isInTree(b.base) : b.root != -1;</span>
+<span class="pc bpc" id="L884" title="1 of 4 branches missed.">			return b.parent != null ? isInTree(b.base) : b.root &gt;= 0;</span>
 		}
 
 		Blossom topBlossom(int v) {
@@ -978,7 +978,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc bfc" id="L978" title="All 2 branches covered.">			if (b == null)</span>
 				// v was part of an even blossom from the beginning of the current search
 <span class="fc" id="L980">				val -= delta;</span>
-<span class="fc bfc" id="L981" title="All 4 branches covered.">			else if ((isEven = isEven(v)) || b.root != -1)</span>
+<span class="fc bfc" id="L981" title="All 4 branches covered.">			else if ((isEven = isEven(v)) || b.root &gt;= 0)</span>
 				// v was part of an out blossom, b is max blossom before v became even
 <span class="fc bfc" id="L983" title="All 2 branches covered.">				val += isEven ? -(delta - b.delta0) : +(delta - b.delta1);</span>
 <span class="fc" id="L984">			return val;</span>
@@ -987,7 +987,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 		double dualVal(Blossom b) {
 <span class="pc bnc" id="L988" title="All 2 branches missed.">			assert !b.isSingleton();</span>
 <span class="fc" id="L989">			double zb = b.z0;</span>
-<span class="fc bfc" id="L990" title="All 4 branches covered.">			if (b.parent == null &amp;&amp; b.root != -1)</span>
+<span class="fc bfc" id="L990" title="All 4 branches covered.">			if (b.parent == null &amp;&amp; b.root &gt;= 0)</span>
 <span class="fc bfc" id="L991" title="All 2 branches covered.">				zb += 2 * (b.isEven ? +(delta - b.delta0) : -(delta - b.delta1));</span>
 <span class="fc" id="L992">			return zb;</span>
 		}
@@ -1076,7 +1076,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc bfc" id="L1076" title="All 2 branches covered.">					if (b.lastVisitIdx == visitIdx)</span>
 <span class="fc" id="L1077">						return b;</span>
 <span class="fc" id="L1078">					b.lastVisitIdx = visitIdx;</span>
-<span class="fc bfc" id="L1079" title="All 2 branches covered.">					bs[i] = b.treeParentEdge == -1 ? null : topBlossom(g.edgeTarget(b.treeParentEdge));</span>
+<span class="fc bfc" id="L1079" title="All 2 branches covered.">					bs[i] = b.treeParentEdge &lt; 0 ? null : topBlossom(g.edgeTarget(b.treeParentEdge));</span>
 <span class="fc" id="L1080">				}</span>
 			}
 		}

@@ -244,13 +244,13 @@ class MaximumFlows {
 <span class="pc bpc" id="L244" title="1 of 2 branches missed.">					if (WeightFunction.isCardinality(capacityOrig)) {</span>
 <span class="nc bnc" id="L245" title="All 2 branches missed.">						for (int e : range(g.edges().size())) {</span>
 <span class="nc" id="L246">							int eRef = edgeRef[e];</span>
-<span class="nc bnc" id="L247" title="All 6 branches missed.">							double cap = (eRef != -1 &amp;&amp; g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink) ? 1 : 0;</span>
+<span class="nc bnc" id="L247" title="All 6 branches missed.">							double cap = (eRef &gt;= 0 &amp;&amp; g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink) ? 1 : 0;</span>
 <span class="nc" id="L248">							residualCapacity[e] = cap;</span>
 <span class="nc" id="L249">						}</span>
 					} else {
 <span class="fc bfc" id="L251" title="All 2 branches covered.">						for (int e : range(g.edges().size())) {</span>
 <span class="fc" id="L252">							int eRef = edgeRef[e];</span>
-<span class="fc bfc" id="L253" title="All 6 branches covered.">							double cap = (eRef != -1 &amp;&amp; g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink)</span>
+<span class="fc bfc" id="L253" title="All 6 branches covered.">							double cap = (eRef &gt;= 0 &amp;&amp; g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink)</span>
 <span class="fc" id="L254">									? capacityOrig.weight(eRef)</span>
 <span class="fc" id="L255">									: 0;</span>
 <span class="fc" id="L256">							residualCapacity[e] = cap;</span>
@@ -264,7 +264,7 @@ class MaximumFlows {
 
 					/* init edges from super-source to sources and from sinks to super-sink */
 <span class="fc bfc" id="L266" title="All 2 branches covered.">					for (int e : range(g.edges().size()))</span>
-<span class="fc bfc" id="L267" title="All 2 branches covered.">						if (edgeRef[e] == -1)</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">						if (edgeRef[e] &lt; 0)</span>
 <span class="fc" id="L268">							residualCapacity[e] =</span>
 <span class="fc bfc" id="L269" title="All 4 branches covered.">									source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;</span>
 				}
@@ -284,13 +284,13 @@ class MaximumFlows {
 <span class="pc bpc" id="L284" title="1 of 2 branches missed.">					if (WeightFunction.isCardinality(capacityOrig)) {</span>
 <span class="nc bnc" id="L285" title="All 2 branches missed.">						for (int e : range(g.edges().size())) {</span>
 <span class="nc" id="L286">							int eRef = edgeRef[e];</span>
-<span class="nc bnc" id="L287" title="All 6 branches missed.">							int cap = (eRef != -1 &amp;&amp; g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink) ? 1 : 0;</span>
+<span class="nc bnc" id="L287" title="All 6 branches missed.">							int cap = (eRef &gt;= 0 &amp;&amp; g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink) ? 1 : 0;</span>
 <span class="nc" id="L288">							residualCapacity[e] = cap;</span>
 <span class="nc" id="L289">						}</span>
 					} else {
 <span class="fc bfc" id="L291" title="All 2 branches covered.">						for (int e : range(g.edges().size())) {</span>
 <span class="fc" id="L292">							int eRef = edgeRef[e];</span>
-<span class="pc bpc" id="L293" title="1 of 6 branches missed.">							int cap = (eRef != -1 &amp;&amp; g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink)</span>
+<span class="pc bpc" id="L293" title="1 of 6 branches missed.">							int cap = (eRef &gt;= 0 &amp;&amp; g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink)</span>
 <span class="fc" id="L294">									? capacity.weightInt(eRef)</span>
 <span class="fc" id="L295">									: 0;</span>
 <span class="fc" id="L296">							residualCapacity[e] = cap;</span>
@@ -312,7 +312,7 @@ class MaximumFlows {
 
 					/* init edges from super-source to sources and from sinks to super-sink */
 <span class="nc bnc" id="L314" title="All 2 branches missed.">					for (int e : range(g.edges().size()))</span>
-<span class="nc bnc" id="L315" title="All 2 branches missed.">						if (edgeRef[e] == -1)</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">						if (edgeRef[e] &lt; 0)</span>
 <span class="nc" id="L316">							residualCapacity[e] =</span>
 <span class="nc bnc" id="L317" title="All 4 branches missed.">									source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;</span>
 				}
@@ -340,7 +340,7 @@ class MaximumFlows {
 
 			boolean isOriginalEdge(int e) {
 <span class="fc" id="L342">				int eOrig = edgeRef[e];</span>
-<span class="fc bfc" id="L343" title="All 4 branches covered.">				return eOrig != -1 &amp;&amp; g.edgeSource(e) == gOrig.edgeSource(eOrig);</span>
+<span class="fc bfc" id="L343" title="All 4 branches covered.">				return eOrig &gt;= 0 &amp;&amp; g.edgeSource(e) == gOrig.edgeSource(eOrig);</span>
 
 			}
 		}

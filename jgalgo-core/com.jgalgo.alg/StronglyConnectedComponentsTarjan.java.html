@@ -78,7 +78,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L78">						u = v;</span>
 <span class="fc" id="L79">						continue dfs;</span>
 					}
-<span class="fc bfc" id="L81" title="All 2 branches covered.">					if (comp[v] == -1) /* do not belong to any scc, still on the stack */</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">					if (comp[v] &lt; 0) /* do not belong to any scc, still on the stack */</span>
 <span class="fc bfc" id="L82" title="All 2 branches covered.">						if (lowLink[u] &gt; visitIdx[v]) /* weird line */</span>
 <span class="fc" id="L83">							lowLink[u] = visitIdx[v];</span>
 <span class="fc" id="L84">				}</span>
@@ -94,7 +94,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L94">					}</span>
 <span class="fc bfc" id="L95" title="All 2 branches covered.">					if (stopAfterOneBlock) {</span>
 <span class="fc bfc" id="L96" title="All 2 branches covered.">						for (int w : range(n))</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">							if (comp[w] == -1)</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">							if (comp[w] &lt; 0)</span>
 <span class="fc" id="L98">								return null;</span>
 <span class="fc" id="L99">						return new VertexPartitions.Impl(g, compNum, comp);</span>
 					}

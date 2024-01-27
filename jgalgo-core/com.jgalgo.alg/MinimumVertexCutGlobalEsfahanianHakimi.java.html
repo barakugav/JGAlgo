@@ -75,7 +75,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 				}
 <span class="fc" id="L76">			}</span>
 		}
-<span class="fc bfc" id="L78" title="All 2 branches covered.">		if (startVertex == -1) {</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		if (startVertex &lt; 0) {</span>
 			/* the graph is a clique, we can disconnect it only by removing n-1 vertices */
 <span class="fc" id="L80">			return range(g.vertices().size() - 1);</span>
 		}

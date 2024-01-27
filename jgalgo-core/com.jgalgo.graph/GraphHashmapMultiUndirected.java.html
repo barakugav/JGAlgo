@@ -110,14 +110,14 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract implements G
 <span class="fc" id="L110">			int oldVal1 = edgesMap[target].remove(swappedIdx);</span>
 <span class="fc" id="L111">			int oldVal2 = edgesMap[target].put(removedIdx, firstEdge);</span>
 <span class="pc bnc" id="L112" title="All 2 branches missed.">			assert oldVal1 == firstEdge;</span>
-<span class="pc bnc" id="L113" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
+<span class="pc bnc" id="L113" title="All 2 branches missed.">			assert oldVal2 &lt; 0;</span>
 <span class="fc" id="L114">		}</span>
 
 <span class="fc bfc" id="L116" title="All 2 branches covered.">		if (firstSelfEdge &gt;= 0) {</span>
 <span class="fc bfc" id="L117" title="All 2 branches covered.">			for (int e = firstSelfEdge; e &gt;= 0; e = edgeNext[e])</span>
 <span class="fc" id="L118">				setEndpoints(e, removedIdx, removedIdx);</span>
 <span class="fc" id="L119">			int oldVal = edgesMap[swappedIdx].put(removedIdx, firstSelfEdge);</span>
-<span class="pc bnc" id="L120" title="All 2 branches missed.">			assert oldVal == -1;</span>
+<span class="pc bnc" id="L120" title="All 2 branches missed.">			assert oldVal &lt; 0;</span>
 		}
 
 <span class="fc" id="L123">		swapAndClear(edgesMap, removedIdx, swappedIdx, EmptyEdgeMap);</span>

@@ -1824,7 +1824,7 @@ public class Graphs {
 		@Override
 		public int getEdge(int source, int target) {
 <span class="fc" id="L1826">			int e = graph().getEdge(source, target);</span>
-<span class="fc bfc" id="L1827" title="All 2 branches covered.">			return e != -1 ? e : graph().getEdge(target, source);</span>
+<span class="fc bfc" id="L1827" title="All 2 branches covered.">			return e &gt;= 0 ? e : graph().getEdge(target, source);</span>
 		}
 
 		@Override

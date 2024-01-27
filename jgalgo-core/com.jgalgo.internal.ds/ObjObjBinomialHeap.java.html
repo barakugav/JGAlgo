@@ -187,7 +187,7 @@ public class ObjObjBinomialHeap &lt;K, V&gt; implements ObjObjReferenceableHeap 
 <span class="fc" id="L187">				break;</span>
 			}
 <span class="fc" id="L189">		}</span>
-<span class="pc bpc" id="L190" title="1 of 2 branches missed.">		if (rootIdx == -1)</span>
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">		if (rootIdx &lt; 0)</span>
 <span class="nc" id="L191">			throw new ConcurrentModificationException();</span>
 
 <span class="fc" id="L193">		Node &lt;K, V&gt;[] childs = tempArray(rootIdx);</span>

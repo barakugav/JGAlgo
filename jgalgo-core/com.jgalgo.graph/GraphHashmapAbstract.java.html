@@ -103,7 +103,7 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 
 		@Override
 		public void remove() {
-<span class="pc bpc" id="L106" title="1 of 2 branches missed.">			if (prevEdge == -1)</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">			if (prevEdge &lt; 0)</span>
 <span class="nc" id="L107">				throw new IllegalStateException();</span>
 
 			/*

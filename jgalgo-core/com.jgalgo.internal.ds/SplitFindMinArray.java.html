@@ -184,7 +184,7 @@ class SplitFindMinArray&lt;K&gt; implements SplitFindMin&lt;K&gt; {
 <span class="fc" id="L184">		int min = -1;</span>
 <span class="fc" id="L185">		for (Block blk = head;;) {</span>
 <span class="fc" id="L186">			blk.seq = seq;</span>
-<span class="fc bfc" id="L187" title="All 4 branches covered.">			if (min == -1 || c.compare(keys[min], keys[blk.min]) &gt; 0)</span>
+<span class="fc bfc" id="L187" title="All 4 branches covered.">			if (min &lt; 0 || c.compare(keys[min], keys[blk.min]) &gt; 0)</span>
 <span class="fc" id="L188">				min = blk.min;</span>
 <span class="pc bpc" id="L189" title="1 of 4 branches missed.">			if (blk == tail || blk.to &gt;= blocks.length)</span>
 <span class="nc" id="L190">				break;</span>
@@ -205,7 +205,7 @@ class SplitFindMinArray&lt;K&gt; implements SplitFindMin&lt;K&gt; {
 <span class="fc" id="L205">		int min = -1;</span>
 <span class="fc bfc" id="L206" title="All 2 branches covered.">		for (int i : range(from, to)) {</span>
 <span class="fc" id="L207">			blocks[i] = blk;</span>
-<span class="fc bfc" id="L208" title="All 4 branches covered.">			if (min == -1 || c.compare(keys[min], keys[i]) &gt; 0)</span>
+<span class="fc bfc" id="L208" title="All 4 branches covered.">			if (min &lt; 0 || c.compare(keys[min], keys[i]) &gt; 0)</span>
 <span class="fc" id="L209">				min = i;</span>
 <span class="fc" id="L210">		}</span>
 <span class="fc" id="L211">		blk.min = min;</span>

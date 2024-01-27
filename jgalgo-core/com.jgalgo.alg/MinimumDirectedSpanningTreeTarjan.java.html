@@ -127,10 +127,10 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L127">		Arrays.fill(inEdge, -1);</span>
 
 <span class="fc" id="L129">		IntStack stack = new IntArrayList();</span>
-<span class="pc bnc" id="L130" title="All 2 branches missed.">		assert cg.child[root] == -1;</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">		for (int v = cg.parent[root], prevChild = root; v != -1; v = cg.parent[prevChild = v]) {</span>
+<span class="pc bnc" id="L130" title="All 2 branches missed.">		assert cg.child[root] &lt; 0;</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">		for (int v = cg.parent[root], prevChild = root; v &gt;= 0; v = cg.parent[prevChild = v]) {</span>
 <span class="fc" id="L132">			for (int child = cg.child[v], c = child;;) {</span>
-<span class="pc bnc" id="L133" title="All 2 branches missed.">				assert c != -1;</span>
+<span class="pc bnc" id="L133" title="All 2 branches missed.">				assert c &gt;= 0;</span>
 <span class="fc bfc" id="L134" title="All 2 branches covered.">				if (c != prevChild)</span>
 <span class="fc" id="L135">					stack.push(c);</span>
 <span class="fc" id="L136">				c = cg.brother[c];</span>
@@ -144,11 +144,11 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L144">			int u = g.edgeTarget(e);</span>
 <span class="fc" id="L145">			inEdge[u] = e;</span>
 
-<span class="pc bnc" id="L147" title="All 2 branches missed.">			assert cg.child[u] == -1;</span>
+<span class="pc bnc" id="L147" title="All 2 branches missed.">			assert cg.child[u] &lt; 0;</span>
 <span class="fc bfc" id="L148" title="All 2 branches covered.">			for (int v = cg.parent[u], prevChild = u; v != cg.parent[r]; v = cg.parent[prevChild = v]) {</span>
-<span class="pc bpc" id="L149" title="1 of 2 branches missed.">				if (cg.child[v] != -1) {</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">				if (cg.child[v] &gt;= 0) {</span>
 <span class="fc" id="L150">					for (int child = cg.child[v], c = child;;) {</span>
-<span class="pc bnc" id="L151" title="All 2 branches missed.">						assert c != -1;</span>
+<span class="pc bnc" id="L151" title="All 2 branches missed.">						assert c &gt;= 0;</span>
 <span class="fc bfc" id="L152" title="All 2 branches covered.">						if (c != prevChild)</span>
 <span class="fc" id="L153">							stack.push(c);</span>
 <span class="fc" id="L154">						c = cg.brother[c];</span>
@@ -182,7 +182,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L182">		Arrays.fill(blockToV, -1);</span>
 <span class="fc" id="L183">		int n = g.vertices().size();</span>
 <span class="fc bfc" id="L184" title="All 2 branches covered.">		for (int b, v = 0; v &lt; n; v++)</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">			if (blockToV[b = connectivityRes.vertexBlock(v)] == -1)</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">			if (blockToV[b = connectivityRes.vertexBlock(v)] &lt; 0)</span>
 <span class="fc" id="L186">				blockToV[b] = v;</span>
 
 <span class="fc" id="L188">		int rootBlock = connectivityRes.vertexBlock(root);</span>
@@ -291,7 +291,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L291">					cHeap.meld(heap[a]);</span>
 <span class="fc" id="L292">					heap[a] = null;</span>
 <span class="fc" id="L293">					a = brother[a];</span>
-<span class="fc bfc" id="L294" title="All 2 branches covered.">				} while (parent[a] == -1);</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">				} while (parent[a] &lt; 0);</span>
 
 <span class="fc" id="L296">				ufIdxToV[uf.find(c)] = c;</span>
 

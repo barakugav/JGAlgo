@@ -255,7 +255,7 @@ interface WeightsImpl {
 <span class="fc" id="L255">				Objects.requireNonNull(key);</span>
 <span class="fc" id="L256">				int idx = keyToIdx.size();</span>
 <span class="fc" id="L257">				int oldIdx = keyToIdx.putIfAbsent(key, idx);</span>
-<span class="pc bpc" id="L258" title="1 of 2 branches missed.">				if (oldIdx != -1)</span>
+<span class="pc bpc" id="L258" title="1 of 2 branches missed.">				if (oldIdx &gt;= 0)</span>
 <span class="nc" id="L259">					throw new IllegalArgumentException(&quot;Two weights types with the same key: &quot; + key);</span>
 
 <span class="fc bfc" id="L261" title="All 2 branches covered.">				if (idx == this.weights.length) {</span>
@@ -272,7 +272,7 @@ interface WeightsImpl {
 			void removeWeights(String key) {
 <span class="fc" id="L273">				int lastIdx = keyToIdx.size() - 1;</span>
 <span class="fc" id="L274">				int idx = keyToIdx.removeInt(key);</span>
-<span class="pc bpc" id="L275" title="1 of 2 branches missed.">				if (idx == -1)</span>
+<span class="pc bpc" id="L275" title="1 of 2 branches missed.">				if (idx &lt; 0)</span>
 <span class="nc" id="L276">					throw new IllegalArgumentException(&quot;no weights with key: &quot; + key);</span>
 
 <span class="fc bfc" id="L278" title="All 2 branches covered.">				if (idx != lastIdx) {</span>
@@ -286,7 +286,7 @@ interface WeightsImpl {
 			@SuppressWarnings(&quot;unchecked&quot;)
 			&lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT getWeights(String key) {
 <span class="fc" id="L288">				int idx = keyToIdx.getInt(key);</span>
-<span class="fc bfc" id="L289" title="All 2 branches covered.">				return idx == -1 ? null : (WeightsT) weights[idx];</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">				return idx &lt; 0 ? null : (WeightsT) weights[idx];</span>
 			}
 
 			Set&lt;String&gt; weightsKeys() {

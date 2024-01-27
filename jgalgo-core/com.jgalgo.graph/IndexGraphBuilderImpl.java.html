@@ -183,7 +183,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L183">					checkVertex(source);</span>
 <span class="fc" id="L184">					checkVertex(target);</span>
 <span class="fc" id="L185">					int eIdx = edge - currentNum;</span>
-<span class="fc bfc" id="L186" title="All 6 branches covered.">					if (eIdx &lt; 0 || eIdx * 2 &gt;= newEdgesEndpoints.length || newEdgesEndpoints[2 * eIdx] != -1)</span>
+<span class="fc bfc" id="L186" title="All 6 branches covered.">					if (eIdx &lt; 0 || eIdx * 2 &gt;= newEdgesEndpoints.length || newEdgesEndpoints[2 * eIdx] &gt;= 0)</span>
 <span class="fc" id="L187">						throw new IllegalArgumentException(</span>
 								&quot;added edges must be a consecutive range of integers starting from &quot; + currentNum
 										+ &quot; but was &quot; + edges);

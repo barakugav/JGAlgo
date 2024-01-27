@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IntersectionGraphGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.gen</a> &gt; <span class="el_source">IntersectionGraphGenerator.java</span></div><h1>IntersectionGraphGenerator.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.gen;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.ToIntFunction;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
+/**
+ * Generate the intersection graph of two or more given graphs.
+ *
+ * &lt;p&gt;
+ * The intersection graph of two graphs is a graph with the vertex set which is the intersection of the vertex sets of
+ * the two graphs, and the edge set which is the intersection of the edge sets of the two graphs. There are two
+ * different ways to intersect the edges of the graphs:
+ * &lt;ul&gt;
+ * &lt;li&gt;Intersect by id: the edges are considered the same if they have the same id. Two edges with the same id in the
+ * two graphs are considered the same edge. If they do not have the same endpoints, an exception is thrown. This is the
+ * default.&lt;/li&gt;
+ * &lt;li&gt;Intersect by endpoints: the edges are considered the same if they have the same endpoints. Two edges with the
+ * same endpoints in the two graphs are considered the same edge. The id of the edge in the first graph is used as the
+ * id of the edge in the intersection graph.&lt;/li&gt;
+ * &lt;/ul&gt;
+ * The above rules generalize to intersection of more than two graphs.
+ *
+ * &lt;p&gt;
+ * By default, the edges intersection is by id. Use {@link #edgeIntersectByEndpoints()} and {@link #edgeIntersectById()}
+ * to change the intersection of edges.
+ *
+ * &lt;p&gt;
+ * Weights are not copied from the input graphs to the generated graph(s). In the future there might be an option to do
+ * so.
+ *
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
+ */
+public class IntersectionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {
+
+	private final GraphFactory&lt;V, E&gt; factory;
+	private final List&lt;Graph&lt;V, E&gt;&gt; graphs;
+<span class="fc" id="L71">	private boolean intersectById = true;</span>
+	// private boolean verticesWeights, edgesWeights;
+	// private Set&lt;String&gt; verticesWeightsKeys, edgesWeightsKeys;
+
+	/**
+	 * Create a new intersection graph generator that will use the default graph factory.
+	 */
+	public IntersectionGraphGenerator() {
+<span class="fc" id="L79">		this(GraphFactory.undirected());</span>
+<span class="fc" id="L80">	}</span>
+
+	/**
+	 * Create a new intersection graph generator that will use the given graph factory.
+	 *
+	 * &lt;p&gt;
+	 * The graph factory will be used to create the generated graph(s).
+	 *
+	 * &lt;p&gt;
+	 * To generate {@linkplain IntGraph int graphs}, pass an instance of {@linkplain IntGraphFactory} to this
+	 * constructor.
+	 *
+	 * @param factory the graph factory that will be used to create the generated graph(s)
+	 */
+<span class="fc" id="L94">	public IntersectionGraphGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
+<span class="fc" id="L95">		this.factory = Objects.requireNonNull(factory);</span>
+<span class="fc" id="L96">		graphs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L97">	}</span>
+
+	/**
+	 * Get the graph factory that will be used to create the generated graph(s).
+	 *
+	 * &lt;p&gt;
+	 * It's possible to customize the factory before generating the graph(s), for example by using
+	 * {@link GraphFactory#addHint(GraphFactory.Hint)} to optimize the generated graph(s) for a specific algorithm.
+	 *
+	 * &lt;p&gt;
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration. If all of of the input graphs have self
+	 * edges, the method {@link GraphFactory#allowSelfEdges()} will be called. If all of the input graphs have parallel
+	 * edges, the method {@link GraphFactory#allowParallelEdges()} will be called. Note that parallel edges are not
+	 * allowed (in each input graph independently) when intersecting by endpoints is used (see
+	 * {@link #edgeIntersectByEndpoints()}).
+	 *
+	 * @return the graph factory that will be used to create the generated graph(s)
+	 */
+	public GraphFactory&lt;V, E&gt; graphFactory() {
+<span class="fc" id="L117">		return factory;</span>
+	}
+
+	/**
+	 * Set the input graphs whose intersection graph will be generated.
+	 *
+	 * &lt;p&gt;
+	 * Given two or more graphs, the intersection graph of the graphs is a graph with the vertex set which is the
+	 * intersection of the vertex sets of the graphs, and the edge set which is the intersection of the edge sets of the
+	 * graphs. There are two different ways to intersect the edges of the graphs, see {@link #edgeIntersectById()} and
+	 * {@link #edgeIntersectByEndpoints()} for more details.
+	 *
+	 * @param  graphs                   the input graphs
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if less than two input graphs are provided, or if the graphs have different
+	 *                                      directionality
+	 */
+	public IntersectionGraphGenerator&lt;V, E&gt; graphs(Collection&lt;? extends Graph&lt;V, E&gt;&gt; graphs) {
+<span class="fc bfc" id="L135" title="All 2 branches covered.">		if (graphs.size() &lt; 2)</span>
+<span class="fc" id="L136">			throw new IllegalArgumentException(&quot;At least two graphs must be provided&quot;);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		if (graphs.stream().map(Graph::isDirected).distinct().count() != 1)</span>
+<span class="fc" id="L138">			throw new IllegalArgumentException(&quot;Input graphs must have the same directionality&quot;);</span>
+<span class="fc" id="L139">		this.graphs.clear();</span>
+<span class="fc" id="L140">		this.graphs.addAll(graphs);</span>
+<span class="fc" id="L141">		return this;</span>
+	}
+
+	/**
+	 * Set the input graphs whose intersection graph will be generated.
+	 *
+	 * &lt;p&gt;
+	 * Given two or more graphs, the intersection graph of the graphs is a graph with the vertex set which is the
+	 * intersection of the vertex sets of the graphs, and the edge set which is the intersection of the edge sets of the
+	 * graphs. There are two different ways to intersect the edges of the graphs, see {@link #edgeIntersectById()} and
+	 * {@link #edgeIntersectByEndpoints()} for more details.
+	 *
+	 * @param  graphs                   the input graphs
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if less than two input graphs are provided, or if the graphs have different
+	 *                                      directionality
+	 */
+	@SafeVarargs
+	public final IntersectionGraphGenerator&lt;V, E&gt; graphs(Graph&lt;V, E&gt;... graphs) {
+<span class="fc" id="L160">		return graphs(ObjectList.of(graphs));</span>
+	}
+
+	/**
+	 * Set the intersection of edges to by the edges identifiers.
+	 *
+	 * &lt;p&gt;
+	 * The intersection graph of two or more graphs using this method is a graph with the vertex set which is the
+	 * intersection of the vertex sets of the graphs, and the edge set constructed as follows: for each edge in the
+	 * first graph, if the edge (identifier) exists in all of the graphs, it is added to the intersection graph. The
+	 * endpoints of the edge must be the same for all graphs, otherwise an exception is thrown.
+	 *
+	 * &lt;p&gt;
+	 * A call to this method override a previous call to {@link #edgeIntersectByEndpoints()}. By default, the
+	 * intersection of edges is by id.
+	 *
+	 * &lt;p&gt;
+	 * Both self and parallel edges may be generated if such edges exist in all the input graphs.
+	 *
+	 * &lt;p&gt;
+	 * In the following example two directed graphs are created, and the intersection graph of the two graphs is
+	 * generated by the edges identifiers:
+	 *
+	 * &lt;pre&gt; {@code
+	 * Graph&lt;String, Integer&gt; graph1 = Graph.newDirected();
+	 * graph1.addVertices(List.of(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;));
+	 * graph1.addEdge(&quot;A&quot;, &quot;B&quot;, 1);
+	 * graph1.addEdge(&quot;A&quot;, &quot;C&quot;, 2);
+	 *
+	 * Graph&lt;String, Integer&gt; graph2 = Graph.newDirected();
+	 * graph2.addVertices(List.of(&quot;A&quot;, &quot;B&quot;, &quot;D&quot;));
+	 * graph2.addEdge(&quot;A&quot;, &quot;B&quot;, 1);
+	 * graph2.addEdge(&quot;A&quot;, &quot;D&quot;, 5);
+	 *
+	 * Graph&lt;String, Integer&gt; intersectionGraph = new IntersectionGraphGenerator&lt;String, Integer&gt;()
+	 * 		.graphs(graph1, graph2)
+	 * 		.edgeIntersectById() // override previous call to edgeIntersectByEndpoints() if have been called
+	 * 		.generate();
+	 * assert Set.of(&quot;A&quot;, &quot;B&quot;).equals(intersectionGraph.vertices());
+	 * assert Set.of(1).equals(intersectionGraph.edges());
+	 * assert intersectionGraph.edgeSource(1).equals(&quot;A&quot;) &amp;&amp; intersectionGraph.edgeTarget(1).equals(&quot;B&quot;);
+	 * }&lt;/pre&gt;
+	 *
+	 * @return this generator
+	 */
+	public IntersectionGraphGenerator&lt;V, E&gt; edgeIntersectById() {
+<span class="fc" id="L206">		intersectById = true;</span>
+<span class="fc" id="L207">		return this;</span>
+	}
+
+	/**
+	 * Set the intersection of edges to be by the edges endpoints.
+	 *
+	 * &lt;p&gt;
+	 * The intersection graph of two or more graphs using this method is a graph with the vertex set which is the
+	 * intersection of the vertex sets of the graphs, and the edge set constructed as follows: for each edge in the
+	 * first graph, if an edge (same endpoints, identifier may differ) exists in all of the graphs, it is added to the
+	 * intersection graph. The identifier of the edge in the first graph is used as the identifier of the edge in the
+	 * intersection graph.
+	 *
+	 * &lt;p&gt;
+	 * The input graphs must not contain parallel edges. If one of the input graphs contains parallel edges, an
+	 * exception is thrown during the graph(s) generation. Self edges may be generated if such edges exist in all the
+	 * input graphs. Parallel edges are never generated.
+	 *
+	 * &lt;p&gt;
+	 * A call to this method override a previous call to {@link #edgeIntersectById()}. By default, the intersection of
+	 * edges is by id.
+	 *
+	 * &lt;p&gt;
+	 * In the following example two directed graphs are created, and the intersection graph of the two graphs is
+	 * generated by the edges endpoints. Note that the edge \(A, B\) exists in both graphs, but with different
+	 * identifiers. In the generated graph, the edge \(A, B\) will appear only once, with identifier from the first
+	 * graph:
+	 *
+	 * &lt;pre&gt; {@code
+	 * Graph&lt;String, Integer&gt; graph1 = Graph.newDirected();
+	 * graph1.addVertices(List.of(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;));
+	 * graph1.addEdge(&quot;A&quot;, &quot;B&quot;, 10);
+	 * graph1.addEdge(&quot;A&quot;, &quot;C&quot;, 20);
+	 *
+	 * Graph&lt;String, Integer&gt; graph2 = Graph.newDirected();
+	 * graph2.addVertices(List.of(&quot;A&quot;, &quot;B&quot;, &quot;D&quot;));
+	 * graph2.addEdge(&quot;A&quot;, &quot;B&quot;, 50);
+	 * graph2.addEdge(&quot;A&quot;, &quot;D&quot;, 100);
+	 *
+	 * Graph&lt;String, Integer&gt; intersectionGraph = new IntersectionGraphGenerator&lt;String, Integer&gt;()
+	 * 		.graphs(graph1, graph2)
+	 * 		.edgeIntersectByEndpoints() // override previous call to edgeIntersectById() if have been called
+	 * 		.generate();
+	 * assert Set.of(&quot;A&quot;, &quot;B&quot;).equals(intersectionGraph.vertices());
+	 * assert Set.of(10).equals(intersectionGraph.edges());
+	 * assert intersectionGraph.edgeSource(10).equals(&quot;A&quot;) &amp;&amp; intersectionGraph.edgeTarget(10).equals(&quot;B&quot;);
+	 * }&lt;/pre&gt;
+	 *
+	 * @return this generator
+	 */
+	public IntersectionGraphGenerator&lt;V, E&gt; edgeIntersectByEndpoints() {
+<span class="fc" id="L258">		intersectById = false;</span>
+<span class="fc" id="L259">		return this;</span>
+	}
+
+	// public IntersectionGraphGenerator&lt;V, E&gt; copyWeights(boolean verticesWeights, boolean edgesWeights) {
+	// this.verticesWeights = verticesWeights;
+	// this.edgesWeights = edgesWeights;
+	// return this;
+	// }
+
+	// public IntersectionGraphGenerator&lt;V, E&gt; verticesWeightsKeys(Set&lt;String&gt; keys) {
+	// verticesWeightsKeys = keys == null ? null : new HashSet&lt;&gt;(keys);
+	// return this;
+	// }
+
+	// public IntersectionGraphGenerator&lt;V, E&gt; edgesWeightsKeys(Set&lt;String&gt; keys) {
+	// edgesWeightsKeys = keys == null ? null : new HashSet&lt;&gt;(keys);
+	// return this;
+	// }
+
+	@Override
+	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
+<span class="fc bfc" id="L280" title="All 2 branches covered.">		if (graphs.isEmpty())</span>
+<span class="fc" id="L281">			throw new IllegalStateException(&quot;Input graphs not provided&quot;);</span>
+
+<span class="fc" id="L283">		final Graph&lt;V, E&gt; firstGraph = graphs.get(0);</span>
+<span class="fc" id="L284">		final List&lt;Graph&lt;V, E&gt;&gt; remainingGraphs = graphs.subList(1, graphs.size());</span>
+<span class="fc" id="L285">		final boolean directed = firstGraph.isDirected();</span>
+<span class="fc" id="L286">		factory.setDirected(directed);</span>
+<span class="fc bfc" id="L287" title="All 4 branches covered.">		if (graphs.stream().allMatch(g -&gt; !Graphs.selfEdges(g).isEmpty()))</span>
+<span class="fc" id="L288">			factory.allowSelfEdges();</span>
+<span class="fc bfc" id="L289" title="All 4 branches covered.">		if (intersectById &amp;&amp; graphs.stream().allMatch(Graphs::containsParallelEdges))</span>
+<span class="fc" id="L290">			factory.allowParallelEdges();</span>
+<span class="fc" id="L291">		GraphBuilder&lt;V, E&gt; intersection = factory.newBuilder();</span>
+
+		Set&lt;V&gt; vertices;
+<span class="fc bfc" id="L294" title="All 2 branches covered.">		if (graphs.stream().allMatch(g -&gt; g instanceof IntGraph)) {</span>
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L296">			Set&lt;V&gt; vertices0 = (Set&lt;V&gt;) new IntOpenHashSet();</span>
+<span class="fc" id="L297">			vertices = vertices0;</span>
+<span class="fc" id="L298">		} else {</span>
+<span class="fc" id="L299">			vertices = new ObjectOpenHashSet&lt;&gt;();</span>
+		}
+<span class="fc bfc" id="L301" title="All 2 branches covered.">		for (V v : firstGraph.vertices())</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">			if (remainingGraphs.stream().allMatch(g -&gt; g.vertices().contains(v)))</span>
+<span class="fc" id="L303">				vertices.add(v);</span>
+<span class="fc" id="L304">		intersection.addVertices(vertices);</span>
+<span class="fc" id="L305">		vertices = intersection.vertices();</span>
+
+<span class="fc" id="L307">		final IndexIdMap&lt;V&gt; firstGraphVIdMap = firstGraph.indexGraphVerticesMap();</span>
+<span class="fc" id="L308">		final ToIntFunction&lt;V&gt; vIndex = firstGraphVIdMap::idToIndex;</span>
+<span class="fc" id="L309">		final Comparator&lt;V&gt; vComparator = Comparator.comparingInt(vIndex);</span>
+
+<span class="fc bfc" id="L311" title="All 2 branches covered.">		if (intersectById) {</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">			for (V u : vertices) {</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">				for (EdgeIter&lt;V, E&gt; eit = firstGraph.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L314">					E e = eit.next();</span>
+<span class="fc" id="L315">					V v = eit.target();</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">					if (!vertices.contains(v))</span>
+<span class="fc" id="L317">						continue;</span>
+<span class="fc bfc" id="L318" title="All 4 branches covered.">					if (!directed &amp;&amp; vComparator.compare(u, v) &gt; 0)</span>
+<span class="fc" id="L319">						continue; /* avoid processing undirected edges twice */</span>
+<span class="fc bfc" id="L320" title="All 2 branches covered.">					if (!remainingGraphs.stream().allMatch(g -&gt; g.edges().contains(e)))</span>
+<span class="fc" id="L321">						continue;</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">					for (Graph&lt;V, E&gt; g : remainingGraphs) {</span>
+<span class="fc" id="L323">						V u2 = g.edgeSource(e);</span>
+<span class="fc" id="L324">						V v2 = g.edgeTarget(e);</span>
+<span class="fc" id="L325">						boolean sameEndpoints =</span>
+<span class="pc bpc" id="L326" title="4 of 10 branches missed.">								(u.equals(u2) &amp;&amp; v.equals(v2)) || (!directed &amp;&amp; u.equals(v2) &amp;&amp; v.equals(u2));</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">						if (!sameEndpoints)</span>
+<span class="fc" id="L328">							throw new IllegalArgumentException(</span>
+									&quot;Input graphs have the same edge with different endpoints&quot;);
+<span class="fc" id="L330">					}</span>
+<span class="fc" id="L331">					intersection.addEdge(u, v, e);</span>
+<span class="fc" id="L332">				}</span>
+<span class="fc" id="L333">			}</span>
+
+		} else { /* intersect by endpoints */
+<span class="fc bfc" id="L336" title="All 2 branches covered.">			if (graphs.stream().anyMatch(Graphs::containsParallelEdges))</span>
+<span class="fc" id="L337">				throw new IllegalArgumentException(</span>
+						&quot;Cannot intersect by endpoints when input graphs contain parallel edges&quot;);
+
+			// TODO can be implemented in array of size firstGraph.vertices().size()
+<span class="fc" id="L341">			Int2IntOpenHashMap edges = new Int2IntOpenHashMap();</span>
+
+<span class="fc bfc" id="L343" title="All 2 branches covered.">			for (V u : vertices) {</span>
+<span class="fc bfc" id="L344" title="All 2 branches covered.">				for (Graph&lt;V, E&gt; graph : remainingGraphs) {</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">					for (EdgeIter&lt;V, E&gt; eit = graph.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L346">						eit.next();</span>
+<span class="fc" id="L347">						V v = eit.target();</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">						if (!vertices.contains(v))</span>
+<span class="fc" id="L349">							continue;</span>
+<span class="fc bfc" id="L350" title="All 4 branches covered.">						if (!directed &amp;&amp; vComparator.compare(u, v) &gt; 0)</span>
+<span class="fc" id="L351">							continue; /* avoid processing undirected edges twice */</span>
+<span class="fc" id="L352">						edges.addTo(vIndex.applyAsInt(v), 1);</span>
+<span class="fc" id="L353">					}</span>
+<span class="fc" id="L354">				}</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">				for (EdgeIter&lt;V, E&gt; eit = firstGraph.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L356">					E e = eit.next();</span>
+<span class="fc" id="L357">					V v = eit.target();</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">					if (!vertices.contains(v))</span>
+<span class="fc" id="L359">						continue;</span>
+<span class="fc bfc" id="L360" title="All 4 branches covered.">					if (!directed &amp;&amp; vComparator.compare(u, v) &gt; 0)</span>
+<span class="fc" id="L361">						continue; /* avoid processing undirected edges twice */</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">					boolean existInAllGraphs = edges.get(vIndex.applyAsInt(v)) == graphs.size() - 1;</span>
+<span class="fc bfc" id="L363" title="All 2 branches covered.">					if (existInAllGraphs)</span>
+<span class="fc" id="L364">						intersection.addEdge(u, v, e);</span>
+<span class="fc" id="L365">				}</span>
+<span class="fc" id="L366">				edges.clear();</span>
+<span class="fc" id="L367">			}</span>
+		}
+<span class="fc" id="L369">		return intersection;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

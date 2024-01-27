@@ -56,7 +56,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L56">		int cNext = 1;</span>
 
 <span class="fc bfc" id="L58" title="All 2 branches covered.">		for (int root : range(n)) {</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">			if (comp[root] != -1)</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">			if (comp[root] &gt;= 0)</span>
 <span class="fc" id="L60">				continue;</span>
 <span class="fc" id="L61">			dfsPath[0] = root;</span>
 <span class="fc" id="L62">			edges[0] = g.outEdges(root).iterator();</span>
@@ -76,7 +76,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L76">						dfsPath[++depth] = v;</span>
 <span class="fc" id="L77">						edges[depth] = g.outEdges(v).iterator();</span>
 <span class="fc" id="L78">						continue dfs;</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">					} else if (comp[v] == -1)</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">					} else if (comp[v] &lt; 0)</span>
 <span class="fc bfc" id="L80" title="All 2 branches covered.">						while (c[p.topInt()] &gt; c[v])</span>
 <span class="fc" id="L81">							p.popInt();</span>
 <span class="fc" id="L82">				}</span>
@@ -89,7 +89,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc bfc" id="L89" title="All 2 branches covered.">					} while (v != u);</span>
 <span class="fc bfc" id="L90" title="All 2 branches covered.">					if (stopAfterOneBlock) {</span>
 <span class="fc bfc" id="L91" title="All 2 branches covered.">						for (int w : range(n))</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">							if (comp[w] == -1)</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">							if (comp[w] &lt; 0)</span>
 <span class="fc" id="L93">								return null;</span>
 <span class="fc" id="L94">						return new VertexPartitions.Impl(g, compNum, comp);</span>
 					}

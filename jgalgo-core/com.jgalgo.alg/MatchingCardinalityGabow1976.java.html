@@ -102,7 +102,7 @@ class MatchingCardinalityGabow1976 implements MatchingAlgoBase.Cardinality {
 <span class="fc" id="L102">					final int v = eit.targetInt();</span>
 <span class="fc" id="L103">					int vRoot = root[v];</span>
 
-<span class="fc bfc" id="L105" title="All 2 branches covered.">					if (vRoot == -1) {</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">					if (vRoot &lt; 0) {</span>
 						// unexplored vertex, add to tree
 <span class="fc" id="L107">						root[v] = uRoot;</span>
 <span class="fc" id="L108">						parent[v] = e;</span>
@@ -132,7 +132,7 @@ class MatchingCardinalityGabow1976 implements MatchingAlgoBase.Cardinality {
 <span class="fc" id="L132">						blossomBaseSearch: for (int[] ps = new int[] { uBase, vBase };;) {</span>
 <span class="fc bfc" id="L133" title="All 2 branches covered.">							for (int i : range(ps.length)) {</span>
 <span class="fc" id="L134">								int p = ps[i];</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">								if (p == -1)</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">								if (p &lt; 0)</span>
 <span class="fc" id="L136">									continue;</span>
 <span class="fc bfc" id="L137" title="All 2 branches covered.">								if (blossomBaseSearchNotes[p] == searchIdx) {</span>
 <span class="fc" id="L138">									base = p;</span>

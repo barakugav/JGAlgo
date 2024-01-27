@@ -91,7 +91,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L91" title="All 2 branches covered.">			w2 = e -&gt; e &lt; vvEdgeThreshold ? w0.weight(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];</span>
 		}
 <span class="fc bfc" id="L93" title="All 2 branches covered.">		for (int v : range(n))</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">			if (minAdjacentEdge[v] == -1)</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">			if (minAdjacentEdge[v] &lt; 0)</span>
 <span class="fc" id="L95">				throw new IllegalArgumentException(&quot;no edge cover exists, vertex with index &quot; + v + &quot; has no edges&quot;);</span>
 
 <span class="fc" id="L97">		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(g2, w2);</span>

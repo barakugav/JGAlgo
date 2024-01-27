@@ -97,7 +97,7 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 <span class="fc" id="L97">		Arrays.fill(vToDepthsIdx, -1);</span>
 <span class="fc bfc" id="L98" title="All 2 branches covered.">		for (int i : range(sequenceLength)) {</span>
 <span class="fc" id="L99">			int v = vs[i];</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">			if (vToDepthsIdx[v] == -1)</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">			if (vToDepthsIdx[v] &lt; 0)</span>
 <span class="fc" id="L101">				vToDepthsIdx[v] = i;</span>
 <span class="fc" id="L102">		}</span>
 

@@ -706,7 +706,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L706">			int idx = idxToId.size();</span>
 <span class="fc" id="L707">			idxToId.add(id);</span>
 <span class="fc" id="L708">			int oldVal = idToIdx.put(id, idx);</span>
-<span class="pc bnc" id="L709" title="All 2 branches missed.">			assert oldVal == -1;</span>
+<span class="pc bnc" id="L709" title="All 2 branches missed.">			assert oldVal &lt; 0;</span>
 <span class="fc" id="L710">		}</span>
 
 		void remove(K id) {
@@ -749,7 +749,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 		@Override
 		public int idToIndex(K id) {
 <span class="fc" id="L751">			int idx = idToIdx.getInt(id);</span>
-<span class="fc bfc" id="L752" title="All 2 branches covered.">			if (idx == -1) {</span>
+<span class="fc bfc" id="L752" title="All 2 branches covered.">			if (idx &lt; 0) {</span>
 <span class="fc bfc" id="L753" title="All 2 branches covered.">				if (isEdges) {</span>
 <span class="fc" id="L754">					throw NoSuchEdgeException.ofEdge(id);</span>
 				} else {

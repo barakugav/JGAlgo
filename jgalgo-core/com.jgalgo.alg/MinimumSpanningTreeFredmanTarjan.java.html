@@ -120,7 +120,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 
 <span class="fc" id="L121">			Arrays.fill(vTree, 0, ni, -1);</span>
 <span class="fc bfc" id="L122" title="All 2 branches covered.">			for (int r : range(ni)) {</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">				if (vTree[r] != -1)</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">				if (vTree[r] &gt;= 0)</span>
 <span class="fc" id="L124">					continue;</span>
 
 <span class="fc" id="L126">				int treeSize = 0;</span>
@@ -132,7 +132,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 <span class="fc" id="L132">					vHeapElm[U] = null;</span>
 
 					// decrease edges keys if a better one is found
-<span class="fc bfc" id="L135" title="All 2 branches covered.">					for (int u = vListBegin[U]; u != -1; u = vListNext[u]) {</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">					for (int u = vListBegin[U]; u &gt;= 0; u = vListNext[u]) {</span>
 						// for each vertex in the super vertex, iterate over all edges
 <span class="fc bfc" id="L137" title="All 2 branches covered.">						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L138">							int e = eit.nextInt();</span>
@@ -173,7 +173,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 					// add lightest edge to MST
 <span class="fc" id="L174">					mst.add(e);</span>
 <span class="fc" id="L175">					U = v;</span>
-<span class="fc bfc" id="L176" title="All 2 branches covered.">					if (vt != -1) {</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">					if (vt &gt;= 0) {</span>
 						// connected to an existing tree, take it's super vertex label for next iter
 <span class="fc" id="L178">						connectedTree = VNext[vt];</span>
 <span class="fc" id="L179">						break;</span>
@@ -182,7 +182,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 
 				int newV; // super vertex label for next iteration for all vertices in tree
 				int listEnd; // last vertex in super vertex vertices list
-<span class="fc bfc" id="L185" title="All 2 branches covered.">				if (connectedTree != -1) {</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">				if (connectedTree &gt;= 0) {</span>
 <span class="fc" id="L186">					newV = connectedTree;</span>
 <span class="fc" id="L187">					listEnd = vListEndNext[connectedTree];</span>
 				} else {
@@ -195,41 +195,42 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 <span class="fc" id="L195">					v = treeVertices[treeSize];</span>
 <span class="fc" id="L196">					VNext[v] = newV;</span>
 
-<span class="fc bfc" id="L198" title="All 2 branches covered.">					if (listEnd == -1)</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">					if (listEnd &lt; 0) {</span>
 						// set new super vertex vertices list begin
 <span class="fc" id="L200">						vListBeginNext[newV] = vListBegin[v];</span>
-					else
+					} else {
 						// concatenate current vertex vertices list with the prev one
 <span class="fc" id="L203">						vListNext[listEnd] = vListBegin[v];</span>
+					}
 				}
 				// set new super vertex vertices list end
-<span class="fc" id="L206">				vListEndNext[newV] = listEnd;</span>
+<span class="fc" id="L207">				vListEndNext[newV] = listEnd;</span>
 
-<span class="fc" id="L208">				Arrays.fill(vHeapElm, 0, ni, null);</span>
-<span class="fc" id="L209">				heap.clear();</span>
-<span class="fc" id="L210">				heapSize = 0;</span>
-<span class="fc" id="L211">			}</span>
+<span class="fc" id="L209">				Arrays.fill(vHeapElm, 0, ni, null);</span>
+<span class="fc" id="L210">				heap.clear();</span>
+<span class="fc" id="L211">				heapSize = 0;</span>
+<span class="fc" id="L212">			}</span>
 
 			// assign new super vertices' vertices list
-<span class="fc" id="L214">			int[] temp = vListBegin;</span>
-<span class="fc" id="L215">			vListBegin = vListBeginNext;</span>
-<span class="fc" id="L216">			vListBeginNext = temp;</span>
-<span class="fc" id="L217">			temp = vListEnd;</span>
-<span class="fc" id="L218">			vListEnd = vListEndNext;</span>
-<span class="fc" id="L219">			vListEndNext = temp;</span>
+<span class="fc" id="L215">			int[] temp = vListBegin;</span>
+<span class="fc" id="L216">			vListBegin = vListBeginNext;</span>
+<span class="fc" id="L217">			vListBeginNext = temp;</span>
+<span class="fc" id="L218">			temp = vListEnd;</span>
+<span class="fc" id="L219">			vListEnd = vListEndNext;</span>
+<span class="fc" id="L220">			vListEndNext = temp;</span>
 
 			// If we failed to contract the graph, we are done
-<span class="fc bfc" id="L222" title="All 2 branches covered.">			if (ni == niNext)</span>
-<span class="fc" id="L223">				break;</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">			if (ni == niNext)</span>
+<span class="fc" id="L224">				break;</span>
 
 			// update super vertex labels for all vertices
-<span class="fc bfc" id="L226" title="All 2 branches covered.">			for (int v : range(n))</span>
-<span class="fc" id="L227">				V[v] = VNext[V[v]];</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">			for (int v : range(n))</span>
+<span class="fc" id="L228">				V[v] = VNext[V[v]];</span>
 
 		}
 
-<span class="fc" id="L231">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
-<span class="fc" id="L232">		return new MinimumSpanningTrees.IndexResult(mstSet);</span>
+<span class="fc" id="L232">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
+<span class="fc" id="L233">		return new MinimumSpanningTrees.IndexResult(mstSet);</span>
 	}
 
 }

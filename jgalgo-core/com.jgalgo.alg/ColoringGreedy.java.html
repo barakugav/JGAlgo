@@ -70,7 +70,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 <span class="fc" id="L70">				eit.nextInt();</span>
 <span class="fc" id="L71">				int v = eit.targetInt();</span>
 <span class="fc" id="L72">				int c = colors[v];</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">				if (c != -1)</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">				if (c &gt;= 0)</span>
 <span class="fc" id="L74">					usedColors.set(c);</span>
 <span class="fc" id="L75">			}</span>
 <span class="fc" id="L76">			int color = colors[u] = usedColors.nextClearBit(0);</span>

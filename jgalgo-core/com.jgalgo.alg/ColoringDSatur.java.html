@@ -91,7 +91,7 @@ class ColoringDSatur implements ColoringAlgoBase {
 <span class="fc bfc" id="L91" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L92">				eit.nextInt();</span>
 <span class="fc" id="L93">				int v = eit.targetInt();</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">				if (colors[v] == -1) { /* v is uncolored */</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">				if (colors[v] &lt; 0) { /* v is uncolored */</span>
 <span class="fc" id="L95">					LongIntReferenceableHeap.Ref ref = refs[v];</span>
 <span class="fc" id="L96">					long key = ref.key();</span>
 <span class="fc" id="L97">					int saturationDegree = heapKeyToSaturationDegree(key);</span>

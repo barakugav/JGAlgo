@@ -80,6 +80,9 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
  * By default, the edges union is by id. Use {@link #edgeUnionByEndpoints()} and {@link #edgeUnionById()} to change the
  * union of edges.
  *
+ * &lt;p&gt;
+ * Weights are not copied by default. Use {@link #copyWeights(boolean, boolean)} to copy the vertices/edges weights.
+ *
  * @param  &lt;V&gt; the vertices type
  * @param  &lt;E&gt; the edges type
  * @author     Barak Ugav
@@ -88,7 +91,7 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 
 	private final GraphFactory&lt;V, E&gt; factory;
 	private final List&lt;Graph&lt;V, E&gt;&gt; graphs;
-<span class="fc" id="L91">	private boolean unionById = true;</span>
+<span class="fc" id="L94">	private boolean unionById = true;</span>
 	private boolean verticesWeights, edgesWeights;
 	private Set&lt;String&gt; verticesWeightsKeys, edgesWeightsKeys;
 
@@ -96,8 +99,8 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 * Create a new union graph generator that will use the default graph factory.
 	 */
 	public UnionGraphGenerator() {
-<span class="fc" id="L99">		this(GraphFactory.undirected());</span>
-<span class="fc" id="L100">	}</span>
+<span class="fc" id="L102">		this(GraphFactory.undirected());</span>
+<span class="fc" id="L103">	}</span>
 
 	/**
 	 * Create a new union graph generator that will use the given graph factory.
@@ -111,10 +114,10 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 *
 	 * @param factory the graph factory that will be used to create the generated graph(s)
 	 */
-<span class="fc" id="L114">	public UnionGraphGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
-<span class="fc" id="L115">		this.factory = Objects.requireNonNull(factory);</span>
-<span class="fc" id="L116">		graphs = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L117">	}</span>
+<span class="fc" id="L117">	public UnionGraphGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
+<span class="fc" id="L118">		this.factory = Objects.requireNonNull(factory);</span>
+<span class="fc" id="L119">		graphs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L120">	}</span>
 
 	/**
 	 * Get the graph factory that will be used to create the generated graph(s).
@@ -134,7 +137,7 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 * @return the graph factory that will be used to create the generated graph(s)
 	 */
 	public GraphFactory&lt;V, E&gt; graphFactory() {
-<span class="fc" id="L137">		return factory;</span>
+<span class="fc" id="L140">		return factory;</span>
 	}
 
 	/**
@@ -153,13 +156,13 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 *                                      directionality
 	 */
 	public UnionGraphGenerator&lt;V, E&gt; graphs(Collection&lt;? extends Graph&lt;V, E&gt;&gt; graphs) {
-<span class="fc bfc" id="L156" title="All 2 branches covered.">		if (graphs.size() &lt; 2)</span>
-<span class="fc" id="L157">			throw new IllegalArgumentException(&quot;At least two graphs must be provided&quot;);</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">		if (graphs.stream().map(Graph::isDirected).distinct().count() != 1)</span>
-<span class="fc" id="L159">			throw new IllegalArgumentException(&quot;Input graphs must have the same directionality&quot;);</span>
-<span class="fc" id="L160">		this.graphs.clear();</span>
-<span class="fc" id="L161">		this.graphs.addAll(graphs);</span>
-<span class="fc" id="L162">		return this;</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">		if (graphs.size() &lt; 2)</span>
+<span class="fc" id="L160">			throw new IllegalArgumentException(&quot;At least two graphs must be provided&quot;);</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">		if (graphs.stream().map(Graph::isDirected).distinct().count() != 1)</span>
+<span class="fc" id="L162">			throw new IllegalArgumentException(&quot;Input graphs must have the same directionality&quot;);</span>
+<span class="fc" id="L163">		this.graphs.clear();</span>
+<span class="fc" id="L164">		this.graphs.addAll(graphs);</span>
+<span class="fc" id="L165">		return this;</span>
 	}
 
 	/**
@@ -179,7 +182,7 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 */
 	@SafeVarargs
 	public final UnionGraphGenerator&lt;V, E&gt; graphs(Graph&lt;V, E&gt;... graphs) {
-<span class="fc" id="L182">		return graphs(ObjectList.of(graphs));</span>
+<span class="fc" id="L185">		return graphs(ObjectList.of(graphs));</span>
 	}
 
 	/**
@@ -230,8 +233,8 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 * @return this generator
 	 */
 	public UnionGraphGenerator&lt;V, E&gt; edgeUnionById() {
-<span class="fc" id="L233">		unionById = true;</span>
-<span class="fc" id="L234">		return this;</span>
+<span class="fc" id="L236">		unionById = true;</span>
+<span class="fc" id="L237">		return this;</span>
 	}
 
 	/**
@@ -244,8 +247,9 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 * identifier. If an edge with the same endpoints exists in the union graph, it is not added to the union graph.
 	 *
 	 * &lt;p&gt;
-	 * Self edges may be generated if one of the input graphs have self edges. Parallel edges are never generated when
-	 * union by endpoints is used.
+	 * The input graphs must not contains parallel edges. If one of the input graphs contains parallel edges, an
+	 * exception is thrown during the graph(s) generation. Self edges may be generated if one of the input graphs have
+	 * self edges. Parallel edges are never generated when union by endpoints is used.
 	 *
 	 * &lt;p&gt;
 	 * A call to this method override a previous call to {@link #edgeUnionById()}. By default, the union of edges is by
@@ -254,7 +258,7 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 * &lt;p&gt;
 	 * In the following example two directed graphs are created, and the union graph of the two graphs is generated by
 	 * the edges endpoints. Note that the edge \(A, B\) exists in both graphs, but with different identifiers. In the
-	 * generated graph, the edge \(A, B\) will appear only once, with a newly generated identifier:
+	 * generated graph, the edge \(A, B\) will appear only once, with identifier from the first graph:
 	 *
 	 * &lt;pre&gt; {@code
 	 * Graph&lt;String, Integer&gt; graph1 = Graph.newDirected();
@@ -272,14 +276,17 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 * 		.edgeUnionByEndpoints() // override previous call to edgeUnionById() if have been called
 	 * 		.generate();
 	 * assert Set.of(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;).equals(unionGraph.vertices());
-	 * assert Set.of(0, 1, 2).equals(unionGraph.edges());
+	 * assert Set.of(10, 20, 100).equals(unionGraph.edges());
+	 * assert unionGraph.edgeSource(10).equals(&quot;A&quot;) &amp;&amp; unionGraph.edgeTarget(10).equals(&quot;B&quot;);
+	 * assert unionGraph.edgeSource(20).equals(&quot;A&quot;) &amp;&amp; unionGraph.edgeTarget(20).equals(&quot;C&quot;);
+	 * assert unionGraph.edgeSource(100).equals(&quot;A&quot;) &amp;&amp; unionGraph.edgeTarget(100).equals(&quot;D&quot;);
 	 * }&lt;/pre&gt;
 	 *
 	 * @return this generator
 	 */
 	public UnionGraphGenerator&lt;V, E&gt; edgeUnionByEndpoints() {
-<span class="fc" id="L281">		unionById = false;</span>
-<span class="fc" id="L282">		return this;</span>
+<span class="fc" id="L288">		unionById = false;</span>
+<span class="fc" id="L289">		return this;</span>
 	}
 
 	/**
@@ -351,9 +358,9 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 * @return                 this generator
 	 */
 	public UnionGraphGenerator&lt;V, E&gt; copyWeights(boolean verticesWeights, boolean edgesWeights) {
-<span class="fc" id="L354">		this.verticesWeights = verticesWeights;</span>
-<span class="fc" id="L355">		this.edgesWeights = edgesWeights;</span>
-<span class="fc" id="L356">		return this;</span>
+<span class="fc" id="L361">		this.verticesWeights = verticesWeights;</span>
+<span class="fc" id="L362">		this.edgesWeights = edgesWeights;</span>
+<span class="fc" id="L363">		return this;</span>
 	}
 
 	/**
@@ -369,8 +376,8 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 * @return      this generator
 	 */
 	public UnionGraphGenerator&lt;V, E&gt; verticesWeightsKeys(Set&lt;String&gt; keys) {
-<span class="fc bfc" id="L372" title="All 2 branches covered.">		verticesWeightsKeys = keys == null ? null : new HashSet&lt;&gt;(keys);</span>
-<span class="fc" id="L373">		return this;</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">		verticesWeightsKeys = keys == null ? null : new HashSet&lt;&gt;(keys);</span>
+<span class="fc" id="L380">		return this;</span>
 	}
 
 	/**
@@ -386,226 +393,226 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 * @return      this generator
 	 */
 	public UnionGraphGenerator&lt;V, E&gt; edgesWeightsKeys(Set&lt;String&gt; keys) {
-<span class="fc bfc" id="L389" title="All 2 branches covered.">		edgesWeightsKeys = keys == null ? null : new HashSet&lt;&gt;(keys);</span>
-<span class="fc" id="L390">		return this;</span>
+<span class="fc bfc" id="L396" title="All 2 branches covered.">		edgesWeightsKeys = keys == null ? null : new HashSet&lt;&gt;(keys);</span>
+<span class="fc" id="L397">		return this;</span>
 	}
 
 	@Override
 	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
-<span class="fc bfc" id="L395" title="All 2 branches covered.">		if (graphs.isEmpty())</span>
-<span class="fc" id="L396">			throw new IllegalStateException(&quot;Input graphs not provided&quot;);</span>
+<span class="fc bfc" id="L402" title="All 2 branches covered.">		if (graphs.isEmpty())</span>
+<span class="fc" id="L403">			throw new IllegalStateException(&quot;Input graphs not provided&quot;);</span>
 
 		/* Create a union vertex set, assign a number for each such vertex and remember its origin graph idx */
-<span class="fc" id="L399">		Object2IntMap&lt;V&gt; globalVertexIndexing = new Object2IntOpenHashMap&lt;&gt;(graphs.get(0).vertices().size());</span>
-<span class="fc" id="L400">		globalVertexIndexing.defaultReturnValue(-1);</span>
+<span class="fc" id="L406">		Object2IntMap&lt;V&gt; globalVertexIndexing = new Object2IntOpenHashMap&lt;&gt;(graphs.get(0).vertices().size());</span>
+<span class="fc" id="L407">		globalVertexIndexing.defaultReturnValue(-1);</span>
 
-<span class="fc" id="L402">		final boolean trackGraphsContainingVertices = verticesWeights;</span>
+<span class="fc" id="L409">		final boolean trackGraphsContainingVertices = verticesWeights;</span>
 		List&lt;Bitmap&gt; graphsContainingVertexBitmaps =
-<span class="fc bfc" id="L404" title="All 2 branches covered.">				trackGraphsContainingVertices ? new ArrayList&lt;&gt;(graphs.get(0).vertices().size()) : null;</span>
+<span class="fc bfc" id="L411" title="All 2 branches covered.">				trackGraphsContainingVertices ? new ArrayList&lt;&gt;(graphs.get(0).vertices().size()) : null;</span>
 
-<span class="fc bfc" id="L406" title="All 2 branches covered.">		for (int graphIdx : range(graphs.size())) {</span>
-<span class="fc" id="L407">			Graph&lt;V, E&gt; graph = graphs.get(graphIdx);</span>
-<span class="fc bfc" id="L408" title="All 2 branches covered.">			for (V v : graph.vertices()) {</span>
-<span class="fc" id="L409">				int vGlobalIdx = globalVertexIndexing.size();</span>
-<span class="fc" id="L410">				int existingIdx = globalVertexIndexing.putIfAbsent(v, vGlobalIdx);</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">		for (int graphIdx : range(graphs.size())) {</span>
+<span class="fc" id="L414">			Graph&lt;V, E&gt; graph = graphs.get(graphIdx);</span>
+<span class="fc bfc" id="L415" title="All 2 branches covered.">			for (V v : graph.vertices()) {</span>
+<span class="fc" id="L416">				int vGlobalIdx = globalVertexIndexing.size();</span>
+<span class="fc" id="L417">				int existingIdx = globalVertexIndexing.putIfAbsent(v, vGlobalIdx);</span>
 
-<span class="fc bfc" id="L412" title="All 2 branches covered.">				if (trackGraphsContainingVertices) {</span>
-<span class="fc bfc" id="L413" title="All 2 branches covered.">					if (existingIdx &gt;= 0)</span>
-<span class="fc" id="L414">						vGlobalIdx = existingIdx;</span>
-<span class="fc bfc" id="L415" title="All 2 branches covered.">					if (existingIdx &lt; 0)</span>
-<span class="fc" id="L416">						graphsContainingVertexBitmaps.add(new Bitmap(graphs.size()));</span>
-<span class="fc" id="L417">					graphsContainingVertexBitmaps.get(vGlobalIdx).set(graphIdx);</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">				if (trackGraphsContainingVertices) {</span>
+<span class="fc bfc" id="L420" title="All 2 branches covered.">					if (existingIdx &gt;= 0)</span>
+<span class="fc" id="L421">						vGlobalIdx = existingIdx;</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">					if (existingIdx &lt; 0)</span>
+<span class="fc" id="L423">						graphsContainingVertexBitmaps.add(new Bitmap(graphs.size()));</span>
+<span class="fc" id="L424">					graphsContainingVertexBitmaps.get(vGlobalIdx).set(graphIdx);</span>
 				}
-<span class="fc" id="L419">			}</span>
-<span class="fc" id="L420">		}</span>
-<span class="fc" id="L421">		Set&lt;V&gt; unionVertices = globalVertexIndexing.keySet();</span>
+<span class="fc" id="L426">			}</span>
+<span class="fc" id="L427">		}</span>
+<span class="fc" id="L428">		Set&lt;V&gt; unionVertices = globalVertexIndexing.keySet();</span>
 
-<span class="fc" id="L423">		final boolean directed = graphs.get(0).isDirected();</span>
-<span class="fc" id="L424">		factory.setDirected(directed);</span>
+<span class="fc" id="L430">		final boolean directed = graphs.get(0).isDirected();</span>
+<span class="fc" id="L431">		factory.setDirected(directed);</span>
 
 		/* Determine if there will be self edges in the union graph */
-<span class="fc bfc" id="L427" title="All 4 branches covered.">		if (graphs.stream().anyMatch(g -&gt; !Graphs.selfEdges(g).isEmpty()))</span>
-<span class="fc" id="L428">			factory.allowSelfEdges();</span>
+<span class="fc bfc" id="L434" title="All 4 branches covered.">		if (graphs.stream().anyMatch(g -&gt; !Graphs.selfEdges(g).isEmpty()))</span>
+<span class="fc" id="L435">			factory.allowSelfEdges();</span>
 
 		/* Determine if there will be parallel edges in the union graph */
-<span class="fc bfc" id="L431" title="All 2 branches covered.">		if (unionById) {</span>
-<span class="fc" id="L432">			int[] lastVisit = new int[unionVertices.size()];</span>
-<span class="fc" id="L433">			int nextVisitIdx = 1;</span>
-<span class="fc" id="L434">			boolean parallelEdges = false;</span>
-<span class="fc bfc" id="L435" title="All 2 branches covered.">			parallelEdgesCheck: for (V u : unionVertices) {</span>
-<span class="fc" id="L436">				final int visitIdx = nextVisitIdx++;</span>
+<span class="fc bfc" id="L438" title="All 2 branches covered.">		if (unionById) {</span>
+<span class="fc" id="L439">			int[] lastVisit = new int[unionVertices.size()];</span>
+<span class="fc" id="L440">			int nextVisitIdx = 1;</span>
+<span class="fc" id="L441">			boolean parallelEdges = false;</span>
+<span class="fc bfc" id="L442" title="All 2 branches covered.">			parallelEdgesCheck: for (V u : unionVertices) {</span>
+<span class="fc" id="L443">				final int visitIdx = nextVisitIdx++;</span>
 				/* check all edges (u, _) in all the graphs */
-<span class="fc bfc" id="L438" title="All 2 branches covered.">				for (Graph&lt;V, E&gt; g : graphs) {</span>
-<span class="fc" id="L439">					IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L440">					int uIdx = viMap.idToIndexIfExist(u);</span>
-<span class="fc bfc" id="L441" title="All 2 branches covered.">					if (uIdx &lt; 0)</span>
-<span class="fc" id="L442">						continue; /* g does not contain u */</span>
-<span class="fc" id="L443">					IndexGraph ig = g.indexGraph();</span>
-<span class="fc bfc" id="L444" title="All 2 branches covered.">					for (IEdgeIter eit = ig.outEdges(uIdx).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L445">						eit.nextInt();</span>
-<span class="fc" id="L446">						V v = viMap.indexToId(eit.targetInt());</span>
-<span class="fc" id="L447">						int vGlobalIdx = globalVertexIndexing.getInt(v);</span>
-<span class="fc bfc" id="L448" title="All 2 branches covered.">						if (lastVisit[vGlobalIdx] == visitIdx) {</span>
-<span class="fc" id="L449">							parallelEdges = true;</span>
-<span class="fc" id="L450">							break parallelEdgesCheck;</span>
+<span class="fc bfc" id="L445" title="All 2 branches covered.">				for (Graph&lt;V, E&gt; g : graphs) {</span>
+<span class="fc" id="L446">					IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L447">					int uIdx = viMap.idToIndexIfExist(u);</span>
+<span class="fc bfc" id="L448" title="All 2 branches covered.">					if (uIdx &lt; 0)</span>
+<span class="fc" id="L449">						continue; /* g does not contain u */</span>
+<span class="fc" id="L450">					IndexGraph ig = g.indexGraph();</span>
+<span class="fc bfc" id="L451" title="All 2 branches covered.">					for (IEdgeIter eit = ig.outEdges(uIdx).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L452">						eit.nextInt();</span>
+<span class="fc" id="L453">						V v = viMap.indexToId(eit.targetInt());</span>
+<span class="fc" id="L454">						int vGlobalIdx = globalVertexIndexing.getInt(v);</span>
+<span class="fc bfc" id="L455" title="All 2 branches covered.">						if (lastVisit[vGlobalIdx] == visitIdx) {</span>
+<span class="fc" id="L456">							parallelEdges = true;</span>
+<span class="fc" id="L457">							break parallelEdgesCheck;</span>
 						}
-<span class="fc" id="L452">						lastVisit[vGlobalIdx] = visitIdx;</span>
-<span class="fc" id="L453">					}</span>
-<span class="fc" id="L454">				}</span>
-<span class="fc" id="L455">			}</span>
-<span class="fc bfc" id="L456" title="All 2 branches covered.">			if (parallelEdges)</span>
-<span class="fc" id="L457">				factory.allowParallelEdges();</span>
+<span class="fc" id="L459">						lastVisit[vGlobalIdx] = visitIdx;</span>
+<span class="fc" id="L460">					}</span>
+<span class="fc" id="L461">				}</span>
+<span class="fc" id="L462">			}</span>
+<span class="fc bfc" id="L463" title="All 2 branches covered.">			if (parallelEdges)</span>
+<span class="fc" id="L464">				factory.allowParallelEdges();</span>
 		}
 
-<span class="fc" id="L460">		GraphBuilder&lt;V, E&gt; union = factory.newBuilder();</span>
-<span class="fc bfc" id="L461" title="All 2 branches covered.">		List&lt;WeightsCopier&lt;V&gt;&gt; verticesWeightsCopiers = verticesWeights ? createVerticesWeights(union) : null;</span>
-<span class="fc bfc" id="L462" title="All 2 branches covered.">		List&lt;WeightsCopier&lt;E&gt;&gt; edgesWeightsCopiers = edgesWeights ? createEdgesWeights(union) : null;</span>
+<span class="fc" id="L467">		GraphBuilder&lt;V, E&gt; union = factory.newBuilder();</span>
+<span class="fc bfc" id="L468" title="All 2 branches covered.">		List&lt;WeightsCopier&lt;V&gt;&gt; verticesWeightsCopiers = verticesWeights ? createVerticesWeights(union) : null;</span>
+<span class="fc bfc" id="L469" title="All 2 branches covered.">		List&lt;WeightsCopier&lt;E&gt;&gt; edgesWeightsCopiers = edgesWeights ? createEdgesWeights(union) : null;</span>
 
 		/* Add all vertices to the union graph */
-<span class="fc" id="L465">		union.ensureVertexCapacity(unionVertices.size());</span>
-<span class="fc bfc" id="L466" title="All 2 branches covered.">		for (var entry : Object2IntMaps.fastIterable(globalVertexIndexing)) {</span>
-<span class="fc" id="L467">			V v = entry.getKey();</span>
-<span class="fc" id="L468">			union.addVertex(v);</span>
+<span class="fc" id="L472">		union.ensureVertexCapacity(unionVertices.size());</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">		for (var entry : Object2IntMaps.fastIterable(globalVertexIndexing)) {</span>
+<span class="fc" id="L474">			V v = entry.getKey();</span>
+<span class="fc" id="L475">			union.addVertex(v);</span>
 
-<span class="fc bfc" id="L470" title="All 2 branches covered.">			if (verticesWeights) {</span>
-<span class="fc" id="L471">				int vGlobalIdx = entry.getIntValue();</span>
-<span class="fc" id="L472">				Bitmap graphsContainingVertex = graphsContainingVertexBitmaps.get(vGlobalIdx);</span>
-<span class="fc bfc" id="L473" title="All 2 branches covered.">				for (WeightsCopier&lt;V&gt; weightsCopier : verticesWeightsCopiers) {</span>
-<span class="fc" id="L474">					OptionalInt graphIdx = weightsCopier.copySrcIdx(graphsContainingVertex);</span>
-<span class="fc bfc" id="L475" title="All 2 branches covered.">					if (graphIdx.isPresent())</span>
-<span class="fc" id="L476">						weightsCopier.copy(v, v, graphIdx.getAsInt());</span>
-<span class="fc" id="L477">				}</span>
+<span class="fc bfc" id="L477" title="All 2 branches covered.">			if (verticesWeights) {</span>
+<span class="fc" id="L478">				int vGlobalIdx = entry.getIntValue();</span>
+<span class="fc" id="L479">				Bitmap graphsContainingVertex = graphsContainingVertexBitmaps.get(vGlobalIdx);</span>
+<span class="fc bfc" id="L480" title="All 2 branches covered.">				for (WeightsCopier&lt;V&gt; weightsCopier : verticesWeightsCopiers) {</span>
+<span class="fc" id="L481">					OptionalInt graphIdx = weightsCopier.copySrcIdx(graphsContainingVertex);</span>
+<span class="fc bfc" id="L482" title="All 2 branches covered.">					if (graphIdx.isPresent())</span>
+<span class="fc" id="L483">						weightsCopier.copy(v, v, graphIdx.getAsInt());</span>
+<span class="fc" id="L484">				}</span>
 			}
-<span class="fc" id="L479">		}</span>
+<span class="fc" id="L486">		}</span>
 
-<span class="fc" id="L481">		ToLongBiFunction&lt;V, V&gt; endpointsFunc = (u, v) -&gt; {</span>
-<span class="fc" id="L482">			int uGlobalIdx = globalVertexIndexing.getInt(u), vGlobalIdx = globalVertexIndexing.getInt(v);</span>
-<span class="fc bfc" id="L483" title="All 4 branches covered.">			if (!directed &amp;&amp; uGlobalIdx &gt; vGlobalIdx) {</span>
-<span class="fc" id="L484">				int temp = uGlobalIdx;</span>
-<span class="fc" id="L485">				uGlobalIdx = vGlobalIdx;</span>
-<span class="fc" id="L486">				vGlobalIdx = temp;</span>
+<span class="fc" id="L488">		ToLongBiFunction&lt;V, V&gt; endpointsFunc = (u, v) -&gt; {</span>
+<span class="fc" id="L489">			int uGlobalIdx = globalVertexIndexing.getInt(u), vGlobalIdx = globalVertexIndexing.getInt(v);</span>
+<span class="fc bfc" id="L490" title="All 4 branches covered.">			if (!directed &amp;&amp; uGlobalIdx &gt; vGlobalIdx) {</span>
+<span class="fc" id="L491">				int temp = uGlobalIdx;</span>
+<span class="fc" id="L492">				uGlobalIdx = vGlobalIdx;</span>
+<span class="fc" id="L493">				vGlobalIdx = temp;</span>
 			}
-<span class="fc" id="L488">			return JGAlgoUtils.longPack(uGlobalIdx, vGlobalIdx);</span>
+<span class="fc" id="L495">			return JGAlgoUtils.longPack(uGlobalIdx, vGlobalIdx);</span>
 		};
 
 		/* Add all edges to the union graph */
-<span class="fc bfc" id="L492" title="All 2 branches covered.">		if (unionById) {</span>
-<span class="fc" id="L493">			Object2IntMap&lt;E&gt; globalEdgeIndexing = new Object2IntOpenHashMap&lt;&gt;(graphs.get(0).edges().size());</span>
-<span class="fc" id="L494">			globalEdgeIndexing.defaultReturnValue(-1);</span>
-<span class="fc" id="L495">			LongList globalEdgeEndpoints = new LongArrayList(graphs.get(0).edges().size());</span>
+<span class="fc bfc" id="L499" title="All 2 branches covered.">		if (unionById) {</span>
+<span class="fc" id="L500">			Object2IntMap&lt;E&gt; globalEdgeIndexing = new Object2IntOpenHashMap&lt;&gt;(graphs.get(0).edges().size());</span>
+<span class="fc" id="L501">			globalEdgeIndexing.defaultReturnValue(-1);</span>
+<span class="fc" id="L502">			LongList globalEdgeEndpoints = new LongArrayList(graphs.get(0).edges().size());</span>
 
-<span class="fc" id="L497">			final boolean trackGraphsContainingEdges = edgesWeights;</span>
+<span class="fc" id="L504">			final boolean trackGraphsContainingEdges = edgesWeights;</span>
 			List&lt;Bitmap&gt; graphsContainingEdgeBitmaps =
-<span class="fc bfc" id="L499" title="All 2 branches covered.">					trackGraphsContainingEdges ? new ArrayList&lt;&gt;(graphs.get(0).edges().size()) : null;</span>
+<span class="fc bfc" id="L506" title="All 2 branches covered.">					trackGraphsContainingEdges ? new ArrayList&lt;&gt;(graphs.get(0).edges().size()) : null;</span>
 
-<span class="fc bfc" id="L501" title="All 2 branches covered.">			for (int graphIdx : range(graphs.size())) {</span>
-<span class="fc" id="L502">				Graph&lt;V, E&gt; graph = graphs.get(graphIdx);</span>
-<span class="fc" id="L503">				IndexGraph ig = graph.indexGraph();</span>
-<span class="fc" id="L504">				IndexIdMap&lt;V&gt; viMap = graph.indexGraphVerticesMap();</span>
-<span class="fc" id="L505">				IndexIdMap&lt;E&gt; eiMap = graph.indexGraphEdgesMap();</span>
+<span class="fc bfc" id="L508" title="All 2 branches covered.">			for (int graphIdx : range(graphs.size())) {</span>
+<span class="fc" id="L509">				Graph&lt;V, E&gt; graph = graphs.get(graphIdx);</span>
+<span class="fc" id="L510">				IndexGraph ig = graph.indexGraph();</span>
+<span class="fc" id="L511">				IndexIdMap&lt;V&gt; viMap = graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L512">				IndexIdMap&lt;E&gt; eiMap = graph.indexGraphEdgesMap();</span>
 
-<span class="fc bfc" id="L507" title="All 2 branches covered.">				for (int eIdx : range(ig.edges().size())) {</span>
-<span class="fc" id="L508">					int uIdx = ig.edgeSource(eIdx), vIdx = ig.edgeTarget(eIdx);</span>
-<span class="fc" id="L509">					V u = viMap.indexToId(uIdx), v = viMap.indexToId(vIdx);</span>
-<span class="fc" id="L510">					E e = eiMap.indexToId(eIdx);</span>
+<span class="fc bfc" id="L514" title="All 2 branches covered.">				for (int eIdx : range(ig.edges().size())) {</span>
+<span class="fc" id="L515">					int uIdx = ig.edgeSource(eIdx), vIdx = ig.edgeTarget(eIdx);</span>
+<span class="fc" id="L516">					V u = viMap.indexToId(uIdx), v = viMap.indexToId(vIdx);</span>
+<span class="fc" id="L517">					E e = eiMap.indexToId(eIdx);</span>
 
-<span class="fc" id="L512">					long endpoints = endpointsFunc.applyAsLong(u, v);</span>
-<span class="fc" id="L513">					int eGlobalId = globalEdgeIndexing.size();</span>
-<span class="fc" id="L514">					int existingIdx = globalEdgeIndexing.putIfAbsent(e, eGlobalId);</span>
-<span class="fc bfc" id="L515" title="All 2 branches covered.">					if (existingIdx &lt; 0) {</span>
-<span class="fc" id="L516">						union.addEdge(u, v, e);</span>
-<span class="fc" id="L517">						globalEdgeEndpoints.add(endpoints);</span>
+<span class="fc" id="L519">					long endpoints = endpointsFunc.applyAsLong(u, v);</span>
+<span class="fc" id="L520">					int eGlobalId = globalEdgeIndexing.size();</span>
+<span class="fc" id="L521">					int existingIdx = globalEdgeIndexing.putIfAbsent(e, eGlobalId);</span>
+<span class="fc bfc" id="L522" title="All 2 branches covered.">					if (existingIdx &lt; 0) {</span>
+<span class="fc" id="L523">						union.addEdge(u, v, e);</span>
+<span class="fc" id="L524">						globalEdgeEndpoints.add(endpoints);</span>
 					} else {
-<span class="fc bfc" id="L519" title="All 2 branches covered.">						if (globalEdgeEndpoints.getLong(existingIdx) != endpoints)</span>
-<span class="fc" id="L520">							throw new IllegalArgumentException(</span>
+<span class="fc bfc" id="L526" title="All 2 branches covered.">						if (globalEdgeEndpoints.getLong(existingIdx) != endpoints)</span>
+<span class="fc" id="L527">							throw new IllegalArgumentException(</span>
 									&quot;Input graphs have the same edge with different endpoints&quot;);
 					}
-<span class="fc bfc" id="L523" title="All 2 branches covered.">					if (trackGraphsContainingEdges) {</span>
-<span class="fc bfc" id="L524" title="All 2 branches covered.">						if (existingIdx &gt;= 0)</span>
-<span class="fc" id="L525">							eGlobalId = existingIdx;</span>
-<span class="fc bfc" id="L526" title="All 2 branches covered.">						if (existingIdx &lt; 0)</span>
-<span class="fc" id="L527">							graphsContainingEdgeBitmaps.add(new Bitmap(graphs.size()));</span>
-<span class="fc" id="L528">						graphsContainingEdgeBitmaps.get(eGlobalId).set(graphIdx);</span>
+<span class="fc bfc" id="L530" title="All 2 branches covered.">					if (trackGraphsContainingEdges) {</span>
+<span class="fc bfc" id="L531" title="All 2 branches covered.">						if (existingIdx &gt;= 0)</span>
+<span class="fc" id="L532">							eGlobalId = existingIdx;</span>
+<span class="fc bfc" id="L533" title="All 2 branches covered.">						if (existingIdx &lt; 0)</span>
+<span class="fc" id="L534">							graphsContainingEdgeBitmaps.add(new Bitmap(graphs.size()));</span>
+<span class="fc" id="L535">						graphsContainingEdgeBitmaps.get(eGlobalId).set(graphIdx);</span>
 					}
-<span class="fc" id="L530">				}</span>
-<span class="fc" id="L531">			}</span>
+<span class="fc" id="L537">				}</span>
+<span class="fc" id="L538">			}</span>
 
-<span class="fc bfc" id="L533" title="All 2 branches covered.">			if (edgesWeights) {</span>
-<span class="fc bfc" id="L534" title="All 2 branches covered.">				for (var entry : Object2IntMaps.fastIterable(globalEdgeIndexing)) {</span>
-<span class="fc" id="L535">					E e = entry.getKey();</span>
-<span class="fc" id="L536">					int eGlobalIdx = entry.getIntValue();</span>
-<span class="fc" id="L537">					Bitmap graphsContainingEdge = graphsContainingEdgeBitmaps.get(eGlobalIdx);</span>
-<span class="fc bfc" id="L538" title="All 2 branches covered.">					for (WeightsCopier&lt;E&gt; weightsCopier : edgesWeightsCopiers) {</span>
-<span class="fc" id="L539">						OptionalInt graphIdx = weightsCopier.copySrcIdx(graphsContainingEdge);</span>
-<span class="fc bfc" id="L540" title="All 2 branches covered.">						if (graphIdx.isPresent())</span>
-<span class="fc" id="L541">							weightsCopier.copy(e, e, graphIdx.getAsInt());</span>
-<span class="fc" id="L542">					}</span>
-<span class="fc" id="L543">				}</span>
+<span class="fc bfc" id="L540" title="All 2 branches covered.">			if (edgesWeights) {</span>
+<span class="fc bfc" id="L541" title="All 2 branches covered.">				for (var entry : Object2IntMaps.fastIterable(globalEdgeIndexing)) {</span>
+<span class="fc" id="L542">					E e = entry.getKey();</span>
+<span class="fc" id="L543">					int eGlobalIdx = entry.getIntValue();</span>
+<span class="fc" id="L544">					Bitmap graphsContainingEdge = graphsContainingEdgeBitmaps.get(eGlobalIdx);</span>
+<span class="fc bfc" id="L545" title="All 2 branches covered.">					for (WeightsCopier&lt;E&gt; weightsCopier : edgesWeightsCopiers) {</span>
+<span class="fc" id="L546">						OptionalInt graphIdx = weightsCopier.copySrcIdx(graphsContainingEdge);</span>
+<span class="fc bfc" id="L547" title="All 2 branches covered.">						if (graphIdx.isPresent())</span>
+<span class="fc" id="L548">							weightsCopier.copy(e, e, graphIdx.getAsInt());</span>
+<span class="fc" id="L549">					}</span>
+<span class="fc" id="L550">				}</span>
 			}
 
-<span class="fc" id="L546">		} else { /* union by endpoints */</span>
-<span class="fc bfc" id="L547" title="All 2 branches covered.">			if (graphs.stream().anyMatch(Graphs::containsParallelEdges))</span>
-<span class="fc" id="L548">				throw new IllegalArgumentException(</span>
+<span class="fc" id="L553">		} else { /* union by endpoints */</span>
+<span class="fc bfc" id="L554" title="All 2 branches covered.">			if (graphs.stream().anyMatch(Graphs::containsParallelEdges))</span>
+<span class="fc" id="L555">				throw new IllegalArgumentException(</span>
 						&quot;Cannot union by endpoints when input graphs contain parallel edges&quot;);
 
-<span class="fc" id="L551">			Long2IntMap globalEdgeIndexing = new Long2IntOpenHashMap(graphs.get(0).edges().size());</span>
-<span class="fc" id="L552">			globalEdgeIndexing.defaultReturnValue(-1);</span>
+<span class="fc" id="L558">			Long2IntMap globalEdgeIndexing = new Long2IntOpenHashMap(graphs.get(0).edges().size());</span>
+<span class="fc" id="L559">			globalEdgeIndexing.defaultReturnValue(-1);</span>
 
-<span class="fc" id="L554">			final boolean tackEdgeIdentifiers = edgesWeights;</span>
+<span class="fc" id="L561">			final boolean tackEdgeIdentifiers = edgesWeights;</span>
 			List&lt;E[]&gt; globalIdxToIdentifiers =
-<span class="fc bfc" id="L556" title="All 2 branches covered.">					tackEdgeIdentifiers ? new ArrayList&lt;&gt;(graphs.get(0).edges().size()) : null;</span>
+<span class="fc bfc" id="L563" title="All 2 branches covered.">					tackEdgeIdentifiers ? new ArrayList&lt;&gt;(graphs.get(0).edges().size()) : null;</span>
 
-<span class="fc bfc" id="L558" title="All 2 branches covered.">			for (int graphIdx : range(graphs.size())) {</span>
-<span class="fc" id="L559">				Graph&lt;V, E&gt; graph = graphs.get(graphIdx);</span>
-<span class="fc" id="L560">				IndexGraph ig = graph.indexGraph();</span>
-<span class="fc" id="L561">				IndexIdMap&lt;V&gt; viMap = graph.indexGraphVerticesMap();</span>
-<span class="fc" id="L562">				IndexIdMap&lt;E&gt; eiMap = graph.indexGraphEdgesMap();</span>
+<span class="fc bfc" id="L565" title="All 2 branches covered.">			for (int graphIdx : range(graphs.size())) {</span>
+<span class="fc" id="L566">				Graph&lt;V, E&gt; graph = graphs.get(graphIdx);</span>
+<span class="fc" id="L567">				IndexGraph ig = graph.indexGraph();</span>
+<span class="fc" id="L568">				IndexIdMap&lt;V&gt; viMap = graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L569">				IndexIdMap&lt;E&gt; eiMap = graph.indexGraphEdgesMap();</span>
 
-<span class="fc bfc" id="L564" title="All 2 branches covered.">				for (int eIdx : range(ig.edges().size())) {</span>
-<span class="fc" id="L565">					int uIdx = ig.edgeSource(eIdx), vIdx = ig.edgeTarget(eIdx);</span>
-<span class="fc" id="L566">					V u = viMap.indexToId(uIdx), v = viMap.indexToId(vIdx);</span>
-<span class="fc" id="L567">					long endpoints = endpointsFunc.applyAsLong(u, v);</span>
-<span class="fc" id="L568">					int eGlobalId = globalEdgeIndexing.size();</span>
-<span class="fc" id="L569">					int existingIdx = globalEdgeIndexing.putIfAbsent(endpoints, eGlobalId);</span>
-<span class="fc" id="L570">					E e = null;</span>
+<span class="fc bfc" id="L571" title="All 2 branches covered.">				for (int eIdx : range(ig.edges().size())) {</span>
+<span class="fc" id="L572">					int uIdx = ig.edgeSource(eIdx), vIdx = ig.edgeTarget(eIdx);</span>
+<span class="fc" id="L573">					V u = viMap.indexToId(uIdx), v = viMap.indexToId(vIdx);</span>
+<span class="fc" id="L574">					long endpoints = endpointsFunc.applyAsLong(u, v);</span>
+<span class="fc" id="L575">					int eGlobalId = globalEdgeIndexing.size();</span>
+<span class="fc" id="L576">					int existingIdx = globalEdgeIndexing.putIfAbsent(endpoints, eGlobalId);</span>
+<span class="fc" id="L577">					E e = null;</span>
 
-<span class="fc bfc" id="L572" title="All 2 branches covered.">					if (existingIdx &lt; 0) {</span>
-<span class="fc" id="L573">						e = eiMap.indexToId(eIdx);</span>
-<span class="fc" id="L574">						union.addEdge(u, v, e);</span>
+<span class="fc bfc" id="L579" title="All 2 branches covered.">					if (existingIdx &lt; 0) {</span>
+<span class="fc" id="L580">						e = eiMap.indexToId(eIdx);</span>
+<span class="fc" id="L581">						union.addEdge(u, v, e);</span>
 					}
 
-<span class="fc bfc" id="L577" title="All 2 branches covered.">					if (tackEdgeIdentifiers) {</span>
-<span class="fc bfc" id="L578" title="All 2 branches covered.">						if (existingIdx &gt;= 0) {</span>
-<span class="fc" id="L579">							eGlobalId = existingIdx;</span>
-<span class="fc" id="L580">							e = eiMap.indexToId(eIdx);</span>
+<span class="fc bfc" id="L584" title="All 2 branches covered.">					if (tackEdgeIdentifiers) {</span>
+<span class="fc bfc" id="L585" title="All 2 branches covered.">						if (existingIdx &gt;= 0) {</span>
+<span class="fc" id="L586">							eGlobalId = existingIdx;</span>
+<span class="fc" id="L587">							e = eiMap.indexToId(eIdx);</span>
 						}
-<span class="fc bfc" id="L582" title="All 2 branches covered.">						if (existingIdx &lt; 0) {</span>
+<span class="fc bfc" id="L589" title="All 2 branches covered.">						if (existingIdx &lt; 0) {</span>
 							@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L584">							E[] graphsContainingEdgeBitmap = (E[]) new Object[graphs.size()];</span>
-<span class="fc" id="L585">							globalIdxToIdentifiers.add(graphsContainingEdgeBitmap);</span>
+<span class="fc" id="L591">							E[] graphsContainingEdgeBitmap = (E[]) new Object[graphs.size()];</span>
+<span class="fc" id="L592">							globalIdxToIdentifiers.add(graphsContainingEdgeBitmap);</span>
 						}
-<span class="fc" id="L587">						globalIdxToIdentifiers.get(eGlobalId)[graphIdx] = e;</span>
+<span class="fc" id="L594">						globalIdxToIdentifiers.get(eGlobalId)[graphIdx] = e;</span>
 					}
-<span class="fc" id="L589">				}</span>
-<span class="fc" id="L590">			}</span>
+<span class="fc" id="L596">				}</span>
+<span class="fc" id="L597">			}</span>
 
-<span class="fc bfc" id="L592" title="All 2 branches covered.">			if (edgesWeights) {</span>
-<span class="fc bfc" id="L593" title="All 2 branches covered.">				for (int eGlobalIdx : range(globalEdgeIndexing.size())) {</span>
-<span class="fc" id="L594">					E[] edgeIdentifiers = globalIdxToIdentifiers.get(eGlobalIdx);</span>
-<span class="fc bfc" id="L595" title="All 2 branches covered.">					Bitmap graphsContainingEdge = Bitmap.fromPredicate(graphs.size(), i -&gt; edgeIdentifiers[i] != null);</span>
-<span class="fc" id="L596">					E e = edgeIdentifiers[graphsContainingEdge.iterator().nextInt()];</span>
+<span class="fc bfc" id="L599" title="All 2 branches covered.">			if (edgesWeights) {</span>
+<span class="fc bfc" id="L600" title="All 2 branches covered.">				for (int eGlobalIdx : range(globalEdgeIndexing.size())) {</span>
+<span class="fc" id="L601">					E[] edgeIdentifiers = globalIdxToIdentifiers.get(eGlobalIdx);</span>
+<span class="fc bfc" id="L602" title="All 2 branches covered.">					Bitmap graphsContainingEdge = Bitmap.fromPredicate(graphs.size(), i -&gt; edgeIdentifiers[i] != null);</span>
+<span class="fc" id="L603">					E e = edgeIdentifiers[graphsContainingEdge.iterator().nextInt()];</span>
 
-<span class="fc bfc" id="L598" title="All 2 branches covered.">					for (WeightsCopier&lt;E&gt; weightsCopier : edgesWeightsCopiers) {</span>
-<span class="fc" id="L599">						OptionalInt graphIdx = weightsCopier.copySrcIdx(graphsContainingEdge);</span>
-<span class="fc bfc" id="L600" title="All 2 branches covered.">						if (graphIdx.isPresent()) {</span>
-<span class="fc" id="L601">							E srcEdge = edgeIdentifiers[graphIdx.getAsInt()];</span>
-<span class="fc" id="L602">							weightsCopier.copy(srcEdge, e, graphIdx.getAsInt());</span>
+<span class="fc bfc" id="L605" title="All 2 branches covered.">					for (WeightsCopier&lt;E&gt; weightsCopier : edgesWeightsCopiers) {</span>
+<span class="fc" id="L606">						OptionalInt graphIdx = weightsCopier.copySrcIdx(graphsContainingEdge);</span>
+<span class="fc bfc" id="L607" title="All 2 branches covered.">						if (graphIdx.isPresent()) {</span>
+<span class="fc" id="L608">							E srcEdge = edgeIdentifiers[graphIdx.getAsInt()];</span>
+<span class="fc" id="L609">							weightsCopier.copy(srcEdge, e, graphIdx.getAsInt());</span>
 						}
-<span class="fc" id="L604">					}</span>
-<span class="fc" id="L605">				}</span>
+<span class="fc" id="L611">					}</span>
+<span class="fc" id="L612">				}</span>
 			}
 		}
-<span class="fc" id="L608">		return union;</span>
+<span class="fc" id="L615">		return union;</span>
 	}
 
 	private static class WeightsCopier&lt;K&gt; {
@@ -613,116 +620,116 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 		private final Weights&lt;K, ?&gt;[] graphIdxToWeights;
 		private final Weights&lt;K, ?&gt; builderWeights;
 
-<span class="fc" id="L616">		WeightsCopier(Weights&lt;K, ?&gt;[] graphIdxToWeights, Weights&lt;K, ?&gt; builderWeights) {</span>
-<span class="fc" id="L617">			this.graphIdxToWeights = graphIdxToWeights;</span>
-<span class="fc" id="L618">			this.builderWeights = builderWeights;</span>
-<span class="fc" id="L619">		}</span>
+<span class="fc" id="L623">		WeightsCopier(Weights&lt;K, ?&gt;[] graphIdxToWeights, Weights&lt;K, ?&gt; builderWeights) {</span>
+<span class="fc" id="L624">			this.graphIdxToWeights = graphIdxToWeights;</span>
+<span class="fc" id="L625">			this.builderWeights = builderWeights;</span>
+<span class="fc" id="L626">		}</span>
 
 		OptionalInt copySrcIdx(Bitmap graphsContainingElm) {
-<span class="fc" id="L622">			return IterTools</span>
-<span class="fc" id="L623">					.stream(graphsContainingElm)</span>
-<span class="fc bfc" id="L624" title="All 2 branches covered.">					.filter(graphIdx -&gt; graphIdxToWeights[graphIdx] != null)</span>
-<span class="fc" id="L625">					.findFirst();</span>
+<span class="fc" id="L629">			return IterTools</span>
+<span class="fc" id="L630">					.stream(graphsContainingElm)</span>
+<span class="fc bfc" id="L631" title="All 2 branches covered.">					.filter(graphIdx -&gt; graphIdxToWeights[graphIdx] != null)</span>
+<span class="fc" id="L632">					.findFirst();</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		void copy(K srcElm, K dstElm, int graphIdx) {
-<span class="fc" id="L630">			Weights&lt;K, Object&gt; builderWeights = (Weights&lt;K, Object&gt;) this.builderWeights;</span>
-<span class="fc" id="L631">			Weights&lt;K, Object&gt; inputWeights = (Weights&lt;K, Object&gt;) graphIdxToWeights[graphIdx];</span>
-<span class="fc" id="L632">			builderWeights.setAsObj(dstElm, inputWeights.getAsObj(srcElm));</span>
-<span class="fc" id="L633">		}</span>
+<span class="fc" id="L637">			Weights&lt;K, Object&gt; builderWeights = (Weights&lt;K, Object&gt;) this.builderWeights;</span>
+<span class="fc" id="L638">			Weights&lt;K, Object&gt; inputWeights = (Weights&lt;K, Object&gt;) graphIdxToWeights[graphIdx];</span>
+<span class="fc" id="L639">			builderWeights.setAsObj(dstElm, inputWeights.getAsObj(srcElm));</span>
+<span class="fc" id="L640">		}</span>
 	}
 
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	private List&lt;WeightsCopier&lt;V&gt;&gt; createVerticesWeights(GraphBuilder&lt;V, E&gt; builder) {
-<span class="fc" id="L638">		return (List) createWeights(builder, verticesWeightsKeys, true);</span>
+<span class="fc" id="L645">		return (List) createWeights(builder, verticesWeightsKeys, true);</span>
 	}
 
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	private List&lt;WeightsCopier&lt;E&gt;&gt; createEdgesWeights(GraphBuilder&lt;V, E&gt; builder) {
-<span class="fc" id="L643">		return (List) createWeights(builder, edgesWeightsKeys, false);</span>
+<span class="fc" id="L650">		return (List) createWeights(builder, edgesWeightsKeys, false);</span>
 	}
 
 	private List&lt;WeightsCopier&lt;?&gt;&gt; createWeights(GraphBuilder&lt;V, E&gt; builder, Set&lt;String&gt; copiedKeys, boolean vertices) {
-<span class="fc" id="L647">		Map&lt;String, Weights&lt;?, ?&gt;[]&gt; graphsContainingWeightsBitmaps = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L648">		final int graphsNum = graphs.size();</span>
-<span class="fc bfc" id="L649" title="All 2 branches covered.">		for (int graphIdx : range(graphsNum)) {</span>
-<span class="fc" id="L650">			Graph&lt;V, E&gt; graph = graphs.get(graphIdx);</span>
-<span class="fc bfc" id="L651" title="All 4 branches covered.">			for (String key : vertices ? graph.getVerticesWeightsKeys() : graph.getEdgesWeightsKeys()) {</span>
-<span class="fc bfc" id="L652" title="All 2 branches covered.">				Weights&lt;?, ?&gt; weights = vertices ? graph.getVerticesWeights(key) : graph.getEdgesWeights(key);</span>
-<span class="fc" id="L653">				Weights&lt;?, ?&gt;[] weightsPerGraphArr =</span>
-<span class="fc" id="L654">						graphsContainingWeightsBitmaps.computeIfAbsent(key, k -&gt; new Weights&lt;?, ?&gt;[graphsNum]);</span>
-<span class="fc" id="L655">				weightsPerGraphArr[graphIdx] = weights;</span>
-<span class="fc" id="L656">			}</span>
-<span class="fc" id="L657">		}</span>
+<span class="fc" id="L654">		Map&lt;String, Weights&lt;?, ?&gt;[]&gt; graphsContainingWeightsBitmaps = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L655">		final int graphsNum = graphs.size();</span>
+<span class="fc bfc" id="L656" title="All 2 branches covered.">		for (int graphIdx : range(graphsNum)) {</span>
+<span class="fc" id="L657">			Graph&lt;V, E&gt; graph = graphs.get(graphIdx);</span>
+<span class="fc bfc" id="L658" title="All 4 branches covered.">			for (String key : vertices ? graph.getVerticesWeightsKeys() : graph.getEdgesWeightsKeys()) {</span>
+<span class="fc bfc" id="L659" title="All 2 branches covered.">				Weights&lt;?, ?&gt; weights = vertices ? graph.getVerticesWeights(key) : graph.getEdgesWeights(key);</span>
+<span class="fc" id="L660">				Weights&lt;?, ?&gt;[] weightsPerGraphArr =</span>
+<span class="fc" id="L661">						graphsContainingWeightsBitmaps.computeIfAbsent(key, k -&gt; new Weights&lt;?, ?&gt;[graphsNum]);</span>
+<span class="fc" id="L662">				weightsPerGraphArr[graphIdx] = weights;</span>
+<span class="fc" id="L663">			}</span>
+<span class="fc" id="L664">		}</span>
 
-<span class="fc" id="L659">		List&lt;WeightsCopier&lt;?&gt;&gt; weightsFuncs = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L660" title="All 2 branches covered.">		for (var entry : graphsContainingWeightsBitmaps.entrySet()) {</span>
-<span class="fc" id="L661">			String key = entry.getKey();</span>
-<span class="fc bfc" id="L662" title="All 4 branches covered.">			if (copiedKeys != null &amp;&amp; !copiedKeys.contains(key))</span>
-<span class="fc" id="L663">				continue;</span>
-<span class="fc" id="L664">			Weights&lt;?, ?&gt;[] graphIdxToWeights = entry.getValue();</span>
-<span class="fc" id="L665">			Weights&lt;?, ?&gt; weights0 = Arrays.stream(graphIdxToWeights).filter(Objects::nonNull).findFirst().get();</span>
+<span class="fc" id="L666">		List&lt;WeightsCopier&lt;?&gt;&gt; weightsFuncs = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L667" title="All 2 branches covered.">		for (var entry : graphsContainingWeightsBitmaps.entrySet()) {</span>
+<span class="fc" id="L668">			String key = entry.getKey();</span>
+<span class="fc bfc" id="L669" title="All 4 branches covered.">			if (copiedKeys != null &amp;&amp; !copiedKeys.contains(key))</span>
+<span class="fc" id="L670">				continue;</span>
+<span class="fc" id="L671">			Weights&lt;?, ?&gt;[] graphIdxToWeights = entry.getValue();</span>
+<span class="fc" id="L672">			Weights&lt;?, ?&gt; weights0 = Arrays.stream(graphIdxToWeights).filter(Objects::nonNull).findFirst().get();</span>
 
 			Class&lt;?&gt; weightsType;
-<span class="fc bfc" id="L668" title="All 2 branches covered.">			if (weights0 instanceof WeightsByte) {</span>
-<span class="fc" id="L669">				checkWeightsCompatibility(graphIdxToWeights, WeightsByte.class);</span>
-<span class="fc" id="L670">				weightsType = byte.class;</span>
+<span class="fc bfc" id="L675" title="All 2 branches covered.">			if (weights0 instanceof WeightsByte) {</span>
+<span class="fc" id="L676">				checkWeightsCompatibility(graphIdxToWeights, WeightsByte.class);</span>
+<span class="fc" id="L677">				weightsType = byte.class;</span>
 
-<span class="fc bfc" id="L672" title="All 2 branches covered.">			} else if (weights0 instanceof WeightsShort) {</span>
-<span class="fc" id="L673">				checkWeightsCompatibility(graphIdxToWeights, WeightsShort.class);</span>
-<span class="fc" id="L674">				weightsType = short.class;</span>
+<span class="fc bfc" id="L679" title="All 2 branches covered.">			} else if (weights0 instanceof WeightsShort) {</span>
+<span class="fc" id="L680">				checkWeightsCompatibility(graphIdxToWeights, WeightsShort.class);</span>
+<span class="fc" id="L681">				weightsType = short.class;</span>
 
-<span class="fc bfc" id="L676" title="All 2 branches covered.">			} else if (weights0 instanceof WeightsInt) {</span>
-<span class="fc" id="L677">				checkWeightsCompatibility(graphIdxToWeights, WeightsInt.class);</span>
-<span class="fc" id="L678">				weightsType = int.class;</span>
+<span class="fc bfc" id="L683" title="All 2 branches covered.">			} else if (weights0 instanceof WeightsInt) {</span>
+<span class="fc" id="L684">				checkWeightsCompatibility(graphIdxToWeights, WeightsInt.class);</span>
+<span class="fc" id="L685">				weightsType = int.class;</span>
 
-<span class="fc bfc" id="L680" title="All 2 branches covered.">			} else if (weights0 instanceof WeightsLong) {</span>
-<span class="fc" id="L681">				checkWeightsCompatibility(graphIdxToWeights, WeightsLong.class);</span>
-<span class="fc" id="L682">				weightsType = long.class;</span>
+<span class="fc bfc" id="L687" title="All 2 branches covered.">			} else if (weights0 instanceof WeightsLong) {</span>
+<span class="fc" id="L688">				checkWeightsCompatibility(graphIdxToWeights, WeightsLong.class);</span>
+<span class="fc" id="L689">				weightsType = long.class;</span>
 
-<span class="fc bfc" id="L684" title="All 2 branches covered.">			} else if (weights0 instanceof WeightsFloat) {</span>
-<span class="fc" id="L685">				checkWeightsCompatibility(graphIdxToWeights, WeightsFloat.class);</span>
-<span class="fc" id="L686">				weightsType = float.class;</span>
+<span class="fc bfc" id="L691" title="All 2 branches covered.">			} else if (weights0 instanceof WeightsFloat) {</span>
+<span class="fc" id="L692">				checkWeightsCompatibility(graphIdxToWeights, WeightsFloat.class);</span>
+<span class="fc" id="L693">				weightsType = float.class;</span>
 
-<span class="fc bfc" id="L688" title="All 2 branches covered.">			} else if (weights0 instanceof WeightsDouble) {</span>
-<span class="fc" id="L689">				checkWeightsCompatibility(graphIdxToWeights, WeightsDouble.class);</span>
-<span class="fc" id="L690">				weightsType = double.class;</span>
+<span class="fc bfc" id="L695" title="All 2 branches covered.">			} else if (weights0 instanceof WeightsDouble) {</span>
+<span class="fc" id="L696">				checkWeightsCompatibility(graphIdxToWeights, WeightsDouble.class);</span>
+<span class="fc" id="L697">				weightsType = double.class;</span>
 
-<span class="fc bfc" id="L692" title="All 2 branches covered.">			} else if (weights0 instanceof WeightsBool) {</span>
-<span class="fc" id="L693">				checkWeightsCompatibility(graphIdxToWeights, WeightsBool.class);</span>
-<span class="fc" id="L694">				weightsType = boolean.class;</span>
+<span class="fc bfc" id="L699" title="All 2 branches covered.">			} else if (weights0 instanceof WeightsBool) {</span>
+<span class="fc" id="L700">				checkWeightsCompatibility(graphIdxToWeights, WeightsBool.class);</span>
+<span class="fc" id="L701">				weightsType = boolean.class;</span>
 
-<span class="fc bfc" id="L696" title="All 2 branches covered.">			} else if (weights0 instanceof WeightsChar) {</span>
-<span class="fc" id="L697">				checkWeightsCompatibility(graphIdxToWeights, WeightsChar.class);</span>
-<span class="fc" id="L698">				weightsType = char.class;</span>
+<span class="fc bfc" id="L703" title="All 2 branches covered.">			} else if (weights0 instanceof WeightsChar) {</span>
+<span class="fc" id="L704">				checkWeightsCompatibility(graphIdxToWeights, WeightsChar.class);</span>
+<span class="fc" id="L705">				weightsType = char.class;</span>
 
 			} else {
-<span class="fc" id="L701">				checkWeightsCompatibility(graphIdxToWeights, WeightsObj.class);</span>
-<span class="fc" id="L702">				weightsType = Object.class;</span>
+<span class="fc" id="L708">				checkWeightsCompatibility(graphIdxToWeights, WeightsObj.class);</span>
+<span class="fc" id="L709">				weightsType = Object.class;</span>
 			}
 
 			Weights&lt;?, ?&gt; builderWeights;
-<span class="fc" id="L706">			Object defWeight = weights0.defaultWeightAsObj();</span>
+<span class="fc" id="L713">			Object defWeight = weights0.defaultWeightAsObj();</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L708">			Class&lt;Object&gt; weightsType0 = (Class&lt;Object&gt;) weightsType;</span>
-<span class="fc bfc" id="L709" title="All 2 branches covered.">			if (vertices) {</span>
-<span class="fc" id="L710">				builderWeights = builder.addVerticesWeights(key, weightsType0, defWeight);</span>
+<span class="fc" id="L715">			Class&lt;Object&gt; weightsType0 = (Class&lt;Object&gt;) weightsType;</span>
+<span class="fc bfc" id="L716" title="All 2 branches covered.">			if (vertices) {</span>
+<span class="fc" id="L717">				builderWeights = builder.addVerticesWeights(key, weightsType0, defWeight);</span>
 			} else {
-<span class="fc" id="L712">				builderWeights = builder.addEdgesWeights(key, weightsType0, defWeight);</span>
+<span class="fc" id="L719">				builderWeights = builder.addEdgesWeights(key, weightsType0, defWeight);</span>
 			}
 
 			@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L716">			WeightsCopier&lt;?&gt; weightsCopier = new WeightsCopier(graphIdxToWeights, builderWeights);</span>
-<span class="fc" id="L717">			weightsFuncs.add(weightsCopier);</span>
-<span class="fc" id="L718">		}</span>
-<span class="fc" id="L719">		return weightsFuncs;</span>
+<span class="fc" id="L723">			WeightsCopier&lt;?&gt; weightsCopier = new WeightsCopier(graphIdxToWeights, builderWeights);</span>
+<span class="fc" id="L724">			weightsFuncs.add(weightsCopier);</span>
+<span class="fc" id="L725">		}</span>
+<span class="fc" id="L726">		return weightsFuncs;</span>
 	}
 
 	private static void checkWeightsCompatibility(Weights&lt;?, ?&gt;[] weights, Class&lt;?&gt; weightsType) {
-<span class="fc bfc" id="L723" title="All 2 branches covered.">		if (!Arrays.stream(weights).filter(Objects::nonNull).allMatch(weightsType::isInstance))</span>
-<span class="fc" id="L724">			throw new IllegalArgumentException(&quot;Weights are not compatible&quot;);</span>
-<span class="fc" id="L725">	}</span>
+<span class="fc bfc" id="L730" title="All 2 branches covered.">		if (!Arrays.stream(weights).filter(Objects::nonNull).allMatch(weightsType::isInstance))</span>
+<span class="fc" id="L731">			throw new IllegalArgumentException(&quot;Weights are not compatible&quot;);</span>
+<span class="fc" id="L732">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
