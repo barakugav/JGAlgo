@@ -127,10 +127,10 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTreeBa
 		Arrays.fill(inEdge, -1);
 
 		IntStack stack = new IntArrayList();
-		assert cg.child[root] == -1;
-		for (int v = cg.parent[root], prevChild = root; v != -1; v = cg.parent[prevChild = v]) {
+		assert cg.child[root] < 0;
+		for (int v = cg.parent[root], prevChild = root; v >= 0; v = cg.parent[prevChild = v]) {
 			for (int child = cg.child[v], c = child;;) {
-				assert c != -1;
+				assert c >= 0;
 				if (c != prevChild)
 					stack.push(c);
 				c = cg.brother[c];
@@ -144,11 +144,11 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTreeBa
 			int u = g.edgeTarget(e);
 			inEdge[u] = e;
 
-			assert cg.child[u] == -1;
+			assert cg.child[u] < 0;
 			for (int v = cg.parent[u], prevChild = u; v != cg.parent[r]; v = cg.parent[prevChild = v]) {
-				if (cg.child[v] != -1) {
+				if (cg.child[v] >= 0) {
 					for (int child = cg.child[v], c = child;;) {
-						assert c != -1;
+						assert c >= 0;
 						if (c != prevChild)
 							stack.push(c);
 						c = cg.brother[c];
@@ -182,7 +182,7 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTreeBa
 		Arrays.fill(blockToV, -1);
 		int n = g.vertices().size();
 		for (int b, v = 0; v < n; v++)
-			if (blockToV[b = connectivityRes.vertexBlock(v)] == -1)
+			if (blockToV[b = connectivityRes.vertexBlock(v)] < 0)
 				blockToV[b] = v;
 
 		int rootBlock = connectivityRes.vertexBlock(root);
@@ -291,7 +291,7 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTreeBa
 					cHeap.meld(heap[a]);
 					heap[a] = null;
 					a = brother[a];
-				} while (parent[a] == -1);
+				} while (parent[a] < 0);
 
 				ufIdxToV[uf.find(c)] = c;
 

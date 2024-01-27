@@ -228,7 +228,7 @@ public interface VoronoiAlgo {
 		@Override
 		default Integer blockSite(int block) {
 			int site = blockSiteInt(block);
-			return site == -1 ? null : Integer.valueOf(site);
+			return site < 0 ? null : Integer.valueOf(site);
 		}
 
 		/**
@@ -253,7 +253,7 @@ public interface VoronoiAlgo {
 		@Override
 		default Integer vertexSite(Integer vertex) {
 			int site = vertexSite(vertex.intValue());
-			return site == -1 ? null : Integer.valueOf(site);
+			return site < 0 ? null : Integer.valueOf(site);
 		}
 	}
 

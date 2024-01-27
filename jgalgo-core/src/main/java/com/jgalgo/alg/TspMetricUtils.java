@@ -53,7 +53,7 @@ class TspMetricUtils {
 			int e0 = it.nextInt();
 			int e = edgeRef[e0];
 			final int u = it.sourceInt();
-			if (firstVertex == -1)
+			if (firstVertex < 0)
 				firstVertex = u;
 			visited.set(u);
 			while (visited.get(it.targetInt()) && it.hasNext()) {

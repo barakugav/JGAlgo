@@ -84,7 +84,7 @@ class SteinerTreeMehlhorn implements SteinerTreeAlgoBase {
 		Arrays.fill(neighborsBestEdge, -1);
 		IntList neighbors = new IntArrayList(terminalNum);
 		for (int t : range(terminalNum)) {
-			assert neighbors.isEmpty() && Arrays.stream(neighborsBestEdge).allMatch(e -> e == -1);
+			assert neighbors.isEmpty() && Arrays.stream(neighborsBestEdge).allMatch(e -> e < 0);
 			for (int u : cells.blockVertices(t)) {
 				double uDistance = cells.distance(u);
 				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
@@ -94,7 +94,7 @@ class SteinerTreeMehlhorn implements SteinerTreeAlgoBase {
 					if (vT <= t)
 						continue;
 					double ew = uDistance + w.weight(e) + cells.distance(v);
-					if (neighborsBestEdge[vT] == -1) {
+					if (neighborsBestEdge[vT] < 0) {
 						neighborsBestEdge[vT] = e;
 						neighborsBestWeight[vT] = ew;
 						neighbors.add(vT);

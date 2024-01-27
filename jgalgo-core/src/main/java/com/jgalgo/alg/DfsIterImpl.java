@@ -67,7 +67,7 @@ class DfsIterImpl implements DfsIter.Int {
 
 	@Override
 	public boolean hasNext() {
-		return nextV != -1;
+		return nextV >= 0;
 	}
 
 	@Override

@@ -91,7 +91,7 @@ class EdgeCoverWeighted implements EdgeCoverBase {
 			w2 = e -> e < vvEdgeThreshold ? w0.weight(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];
 		}
 		for (int v : range(n))
-			if (minAdjacentEdge[v] == -1)
+			if (minAdjacentEdge[v] < 0)
 				throw new IllegalArgumentException("no edge cover exists, vertex with index " + v + " has no edges");
 
 		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(g2, w2);

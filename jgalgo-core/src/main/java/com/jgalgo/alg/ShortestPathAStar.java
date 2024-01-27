@@ -175,7 +175,7 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 		if (g.isDirected()) {
 			for (int v = target;;) {
 				int e = info.get(v).backtrack;
-				if (e == -1) {
+				if (e < 0) {
 					assert v == source;
 					break;
 				}
@@ -185,7 +185,7 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 		} else {
 			for (int v = target;;) {
 				int e = info.get(v).backtrack;
-				if (e == -1) {
+				if (e < 0) {
 					assert v == source;
 					break;
 				}

@@ -976,7 +976,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 							worker().residualCapacity[e] -= f;
 							assert worker().residualCapacity[e] >= 0;
 
-							if (firstNonResidual == -1 && !worker.isResidual(e))
+							if (firstNonResidual < 0 && !worker.isResidual(e))
 								firstNonResidual = i;
 						} else {
 							assert u == worker.g.edgeTarget(e);
@@ -987,7 +987,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 							worker().residualCapacity[e] += f;
 							assert worker().residualCapacity[e] <= worker().capacity[e] + worker().eps;
 
-							if (firstNonResidual == -1 && !worker.hasFlow(e))
+							if (firstNonResidual < 0 && !worker.hasFlow(e))
 								firstNonResidual = i;
 						}
 
@@ -1030,7 +1030,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 							worker().residualCapacity[e] -= f;
 							assert worker().residualCapacity[e] >= 0;
 
-							if (firstNonResidual == -1 && !worker.isResidual(e))
+							if (firstNonResidual < 0 && !worker.isResidual(e))
 								firstNonResidual = i;
 						} else {
 							assert u == worker.g.edgeTarget(e);
@@ -1041,7 +1041,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 							assert f >= 0;
 							worker().residualCapacity[e] += f;
 
-							if (firstNonResidual == -1 && !worker.isTwinResidualUndirected(e))
+							if (firstNonResidual < 0 && !worker.isTwinResidualUndirected(e))
 								firstNonResidual = i;
 						}
 
@@ -1095,7 +1095,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 							worker().residualCapacity[e] -= f;
 							assert worker().residualCapacity[e] >= 0;
 
-							if (firstNonResidual == -1 && !worker.isResidual(e))
+							if (firstNonResidual < 0 && !worker.isResidual(e))
 								firstNonResidual = i;
 						} else {
 							assert u == worker.g.edgeTarget(e);
@@ -1106,7 +1106,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 							worker().residualCapacity[e] += f;
 							assert worker().residualCapacity[e] <= worker().capacity[e];
 
-							if (firstNonResidual == -1 && !worker.hasFlow(e))
+							if (firstNonResidual < 0 && !worker.hasFlow(e))
 								firstNonResidual = i;
 						}
 
@@ -1149,7 +1149,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 							worker().residualCapacity[e] -= f;
 							assert worker().residualCapacity[e] >= 0;
 
-							if (firstNonResidual == -1 && !worker.isResidual(e))
+							if (firstNonResidual < 0 && !worker.isResidual(e))
 								firstNonResidual = i;
 						} else {
 							assert u == worker.g.edgeTarget(e);
@@ -1160,7 +1160,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 							assert f >= 0;
 							worker().residualCapacity[e] += f;
 
-							if (firstNonResidual == -1 && !worker.isTwinResidualUndirected(e))
+							if (firstNonResidual < 0 && !worker.isTwinResidualUndirected(e))
 								firstNonResidual = i;
 						}
 
@@ -1471,8 +1471,8 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 							// scan of u is complete
 							vState[u] = Visited;
 							if (u != source) {
-								if (topoBegin == -1) {
-									assert topoEnd == -1;
+								if (topoBegin < 0) {
+									assert topoEnd < 0;
 									topoBegin = topoEnd = u;
 								} else {
 									topoNext[u] = topoBegin;
@@ -1551,8 +1551,8 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 							// scan of u is complete
 							vState[u] = Visited;
 							if (u != source) {
-								if (topoBegin == -1) {
-									assert topoEnd == -1;
+								if (topoBegin < 0) {
+									assert topoEnd < 0;
 									topoBegin = topoEnd = u;
 								} else {
 									topoNext[u] = topoBegin;
@@ -1571,7 +1571,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 			// All cycles were eliminated, and we calculated a topological order of the
 			// vertices. Iterate over them using this order and return all excess flow to
 			// source.
-			if (topoBegin != -1)
+			if (topoBegin >= 0)
 				eliminateExcessWithTopologicalOrder(topoBegin, topoEnd, topoNext);
 			// for (int u : range(n))
 			// if (u != source && u != sink)

@@ -162,7 +162,7 @@ class KEdgeConnectedComponentsWang implements KEdgeConnectedComponentsAlgoBase, 
 
 		IntStack stack = new IntArrayList();
 		for (int root : range(n)) {
-			if (comp[root] != -1)
+			if (comp[root] >= 0)
 				continue;
 			final int compIdx = compNum++;
 			stack.push(root);
@@ -176,7 +176,7 @@ class KEdgeConnectedComponentsWang implements KEdgeConnectedComponentsAlgoBase, 
 					if (auxWeights[e] < k)
 						continue;
 					int v = eit.targetInt();
-					if (comp[v] != -1) {
+					if (comp[v] >= 0) {
 						assert comp[v] == compIdx;
 						continue;
 					}

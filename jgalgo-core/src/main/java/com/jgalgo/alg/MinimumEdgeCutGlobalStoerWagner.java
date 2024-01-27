@@ -117,8 +117,8 @@ class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutUtils.AbstractImplGl
 					break minimumCutPhase;
 				}
 			}
-			assert T != -1;
-			if (S == -1)
+			assert T >= 0;
+			if (S < 0)
 				S = 0;
 
 			if (minimumCutWeight > cutOfThePhaseWeight) {

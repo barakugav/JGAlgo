@@ -91,7 +91,7 @@ class ColoringDSatur implements ColoringAlgoBase {
 			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.targetInt();
-				if (colors[v] == -1) { /* v is uncolored */
+				if (colors[v] < 0) { /* v is uncolored */
 					LongIntReferenceableHeap.Ref ref = refs[v];
 					long key = ref.key();
 					int saturationDegree = heapKeyToSaturationDegree(key);

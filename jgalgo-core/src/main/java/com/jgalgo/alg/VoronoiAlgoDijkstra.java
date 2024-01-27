@@ -44,7 +44,7 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 		int[] sitesArr = sites.toIntArray();
 		for (int siteIdx : range(sitesArr.length)) {
 			int site = sitesArr[siteIdx];
-			if (cell[site] != -1)
+			if (cell[site] >= 0)
 				throw new IllegalArgumentException("Duplicate site: " + site);
 			cell[site] = siteIdx;
 			distance[site] = 0;
@@ -82,7 +82,7 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 		boolean hasUnreachable = false;
 		int unreachableCell = sitesArr.length;
 		for (int v : range(n)) {
-			if (cell[v] == -1) {
+			if (cell[v] < 0) {
 				hasUnreachable = true;
 				cell[v] = unreachableCell;
 			}

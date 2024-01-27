@@ -165,9 +165,9 @@ class ArraysUtils {
 		// Find greatest element smaller than the pivot
 		int pivotIdx = -1;
 		for (int i : range(from, to))
-			if (c.compare(pivot, a[i]) >= 0 && (pivotIdx == -1 || c.compare(a[pivotIdx], a[i]) < 0))
+			if (c.compare(pivot, a[i]) >= 0 && (pivotIdx < 0 || c.compare(a[pivotIdx], a[i]) < 0))
 				pivotIdx = i;
-		if (pivotIdx == -1)
+		if (pivotIdx < 0)
 			return 0; // all elements are greater than the pivot
 
 		return JGAlgoUtils.long2high(pivotPartition0(a, from, to, pivotIdx, c));
@@ -197,9 +197,9 @@ class ArraysUtils {
 		// Find greatest element smaller than the pivot
 		int pivotIdx = -1;
 		for (int i : range(from, to))
-			if (c.compare(pivot, a[i]) >= 0 && (pivotIdx == -1 || c.compare(a[pivotIdx], a[i]) < 0))
+			if (c.compare(pivot, a[i]) >= 0 && (pivotIdx < 0 || c.compare(a[pivotIdx], a[i]) < 0))
 				pivotIdx = i;
-		if (pivotIdx == -1)
+		if (pivotIdx < 0)
 			return 0; // all elements are greater than the pivot
 
 		return JGAlgoUtils.long2high(pivotPartition0(a, from, to, pivotIdx, c));

@@ -244,13 +244,13 @@ class MaximumFlows {
 					if (WeightFunction.isCardinality(capacityOrig)) {
 						for (int e : range(g.edges().size())) {
 							int eRef = edgeRef[e];
-							double cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? 1 : 0;
+							double cap = (eRef >= 0 && g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? 1 : 0;
 							residualCapacity[e] = cap;
 						}
 					} else {
 						for (int e : range(g.edges().size())) {
 							int eRef = edgeRef[e];
-							double cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink)
+							double cap = (eRef >= 0 && g.edgeTarget(e) != source && g.edgeSource(e) != sink)
 									? capacityOrig.weight(eRef)
 									: 0;
 							residualCapacity[e] = cap;
@@ -264,7 +264,7 @@ class MaximumFlows {
 
 					/* init edges from super-source to sources and from sinks to super-sink */
 					for (int e : range(g.edges().size()))
-						if (edgeRef[e] == -1)
+						if (edgeRef[e] < 0)
 							residualCapacity[e] =
 									source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;
 				}
@@ -284,13 +284,13 @@ class MaximumFlows {
 					if (WeightFunction.isCardinality(capacityOrig)) {
 						for (int e : range(g.edges().size())) {
 							int eRef = edgeRef[e];
-							int cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? 1 : 0;
+							int cap = (eRef >= 0 && g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? 1 : 0;
 							residualCapacity[e] = cap;
 						}
 					} else {
 						for (int e : range(g.edges().size())) {
 							int eRef = edgeRef[e];
-							int cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink)
+							int cap = (eRef >= 0 && g.edgeTarget(e) != source && g.edgeSource(e) != sink)
 									? capacity.weightInt(eRef)
 									: 0;
 							residualCapacity[e] = cap;
@@ -312,7 +312,7 @@ class MaximumFlows {
 
 					/* init edges from super-source to sources and from sinks to super-sink */
 					for (int e : range(g.edges().size()))
-						if (edgeRef[e] == -1)
+						if (edgeRef[e] < 0)
 							residualCapacity[e] =
 									source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;
 				}
@@ -340,7 +340,7 @@ class MaximumFlows {
 
 			boolean isOriginalEdge(int e) {
 				int eOrig = edgeRef[e];
-				return eOrig != -1 && g.edgeSource(e) == gOrig.edgeSource(eOrig);
+				return eOrig >= 0 && g.edgeSource(e) == gOrig.edgeSource(eOrig);
 
 			}
 		}

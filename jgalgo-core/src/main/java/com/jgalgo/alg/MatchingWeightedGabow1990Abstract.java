@@ -155,7 +155,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 
 		@Override
 		public String toString() {
-			return "" + (root == -1 ? 'X' : isEven ? 'E' : 'O') + base;
+			return "" + (root < 0 ? 'X' : isEven ? 'E' : 'O') + base;
 		}
 
 		boolean isSingleton() {
@@ -215,7 +215,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 
 				@Override
 				public boolean hasNext() {
-					return next != -1;
+					return next >= 0;
 				}
 
 				@Override
@@ -695,7 +695,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 			assert JGAlgoUtils.isEqual(delta, expandEvents.findMin().key());
 			final Blossom B = expandEvents.extractMin().value();
 
-			assert B.root != -1 && !B.isEven && !B.isSingleton() && dualVal(B) <= 1e-5;
+			assert B.root >= 0 && !B.isEven && !B.isSingleton() && dualVal(B) <= 1e-5;
 
 			int baseV = B.base, topV = g.edgeSource(B.treeParentEdge);
 			Blossom base = null;
@@ -791,16 +791,16 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 				for (int u = b == U ? bu : bv;;) {
 					assert b.isEven;
 					augmentPath(b, u);
-					if (e != -1) {
+					if (e >= 0) {
 						int eu = g.edgeSource(e), ev = g.edgeTarget(e);
 						matched[eu] = e;
 						matched[ev] = edgeVal.get(e).twin;
 
 						debug.print(" ", Integer.valueOf(e));
-						assert matched[eu] != -1;
-						assert matched[ev] != -1;
+						assert matched[eu] >= 0;
+						assert matched[ev] >= 0;
 					}
-					if (b.treeParentEdge == -1)
+					if (b.treeParentEdge < 0)
 						break;
 					// Odd
 					b = topBlossom(g.edgeTarget(b.treeParentEdge));
@@ -873,15 +873,15 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 		}
 
 		boolean isMatched(int v) {
-			return matched[v] != -1;
+			return matched[v] >= 0;
 		}
 
 		boolean isInTree(int v) {
-			return topBlossom(v).root != -1;
+			return topBlossom(v).root >= 0;
 		}
 
 		boolean isInTree(Blossom b) {
-			return b.parent != null ? isInTree(b.base) : b.root != -1;
+			return b.parent != null ? isInTree(b.base) : b.root >= 0;
 		}
 
 		Blossom topBlossom(int v) {
@@ -978,7 +978,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 			if (b == null)
 				// v was part of an even blossom from the beginning of the current search
 				val -= delta;
-			else if ((isEven = isEven(v)) || b.root != -1)
+			else if ((isEven = isEven(v)) || b.root >= 0)
 				// v was part of an out blossom, b is max blossom before v became even
 				val += isEven ? -(delta - b.delta0) : +(delta - b.delta1);
 			return val;
@@ -987,7 +987,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 		double dualVal(Blossom b) {
 			assert !b.isSingleton();
 			double zb = b.z0;
-			if (b.parent == null && b.root != -1)
+			if (b.parent == null && b.root >= 0)
 				zb += 2 * (b.isEven ? +(delta - b.delta0) : -(delta - b.delta1));
 			return zb;
 		}
@@ -1076,7 +1076,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 					if (b.lastVisitIdx == visitIdx)
 						return b;
 					b.lastVisitIdx = visitIdx;
-					bs[i] = b.treeParentEdge == -1 ? null : topBlossom(g.edgeTarget(b.treeParentEdge));
+					bs[i] = b.treeParentEdge < 0 ? null : topBlossom(g.edgeTarget(b.treeParentEdge));
 				}
 			}
 		}

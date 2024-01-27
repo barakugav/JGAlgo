@@ -60,7 +60,7 @@ class BfsIterImpl {
 				Assertions.checkVertex(source, n);
 				visited.set(source);
 				queue.enqueue(JGAlgoUtils.longPack(source, -1));
-				if (firstVInLayer == -1)
+				if (firstVInLayer < 0)
 					firstVInLayer = source;
 			} while (sources.hasNext());
 		}
@@ -122,7 +122,7 @@ class BfsIterImpl {
 					continue;
 				visited.set(v);
 				queue.enqueue(JGAlgoUtils.longPack(v, e));
-				if (firstVInLayer == -1)
+				if (firstVInLayer < 0)
 					firstVInLayer = v;
 			}
 

@@ -83,7 +83,7 @@ class DominatingSetAlgoGreedy implements DominatingSetAlgoBase, RandomizedAlgori
 						if (u == v || visited[v] == u)
 							continue;
 						visited[v] = u;
-						assert edgeToIdx[e] == -1;
+						assert edgeToIdx[e] < 0;
 						edgeToIdx[e] = edges0.size();
 						edges0.add(e);
 					}
@@ -98,7 +98,7 @@ class DominatingSetAlgoGreedy implements DominatingSetAlgoBase, RandomizedAlgori
 						if (u == v || visited[v] == u)
 							continue;
 						visited[v] = u;
-						assert edgeToIdx[e] == -1;
+						assert edgeToIdx[e] < 0;
 						edgeToIdx[e] = edges0.size();
 						edges0.add(e);
 					}
@@ -227,7 +227,7 @@ class DominatingSetAlgoGreedy implements DominatingSetAlgoBase, RandomizedAlgori
 			for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int idx = edgeToIdx[e];
-				if (idx != -1)
+				if (idx >= 0)
 					removeEdge(e, idx);
 			}
 		}
@@ -238,7 +238,7 @@ class DominatingSetAlgoGreedy implements DominatingSetAlgoBase, RandomizedAlgori
 				if (!dominated.get(eit.targetInt()))
 					continue;
 				int idx = edgeToIdx[e];
-				if (idx != -1)
+				if (idx >= 0)
 					removeEdge(e, idx);
 			}
 		}
@@ -247,7 +247,7 @@ class DominatingSetAlgoGreedy implements DominatingSetAlgoBase, RandomizedAlgori
 			for (IEdgeIter eit = g.inEdges(target).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int idx = edgeToIdx[e];
-				if (idx != -1)
+				if (idx >= 0)
 					removeEdge(e, idx);
 			}
 		}
@@ -258,7 +258,7 @@ class DominatingSetAlgoGreedy implements DominatingSetAlgoBase, RandomizedAlgori
 				if (!dominated.get(eit.sourceInt()))
 					continue;
 				int idx = edgeToIdx[e];
-				if (idx != -1)
+				if (idx >= 0)
 					removeEdge(e, idx);
 			}
 		}

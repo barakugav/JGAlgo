@@ -35,7 +35,7 @@ class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.Abstrac
 
 		IntStack stack = new IntArrayList();
 		for (int root : range(n)) {
-			if (comp[root] != -1)
+			if (comp[root] >= 0)
 				continue;
 			final int compIdx = compNum++;
 			stack.push(root);
@@ -47,7 +47,7 @@ class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.Abstrac
 				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.targetInt();
-					if (comp[v] != -1) {
+					if (comp[v] >= 0) {
 						assert comp[v] == compIdx;
 						continue;
 					}
@@ -59,7 +59,7 @@ class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.Abstrac
 					for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
 						eit.nextInt();
 						int v = eit.sourceInt();
-						if (comp[v] != -1) {
+						if (comp[v] >= 0) {
 							assert comp[v] == compIdx;
 							continue;
 						}

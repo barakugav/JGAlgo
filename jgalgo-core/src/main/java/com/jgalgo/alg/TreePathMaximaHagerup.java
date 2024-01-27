@@ -171,9 +171,9 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 					}
 				}
 
-				res[i] = (va == -1 || (ua != -1 && w.weight(edgeRef[ua]) >= w.weight(edgeRef[va])))
-						? (ua != -1 ? edgeRef[ua] : -1)
-						: /* va != -1 */ edgeRef[va];
+				res[i] = (va < 0 || (ua >= 0 && w.weight(edgeRef[ua]) >= w.weight(edgeRef[va])))
+						? (ua >= 0 ? edgeRef[ua] : -1)
+						: /* va >= 0 */ edgeRef[va];
 			}
 
 			return new TreePathMaximaUtils.ResultImpl(res);
@@ -469,7 +469,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 				int u = queue.dequeueInt();
 
 				int parent = parents[u];
-				if (parent == -1)
+				if (parent < 0)
 					continue;
 				q[parent] |= q[u] & ~(1 << depths[parent]);
 

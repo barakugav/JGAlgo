@@ -133,7 +133,7 @@ class BiConnectedComponentsAlgos {
 					Arrays.fill(edge2bicc, -1);
 					for (int b : range(biccsNum)) {
 						for (int e : biccsEdgesFromAlgo[b]) {
-							assert edge2bicc[e] == -1;
+							assert edge2bicc[e] < 0;
 							edge2bicc[e] = b;
 						}
 					}
@@ -152,7 +152,7 @@ class BiConnectedComponentsAlgos {
 								if (u == v)
 									continue;
 								int b = edge2bicc[e];
-								if (b != -1)
+								if (b >= 0)
 									target2bicc[v] = b;
 							}
 							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
@@ -161,10 +161,10 @@ class BiConnectedComponentsAlgos {
 								if (u == v)
 									continue;
 								int b = edge2bicc[e];
-								if (b == -1) {
+								if (b < 0) {
 									b = target2bicc[v];
 									edge2bicc[e] = b;
-									assert extraEdgesBiccs[e] == -1;
+									assert extraEdgesBiccs[e] < 0;
 									extraEdgesBiccs[e] = b;
 									biccExtraEdgesCount[b]++;
 								}
@@ -178,7 +178,7 @@ class BiConnectedComponentsAlgos {
 
 					/* search for self edges, which are not added to any bicc */
 					if (g.isAllowSelfEdges()) {
-						assert Graphs.selfEdges(g).intStream().allMatch(e -> edge2bicc[e] == -1);
+						assert Graphs.selfEdges(g).intStream().allMatch(e -> edge2bicc[e] < 0);
 						for (int u : range(n)) {
 							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 								eit.nextInt();
@@ -204,7 +204,7 @@ class BiConnectedComponentsAlgos {
 					/* add parallel edges */
 					if (g.isAllowParallelEdges()) {
 						for (int b, e = 0; e < m; e++)
-							if ((b = extraEdgesBiccs[e]) != -1)
+							if ((b = extraEdgesBiccs[e]) >= 0)
 								biccsEdgesFromAlgo[b][biccExtraEdgesCount[b]++] = e;
 					}
 

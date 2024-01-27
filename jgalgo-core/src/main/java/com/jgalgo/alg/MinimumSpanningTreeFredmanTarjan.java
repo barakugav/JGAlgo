@@ -120,7 +120,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 
 			Arrays.fill(vTree, 0, ni, -1);
 			for (int r : range(ni)) {
-				if (vTree[r] != -1)
+				if (vTree[r] >= 0)
 					continue;
 
 				int treeSize = 0;
@@ -132,7 +132,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 					vHeapElm[U] = null;
 
 					// decrease edges keys if a better one is found
-					for (int u = vListBegin[U]; u != -1; u = vListNext[u]) {
+					for (int u = vListBegin[U]; u >= 0; u = vListNext[u]) {
 						// for each vertex in the super vertex, iterate over all edges
 						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							int e = eit.nextInt();
@@ -173,7 +173,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 					// add lightest edge to MST
 					mst.add(e);
 					U = v;
-					if (vt != -1) {
+					if (vt >= 0) {
 						// connected to an existing tree, take it's super vertex label for next iter
 						connectedTree = VNext[vt];
 						break;
@@ -182,7 +182,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 
 				int newV; // super vertex label for next iteration for all vertices in tree
 				int listEnd; // last vertex in super vertex vertices list
-				if (connectedTree != -1) {
+				if (connectedTree >= 0) {
 					newV = connectedTree;
 					listEnd = vListEndNext[connectedTree];
 				} else {
@@ -195,12 +195,13 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 					v = treeVertices[treeSize];
 					VNext[v] = newV;
 
-					if (listEnd == -1)
+					if (listEnd < 0) {
 						// set new super vertex vertices list begin
 						vListBeginNext[newV] = vListBegin[v];
-					else
+					} else {
 						// concatenate current vertex vertices list with the prev one
 						vListNext[listEnd] = vListBegin[v];
+					}
 				}
 				// set new super vertex vertices list end
 				vListEndNext[newV] = listEnd;

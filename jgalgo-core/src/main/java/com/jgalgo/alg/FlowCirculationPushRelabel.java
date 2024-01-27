@@ -144,7 +144,7 @@ class FlowCirculationPushRelabel implements FlowCirculationBase {
 			final int n = g.vertices().size();
 			final double lowerBound = 0;
 
-			mainLoop: for (int act; (act = highestActive()) != -1;) {
+			mainLoop: for (int act; (act = highestActive()) >= 0;) {
 				deactivate(act);
 				double exc = excess[act];
 				assert exc > eps;
@@ -283,7 +283,7 @@ class FlowCirculationPushRelabel implements FlowCirculationBase {
 			final int n = g.vertices().size();
 			final int lowerBound = 0;
 
-			mainLoop: for (int act; (act = highestActive()) != -1;) {
+			mainLoop: for (int act; (act = highestActive()) >= 0;) {
 				deactivate(act);
 				int exc = excess[act];
 				assert exc > 0;

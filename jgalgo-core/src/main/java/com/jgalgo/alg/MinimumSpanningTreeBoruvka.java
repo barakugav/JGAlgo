@@ -147,7 +147,7 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTreeBase {
 			/* add min edges to MST */
 			for (int tree : range(treeNum)) {
 				int e = minEdges[tree];
-				if (e == -1)
+				if (e < 0)
 					continue;
 				int ut = vTree[g.edgeSource(e)];
 				if (tree == ut || minEdges[ut] != e)
@@ -181,7 +181,7 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTreeBase {
 					path[pathLength++] = tPtr;
 					vTreeNext[tPtr] = IN_PATH;
 					int minEdge = minEdges[tPtr];
-					if (minEdge == -1) {
+					if (minEdge < 0) {
 						deepestTree = tPtr;
 						break;
 					}

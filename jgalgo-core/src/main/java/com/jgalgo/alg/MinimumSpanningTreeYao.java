@@ -105,7 +105,7 @@ class MinimumSpanningTreeYao implements MinimumSpanningTreeBase {
 
 			/* add min edges to MST */
 			for (int tree : range(treeNum)) {
-				if (minEdges[tree] != -1) {
+				if (minEdges[tree] >= 0) {
 					int e = minEdges[tree];
 					int ut = vTree[g.edgeSource(e)], vt = vTree[g.edgeTarget(e)];
 					if (tree == vt) {
@@ -138,7 +138,7 @@ class MinimumSpanningTreeYao implements MinimumSpanningTreeBase {
 						path[pathLength++] = tPtr;
 						vTreeNext[tPtr] = IN_PATH;
 
-						if (minEdges[tPtr] != -1) {
+						if (minEdges[tPtr] >= 0) {
 							int nextTPtr;
 							if ((nextTPtr = vTree[g.edgeSource(minEdges[tPtr])]) == tPtr)
 								nextTPtr = vTree[g.edgeTarget(minEdges[tPtr])];

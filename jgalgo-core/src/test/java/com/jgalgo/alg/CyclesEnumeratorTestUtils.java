@@ -99,7 +99,7 @@ class CyclesEnumeratorTestUtils extends TestUtils {
 			for (int i : range(s)) {
 				E elm = c.get(i);
 				int elmIdx = eiMap.idToIndex(elm);
-				if (minIdx == -1 || min > elmIdx) {
+				if (minIdx < 0 || min > elmIdx) {
 					minIdx = i;
 					min = elmIdx;
 				}

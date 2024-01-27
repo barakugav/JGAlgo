@@ -225,7 +225,7 @@ public interface MinimumSpanningTree {
 		Arrays.fill(root, -1);
 		LongPriorityQueue queue = new FIFOQueueLongNoReduce();
 		for (int r : range(n)) {
-			if (root[r] != -1)
+			if (root[r] >= 0)
 				continue;
 			root[r] = r;
 			queue.enqueue(JGAlgoUtils.longPack(r, -1));

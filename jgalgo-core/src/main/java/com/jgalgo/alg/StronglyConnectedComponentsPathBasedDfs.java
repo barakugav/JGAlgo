@@ -56,7 +56,7 @@ class StronglyConnectedComponentsPathBasedDfs extends ConnectedComponentsUtils.A
 		int cNext = 1;
 
 		for (int root : range(n)) {
-			if (comp[root] != -1)
+			if (comp[root] >= 0)
 				continue;
 			dfsPath[0] = root;
 			edges[0] = g.outEdges(root).iterator();
@@ -76,7 +76,7 @@ class StronglyConnectedComponentsPathBasedDfs extends ConnectedComponentsUtils.A
 						dfsPath[++depth] = v;
 						edges[depth] = g.outEdges(v).iterator();
 						continue dfs;
-					} else if (comp[v] == -1)
+					} else if (comp[v] < 0)
 						while (c[p.topInt()] > c[v])
 							p.popInt();
 				}
@@ -89,7 +89,7 @@ class StronglyConnectedComponentsPathBasedDfs extends ConnectedComponentsUtils.A
 					} while (v != u);
 					if (stopAfterOneBlock) {
 						for (int w : range(n))
-							if (comp[w] == -1)
+							if (comp[w] < 0)
 								return null;
 						return new VertexPartitions.Impl(g, compNum, comp);
 					}

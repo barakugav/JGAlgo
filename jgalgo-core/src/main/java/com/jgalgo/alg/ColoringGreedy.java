@@ -70,7 +70,7 @@ class ColoringGreedy implements ColoringAlgoBase, RandomizedAlgorithm {
 				eit.nextInt();
 				int v = eit.targetInt();
 				int c = colors[v];
-				if (c != -1)
+				if (c >= 0)
 					usedColors.set(c);
 			}
 			int color = colors[u] = usedColors.nextClearBit(0);

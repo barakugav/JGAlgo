@@ -319,7 +319,7 @@ class TreePathMaximaUtils {
 			if (g.edgeSource(e) == g.edgeTarget(e))
 				continue;
 			int mstEdge = tpmResults.getHeaviestEdgeInt(i++);
-			if (mstEdge == -1 || w.weight(e) < mstWeights[mstEdge])
+			if (mstEdge < 0 || w.weight(e) < mstWeights[mstEdge])
 				return false;
 		}
 		return true;

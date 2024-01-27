@@ -99,7 +99,7 @@ class ShortestPathSTBidirectionalBfs implements ShortestPathSTBase {
 				break;
 		}
 
-		if (middle == -1)
+		if (middle < 0)
 			return null;
 		IntArrayList path = new IntArrayList();
 

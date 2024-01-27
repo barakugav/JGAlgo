@@ -172,7 +172,7 @@ class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSourceBas
 		/* search for a negative cycle */
 		for (int v : range(n)) {
 			int e = res.backtrack[v];
-			if (e == -1)
+			if (e < 0)
 				continue;
 			int u = g.edgeSource(e);
 			double d = res.distances[u] + w.weight(e);

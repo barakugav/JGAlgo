@@ -85,7 +85,7 @@ class VoronoiAlgos {
 			if (g.isDirected()) {
 				for (int v = target;;) {
 					int e = backtrack[v];
-					if (e == -1) {
+					if (e < 0) {
 						site = v;
 						break;
 					}
@@ -95,7 +95,7 @@ class VoronoiAlgos {
 			} else {
 				for (int v = target;;) {
 					int e = backtrack[v];
-					if (e == -1) {
+					if (e < 0) {
 						site = v;
 						break;
 					}

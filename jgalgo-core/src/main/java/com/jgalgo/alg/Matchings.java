@@ -48,7 +48,7 @@ class Matchings {
 
 		@Override
 		public boolean isVertexMatched(int vertex) {
-			return getMatchedEdge(vertex) != -1;
+			return getMatchedEdge(vertex) >= 0;
 		}
 
 		@Override
@@ -56,11 +56,11 @@ class Matchings {
 			if (matchedVertices == null) {
 				int matchedCount = 0;
 				for (int v : range(matched.length))
-					if (matched[v] != -1)
+					if (matched[v] >= 0)
 						matchedCount++;
 				int[] matchedVertices0 = new int[matchedCount];
 				for (int i = 0, v = 0; v < matched.length; v++)
-					if (matched[v] != -1)
+					if (matched[v] >= 0)
 						matchedVertices0[i++] = v;
 				matchedVertices = ImmutableIntArraySet
 						.newInstance(matchedVertices0, v -> 0 <= v && v < matched.length && matched[v] >= 0);
@@ -73,11 +73,11 @@ class Matchings {
 			if (unmatchedVertices == null) {
 				int unmatchedCount = 0;
 				for (int v : range(matched.length))
-					if (matched[v] == -1)
+					if (matched[v] < 0)
 						unmatchedCount++;
 				int[] unmatchedVertices0 = new int[unmatchedCount];
 				for (int i = 0, v = 0; v < matched.length; v++)
-					if (matched[v] == -1)
+					if (matched[v] < 0)
 						unmatchedVertices0[i++] = v;
 				unmatchedVertices = ImmutableIntArraySet
 						.newInstance(unmatchedVertices0, v -> 0 <= v && v < matched.length && matched[v] < 0);
@@ -107,7 +107,7 @@ class Matchings {
 			int edgesCount = 0;
 			for (int v : range(g.vertices().size())) {
 				int e = matched[v];
-				if (e != -1 && v == g.edgeSource(e)) {
+				if (e >= 0 && v == g.edgeSource(e)) {
 					assert g.edgeSource(e) != g.edgeTarget(e);
 					edgesCount++;
 				}
@@ -115,7 +115,7 @@ class Matchings {
 			int[] edges0 = new int[edgesCount];
 			for (int i = 0, n = g.vertices().size(), v = 0; v < n; v++) {
 				int e = matched[v];
-				if (e != -1 && v == g.edgeSource(e)) {
+				if (e >= 0 && v == g.edgeSource(e)) {
 					assert g.edgeSource(e) != g.edgeTarget(e);
 					edges0[i++] = e;
 				}
@@ -132,7 +132,7 @@ class Matchings {
 		@Override
 		public boolean isPerfect() {
 			for (int e : matched)
-				if (e == -1)
+				if (e < 0)
 					return false;
 			return true;
 		}

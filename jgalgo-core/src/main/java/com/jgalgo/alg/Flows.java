@@ -198,7 +198,7 @@ class Flows {
 
 		boolean isOriginalEdge(int e) {
 			int eOrig = edgeRef[e];
-			return eOrig != -1 && g.edgeSource(e) == gOrig.edgeSource(eOrig);
+			return eOrig >= 0 && g.edgeSource(e) == gOrig.edgeSource(eOrig);
 		}
 
 		static class Builder {

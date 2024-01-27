@@ -233,7 +233,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase {
 				// Find biggest layer
 				int biggestLayer = -1;
 				for (int l = layerNum - 1; l > 0; l--)
-					if (biggestLayer == -1 || layerSize[l] > layerSize[biggestLayer])
+					if (biggestLayer < 0 || layerSize[l] > layerSize[biggestLayer])
 						biggestLayer = l;
 				if (layerSize[biggestLayer] >= Math.sqrt(N) * alpha) {
 					diagnostics.bigLayer();

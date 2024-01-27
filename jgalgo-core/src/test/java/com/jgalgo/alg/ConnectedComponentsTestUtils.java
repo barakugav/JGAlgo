@@ -39,7 +39,7 @@ class ConnectedComponentsTestUtils {
 		vertexToCC.defaultReturnValue(-1);
 
 		for (V start : g.vertices()) {
-			if (vertexToCC.getInt(start) != -1)
+			if (vertexToCC.getInt(start) >= 0)
 				continue;
 			int ccIdx = ccNum++;
 			for (BfsIter<V, E> it = BfsIter.newInstance(g, start); it.hasNext();)
@@ -63,7 +63,7 @@ class ConnectedComponentsTestUtils {
 		vertexToCC.defaultReturnValue(-1);
 
 		for (V u : g.vertices()) {
-			if (vertexToCC.getInt(u) != -1)
+			if (vertexToCC.getInt(u) >= 0)
 				continue;
 			int ccIdx = ccNum++;
 			vertexToCC.put(u, ccIdx);

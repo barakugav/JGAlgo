@@ -75,7 +75,7 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 				}
 			}
 		}
-		if (startVertex == -1) {
+		if (startVertex < 0) {
 			/* the graph is a clique, we can disconnect it only by removing n-1 vertices */
 			return range(g.vertices().size() - 1);
 		}

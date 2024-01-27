@@ -125,7 +125,7 @@ class ShortestPathAllPairsUtils {
 				IntList path = new IntArrayList();
 				for (int v = source; v != target;) {
 					int e = getEdgeTo(v, target);
-					assert e != -1;
+					assert e >= 0;
 					path.add(e);
 					v = g.edgeEndpoint(e, v);
 				}
@@ -166,7 +166,7 @@ class ShortestPathAllPairsUtils {
 				IntList path = new IntArrayList();
 				for (int v = source; v != target;) {
 					int e = getEdgeTo(v, target);
-					assert e != -1;
+					assert e >= 0;
 					assert v == g.edgeSource(e);
 					path.add(e);
 					v = g.edgeTarget(e);

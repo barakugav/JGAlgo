@@ -102,7 +102,7 @@ class MatchingCardinalityGabow1976 implements MatchingAlgoBase.Cardinality {
 					final int v = eit.targetInt();
 					int vRoot = root[v];
 
-					if (vRoot == -1) {
+					if (vRoot < 0) {
 						// unexplored vertex, add to tree
 						root[v] = uRoot;
 						parent[v] = e;
@@ -132,7 +132,7 @@ class MatchingCardinalityGabow1976 implements MatchingAlgoBase.Cardinality {
 						blossomBaseSearch: for (int[] ps = new int[] { uBase, vBase };;) {
 							for (int i : range(ps.length)) {
 								int p = ps[i];
-								if (p == -1)
+								if (p < 0)
 									continue;
 								if (blossomBaseSearchNotes[p] == searchIdx) {
 									base = p;

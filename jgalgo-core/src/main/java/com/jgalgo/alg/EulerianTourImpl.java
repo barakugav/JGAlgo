@@ -40,17 +40,17 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		for (int u : range(n)) {
 			if (degreeWithoutSelfLoops(g, u) % 2 == 0)
 				continue;
-			if (start == -1) {
+			if (start < 0) {
 				start = u;
-			} else if (end == -1) {
+			} else if (end < 0) {
 				end = u;
 			} else {
 				/* More than two vertices have an odd degree */
 				return Optional.empty();
 			}
 		}
-		if (start == -1) {
-			assert end == -1;
+		if (start < 0) {
+			assert end < 0;
 			start = end = 0;
 		}
 
@@ -115,14 +115,14 @@ class EulerianTourImpl implements EulerianTourAlgo {
 			if (outD == inD)
 				continue;
 			if (outD == inD + 1) {
-				if (start == -1) {
+				if (start < 0) {
 					start = u;
 				} else {
 					/* More than one vertex have an extra out edge */
 					return Optional.empty();
 				}
 			} else if (outD + 1 == inD) {
-				if (end == -1) {
+				if (end < 0) {
 					end = u;
 				} else {
 					/* More than one vertex have an extra in edge */
@@ -133,8 +133,8 @@ class EulerianTourImpl implements EulerianTourAlgo {
 				return Optional.empty();
 			}
 		}
-		if (start == -1) {
-			assert end == -1;
+		if (start < 0) {
+			assert end < 0;
 			start = end = 0;
 		}
 

@@ -192,7 +192,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 				if (u == v)
 					continue;
 				int resU = vToResV[u], resV = vToResV[v];
-				if (resU == -1 || resV == -1)
+				if (resU < 0 || resV < 0)
 					continue;
 				double ef = maxFlow.getFlow(e);
 				double ew = w.weight(e);
@@ -208,7 +208,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 				if (u == v)
 					continue;
 				int resU = vToResV[u], resV = vToResV[v];
-				if (resU == -1 || resV == -1)
+				if (resU < 0 || resV < 0)
 					continue;
 				double f = maxFlow.getFlow(e);
 				double ew = w.weight(e);

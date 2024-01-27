@@ -78,7 +78,7 @@ class StronglyConnectedComponentsTarjan extends ConnectedComponentsUtils.Abstrac
 						u = v;
 						continue dfs;
 					}
-					if (comp[v] == -1) /* do not belong to any scc, still on the stack */
+					if (comp[v] < 0) /* do not belong to any scc, still on the stack */
 						if (lowLink[u] > visitIdx[v]) /* weird line */
 							lowLink[u] = visitIdx[v];
 				}
@@ -94,7 +94,7 @@ class StronglyConnectedComponentsTarjan extends ConnectedComponentsUtils.Abstrac
 					}
 					if (stopAfterOneBlock) {
 						for (int w : range(n))
-							if (comp[w] == -1)
+							if (comp[w] < 0)
 								return null;
 						return new VertexPartitions.Impl(g, compNum, comp);
 					}

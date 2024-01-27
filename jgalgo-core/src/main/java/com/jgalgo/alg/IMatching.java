@@ -72,7 +72,7 @@ public interface IMatching extends Matching<Integer, Integer> {
 	@Override
 	default Integer getMatchedEdge(Integer vertex) {
 		int e = getMatchedEdge(vertex.intValue());
-		return e == -1 ? null : Integer.valueOf(e);
+		return e < 0 ? null : Integer.valueOf(e);
 	}
 
 	@Override

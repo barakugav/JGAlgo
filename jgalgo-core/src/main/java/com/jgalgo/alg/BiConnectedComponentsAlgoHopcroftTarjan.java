@@ -90,7 +90,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAl
 		IntList biccEdgesTemp = new IntArrayList();
 
 		for (int root : range(n)) {
-			if (depths[root] != -1)
+			if (depths[root] >= 0)
 				continue;
 			int depth = 0;
 			depths[root] = depth;
@@ -107,7 +107,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAl
 
 					int v = eit.targetInt();
 					final int vDepth = depths[v];
-					if (vDepth == -1) { /* unvisited */
+					if (vDepth < 0) { /* unvisited */
 						edgeStack.push(e);
 						edgePath[depth] = e;
 						depth++;

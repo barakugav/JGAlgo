@@ -124,7 +124,7 @@ class MinimumMeanCycleHoward implements MinimumMeanCycleBase {
 					}
 
 					/* cycle found */
-					if (cycleVertex != -1) {
+					if (cycleVertex >= 0) {
 
 						/* find cycle mean weight */
 						double cycleWeight = 0;
@@ -147,7 +147,7 @@ class MinimumMeanCycleHoward implements MinimumMeanCycleBase {
 						}
 					}
 				}
-				assert bestCycleVertex != -1;
+				assert bestCycleVertex >= 0;
 				if (overallBestCycleMeanWeight > bestCycleMeanWeight) {
 					overallBestCycleMeanWeight = bestCycleMeanWeight;
 					overallBestCycleVertex = bestCycleVertex;
@@ -203,13 +203,13 @@ class MinimumMeanCycleHoward implements MinimumMeanCycleBase {
 					bestSelfEdgeWeight = w.weight(e);
 				}
 			}
-			if (bestSelfEdge != -1 && bestSelfEdgeWeight < overallBestCycleMeanWeight) {
+			if (bestSelfEdge >= 0 && bestSelfEdgeWeight < overallBestCycleMeanWeight) {
 				int cycleVertex = g.edgeSource(bestSelfEdge);
 				return IPath.valueOf(g, cycleVertex, cycleVertex, IntList.of(bestSelfEdge));
 			}
 		}
 
-		if (overallBestCycleVertex == -1)
+		if (overallBestCycleVertex < 0)
 			return null;
 
 		IntList cycle = new IntArrayList();

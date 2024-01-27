@@ -328,7 +328,7 @@ class Paths {
 			@Override
 			public int nextInt() {
 				int eNext = it.nextInt();
-				if (e != -1)
+				if (e >= 0)
 					assert g.edgeTarget(e) == g.edgeSource(eNext);
 				return e = eNext;
 			}

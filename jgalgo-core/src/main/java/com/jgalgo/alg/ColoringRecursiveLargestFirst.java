@@ -73,7 +73,7 @@ class ColoringRecursiveLargestFirst implements ColoringAlgoBase {
 
 			int bestDegree = -1, firstU = -1;
 			for (int u : range(n)) {
-				if (colors[u] != -1)
+				if (colors[u] >= 0)
 					continue;
 				int d = degree[u];
 				if (bestDegree < d) {
@@ -81,12 +81,12 @@ class ColoringRecursiveLargestFirst implements ColoringAlgoBase {
 					firstU = u;
 				}
 			}
-			if (firstU == -1) {
+			if (firstU < 0) {
 				colorsNum = color;
 				break;
 			}
 
-			for (int u = firstU; u != -1;) {
+			for (int u = firstU; u >= 0;) {
 				// add u to S
 				S.set(u);
 
@@ -94,7 +94,7 @@ class ColoringRecursiveLargestFirst implements ColoringAlgoBase {
 				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.targetInt();
-					if (colors[v] != -1)
+					if (colors[v] >= 0)
 						continue;
 					isAdjacentToS.set(v);
 				}
@@ -102,7 +102,7 @@ class ColoringRecursiveLargestFirst implements ColoringAlgoBase {
 				int nextU = -1, bestNumOfNeighborsAdjacentToS = -1;
 				bestDegree = -1;
 				for (int v : range(n)) {
-					if (colors[v] != -1 || S.get(v) || isAdjacentToS.get(v))
+					if (colors[v] >= 0 || S.get(v) || isAdjacentToS.get(v))
 						continue;
 					int numOfNeighborsAdjacentToS = 0;
 					for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {

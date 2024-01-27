@@ -140,7 +140,7 @@ public interface BfsIter<V, E> extends Iterator<V> {
 		@Override
 		default Integer lastEdge() {
 			int e = lastEdgeInt();
-			return e == -1 ? null : Integer.valueOf(e);
+			return e < 0 ? null : Integer.valueOf(e);
 		}
 	}
 

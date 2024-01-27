@@ -197,7 +197,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 						dt.link(U.dtVertex, V.dtVertex, getResidualCapacity(e));
 						U.linkedEdge = e;
 						assert !children.hasNext(U.v) && !children.hasPrev(U.v);
-						if (V.firstDtChild != -1)
+						if (V.firstDtChild >= 0)
 							children.connect(U.v, V.firstDtChild);
 						V.firstDtChild = U.v;
 						W = U;
@@ -260,7 +260,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 		void cutAllChildren(Vertex U) {
 			/* cut all vertices pointing into u */
 			assert U.dtVertex.getParent() == null;
-			if (U.firstDtChild != -1) {
+			if (U.firstDtChild >= 0) {
 				for (IntIterator childIt = children.iterator(U.firstDtChild); childIt.hasNext();) {
 					int child = childIt.nextInt();
 					Vertex childData = vertexData(child);

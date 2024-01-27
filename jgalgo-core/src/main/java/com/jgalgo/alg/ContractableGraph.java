@@ -125,7 +125,7 @@ class ContractableGraph {
 
 			@Override
 			public boolean hasNext() {
-				return nextEdge != -1;
+				return nextEdge >= 0;
 			}
 
 			@Override

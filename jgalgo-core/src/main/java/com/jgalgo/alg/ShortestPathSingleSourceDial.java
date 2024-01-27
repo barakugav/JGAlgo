@@ -112,7 +112,7 @@ class ShortestPathSingleSourceDial implements ShortestPathSingleSourceBase {
 			}
 
 			u = heap.extractMin();
-			if (u == -1)
+			if (u < 0)
 				break;
 		}
 
