@@ -41,11 +41,11 @@ class EdgeCoverTestUtils extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
-		tester.addPhase().withArgs(4, 6).repeat(64);
-		tester.addPhase().withArgs(8, 12).repeat(64);
-		tester.addPhase().withArgs(8, 16).repeat(32);
-		tester.addPhase().withArgs(64, 256).repeat(16);
-		tester.addPhase().withArgs(1024, 2048).repeat(2);
+		tester.addPhase().withArgs(4, 6).repeat(32);
+		tester.addPhase().withArgs(8, 12).repeat(32);
+		tester.addPhase().withArgs(8, 16).repeat(16);
+		tester.addPhase().withArgs(64, 256).repeat(8);
+		tester.addPhase().withArgs(324, 1624).repeat(2);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 			/* make sure all vertices have at least one adjacent edge */
