@@ -706,7 +706,7 @@ public class GuavaNetworkWrapper<V, E> extends AbstractGraph<V, E> {
 			int idx = idxToId.size();
 			idxToId.add(id);
 			int oldVal = idToIdx.put(id, idx);
-			assert oldVal == -1;
+			assert oldVal < 0;
 		}
 
 		void remove(K id) {
@@ -749,7 +749,7 @@ public class GuavaNetworkWrapper<V, E> extends AbstractGraph<V, E> {
 		@Override
 		public int idToIndex(K id) {
 			int idx = idToIdx.getInt(id);
-			if (idx == -1) {
+			if (idx < 0) {
 				if (isEdges) {
 					throw NoSuchEdgeException.ofEdge(id);
 				} else {
