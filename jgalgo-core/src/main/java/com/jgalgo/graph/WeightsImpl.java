@@ -255,7 +255,7 @@ interface WeightsImpl {
 				Objects.requireNonNull(key);
 				int idx = keyToIdx.size();
 				int oldIdx = keyToIdx.putIfAbsent(key, idx);
-				if (oldIdx != -1)
+				if (oldIdx >= 0)
 					throw new IllegalArgumentException("Two weights types with the same key: " + key);
 
 				if (idx == this.weights.length) {
@@ -272,7 +272,7 @@ interface WeightsImpl {
 			void removeWeights(String key) {
 				int lastIdx = keyToIdx.size() - 1;
 				int idx = keyToIdx.removeInt(key);
-				if (idx == -1)
+				if (idx < 0)
 					throw new IllegalArgumentException("no weights with key: " + key);
 
 				if (idx != lastIdx) {
@@ -286,7 +286,7 @@ interface WeightsImpl {
 			@SuppressWarnings("unchecked")
 			<T, WeightsT extends IWeights<T>> WeightsT getWeights(String key) {
 				int idx = keyToIdx.getInt(key);
-				return idx == -1 ? null : (WeightsT) weights[idx];
+				return idx < 0 ? null : (WeightsT) weights[idx];
 			}
 
 			Set<String> weightsKeys() {

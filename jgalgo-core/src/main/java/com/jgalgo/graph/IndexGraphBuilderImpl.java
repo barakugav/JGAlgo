@@ -183,7 +183,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 					checkVertex(source);
 					checkVertex(target);
 					int eIdx = edge - currentNum;
-					if (eIdx < 0 || eIdx * 2 >= newEdgesEndpoints.length || newEdgesEndpoints[2 * eIdx] != -1)
+					if (eIdx < 0 || eIdx * 2 >= newEdgesEndpoints.length || newEdgesEndpoints[2 * eIdx] >= 0)
 						throw new IllegalArgumentException(
 								"added edges must be a consecutive range of integers starting from " + currentNum
 										+ " but was " + edges);

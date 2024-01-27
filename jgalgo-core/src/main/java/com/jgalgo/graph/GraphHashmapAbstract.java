@@ -103,7 +103,7 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 
 		@Override
 		public void remove() {
-			if (prevEdge == -1)
+			if (prevEdge < 0)
 				throw new IllegalStateException();
 
 			/*

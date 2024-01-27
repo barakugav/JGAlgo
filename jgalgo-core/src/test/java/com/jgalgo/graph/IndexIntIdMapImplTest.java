@@ -150,7 +150,7 @@ public class IndexIntIdMapImplTest extends TestBase {
 			assertEquals(-1, map2.indexToIdIfExistInt(idx));
 		for (int id : range(100)) {
 			int expected = map1.idToIndexIfExist(id);
-			if (expected != -1)
+			if (expected >= 0)
 				expected = reindexing.origToReIndexed(expected);
 			assertEquals(expected, map2.idToIndexIfExist(id));
 		}

@@ -78,7 +78,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 	void removeAllEdgesInList(int firstEdge) {
 		for (;;) {
 			int nextEdge = edgeNext[firstEdge];
-			if (nextEdge == -1) {
+			if (nextEdge < 0) {
 				removeEdge(firstEdge);
 				break;
 			}
@@ -141,7 +141,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 		@Override
 		public void remove() {
-			if (prevEdge == -1)
+			if (prevEdge < 0)
 				throw new IllegalStateException();
 
 			/*
@@ -296,7 +296,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 				@Override
 				public void remove() {
-					if (prevEdge == -1)
+					if (prevEdge < 0)
 						throw new IllegalStateException();
 					int lastEdge = edges().size() - 1;
 					if (nextEdge == lastEdge)

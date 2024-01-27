@@ -1079,7 +1079,7 @@ public class IndexIdMaps {
 		@Override
 		public boolean rem(int key) {
 			int id = map.indexToIdIfExistInt(key);
-			return id != -1 && idList.rem(id);
+			return id >= 0 && idList.rem(id);
 		}
 
 		@Override
@@ -1095,13 +1095,13 @@ public class IndexIdMaps {
 		@Override
 		public int indexOf(int k) {
 			int id = map.indexToIdIfExistInt(k);
-			return id == -1 ? -1 : idList.indexOf(id);
+			return id < 0 ? -1 : idList.indexOf(id);
 		}
 
 		@Override
 		public int lastIndexOf(int k) {
 			int id = map.indexToIdIfExistInt(k);
-			return id == -1 ? -1 : idList.lastIndexOf(id);
+			return id < 0 ? -1 : idList.lastIndexOf(id);
 		}
 
 		@Override
@@ -1190,13 +1190,13 @@ public class IndexIdMaps {
 		@Override
 		public int indexOf(Object k) {
 			int idx = map.idToIndexIfExist((K) k);
-			return idx == -1 ? -1 : indexList.indexOf(idx);
+			return idx < 0 ? -1 : indexList.indexOf(idx);
 		}
 
 		@Override
 		public int lastIndexOf(Object k) {
 			int idx = map.idToIndexIfExist((K) k);
-			return idx == -1 ? -1 : indexList.lastIndexOf(idx);
+			return idx < 0 ? -1 : indexList.lastIndexOf(idx);
 		}
 
 		@Override
@@ -1248,13 +1248,13 @@ public class IndexIdMaps {
 		@Override
 		public int indexOf(int k) {
 			int idx = map.idToIndexIfExist(k);
-			return idx == -1 ? -1 : indexList.indexOf(idx);
+			return idx < 0 ? -1 : indexList.indexOf(idx);
 		}
 
 		@Override
 		public int lastIndexOf(int k) {
 			int idx = map.idToIndexIfExist(k);
-			return idx == -1 ? -1 : indexList.lastIndexOf(idx);
+			return idx < 0 ? -1 : indexList.lastIndexOf(idx);
 		}
 
 		@Override

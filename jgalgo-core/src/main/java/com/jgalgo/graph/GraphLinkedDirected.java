@@ -269,7 +269,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract implements GraphDefaultsDi
 	private void removeEdgeOutPointers(int e) {
 		int u = source(e);
 		int next = edgeNextOut[e], prev = edgePrevOut[e];
-		if (prev == -1) {
+		if (prev < 0) {
 			edgesOutHead[u] = next;
 		} else {
 			edgeNextOut[prev] = next;
@@ -285,7 +285,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract implements GraphDefaultsDi
 	private void removeEdgeInPointers(int e) {
 		int v = target(e);
 		int next = edgeNextIn[e], prev = edgePrevIn[e];
-		if (prev == -1) {
+		if (prev < 0) {
 			edgesInHead[v] = next;
 		} else {
 			edgeNextIn[prev] = next;

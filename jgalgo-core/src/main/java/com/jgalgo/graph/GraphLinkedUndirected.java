@@ -221,7 +221,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements GraphDefaults
 
 	private void removeEdgePointers(int e, int w) {
 		int next = next(e, w), prev = prev(e, w);
-		if (prev == -1) {
+		if (prev < 0) {
 			edgesHead[w] = next;
 		} else {
 			setNext(prev, w, next);

@@ -286,13 +286,13 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * @throws NoSuchVertexException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	default boolean containsEdge(int source, int target) {
-		return getEdge(source, target) != -1;
+		return getEdge(source, target) >= 0;
 	}
 
 	@Deprecated
 	@Override
 	default boolean containsEdge(Integer source, Integer target) {
-		return getEdge(source.intValue(), target.intValue()) != -1;
+		return getEdge(source.intValue(), target.intValue()) >= 0;
 	}
 
 	/**
@@ -322,7 +322,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	@Override
 	default Integer getEdge(Integer source, Integer target) {
 		int e = getEdge(source.intValue(), target.intValue());
-		return e == -1 ? null : Integer.valueOf(e);
+		return e < 0 ? null : Integer.valueOf(e);
 	}
 
 	/**

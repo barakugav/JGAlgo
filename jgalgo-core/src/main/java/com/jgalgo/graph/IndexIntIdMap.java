@@ -92,7 +92,7 @@ public interface IndexIntIdMap extends IndexIdMap<Integer> {
 	@Override
 	default Integer indexToIdIfExist(int index) {
 		int id = indexToIdIfExistInt(index);
-		return id == -1 ? null : Integer.valueOf(id);
+		return id < 0 ? null : Integer.valueOf(id);
 	}
 
 	/**

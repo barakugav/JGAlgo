@@ -135,7 +135,7 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract implements Gra
 			int oldVal1 = edgesIn[target].remove(swappedIdx);
 			int oldVal2 = edgesIn[target].put(removedIdx, firstEdge);
 			assert oldVal1 == firstEdge;
-			assert oldVal2 == -1;
+			assert oldVal2 < 0;
 		}
 		for (var entry : Int2IntMaps.fastIterable(edgesIn[swappedIdx])) {
 			int source = entry.getIntKey();
@@ -145,7 +145,7 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract implements Gra
 			int oldVal1 = edgesOut[source].remove(swappedIdx);
 			int oldVal2 = edgesOut[source].put(removedIdx, firstEdge);
 			assert oldVal1 == firstEdge;
-			assert oldVal2 == -1;
+			assert oldVal2 < 0;
 		}
 
 		if (firstSelfEdge >= 0) {
@@ -153,8 +153,8 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract implements Gra
 				setEndpoints(e, removedIdx, removedIdx);
 			int oldVal1 = edgesOut[swappedIdx].put(removedIdx, firstSelfEdge);
 			int oldVal2 = edgesIn[swappedIdx].put(removedIdx, firstSelfEdge);
-			assert oldVal1 == -1;
-			assert oldVal2 == -1;
+			assert oldVal1 < 0;
+			assert oldVal2 < 0;
 		}
 
 		swapAndClear(edgesOut, removedIdx, swappedIdx, EmptyEdgeMap);

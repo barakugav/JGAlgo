@@ -92,7 +92,7 @@ abstract class GraphArrayAbstract extends GraphBaseMutable {
 
 		@Override
 		public void remove() {
-			if (lastEdge == -1)
+			if (lastEdge < 0)
 				throw new IllegalStateException();
 			removeEdge(lastEdge);
 			/*

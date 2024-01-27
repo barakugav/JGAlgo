@@ -64,7 +64,7 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 
 		@Override
 		public void remove() {
-			if (last == -1)
+			if (last < 0)
 				throw new IllegalStateException();
 			if (last == edges.size - 1) {
 				removeEdgeLast(last);

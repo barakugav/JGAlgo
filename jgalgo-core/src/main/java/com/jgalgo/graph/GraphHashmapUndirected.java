@@ -67,7 +67,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract implements GraphDefaul
 				if (oldVal1 >= 0)
 					throw new IllegalArgumentException("Parallel edge (idx=" + source + ",idx=" + target
 							+ ") already exists. Parallel edges are not allowed.");
-				assert oldVal2 == -1 || (source == target && oldVal2 == e);
+				assert oldVal2 < 0 || (source == target && oldVal2 == e);
 			}
 		}
 	}
@@ -85,7 +85,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract implements GraphDefaul
 			if (oldVal1 >= 0)
 				throw new IllegalArgumentException("Parallel edge (idx=" + source + ",idx=" + target
 						+ ") already exists. Parallel edges are not allowed.");
-			assert oldVal2 == -1 || (source == target && oldVal2 == e);
+			assert oldVal2 < 0 || (source == target && oldVal2 == e);
 		}
 	}
 
@@ -111,13 +111,13 @@ class GraphHashmapUndirected extends GraphHashmapAbstract implements GraphDefaul
 			int oldVal1 = edges[target].remove(swappedIdx);
 			int oldVal2 = edges[target].put(removedIdx, e);
 			assert oldVal1 == e;
-			assert oldVal2 == -1;
+			assert oldVal2 < 0;
 		}
 
 		if (selfEdge >= 0) {
 			setEndpoints(selfEdge, removedIdx, removedIdx);
 			int oldVal = edges[swappedIdx].put(removedIdx, selfEdge);
-			assert oldVal == -1;
+			assert oldVal < 0;
 		}
 
 		swapAndClear(edges, removedIdx, swappedIdx, EmptyEdgeMap);
@@ -157,7 +157,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract implements GraphDefaul
 		int oldVal1 = edges[source].remove(target);
 		int oldVal2 = edges[target].remove(source);
 		assert edge == oldVal1;
-		assert edge == oldVal2 || (source == target && oldVal2 == -1);
+		assert edge == oldVal2 || (source == target && oldVal2 < 0);
 		super.removeEdgeLast(edge);
 	}
 
@@ -169,7 +169,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract implements GraphDefaul
 		int oldVal1 = edges[ur].remove(vr);
 		int oldVal2 = edges[vr].remove(ur);
 		assert oldVal1 == removedIdx;
-		assert oldVal2 == removedIdx || (ur == vr && oldVal2 == -1);
+		assert oldVal2 == removedIdx || (ur == vr && oldVal2 < 0);
 
 		int us = source(swappedIdx), vs = target(swappedIdx);
 		assert edges[us] != EmptyEdgeMap;

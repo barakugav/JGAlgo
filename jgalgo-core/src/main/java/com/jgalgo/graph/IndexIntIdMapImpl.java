@@ -72,7 +72,7 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 						indexToId[idx] = id;
 
 						int oldIdx = idToIndex.put(id, idx);
-						if (oldIdx != -1)
+						if (oldIdx >= 0)
 							throw new IllegalArgumentException("duplicate id: " + id);
 					}
 
@@ -85,7 +85,7 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 						indexToId[idx] = id;
 
 						int oldIdx = idToIndex.put(id, idx);
-						if (oldIdx != -1)
+						if (oldIdx >= 0)
 							throw new IllegalArgumentException("duplicate id: " + id);
 					}
 				}
@@ -119,7 +119,7 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 		assert id >= 0;
 		assert idx == idToIndex.size();
 		int oldIdx = idToIndex.putIfAbsent(id, idx);
-		if (oldIdx != -1)
+		if (oldIdx >= 0)
 			return false;
 
 		if (idx == indexToId.length)
@@ -223,7 +223,7 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 			}
 		}
 		int oldIdx = idToIndex.putIfAbsent(newId, idx);
-		if (oldIdx != -1) {
+		if (oldIdx >= 0) {
 			idToIndex.put(oldId, idx); /* roll back */
 			if (isEdges) {
 				throw new IllegalArgumentException("Graph already contain such an edge: " + newId);

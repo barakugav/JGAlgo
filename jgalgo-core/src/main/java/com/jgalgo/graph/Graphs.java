@@ -1824,7 +1824,7 @@ public class Graphs {
 		@Override
 		public int getEdge(int source, int target) {
 			int e = graph().getEdge(source, target);
-			return e != -1 ? e : graph().getEdge(target, source);
+			return e >= 0 ? e : graph().getEdge(target, source);
 		}
 
 		@Override

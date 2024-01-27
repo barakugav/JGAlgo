@@ -105,7 +105,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract implements GraphDefaults
 			if (oldVal1 >= 0)
 				throw new IllegalArgumentException("Parallel edge (idx=" + source + ",idx=" + target
 						+ ") already exists. Parallel edges are not allowed.");
-			assert oldVal2 == -1;
+			assert oldVal2 < 0;
 		}
 	}
 
@@ -135,7 +135,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract implements GraphDefaults
 			int oldVal1 = edgesIn[target].remove(swappedIdx);
 			int oldVal2 = edgesIn[target].put(removedIdx, e);
 			assert oldVal1 == e;
-			assert oldVal2 == -1;
+			assert oldVal2 < 0;
 		}
 		for (int e : edgesIn[swappedIdx].values()) {
 			int source = source(e);
@@ -143,15 +143,15 @@ class GraphHashmapDirected extends GraphHashmapAbstract implements GraphDefaults
 			int oldVal1 = edgesOut[source].remove(swappedIdx);
 			int oldVal2 = edgesOut[source].put(removedIdx, e);
 			assert oldVal1 == e;
-			assert oldVal2 == -1;
+			assert oldVal2 < 0;
 		}
 
 		if (selfEdge >= 0) {
 			setEndpoints(selfEdge, removedIdx, removedIdx);
 			int oldVal1 = edgesOut[swappedIdx].put(removedIdx, selfEdge);
 			int oldVal2 = edgesIn[swappedIdx].put(removedIdx, selfEdge);
-			assert oldVal1 == -1;
-			assert oldVal2 == -1;
+			assert oldVal1 < 0;
+			assert oldVal2 < 0;
 		}
 
 		swapAndClear(edgesOut, removedIdx, swappedIdx, EmptyEdgeMap);
@@ -245,7 +245,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract implements GraphDefaults
 
 		int oldVal4 = ensureEdgesMapMutable(edgesOut, newSource).put(newTarget, edge);
 		int oldVal3 = ensureEdgesMapMutable(edgesIn, newTarget).put(newSource, edge);
-		assert -1 == oldVal3 && -1 == oldVal4;
+		assert oldVal3 < 0 && oldVal4 < 0;
 
 		setEndpoints(edge, newSource, newTarget);
 	}

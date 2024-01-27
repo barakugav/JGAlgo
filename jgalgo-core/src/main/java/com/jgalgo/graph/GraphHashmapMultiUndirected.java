@@ -110,14 +110,14 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract implements G
 			int oldVal1 = edgesMap[target].remove(swappedIdx);
 			int oldVal2 = edgesMap[target].put(removedIdx, firstEdge);
 			assert oldVal1 == firstEdge;
-			assert oldVal2 == -1;
+			assert oldVal2 < 0;
 		}
 
 		if (firstSelfEdge >= 0) {
 			for (int e = firstSelfEdge; e >= 0; e = edgeNext[e])
 				setEndpoints(e, removedIdx, removedIdx);
 			int oldVal = edgesMap[swappedIdx].put(removedIdx, firstSelfEdge);
-			assert oldVal == -1;
+			assert oldVal < 0;
 		}
 
 		swapAndClear(edgesMap, removedIdx, swappedIdx, EmptyEdgeMap);

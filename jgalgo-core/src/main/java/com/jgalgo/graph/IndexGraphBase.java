@@ -359,7 +359,7 @@ abstract class IndexGraphBase extends AbstractGraph<Integer, Integer> implements
 
 		@Override
 		public void remove() {
-			if (lastEdge == -1)
+			if (lastEdge < 0)
 				throw new IllegalStateException();
 
 			/* we remove the edge using the graph API, not EdgeIter.remove(), so we must copy the iterator */
