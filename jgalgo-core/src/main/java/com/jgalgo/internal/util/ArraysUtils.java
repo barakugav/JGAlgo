@@ -28,14 +28,6 @@ public class ArraysUtils {
 
 	private ArraysUtils() {}
 
-	static <E> E kthElement(E[] a, int k, Comparator<? super E> c) {
-		return kthElement(a, 0, a.length, k, c, false);
-	}
-
-	static int kthElement(int[] a, int k, IntComparator c) {
-		return kthElement(a, 0, a.length, k, c, false);
-	}
-
 	/**
 	 * Get the element that would be in the k-th position if the array was sorted.
 	 *
@@ -56,6 +48,7 @@ public class ArraysUtils {
 		Assertions.checkArrayFromTo(from, to, a.length);
 		Assertions.checkArrayIndex(k, from, to);
 		if (!inPlace) {
+			k -= from;
 			a = Arrays.copyOfRange(a, from, to);
 			from = 0;
 			to = a.length;
@@ -85,6 +78,7 @@ public class ArraysUtils {
 		Assertions.checkArrayFromTo(from, to, a.length);
 		Assertions.checkArrayIndex(k, from, to);
 		if (!inPlace) {
+			k -= from;
 			a = Arrays.copyOfRange(a, from, to);
 			from = 0;
 			to = a.length;
@@ -96,10 +90,9 @@ public class ArraysUtils {
 	}
 
 	private static <E> void kthElement0(E[] x, int from, int to, int k, Comparator<? super E> comp) {
+		if (from >= to - 1)
+			return;
 		for (;;) {
-			if (from == to + 1)
-				return;
-
 			/* Pivot choice code from fastutil */
 			final int len = to - from;
 			// Choose a partition element, v
@@ -131,10 +124,9 @@ public class ArraysUtils {
 	}
 
 	private static void kthElement0(int[] x, int from, int to, int k, IntComparator comp) {
+		if (from >= to - 1)
+			return;
 		for (;;) {
-			if (from == to + 1)
-				return;
-
 			/* Pivot choice code from fastutil */
 			final int len = to - from;
 			// Choose a partition element, v
