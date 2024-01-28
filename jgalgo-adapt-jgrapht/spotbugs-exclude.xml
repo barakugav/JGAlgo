@@ -15,7 +15,7 @@
   <Match>
     <!-- The returned weights are not internal data, they should be modified by the user -->
     <Class name="com.jgalgo.adapt.jgrapht.JGraphTWrapper" />
-    <Method name="getEdgesWeights" />
+    <Method name="edgesWeights" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>

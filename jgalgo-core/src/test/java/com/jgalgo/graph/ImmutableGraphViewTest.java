@@ -389,9 +389,9 @@ public class ImmutableGraphViewTest extends TestBase {
 			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 			Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
 
-			assertEquals(gOrig.getVerticesWeightsKeys(), gImmutable.getVerticesWeightsKeys());
-			WeightsInt<Integer> wOrig = gOrig.getVerticesWeights(VerticesWeightsKey);
-			WeightsInt<Integer> wImmutable = gImmutable.getVerticesWeights(VerticesWeightsKey);
+			assertEquals(gOrig.verticesWeightsKeys(), gImmutable.verticesWeightsKeys());
+			WeightsInt<Integer> wOrig = gOrig.verticesWeights(VerticesWeightsKey);
+			WeightsInt<Integer> wImmutable = gImmutable.verticesWeights(VerticesWeightsKey);
 
 			for (Integer v : gImmutable.vertices())
 				assertEquals(wOrig.get(v), wImmutable.get(v));
@@ -413,9 +413,9 @@ public class ImmutableGraphViewTest extends TestBase {
 			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 			Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
 
-			assertEquals(gOrig.getEdgesWeightsKeys(), gImmutable.getEdgesWeightsKeys());
-			WeightsInt<Integer> wOrig = gOrig.getEdgesWeights(EdgesWeightsKey);
-			WeightsInt<Integer> wImmutable = gImmutable.getEdgesWeights(EdgesWeightsKey);
+			assertEquals(gOrig.edgesWeightsKeys(), gImmutable.edgesWeightsKeys());
+			WeightsInt<Integer> wOrig = gOrig.edgesWeights(EdgesWeightsKey);
+			WeightsInt<Integer> wImmutable = gImmutable.edgesWeights(EdgesWeightsKey);
 
 			for (Integer e : gImmutable.edges())
 				assertEquals(wOrig.get(e), wImmutable.get(e));
@@ -566,10 +566,10 @@ public class ImmutableGraphViewTest extends TestBase {
 			assertEquals(gOrig.toString(), gImmutable.toString());
 			assertEquals(gOrig.immutableView().toString(), gImmutable.toString());
 
-			while (!gOrig0.getVerticesWeightsKeys().isEmpty())
-				gOrig0.removeVerticesWeights(gOrig0.getVerticesWeightsKeys().iterator().next());
-			while (!gOrig0.getEdgesWeightsKeys().isEmpty())
-				gOrig0.removeEdgesWeights(gOrig0.getEdgesWeightsKeys().iterator().next());
+			while (!gOrig0.verticesWeightsKeys().isEmpty())
+				gOrig0.removeVerticesWeights(gOrig0.verticesWeightsKeys().iterator().next());
+			while (!gOrig0.edgesWeightsKeys().isEmpty())
+				gOrig0.removeEdgesWeights(gOrig0.edgesWeightsKeys().iterator().next());
 			assertEquals(gOrig.toString(), gImmutable.toString());
 			assertEquals(gOrig.immutableView().toString(), gImmutable.toString());
 		});

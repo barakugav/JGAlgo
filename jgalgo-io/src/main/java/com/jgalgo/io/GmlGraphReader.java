@@ -116,8 +116,8 @@ import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
  *
  * <p>
  * The weights of the vertices will added to the built graph, and will be accessed later by the
- * {@link Graph#getVerticesWeights(String)} method, and similarly for the edges weights. GML supports integers, doubles
- * and strings as weights, and the weights will be added to the graph using {@link WeightsInt}, {@link WeightsDouble} or
+ * {@link Graph#verticesWeights(String)} method, and similarly for the edges weights. GML supports integers, doubles and
+ * strings as weights, and the weights will be added to the graph using {@link WeightsInt}, {@link WeightsDouble} or
  * {@link WeightsObj}. If the vertices (edges) contains weights with the same key but different type, the weights will
  * be added to the graph using a 'supertype' of the weights type. For example, if the vertices contains weights with key
  * 'weight' of type {@code int.class} and {@code double.class}, the weights will be added to the graph using

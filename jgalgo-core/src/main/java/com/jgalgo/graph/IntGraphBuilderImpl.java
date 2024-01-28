@@ -154,8 +154,8 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T, WeightsT extends Weights<Integer, T>> WeightsT getVerticesWeights(String key) {
-		WeightsImpl.Index<T> indexWeights = ibuilder.getVerticesWeights(key);
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT verticesWeights(String key) {
+		WeightsImpl.Index<T> indexWeights = ibuilder.verticesWeights(key);
 		if (indexWeights == null)
 			return null;
 		return (WeightsT) verticesWeights
@@ -166,18 +166,18 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
 			T defVal) {
 		ibuilder.addVerticesWeights(key, type, defVal);
-		return getVerticesWeights(key);
+		return verticesWeights(key);
 	}
 
 	@Override
-	public Set<String> getVerticesWeightsKeys() {
-		return ibuilder.getVerticesWeightsKeys();
+	public Set<String> verticesWeightsKeys() {
+		return ibuilder.verticesWeightsKeys();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key) {
-		WeightsImpl.Index<T> indexWeights = ibuilder.getEdgesWeights(key);
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT edgesWeights(String key) {
+		WeightsImpl.Index<T> indexWeights = ibuilder.edgesWeights(key);
 		if (indexWeights == null)
 			return null;
 		return (WeightsT) edgesWeights
@@ -188,12 +188,12 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
 			T defVal) {
 		ibuilder.addEdgesWeights(key, type, defVal);
-		return getEdgesWeights(key);
+		return edgesWeights(key);
 	}
 
 	@Override
-	public Set<String> getEdgesWeightsKeys() {
-		return ibuilder.getEdgesWeightsKeys();
+	public Set<String> edgesWeightsKeys() {
+		return ibuilder.edgesWeightsKeys();
 	}
 
 	@Override

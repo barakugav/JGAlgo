@@ -183,7 +183,7 @@ public class LineGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 * 		.commonVertexWeights("common-vertex")
 	 * 		.generate();
 	 *
-	 * 	WeightsObj<Integer, URI> commonVertexWeights = g.getEdgesWeights("common-vertex");
+	 * 	WeightsObj<Integer, URI> commonVertexWeights = g.edgesWeight("common-vertex");
 	 * 	for (Integer lineEdge : g.edges()) {
 	 * 		String e1 = g.edgeSource(lineEdge);
 	 * 		String e2 = g.edgeTarget(lineEdge);

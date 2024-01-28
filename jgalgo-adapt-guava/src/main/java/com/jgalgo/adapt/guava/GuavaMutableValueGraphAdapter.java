@@ -44,7 +44,7 @@ import com.google.common.graph.MutableValueGraph;
  * The values of the edges are represented as {@linkplain com.jgalgo.graph.Weights weights} in the underlying JGAlgo
  * graph, and the weights key is passed in the
  * {@linkplain #GuavaMutableValueGraphAdapter(com.jgalgo.graph.Graph, String) constructor}, see
- * {@linkplain com.jgalgo.graph.Graph#getEdgesWeights(String)}. The type of the value is specified as a generic
+ * {@linkplain com.jgalgo.graph.Graph#edgesWeights(String)}. The type of the value is specified as a generic
  * {@code ValueT} parameter. The edge generic type {@code E} is not reflected in the Guava graph, and is only used
  * internally for safe access to the underlying JGAlgo graph. To create new connections (edges) in the graph, the
  * adapter must be able to create a new identifier for the created edge in the JGAlgo graph. This is done via the

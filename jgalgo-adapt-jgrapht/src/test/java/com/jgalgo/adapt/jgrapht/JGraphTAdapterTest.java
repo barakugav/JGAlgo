@@ -788,7 +788,7 @@ public class JGraphTAdapterTest {
 		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig, "weights");
-			WeightsDouble<Integer> weights = gOrig.getEdgesWeights("weights");
+			WeightsDouble<Integer> weights = gOrig.edgesWeights("weights");
 			for (Integer e : gOrig.edges())
 				assertEquals(weights.get(e), g.getEdgeWeight(e));
 
@@ -807,7 +807,7 @@ public class JGraphTAdapterTest {
 		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, false, false);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig, "weights");
-			WeightsDouble<Integer> weights = gOrig.getEdgesWeights("weights");
+			WeightsDouble<Integer> weights = gOrig.edgesWeights("weights");
 			for (Integer e : gOrig.edges()) {
 				double newWeight = g.getEdgeWeight(e) + 1;
 				g.setEdgeWeight(e, newWeight);

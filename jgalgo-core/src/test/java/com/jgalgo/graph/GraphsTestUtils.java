@@ -218,14 +218,14 @@ public class GraphsTestUtils extends TestUtils {
 		Graph<Integer, Integer> g2 = graphImpl.apply(g.isDirected());
 		g2.addVertices(g.vertices());
 		g2.addEdges(EdgeSet.allOf(g));
-		for (String weightKey : g.getVerticesWeightsKeys()) {
-			Weights<Integer, Object> w1 = g.getVerticesWeights(weightKey);
+		for (String weightKey : g.verticesWeightsKeys()) {
+			Weights<Integer, Object> w1 = g.verticesWeights(weightKey);
 			Weights<Integer, Object> w2 = g2.addVerticesWeights(weightKey, (Class<Object>) getWeightsType(w1));
 			for (int v : g.vertices())
 				w2.setAsObj(v, w1.getAsObj(v));
 		}
-		for (String weightKey : g.getEdgesWeightsKeys()) {
-			Weights<Integer, Object> w1 = g.getEdgesWeights(weightKey);
+		for (String weightKey : g.edgesWeightsKeys()) {
+			Weights<Integer, Object> w1 = g.edgesWeights(weightKey);
 			Weights<Integer, Object> w2 = g2.addEdgesWeights(weightKey, (Class<Object>) getWeightsType(w1));
 			for (int e : g.edges())
 				w2.setAsObj(e, w1.getAsObj(e));

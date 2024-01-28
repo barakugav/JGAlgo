@@ -332,7 +332,7 @@ public class WeightsTest extends TestBase {
 			assertThrows(NoSuchEdgeException.class, () -> weights.setAsObj(-1, weightFactory.get()));
 			assertThrows(NoSuchEdgeException.class, () -> weights.setAsObj(nonExistingEdge, weightFactory.get()));
 
-			Weights<Integer, T> weightsImmutable = g.immutableView().getEdgesWeights(wKey);
+			Weights<Integer, T> weightsImmutable = g.immutableView().edgesWeights(wKey);
 			for (int e : g.edges())
 				assertEquals(weights.getAsObj(e), weightsImmutable.getAsObj(e));
 			assertEquals(weights.defaultWeightAsObj(), weightsImmutable.defaultWeightAsObj());

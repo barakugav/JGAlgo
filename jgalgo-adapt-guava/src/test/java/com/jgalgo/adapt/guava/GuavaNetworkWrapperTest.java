@@ -987,10 +987,10 @@ public class GuavaNetworkWrapperTest {
 		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
-			assertEquals(Set.of(), g.getVerticesWeightsKeys());
-			assertEquals(Set.of(), g.getEdgesWeightsKeys());
-			assertNull(g.getVerticesWeights("weights"));
-			assertNull(g.getEdgesWeights("weights"));
+			assertEquals(Set.of(), g.verticesWeightsKeys());
+			assertEquals(Set.of(), g.edgesWeightsKeys());
+			assertNull(g.verticesWeights("weights"));
+			assertNull(g.edgesWeights("weights"));
 			assertThrows(IllegalArgumentException.class, () -> g.removeVerticesWeights("nonexistingedges"));
 			assertThrows(IllegalArgumentException.class, () -> g.removeEdgesWeights("nonexistingedges"));
 			assertThrows(UnsupportedOperationException.class, () -> g.addVerticesWeights("weights", double.class));
@@ -1534,10 +1534,10 @@ public class GuavaNetworkWrapperTest {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
-			assertEquals(Set.of(), ig.getVerticesWeightsKeys());
-			assertEquals(Set.of(), ig.getEdgesWeightsKeys());
-			assertNull(ig.getVerticesWeights("weights"));
-			assertNull(ig.getEdgesWeights("weights"));
+			assertEquals(Set.of(), ig.verticesWeightsKeys());
+			assertEquals(Set.of(), ig.edgesWeightsKeys());
+			assertNull(ig.verticesWeights("weights"));
+			assertNull(ig.edgesWeights("weights"));
 			assertThrows(UnsupportedOperationException.class, () -> ig.removeVerticesWeights("nonexistingedges"));
 			assertThrows(UnsupportedOperationException.class, () -> ig.removeEdgesWeights("nonexistingedges"));
 			assertThrows(UnsupportedOperationException.class, () -> ig.addVerticesWeights("weights", double.class));

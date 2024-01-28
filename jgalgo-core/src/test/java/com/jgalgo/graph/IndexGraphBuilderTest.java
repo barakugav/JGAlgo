@@ -584,23 +584,22 @@ public class IndexGraphBuilderTest extends TestBase {
 			addWeights.accept(char.class, () -> Character.valueOf((char) rand.nextInt()));
 			addWeights.accept(String.class, () -> String.valueOf(rand.nextInt()));
 
-			assertEquals(g.getVerticesWeightsKeys(), b.getVerticesWeightsKeys());
-			assertEquals(g.getEdgesWeightsKeys(), b.getEdgesWeightsKeys());
-			assertNull(b.getVerticesWeights("dashpauht"));
-			assertNull(b.getEdgesWeights("asdjeea"));
+			assertEquals(g.verticesWeightsKeys(), b.verticesWeightsKeys());
+			assertEquals(g.edgesWeightsKeys(), b.edgesWeightsKeys());
+			assertNull(b.verticesWeights("dashpauht"));
+			assertNull(b.edgesWeights("asdjeea"));
 
 			IntGraph gActual = buildMut ? b.buildMutable() : b.build();
 			assertEquals(g, gActual);
 
-			assertEquals(b.getVerticesWeightsKeys(), gActual.getVerticesWeightsKeys());
-			assertEquals(b.getEdgesWeightsKeys(), gActual.getEdgesWeightsKeys());
+			assertEquals(b.verticesWeightsKeys(), gActual.verticesWeightsKeys());
+			assertEquals(b.edgesWeightsKeys(), gActual.edgesWeightsKeys());
 
-			for (String key : g.getVerticesWeightsKeys())
-				assertEquals(g.getVerticesWeights(key).defaultWeightAsObj(),
-						gActual.getVerticesWeights(key).defaultWeightAsObj());
-			for (String key : g.getEdgesWeightsKeys())
-				assertEquals(g.getEdgesWeights(key).defaultWeightAsObj(),
-						gActual.getEdgesWeights(key).defaultWeightAsObj());
+			for (String key : g.verticesWeightsKeys())
+				assertEquals(g.verticesWeights(key).defaultWeightAsObj(),
+						gActual.verticesWeights(key).defaultWeightAsObj());
+			for (String key : g.edgesWeightsKeys())
+				assertEquals(g.edgesWeights(key).defaultWeightAsObj(), gActual.edgesWeights(key).defaultWeightAsObj());
 		});
 	}
 
@@ -616,14 +615,14 @@ public class IndexGraphBuilderTest extends TestBase {
 			b.ensureEdgeCapacity(g.edges().size());
 			b.addVertices(g.vertices());
 			b.addEdges(EdgeSet.allOf(g));
-			for (String key : g.getVerticesWeightsKeys()) {
-				IWeightsInt w = g.getVerticesWeights(key);
+			for (String key : g.verticesWeightsKeys()) {
+				IWeightsInt w = g.verticesWeights(key);
 				IWeightsInt bw = b.addVerticesWeights(key, int.class, Integer.valueOf(w.defaultWeight()));
 				for (int v : g.vertices())
 					bw.set(v, w.get(v));
 			}
-			for (String key : g.getEdgesWeightsKeys()) {
-				IWeightsInt w = g.getEdgesWeights(key);
+			for (String key : g.edgesWeightsKeys()) {
+				IWeightsInt w = g.edgesWeights(key);
 				IWeightsInt bw = b.addEdgesWeights(key, int.class, Integer.valueOf(w.defaultWeight()));
 				for (int e : g.edges())
 					bw.set(e, w.get(e));
@@ -661,15 +660,15 @@ public class IndexGraphBuilderTest extends TestBase {
 					int u = vOrigToReIndexed.applyAsInt(uOrig), v = vOrigToReIndexed.applyAsInt(vOrig);
 					gReIndexedExpected.addEdge(u, v);
 				}
-				for (String key : g.getVerticesWeightsKeys()) {
-					IWeightsInt w = g.getVerticesWeights(key);
+				for (String key : g.verticesWeightsKeys()) {
+					IWeightsInt w = g.verticesWeights(key);
 					IWeightsInt wReIndexed =
 							gReIndexedExpected.addVerticesWeights(key, int.class, Integer.valueOf(w.defaultWeight()));
 					for (int v : gReIndexed.vertices())
 						wReIndexed.set(v, w.get(vReIndexedToOrig.applyAsInt(v)));
 				}
-				for (String key : g.getEdgesWeightsKeys()) {
-					IWeightsInt w = g.getEdgesWeights(key);
+				for (String key : g.edgesWeightsKeys()) {
+					IWeightsInt w = g.edgesWeights(key);
 					IWeightsInt wReIndexed =
 							gReIndexedExpected.addEdgesWeights(key, int.class, Integer.valueOf(w.defaultWeight()));
 					for (int e : gReIndexed.edges())
@@ -780,18 +779,18 @@ public class IndexGraphBuilderTest extends TestBase {
 							Set
 									.of("vByteWeights", "vShortWeights", "vIntWeights", "vLongWeights", "vFloatWeights",
 											"vDoubleWeights", "vBoolWeights", "vCharWeights", "vStringWeights"),
-							bg.getVerticesWeightsKeys());
+							bg.verticesWeightsKeys());
 				} else {
-					assertEquals(Set.of(), bg.getVerticesWeightsKeys());
+					assertEquals(Set.of(), bg.verticesWeightsKeys());
 				}
 				if (copyEdgesWeights) {
 					assertEquals(
 							Set
 									.of("eByteWeights", "eShortWeights", "eIntWeights", "eLongWeights", "eFloatWeights",
 											"eDoubleWeights", "eBoolWeights", "eCharWeights", "eStringWeights"),
-							bg.getEdgesWeightsKeys());
+							bg.edgesWeightsKeys());
 				} else {
-					assertEquals(Set.of(), bg.getEdgesWeightsKeys());
+					assertEquals(Set.of(), bg.edgesWeightsKeys());
 				}
 				assertEquals(g.copy(copyVerticesWeights, copyEdgesWeights), bg);
 			});

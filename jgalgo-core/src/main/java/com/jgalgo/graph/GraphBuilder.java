@@ -251,7 +251,7 @@ public interface GraphBuilder<V, E> {
 	 * @param  key        key of the weights
 	 * @return            vertices weights of the key, or {@code null} if no container found with the specified key
 	 */
-	<T, WeightsT extends Weights<V, T>> WeightsT getVerticesWeights(String key);
+	<T, WeightsT extends Weights<V, T>> WeightsT verticesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the vertices of the built graph.
@@ -298,7 +298,7 @@ public interface GraphBuilder<V, E> {
 	 *
 	 * @return the keys of all the associated vertices weights
 	 */
-	Set<String> getVerticesWeightsKeys();
+	Set<String> verticesWeightsKeys();
 
 	/**
 	 * Get the edges weights of some key.
@@ -312,7 +312,7 @@ public interface GraphBuilder<V, E> {
 	 * @param  key        key of the weights
 	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
 	 */
-	<T, WeightsT extends Weights<E, T>> WeightsT getEdgesWeights(String key);
+	<T, WeightsT extends Weights<E, T>> WeightsT edgesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the edges of the built graph.
@@ -359,7 +359,7 @@ public interface GraphBuilder<V, E> {
 	 *
 	 * @return the keys of all the associated edges weights
 	 */
-	Set<String> getEdgesWeightsKeys();
+	Set<String> edgesWeightsKeys();
 
 	/**
 	 * Clear the builder by removing all vertices and edges added to it.

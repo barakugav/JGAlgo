@@ -365,8 +365,8 @@ class IntGraphImpl extends AbstractGraphImpl<Integer, Integer> implements IntGra
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T, WeightsT extends Weights<Integer, T>> WeightsT getVerticesWeights(String key) {
-		WeightsImpl.Index<T> indexWeights = indexGraph.getVerticesWeights(key);
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT verticesWeights(String key) {
+		WeightsImpl.Index<T> indexWeights = indexGraph.verticesWeights(key);
 		if (indexWeights == null)
 			return null;
 		return (WeightsT) verticesWeights
@@ -375,8 +375,8 @@ class IntGraphImpl extends AbstractGraphImpl<Integer, Integer> implements IntGra
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key) {
-		WeightsImpl.Index<T> indexWeights = indexGraph.getEdgesWeights(key);
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT edgesWeights(String key) {
+		WeightsImpl.Index<T> indexWeights = indexGraph.edgesWeights(key);
 		if (indexWeights == null)
 			return null;
 		return (WeightsT) edgesWeights

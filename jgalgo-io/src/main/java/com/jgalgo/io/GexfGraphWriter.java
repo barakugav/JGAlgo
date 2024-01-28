@@ -132,14 +132,14 @@ public class GexfGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V, E
 			rootElm.appendChild(graphElm);
 
 			Element nodeAttributesElm = null;
-			if (!graph.getVerticesWeightsKeys().isEmpty()) {
+			if (!graph.verticesWeightsKeys().isEmpty()) {
 				nodeAttributesElm = document.createElement("attributes");
 				nodeAttributesElm.setAttribute("class", "node");
 				graphElm.appendChild(nodeAttributesElm);
 			}
 			List<Function<V, Element>> vWeightsWriters = new ArrayList<>();
-			for (String weightKey : graph.getVerticesWeightsKeys()) {
-				Weights<V, ?> weights = graph.getVerticesWeights(weightKey);
+			for (String weightKey : graph.verticesWeightsKeys()) {
+				Weights<V, ?> weights = graph.verticesWeights(weightKey);
 				Pair<String, Function<Object, String>> attrWriter0 = attrWriter(weights, graph.vertices());
 				if (attrWriter0 == null)
 					throw new IllegalArgumentException(
@@ -172,14 +172,14 @@ public class GexfGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V, E
 			}
 
 			Element edgeAttributesElm = null;
-			if (!graph.getEdgesWeightsKeys().isEmpty()) {
+			if (!graph.edgesWeightsKeys().isEmpty()) {
 				edgeAttributesElm = document.createElement("attributes");
 				edgeAttributesElm.setAttribute("class", "edge");
 				graphElm.appendChild(edgeAttributesElm);
 			}
 			List<Function<E, Element>> eWeightsWriters = new ArrayList<>();
-			for (String weightKey : graph.getEdgesWeightsKeys()) {
-				Weights<E, ?> weights = graph.getEdgesWeights(weightKey);
+			for (String weightKey : graph.edgesWeightsKeys()) {
+				Weights<E, ?> weights = graph.edgesWeights(weightKey);
 				Pair<String, Function<Object, String>> attrWriter0 = attrWriter(weights, graph.edges());
 				if (attrWriter0 == null)
 					throw new IllegalArgumentException("Edges weights with key '" + weightKey + "' are not supported");

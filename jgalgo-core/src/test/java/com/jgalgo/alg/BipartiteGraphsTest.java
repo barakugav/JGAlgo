@@ -109,7 +109,7 @@ public class BipartiteGraphsTest extends TestBase {
 
 				if (addPartitionWeight) {
 					WeightsBool<Integer> partitionWeights =
-							g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
+							g.verticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 					assertNotNull(partitionWeights);
 					g.edges().stream().forEach(e -> {
 						Integer u = g.edgeSource(e), v = g.edgeTarget(e);
@@ -118,7 +118,7 @@ public class BipartiteGraphsTest extends TestBase {
 					assertNotEquals(Optional.empty(), BipartiteGraphs.getExistingPartition(g));
 
 				} else {
-					assertNull(g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey));
+					assertNull(g.verticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey));
 					assertEquals(Optional.empty(), BipartiteGraphs.getExistingPartition(g));
 				}
 			});
@@ -150,7 +150,7 @@ public class BipartiteGraphsTest extends TestBase {
 		Graph<Integer, Integer> g = GraphsTestUtils.randBipartiteGraph(20, 31, 200, false, rand.nextLong());
 
 		/* random (probably invalid) existing partition */
-		WeightsBool<Integer> existingPartition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
+		WeightsBool<Integer> existingPartition = g.verticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 		for (Integer v : g.vertices())
 			existingPartition.set(v, rand.nextBoolean());
 
@@ -160,7 +160,7 @@ public class BipartiteGraphsTest extends TestBase {
 		assertNotNull(partition);
 
 		/* assert returned partition uses the existing vertices weights */
-		assertEquals(Set.of(BipartiteGraphs.VertexBiPartitionWeightKey), g.getVerticesWeightsKeys());
+		assertEquals(Set.of(BipartiteGraphs.VertexBiPartitionWeightKey), g.verticesWeightsKeys());
 		for (Integer v : g.vertices())
 			assertEqualsBool(partition.isLeft(v), existingPartition.get(v));
 	}

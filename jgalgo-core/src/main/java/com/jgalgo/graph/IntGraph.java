@@ -690,7 +690,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * {@link IWeightsDouble}.
 	 */
 	@Override
-	<T, WeightsT extends Weights<Integer, T>> WeightsT getVerticesWeights(String key);
+	<T, WeightsT extends Weights<Integer, T>> WeightsT verticesWeights(String key);
 
 	/**
 	 * {@inheritDoc}
@@ -700,7 +700,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * {@link IWeightsDouble}.
 	 */
 	@Override
-	<T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key);
+	<T, WeightsT extends Weights<Integer, T>> WeightsT edgesWeights(String key);
 
 	@Override
 	IndexIntIdMap indexGraphVerticesMap();

@@ -41,8 +41,8 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
  * {@link com.jgalgo.graph.Graph#isDirected()}, {@link com.jgalgo.graph.Graph#isAllowParallelEdges()},
  * {@link com.jgalgo.graph.Graph#isAllowSelfEdges()}). Wether the adapter is weighted or not is determined in the
  * {@linkplain #JGraphTAdapter(com.jgalgo.graph.Graph, String) constructor} by passing the edge weight key, see
- * {@link com.jgalgo.graph.Graph#getEdgesWeights(String)}. Although JGAlgo graphs support multiple types of weights,
- * both for vertices and edges, JGraphT graphs support only one double weight type, for edges.
+ * {@link com.jgalgo.graph.Graph#edgesWeights(String)}. Although JGAlgo graphs support multiple types of weights, both
+ * for vertices and edges, JGraphT graphs support only one double weight type, for edges.
  *
  * <p>
  * For adapting the other way around, from JGraphT to JGAlgo, see {@link JGraphTWrapper}.
@@ -79,8 +79,8 @@ public class JGraphTAdapter<V, E> extends org.jgrapht.graph.AbstractGraph<V, E> 
 	 *
 	 * @param  graph                    the JGAlgo graph
 	 * @param  edgeWeightKey            the edge weight key of the {@linkplain WeightsDouble double weights} of the
-	 *                                      JGAlgo graph (see {@link com.jgalgo.graph.Graph#getEdgesWeights(String)}),
-	 *                                      or {@code null} for unweighted
+	 *                                      JGAlgo graph (see {@link com.jgalgo.graph.Graph#edgesWeights(String)}), or
+	 *                                      {@code null} for unweighted
 	 * @throws IllegalArgumentException if the edge weight key is not {@code null} and it is not found in the JGAlgo
 	 *                                      graph
 	 */
@@ -92,7 +92,7 @@ public class JGraphTAdapter<V, E> extends org.jgrapht.graph.AbstractGraph<V, E> 
 		if (edgeWeightKey == null) {
 			weights = null;
 		} else {
-			weights = graph.getEdgesWeights(edgeWeightKey);
+			weights = graph.edgesWeights(edgeWeightKey);
 			if (weights == null)
 				throw new IllegalArgumentException("No edges weights for key '" + edgeWeightKey + "'");
 		}

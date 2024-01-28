@@ -342,8 +342,8 @@ public class UnionGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 * 		.copyWeights(true, false)
 	 * 		.verticesWeightsKeys(Set.of("w1"))
 	 * 		.generate();
-	 * assert union.getVerticesWeightsKeys().equals(Set.of("w1"));
-	 * WeightsInt<Integer> union_w1 = union.getVerticesWeights("w1");
+	 * assert union.verticesWeightsKeys().equals(Set.of("w1"));
+	 * WeightsInt<Integer> union_w1 = union.verticesWeights("w1");
 	 * assert union_w1.defaultWeight() == -1;
 	 * assert union_w1.get(0) == 100;
 	 * assert union_w1.get(1) == 500;
@@ -655,8 +655,8 @@ public class UnionGraphGenerator<V, E> implements GraphGenerator<V, E> {
 		final int graphsNum = graphs.size();
 		for (int graphIdx : range(graphsNum)) {
 			Graph<V, E> graph = graphs.get(graphIdx);
-			for (String key : vertices ? graph.getVerticesWeightsKeys() : graph.getEdgesWeightsKeys()) {
-				Weights<?, ?> weights = vertices ? graph.getVerticesWeights(key) : graph.getEdgesWeights(key);
+			for (String key : vertices ? graph.verticesWeightsKeys() : graph.edgesWeightsKeys()) {
+				Weights<?, ?> weights = vertices ? graph.verticesWeights(key) : graph.edgesWeights(key);
 				Weights<?, ?>[] weightsPerGraphArr =
 						graphsContainingWeightsBitmaps.computeIfAbsent(key, k -> new Weights<?, ?>[graphsNum]);
 				weightsPerGraphArr[graphIdx] = weights;

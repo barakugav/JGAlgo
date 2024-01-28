@@ -32,8 +32,8 @@ abstract class AbstractGraphImpl<V, E> extends AbstractGraph<V, E> {
 	}
 
 	@Override
-	public Set<String> getVerticesWeightsKeys() {
-		return indexGraph.getVerticesWeightsKeys();
+	public Set<String> verticesWeightsKeys() {
+		return indexGraph.verticesWeightsKeys();
 	}
 
 	@Override
@@ -45,18 +45,18 @@ abstract class AbstractGraphImpl<V, E> extends AbstractGraph<V, E> {
 	public <T, WeightsT extends Weights<V, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
 			T defVal) {
 		indexGraph.addVerticesWeights(key, type, defVal);
-		return getVerticesWeights(key);
+		return verticesWeights(key);
 	}
 
 	@Override
 	public <T, WeightsT extends Weights<E, T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal) {
 		indexGraph.addEdgesWeights(key, type, defVal);
-		return getEdgesWeights(key);
+		return edgesWeights(key);
 	}
 
 	@Override
-	public Set<String> getEdgesWeightsKeys() {
-		return indexGraph.getEdgesWeightsKeys();
+	public Set<String> edgesWeightsKeys() {
+		return indexGraph.edgesWeightsKeys();
 	}
 
 	@Override

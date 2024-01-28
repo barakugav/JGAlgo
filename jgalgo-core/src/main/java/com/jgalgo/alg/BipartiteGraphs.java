@@ -177,7 +177,7 @@ public class BipartiteGraphs {
 	private static IWeightsBool getOrCreateBoolWeights(IndexGraph g, boolean addPartitionWeight) {
 		if (!addPartitionWeight)
 			return IWeights.createExternalEdgesWeights(g, boolean.class);
-		Object existingPartition = g.getVerticesWeights(VertexBiPartitionWeightKey);
+		Object existingPartition = g.verticesWeights(VertexBiPartitionWeightKey);
 		if (existingPartition == null)
 			return g.addVerticesWeights(VertexBiPartitionWeightKey, boolean.class);
 		if (!(existingPartition instanceof IWeightsBool))
@@ -212,7 +212,7 @@ public class BipartiteGraphs {
 	@SuppressWarnings("unchecked")
 	public static <V, E> Optional<VertexBiPartition<V, E>> getExistingPartition(Graph<V, E> g) {
 		IndexGraph ig = g instanceof IndexGraph ? (IndexGraph) g : g.indexGraph();
-		Object existingPartition = ig.getVerticesWeights(VertexBiPartitionWeightKey);
+		Object existingPartition = ig.verticesWeights(VertexBiPartitionWeightKey);
 		if (existingPartition == null)
 			return Optional.empty();
 		if (!(existingPartition instanceof IWeightsBool))

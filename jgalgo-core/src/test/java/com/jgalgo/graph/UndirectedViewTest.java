@@ -724,10 +724,10 @@ public class UndirectedViewTest extends TestBase {
 					vWeights2.set(v, rand.nextInt(10000));
 			}
 
-			assertEquals(g.getVerticesWeightsKeys(), undirectedG.getVerticesWeightsKeys());
+			assertEquals(g.verticesWeightsKeys(), undirectedG.verticesWeightsKeys());
 			for (String key : List.of(key1, key2)) {
-				WeightsInt<Integer> wOrig = g.getVerticesWeights(key);
-				WeightsInt<Integer> wUnd = undirectedG.getVerticesWeights(key);
+				WeightsInt<Integer> wOrig = g.verticesWeights(key);
+				WeightsInt<Integer> wUnd = undirectedG.verticesWeights(key);
 
 				for (Integer v : undirectedG.vertices())
 					assertEquals(wOrig.get(v), wUnd.get(v));
@@ -735,7 +735,7 @@ public class UndirectedViewTest extends TestBase {
 			}
 
 			undirectedG.removeVerticesWeights(key1);
-			assertEquals(g.getVerticesWeightsKeys(), undirectedG.getVerticesWeightsKeys());
+			assertEquals(g.verticesWeightsKeys(), undirectedG.verticesWeightsKeys());
 		});
 	}
 
@@ -758,10 +758,10 @@ public class UndirectedViewTest extends TestBase {
 					eWeights2.set(e, rand.nextInt(10000));
 			}
 
-			assertEquals(g.getEdgesWeightsKeys(), undirectedG.getEdgesWeightsKeys());
+			assertEquals(g.edgesWeightsKeys(), undirectedG.edgesWeightsKeys());
 			for (String key : List.of(key1, key2)) {
-				WeightsInt<Integer> wOrig = g.getEdgesWeights(key);
-				WeightsInt<Integer> wUnd = undirectedG.getEdgesWeights(key);
+				WeightsInt<Integer> wOrig = g.edgesWeights(key);
+				WeightsInt<Integer> wUnd = undirectedG.edgesWeights(key);
 
 				for (Integer e : undirectedG.edges())
 					assertEquals(wOrig.get(e), wUnd.get(e));
@@ -769,7 +769,7 @@ public class UndirectedViewTest extends TestBase {
 			}
 
 			undirectedG.removeEdgesWeights(key1);
-			assertEquals(g.getEdgesWeightsKeys(), undirectedG.getEdgesWeightsKeys());
+			assertEquals(g.edgesWeightsKeys(), undirectedG.edgesWeightsKeys());
 		});
 	}
 

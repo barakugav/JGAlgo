@@ -82,8 +82,8 @@ public class GraphMlGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V
 			int nextWeightsIdx = 0;
 			List<BiConsumer<V, Element>> vWeightsWriters = new ArrayList<>();
 			List<BiConsumer<E, Element>> eWeightsWriters = new ArrayList<>();
-			for (String weightKey : graph.getVerticesWeightsKeys()) {
-				Weights<V, ?> weights = graph.getVerticesWeights(weightKey);
+			for (String weightKey : graph.verticesWeightsKeys()) {
+				Weights<V, ?> weights = graph.verticesWeights(weightKey);
 				String type = attrType(weights, graph.vertices());
 				if (type == null)
 					throw new IllegalArgumentException(
@@ -113,8 +113,8 @@ public class GraphMlGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V
 					vertexElm.appendChild(dataElm);
 				});
 			}
-			for (String weightKey : graph.getEdgesWeightsKeys()) {
-				Weights<E, ?> weights = graph.getEdgesWeights(weightKey);
+			for (String weightKey : graph.edgesWeightsKeys()) {
+				Weights<E, ?> weights = graph.edgesWeights(weightKey);
 				String type = attrType(weights, graph.edges());
 				if (type == null)
 					throw new IllegalArgumentException("Edges weights with key '" + weightKey + "' are not supported");

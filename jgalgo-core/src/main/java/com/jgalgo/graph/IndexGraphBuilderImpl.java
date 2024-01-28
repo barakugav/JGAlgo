@@ -82,12 +82,12 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), false);
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), true);
 		if (copyVerticesWeights)
-			for (String key : g.getVerticesWeightsKeys())
+			for (String key : g.verticesWeightsKeys())
 				verticesUserWeights
-						.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), vertices, false));
+						.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.verticesWeights(key), vertices, false));
 		if (copyEdgesWeights)
-			for (String key : g.getEdgesWeightsKeys())
-				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edges, true));
+			for (String key : g.edgesWeightsKeys())
+				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.edgesWeights(key), edges, true));
 
 		setDefaultImpls();
 	}
@@ -319,7 +319,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	@Override
-	public <T, WeightsT extends Weights<Integer, T>> WeightsT getVerticesWeights(String key) {
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT verticesWeights(String key) {
 		return verticesUserWeights.getWeights(key);
 	}
 
@@ -334,12 +334,12 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	@Override
-	public Set<String> getVerticesWeightsKeys() {
+	public Set<String> verticesWeightsKeys() {
 		return verticesUserWeights.weightsKeys();
 	}
 
 	@Override
-	public <T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key) {
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT edgesWeights(String key) {
 		return edgesUserWeights.getWeights(key);
 	}
 
@@ -354,7 +354,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	@Override
-	public Set<String> getEdgesWeightsKeys() {
+	public Set<String> edgesWeightsKeys() {
 		return edgesUserWeights.weightsKeys();
 	}
 

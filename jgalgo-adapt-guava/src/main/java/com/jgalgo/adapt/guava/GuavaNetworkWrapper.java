@@ -411,12 +411,12 @@ public class GuavaNetworkWrapper<V, E> extends AbstractGraph<V, E> {
 	public void ensureEdgeCapacity(int edgeCapacity) {}
 
 	@Override
-	public <T, WeightsT extends Weights<V, T>> WeightsT getVerticesWeights(String key) {
+	public <T, WeightsT extends Weights<V, T>> WeightsT verticesWeights(String key) {
 		return null;
 	}
 
 	@Override
-	public Set<String> getVerticesWeightsKeys() {
+	public Set<String> verticesWeightsKeys() {
 		return Set.of();
 	}
 
@@ -432,12 +432,12 @@ public class GuavaNetworkWrapper<V, E> extends AbstractGraph<V, E> {
 	}
 
 	@Override
-	public <T, WeightsT extends Weights<E, T>> WeightsT getEdgesWeights(String key) {
+	public <T, WeightsT extends Weights<E, T>> WeightsT edgesWeights(String key) {
 		return null;
 	}
 
 	@Override
-	public Set<String> getEdgesWeightsKeys() {
+	public Set<String> edgesWeightsKeys() {
 		return Set.of();
 	}
 
@@ -896,12 +896,12 @@ public class GuavaNetworkWrapper<V, E> extends AbstractGraph<V, E> {
 		}
 
 		@Override
-		public <T, WeightsT extends Weights<Integer, T>> WeightsT getVerticesWeights(String key) {
+		public <T, WeightsT extends Weights<Integer, T>> WeightsT verticesWeights(String key) {
 			return null;
 		}
 
 		@Override
-		public <T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key) {
+		public <T, WeightsT extends Weights<Integer, T>> WeightsT edgesWeights(String key) {
 			return null;
 		}
 
@@ -922,12 +922,12 @@ public class GuavaNetworkWrapper<V, E> extends AbstractGraph<V, E> {
 		public void ensureEdgeCapacity(int edgeCapacity) {}
 
 		@Override
-		public Set<String> getVerticesWeightsKeys() {
+		public Set<String> verticesWeightsKeys() {
 			return Set.of();
 		}
 
 		@Override
-		public Set<String> getEdgesWeightsKeys() {
+		public Set<String> edgesWeightsKeys() {
 			return Set.of();
 		}
 

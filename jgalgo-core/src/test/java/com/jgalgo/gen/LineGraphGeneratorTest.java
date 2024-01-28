@@ -151,9 +151,9 @@ public class LineGraphGeneratorTest extends TestBase {
 					.graph(origGraph)
 					.edges(IdBuilderInt.defaultBuilder());
 
-			assertEquals(Set.of(), gen.generate().getEdgesWeightsKeys());
-			assertEquals(Set.of("key-name"), gen.commonVertexWeights("key-name").generate().getEdgesWeightsKeys());
-			assertEquals(Set.of(), gen.commonVertexWeights(null).generate().getEdgesWeightsKeys());
+			assertEquals(Set.of(), gen.generate().edgesWeightsKeys());
+			assertEquals(Set.of("key-name"), gen.commonVertexWeights("key-name").generate().edgesWeightsKeys());
+			assertEquals(Set.of(), gen.commonVertexWeights(null).generate().edgesWeightsKeys());
 		});
 		foreachBoolConfig((directed, intGraph) -> {
 			for (int edgesNum : IntList.of(20, 100, 300)) {
@@ -172,8 +172,8 @@ public class LineGraphGeneratorTest extends TestBase {
 						.commonVertexWeights("common-vertex")
 						.generate();
 
-				assertEquals(Set.of("common-vertex"), lineGraph.getEdgesWeightsKeys());
-				Weights<Integer, Integer> commonVertexWeights = lineGraph.getEdgesWeights("common-vertex");
+				assertEquals(Set.of("common-vertex"), lineGraph.edgesWeightsKeys());
+				Weights<Integer, Integer> commonVertexWeights = lineGraph.edgesWeights("common-vertex");
 				if (intGraph) {
 					assertTrue(commonVertexWeights instanceof WeightsInt);
 				} else {

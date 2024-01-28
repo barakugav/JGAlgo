@@ -678,10 +678,10 @@ public class ReversedGraphViewTest extends TestBase {
 					vWeights2.set(v, rand.nextInt(10000));
 			}
 
-			assertEquals(gOrig.getVerticesWeightsKeys(), gRev.getVerticesWeightsKeys());
+			assertEquals(gOrig.verticesWeightsKeys(), gRev.verticesWeightsKeys());
 			for (String key : List.of(key1, key2)) {
-				WeightsInt<Integer> wOrig = gOrig.getVerticesWeights(key);
-				WeightsInt<Integer> wRev = gRev.getVerticesWeights(key);
+				WeightsInt<Integer> wOrig = gOrig.verticesWeights(key);
+				WeightsInt<Integer> wRev = gRev.verticesWeights(key);
 
 				for (Integer v : gRev.vertices())
 					assertEquals(wOrig.get(v), wRev.get(v));
@@ -689,7 +689,7 @@ public class ReversedGraphViewTest extends TestBase {
 			}
 
 			gRev.removeVerticesWeights(key1);
-			assertEquals(gOrig.getVerticesWeightsKeys(), gRev.getVerticesWeightsKeys());
+			assertEquals(gOrig.verticesWeightsKeys(), gRev.verticesWeightsKeys());
 		});
 	}
 
@@ -714,10 +714,10 @@ public class ReversedGraphViewTest extends TestBase {
 					eWeights2.set(e, rand.nextInt(10000));
 			}
 
-			assertEquals(gOrig.getEdgesWeightsKeys(), gRev.getEdgesWeightsKeys());
+			assertEquals(gOrig.edgesWeightsKeys(), gRev.edgesWeightsKeys());
 			for (String key : List.of(key1, key2)) {
-				WeightsInt<Integer> wOrig = gOrig.getEdgesWeights(key);
-				WeightsInt<Integer> wRev = gRev.getEdgesWeights(key);
+				WeightsInt<Integer> wOrig = gOrig.edgesWeights(key);
+				WeightsInt<Integer> wRev = gRev.edgesWeights(key);
 
 				for (Integer e : gRev.edges())
 					assertEquals(wOrig.get(e), wRev.get(e));
@@ -725,7 +725,7 @@ public class ReversedGraphViewTest extends TestBase {
 			}
 
 			gRev.removeEdgesWeights(key1);
-			assertEquals(gOrig.getEdgesWeightsKeys(), gRev.getEdgesWeightsKeys());
+			assertEquals(gOrig.edgesWeightsKeys(), gRev.edgesWeightsKeys());
 		});
 	}
 

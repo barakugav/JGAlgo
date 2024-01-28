@@ -273,19 +273,19 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, graph2)
 					.copyWeights(false, false)
 					.generate();
-			assertEquals(Set.of(), unionNoCopy.getVerticesWeightsKeys());
-			assertEquals(Set.of(), unionNoCopy.getEdgesWeightsKeys());
+			assertEquals(Set.of(), unionNoCopy.verticesWeightsKeys());
+			assertEquals(Set.of(), unionNoCopy.edgesWeightsKeys());
 
 			Graph<Integer, Integer> union = new UnionGraphGenerator<>(IntGraphFactory.undirected())
 					.graphs(graph1, graph2)
 					.copyWeights(true, false)
 					.generate();
-			assertEquals(Set.of("w1", "w2", "w3"), union.getVerticesWeightsKeys());
-			assertEquals(Set.of(), union.getEdgesWeightsKeys());
+			assertEquals(Set.of("w1", "w2", "w3"), union.verticesWeightsKeys());
+			assertEquals(Set.of(), union.edgesWeightsKeys());
 
-			WeightsInt<Integer> unionWeights1 = union.getVerticesWeights("w1");
-			WeightsInt<Integer> unionWeights2 = union.getVerticesWeights("w2");
-			WeightsInt<Integer> unionWeights3 = union.getVerticesWeights("w3");
+			WeightsInt<Integer> unionWeights1 = union.verticesWeights("w1");
+			WeightsInt<Integer> unionWeights2 = union.verticesWeights("w2");
+			WeightsInt<Integer> unionWeights3 = union.verticesWeights("w3");
 			assertEquals(-1, unionWeights1.defaultWeight());
 			assertEquals(-2, unionWeights2.defaultWeight());
 			assertEquals(-30, unionWeights3.defaultWeight());
@@ -305,7 +305,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 							.copyWeights(true, false)
 							.verticesWeightsKeys(Set.of("w1", "w3"))
 							.generate()
-							.getVerticesWeightsKeys());
+							.verticesWeightsKeys());
 			assertEquals(Set.of("w1", "w2", "w3"),
 					new UnionGraphGenerator<>(IntGraphFactory.undirected())
 							.graphs(graph1, graph2)
@@ -313,7 +313,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 							.verticesWeightsKeys(Set.of("w1", "w3"))
 							.verticesWeightsKeys(null)
 							.generate()
-							.getVerticesWeightsKeys());
+							.verticesWeightsKeys());
 		});
 		foreachBoolConfig(directed -> {
 			Graph<Integer, Integer> graph1 = IntGraphFactory.newInstance(directed).newGraph();
@@ -338,7 +338,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(true, false)
 					.generate();
-			WeightsByte<Integer> unionWeights = union.getVerticesWeights("w1");
+			WeightsByte<Integer> unionWeights = union.verticesWeights("w1");
 			assertEquals(10, unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -351,7 +351,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(true, false)
 					.generate();
-			WeightsShort<Integer> unionWeights = union.getVerticesWeights("w1");
+			WeightsShort<Integer> unionWeights = union.verticesWeights("w1");
 			assertEquals(10, unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -364,7 +364,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(true, false)
 					.generate();
-			WeightsInt<Integer> unionWeights = union.getVerticesWeights("w1");
+			WeightsInt<Integer> unionWeights = union.verticesWeights("w1");
 			assertEquals(10, unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -377,7 +377,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(true, false)
 					.generate();
-			WeightsLong<Integer> unionWeights = union.getVerticesWeights("w1");
+			WeightsLong<Integer> unionWeights = union.verticesWeights("w1");
 			assertEquals(10, unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -390,7 +390,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(true, false)
 					.generate();
-			WeightsFloat<Integer> unionWeights = union.getVerticesWeights("w1");
+			WeightsFloat<Integer> unionWeights = union.verticesWeights("w1");
 			assertEquals(10.1f, unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -403,7 +403,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(true, false)
 					.generate();
-			WeightsDouble<Integer> unionWeights = union.getVerticesWeights("w1");
+			WeightsDouble<Integer> unionWeights = union.verticesWeights("w1");
 			assertEquals(10.1, unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -416,7 +416,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(true, false)
 					.generate();
-			WeightsBool<Integer> unionWeights = union.getVerticesWeights("w1");
+			WeightsBool<Integer> unionWeights = union.verticesWeights("w1");
 			assertEquals(true, unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -429,7 +429,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(true, false)
 					.generate();
-			WeightsChar<Integer> unionWeights = union.getVerticesWeights("w1");
+			WeightsChar<Integer> unionWeights = union.verticesWeights("w1");
 			assertEquals('a', unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -442,7 +442,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(true, false)
 					.generate();
-			WeightsObj<Integer, String> unionWeights = union.getVerticesWeights("w1");
+			WeightsObj<Integer, String> unionWeights = union.verticesWeights("w1");
 			assertEquals("10", unionWeights.get(0));
 		});
 	}
@@ -478,19 +478,19 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, graph2)
 					.copyWeights(false, false)
 					.generate();
-			assertEquals(Set.of(), unionNoCopy.getVerticesWeightsKeys());
-			assertEquals(Set.of(), unionNoCopy.getEdgesWeightsKeys());
+			assertEquals(Set.of(), unionNoCopy.verticesWeightsKeys());
+			assertEquals(Set.of(), unionNoCopy.edgesWeightsKeys());
 
 			Graph<Integer, Integer> union = new UnionGraphGenerator<>(IntGraphFactory.undirected())
 					.graphs(graph1, graph2)
 					.copyWeights(false, true)
 					.generate();
-			assertEquals(Set.of(), union.getVerticesWeightsKeys());
-			assertEquals(Set.of("w1", "w2", "w3"), union.getEdgesWeightsKeys());
+			assertEquals(Set.of(), union.verticesWeightsKeys());
+			assertEquals(Set.of("w1", "w2", "w3"), union.edgesWeightsKeys());
 
-			WeightsInt<Integer> unionWeights1 = union.getEdgesWeights("w1");
-			WeightsInt<Integer> unionWeights2 = union.getEdgesWeights("w2");
-			WeightsInt<Integer> unionWeights3 = union.getEdgesWeights("w3");
+			WeightsInt<Integer> unionWeights1 = union.edgesWeights("w1");
+			WeightsInt<Integer> unionWeights2 = union.edgesWeights("w2");
+			WeightsInt<Integer> unionWeights3 = union.edgesWeights("w3");
 			assertEquals(-1, unionWeights1.defaultWeight());
 			assertEquals(-2, unionWeights2.defaultWeight());
 			assertEquals(-30, unionWeights3.defaultWeight());
@@ -510,7 +510,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 							.copyWeights(false, true)
 							.edgesWeightsKeys(Set.of("w1", "w3"))
 							.generate()
-							.getEdgesWeightsKeys());
+							.edgesWeightsKeys());
 			assertEquals(Set.of("w1", "w2", "w3"),
 					new UnionGraphGenerator<>(IntGraphFactory.undirected())
 							.graphs(graph1, graph2)
@@ -518,7 +518,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 							.edgesWeightsKeys(Set.of("w1", "w3"))
 							.edgesWeightsKeys(null)
 							.generate()
-							.getEdgesWeightsKeys());
+							.edgesWeightsKeys());
 		});
 		foreachBoolConfig(directed -> {
 			Graph<Integer, Integer> graph1 = IntGraphFactory.newInstance(directed).newGraph();
@@ -551,20 +551,20 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.edgeUnionByEndpoints()
 					.copyWeights(false, false)
 					.generate();
-			assertEquals(Set.of(), unionNoCopy.getVerticesWeightsKeys());
-			assertEquals(Set.of(), unionNoCopy.getEdgesWeightsKeys());
+			assertEquals(Set.of(), unionNoCopy.verticesWeightsKeys());
+			assertEquals(Set.of(), unionNoCopy.edgesWeightsKeys());
 
 			Graph<Integer, Integer> union = new UnionGraphGenerator<>(IntGraphFactory.undirected())
 					.graphs(graph1, graph2)
 					.edgeUnionByEndpoints()
 					.copyWeights(false, true)
 					.generate();
-			assertEquals(Set.of(), union.getVerticesWeightsKeys());
-			assertEquals(Set.of("w1", "w2", "w3"), union.getEdgesWeightsKeys());
+			assertEquals(Set.of(), union.verticesWeightsKeys());
+			assertEquals(Set.of("w1", "w2", "w3"), union.edgesWeightsKeys());
 
-			WeightsInt<Integer> unionWeights1 = union.getEdgesWeights("w1");
-			WeightsInt<Integer> unionWeights2 = union.getEdgesWeights("w2");
-			WeightsInt<Integer> unionWeights3 = union.getEdgesWeights("w3");
+			WeightsInt<Integer> unionWeights1 = union.edgesWeights("w1");
+			WeightsInt<Integer> unionWeights2 = union.edgesWeights("w2");
+			WeightsInt<Integer> unionWeights3 = union.edgesWeights("w3");
 			assertEquals(-1, unionWeights1.defaultWeight());
 			assertEquals(-2, unionWeights2.defaultWeight());
 			assertEquals(-30, unionWeights3.defaultWeight());
@@ -585,7 +585,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 							.copyWeights(false, true)
 							.edgesWeightsKeys(Set.of("w1", "w3"))
 							.generate()
-							.getEdgesWeightsKeys());
+							.edgesWeightsKeys());
 			assertEquals(Set.of("w1", "w2", "w3"),
 					new UnionGraphGenerator<>(IntGraphFactory.undirected())
 							.graphs(graph1, graph2)
@@ -594,7 +594,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 							.edgesWeightsKeys(Set.of("w1", "w3"))
 							.edgesWeightsKeys(null)
 							.generate()
-							.getEdgesWeightsKeys());
+							.edgesWeightsKeys());
 		});
 		foreachBoolConfig(directed -> {
 			Graph<Integer, Integer> graph1 = IntGraphFactory.newInstance(directed).newGraph();
@@ -621,7 +621,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(false, true)
 					.generate();
-			WeightsByte<Integer> unionWeights = union.getEdgesWeights("w1");
+			WeightsByte<Integer> unionWeights = union.edgesWeights("w1");
 			assertEquals(10, unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -636,7 +636,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(false, true)
 					.generate();
-			WeightsShort<Integer> unionWeights = union.getEdgesWeights("w1");
+			WeightsShort<Integer> unionWeights = union.edgesWeights("w1");
 			assertEquals(10, unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -651,7 +651,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(false, true)
 					.generate();
-			WeightsInt<Integer> unionWeights = union.getEdgesWeights("w1");
+			WeightsInt<Integer> unionWeights = union.edgesWeights("w1");
 			assertEquals(10, unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -666,7 +666,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(false, true)
 					.generate();
-			WeightsLong<Integer> unionWeights = union.getEdgesWeights("w1");
+			WeightsLong<Integer> unionWeights = union.edgesWeights("w1");
 			assertEquals(10, unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -681,7 +681,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(false, true)
 					.generate();
-			WeightsFloat<Integer> unionWeights = union.getEdgesWeights("w1");
+			WeightsFloat<Integer> unionWeights = union.edgesWeights("w1");
 			assertEquals(10.1f, unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -696,7 +696,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(false, true)
 					.generate();
-			WeightsDouble<Integer> unionWeights = union.getEdgesWeights("w1");
+			WeightsDouble<Integer> unionWeights = union.edgesWeights("w1");
 			assertEquals(10.1, unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -711,7 +711,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(false, true)
 					.generate();
-			WeightsBool<Integer> unionWeights = union.getEdgesWeights("w1");
+			WeightsBool<Integer> unionWeights = union.edgesWeights("w1");
 			assertEquals(true, unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -726,7 +726,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(false, true)
 					.generate();
-			WeightsChar<Integer> unionWeights = union.getEdgesWeights("w1");
+			WeightsChar<Integer> unionWeights = union.edgesWeights("w1");
 			assertEquals('a', unionWeights.get(0));
 		});
 		foreachBoolConfig(directed -> {
@@ -741,7 +741,7 @@ public class UnionGraphGeneratorTest extends TestBase {
 					.graphs(graph1, IntGraphFactory.newInstance(directed).newGraph())
 					.copyWeights(false, true)
 					.generate();
-			WeightsObj<Integer, String> unionWeights = union.getEdgesWeights("w1");
+			WeightsObj<Integer, String> unionWeights = union.edgesWeights("w1");
 			assertEquals("10", unionWeights.get(0));
 		});
 	}

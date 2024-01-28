@@ -65,7 +65,7 @@ public class LedaGraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer, I
 	 * By default, the writer will write the graph without any weights. Use this method to specify the key of the
 	 * vertices weights to write.
 	 *
-	 * @see                      Graph#getVerticesWeights(String)
+	 * @see                      Graph#verticesWeights(String)
 	 * @param verticesWeightsKey the key of the vertices weights to write, or {@code null} to write no vertices weights
 	 */
 	public void setVerticesWeightsKey(String verticesWeightsKey) {
@@ -79,7 +79,7 @@ public class LedaGraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer, I
 	 * By default, the writer will write the graph without any weights. Use this method to specify the key of the edges
 	 * weights to write.
 	 *
-	 * @see                   Graph#getEdgesWeights(String)
+	 * @see                   Graph#edgesWeights(String)
 	 * @param edgesWeightsKey the key of the edges weights to write, or {@code null} to write no edges weights
 	 */
 	public void setEdgesWeightsKey(String edgesWeightsKey) {
@@ -97,13 +97,13 @@ public class LedaGraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer, I
 
 		Weights<Integer, ?> verticesWeights = null;
 		if (verticesWeightsKey != null) {
-			verticesWeights = graph.getVerticesWeights(verticesWeightsKey);
+			verticesWeights = graph.verticesWeights(verticesWeightsKey);
 			if (verticesWeights == null)
 				throw new IllegalArgumentException("vertices weights key '" + verticesWeightsKey + "' not found");
 		}
 		Weights<Integer, ?> edgesWeights = null;
 		if (edgesWeightsKey != null) {
-			edgesWeights = graph.getEdgesWeights(edgesWeightsKey);
+			edgesWeights = graph.edgesWeights(edgesWeightsKey);
 			if (edgesWeights == null)
 				throw new IllegalArgumentException("edges weights key '" + edgesWeightsKey + "' not found");
 		}

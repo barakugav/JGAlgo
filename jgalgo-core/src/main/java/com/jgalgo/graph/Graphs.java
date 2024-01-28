@@ -231,8 +231,8 @@ public class Graphs {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T, WeightsT extends Weights<V, T>> WeightsT getVerticesWeights(String key) {
-			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.getVerticesWeights(key));
+		public <T, WeightsT extends Weights<V, T>> WeightsT verticesWeights(String key) {
+			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.verticesWeights(key));
 		}
 
 		@Override
@@ -247,14 +247,14 @@ public class Graphs {
 		}
 
 		@Override
-		public Set<String> getVerticesWeightsKeys() {
-			return graph.getVerticesWeightsKeys();
+		public Set<String> verticesWeightsKeys() {
+			return graph.verticesWeightsKeys();
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T, WeightsT extends Weights<E, T>> WeightsT getEdgesWeights(String key) {
-			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.getEdgesWeights(key));
+		public <T, WeightsT extends Weights<E, T>> WeightsT edgesWeights(String key) {
+			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.edgesWeights(key));
 		}
 
 		@Override
@@ -269,8 +269,8 @@ public class Graphs {
 		}
 
 		@Override
-		public Set<String> getEdgesWeightsKeys() {
-			return graph.getEdgesWeightsKeys();
+		public Set<String> edgesWeightsKeys() {
+			return graph.edgesWeightsKeys();
 		}
 
 		@Override
@@ -427,8 +427,8 @@ public class Graphs {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T, WeightsT extends Weights<Integer, T>> WeightsT getVerticesWeights(String key) {
-			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.getVerticesWeights(key));
+		public <T, WeightsT extends Weights<Integer, T>> WeightsT verticesWeights(String key) {
+			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.verticesWeights(key));
 		}
 
 		@Override
@@ -443,14 +443,14 @@ public class Graphs {
 		}
 
 		@Override
-		public Set<String> getVerticesWeightsKeys() {
-			return graph.getVerticesWeightsKeys();
+		public Set<String> verticesWeightsKeys() {
+			return graph.verticesWeightsKeys();
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key) {
-			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.getEdgesWeights(key));
+		public <T, WeightsT extends Weights<Integer, T>> WeightsT edgesWeights(String key) {
+			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.edgesWeights(key));
 		}
 
 		@Override
@@ -465,8 +465,8 @@ public class Graphs {
 		}
 
 		@Override
-		public Set<String> getEdgesWeightsKeys() {
-			return graph.getEdgesWeightsKeys();
+		public Set<String> edgesWeightsKeys() {
+			return graph.edgesWeightsKeys();
 		}
 
 		@Override
@@ -789,8 +789,8 @@ public class Graphs {
 		}
 
 		@Override
-		public Set<String> getVerticesWeightsKeys() {
-			return graph().getVerticesWeightsKeys();
+		public Set<String> verticesWeightsKeys() {
+			return graph().verticesWeightsKeys();
 		}
 
 		@Override
@@ -805,8 +805,8 @@ public class Graphs {
 		}
 
 		@Override
-		public Set<String> getEdgesWeightsKeys() {
-			return graph().getEdgesWeightsKeys();
+		public Set<String> edgesWeightsKeys() {
+			return graph().edgesWeightsKeys();
 		}
 
 		@Override
@@ -944,13 +944,13 @@ public class Graphs {
 		}
 
 		@Override
-		public <T, WeightsT extends Weights<V, T>> WeightsT getVerticesWeights(String key) {
-			return graph().getVerticesWeights(key);
+		public <T, WeightsT extends Weights<V, T>> WeightsT verticesWeights(String key) {
+			return graph().verticesWeights(key);
 		}
 
 		@Override
-		public <T, WeightsT extends Weights<E, T>> WeightsT getEdgesWeights(String key) {
-			return graph().getEdgesWeights(key);
+		public <T, WeightsT extends Weights<E, T>> WeightsT edgesWeights(String key) {
+			return graph().edgesWeights(key);
 		}
 
 		@Override
@@ -1067,13 +1067,13 @@ public class Graphs {
 		}
 
 		@Override
-		public <T, WeightsT extends Weights<Integer, T>> WeightsT getVerticesWeights(String key) {
-			return graph().getVerticesWeights(key);
+		public <T, WeightsT extends Weights<Integer, T>> WeightsT verticesWeights(String key) {
+			return graph().verticesWeights(key);
 		}
 
 		@Override
-		public <T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key) {
-			return graph().getEdgesWeights(key);
+		public <T, WeightsT extends Weights<Integer, T>> WeightsT edgesWeights(String key) {
+			return graph().edgesWeights(key);
 		}
 	}
 
@@ -2462,16 +2462,16 @@ public class Graphs {
 		}
 
 		if (copyVerticesWeights) {
-			for (String key : g.getVerticesWeightsKeys()) {
-				Weights wSrc = g.getVerticesWeights(key);
+			for (String key : g.verticesWeightsKeys()) {
+				Weights wSrc = g.verticesWeights(key);
 				Class<?> type = (Class) getWeightsType(wSrc);
 				Weights wDst = gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
 				copyWeights(wSrc, wDst, type, gb.vertices());
 			}
 		}
 		if (copyEdgesWeights) {
-			for (String key : g.getEdgesWeightsKeys()) {
-				Weights wSrc = g.getEdgesWeights(key);
+			for (String key : g.edgesWeightsKeys()) {
+				Weights wSrc = g.edgesWeights(key);
 				Class<?> type = (Class) getWeightsType(wSrc);
 				Weights wDst = gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
 				copyWeights(wSrc, wDst, type, gb.edges());
@@ -2582,16 +2582,16 @@ public class Graphs {
 		}
 
 		if (copyVerticesWeights) {
-			for (String key : g.getVerticesWeightsKeys()) {
-				IWeights wSrc = g.getVerticesWeights(key);
+			for (String key : g.verticesWeightsKeys()) {
+				IWeights wSrc = g.verticesWeights(key);
 				Class<?> type = (Class) getWeightsType(wSrc);
 				IWeights wDst = (IWeights) gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
 				copyWeights(wSrc, wDst, type, gb.vertices());
 			}
 		}
 		if (copyEdgesWeights) {
-			for (String key : g.getEdgesWeightsKeys()) {
-				IWeights wSrc = g.getEdgesWeights(key);
+			for (String key : g.edgesWeightsKeys()) {
+				IWeights wSrc = g.edgesWeights(key);
 				Class<?> type = (Class) getWeightsType(wSrc);
 				IWeights wDst = (IWeights) gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
 				copyWeights(wSrc, wDst, type, gb.edges());
@@ -2642,16 +2642,16 @@ public class Graphs {
 		}
 
 		if (copyVerticesWeights) {
-			for (String key : g.getVerticesWeightsKeys()) {
-				IWeights wSrc = g.getVerticesWeights(key);
+			for (String key : g.verticesWeightsKeys()) {
+				IWeights wSrc = g.verticesWeights(key);
 				Class<?> type = (Class) getWeightsType(wSrc);
 				IWeights wDst = (IWeights) gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
 				copyWeights(wSrc, wDst, type, gb.vertices());
 			}
 		}
 		if (copyEdgesWeights) {
-			for (String key : g.getEdgesWeightsKeys()) {
-				IWeights wSrc = g.getEdgesWeights(key);
+			for (String key : g.edgesWeightsKeys()) {
+				IWeights wSrc = g.edgesWeights(key);
 				Class<?> type = (Class) getWeightsType(wSrc);
 				IWeights wDst = (IWeights) gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
 				copyWeights(wSrc, wDst, type, gb.edges());
@@ -2877,17 +2877,17 @@ public class Graphs {
 			}
 		}
 
-		if (!g1.getVerticesWeightsKeys().equals(g2.getVerticesWeightsKeys()))
+		if (!g1.verticesWeightsKeys().equals(g2.verticesWeightsKeys()))
 			return false;
-		for (String key : g1.getVerticesWeightsKeys()) {
-			Weights<V, ?> w1 = g1.getVerticesWeights(key), w2 = g2.getVerticesWeights(key);
+		for (String key : g1.verticesWeightsKeys()) {
+			Weights<V, ?> w1 = g1.verticesWeights(key), w2 = g2.verticesWeights(key);
 			if (!WeightsImpl.isEqual(g1.vertices(), w1, w2))
 				return false;
 		}
-		if (!g1.getEdgesWeightsKeys().equals(g2.getEdgesWeightsKeys()))
+		if (!g1.edgesWeightsKeys().equals(g2.edgesWeightsKeys()))
 			return false;
-		for (String key : g1.getEdgesWeightsKeys()) {
-			Weights<E, ?> w1 = g1.getEdgesWeights(key), w2 = g2.getEdgesWeights(key);
+		for (String key : g1.edgesWeightsKeys()) {
+			Weights<E, ?> w1 = g1.edgesWeights(key), w2 = g2.edgesWeights(key);
 			if (!WeightsImpl.isEqual(g1.edges(), w1, w2))
 				return false;
 		}
@@ -2915,17 +2915,17 @@ public class Graphs {
 			}
 		}
 
-		if (!g1.getVerticesWeightsKeys().equals(g2.getVerticesWeightsKeys()))
+		if (!g1.verticesWeightsKeys().equals(g2.verticesWeightsKeys()))
 			return false;
-		for (String key : g1.getVerticesWeightsKeys()) {
-			IWeights<?> w1 = (IWeights<?>) g1.getVerticesWeights(key), w2 = (IWeights<?>) g2.getVerticesWeights(key);
+		for (String key : g1.verticesWeightsKeys()) {
+			IWeights<?> w1 = (IWeights<?>) g1.verticesWeights(key), w2 = (IWeights<?>) g2.verticesWeights(key);
 			if (!WeightsImpl.isEqual(g1.vertices(), w1, w2))
 				return false;
 		}
-		if (!g1.getEdgesWeightsKeys().equals(g2.getEdgesWeightsKeys()))
+		if (!g1.edgesWeightsKeys().equals(g2.edgesWeightsKeys()))
 			return false;
-		for (String key : g1.getEdgesWeightsKeys()) {
-			IWeights<?> w1 = (IWeights<?>) g1.getEdgesWeights(key), w2 = (IWeights<?>) g2.getEdgesWeights(key);
+		for (String key : g1.edgesWeightsKeys()) {
+			IWeights<?> w1 = (IWeights<?>) g1.edgesWeights(key), w2 = (IWeights<?>) g2.edgesWeights(key);
 			if (!WeightsImpl.isEqual(g1.edges(), w1, w2))
 				return false;
 		}
@@ -2947,10 +2947,10 @@ public class Graphs {
 			for (E e : g.edges())
 				h += g.edgeSource(e).hashCode() + g.edgeTarget(e).hashCode();
 		}
-		for (String key : g.getVerticesWeightsKeys())
-			h += WeightsImpl.hashCode(g.vertices(), g.getVerticesWeights(key));
-		for (String key : g.getEdgesWeightsKeys())
-			h += WeightsImpl.hashCode(g.edges(), g.getEdgesWeights(key));
+		for (String key : g.verticesWeightsKeys())
+			h += WeightsImpl.hashCode(g.vertices(), g.verticesWeights(key));
+		for (String key : g.edgesWeightsKeys())
+			h += WeightsImpl.hashCode(g.edges(), g.edgesWeights(key));
 		return h;
 	}
 
@@ -2965,10 +2965,10 @@ public class Graphs {
 			for (int e : g.edges())
 				h += g.edgeSource(e) + g.edgeTarget(e);
 		}
-		for (String key : g.getVerticesWeightsKeys())
-			h += WeightsImpl.hashCode(g.vertices(), g.getVerticesWeights(key));
-		for (String key : g.getEdgesWeightsKeys())
-			h += WeightsImpl.hashCode(g.edges(), g.getEdgesWeights(key));
+		for (String key : g.verticesWeightsKeys())
+			h += WeightsImpl.hashCode(g.vertices(), g.verticesWeights(key));
+		for (String key : g.edgesWeightsKeys())
+			h += WeightsImpl.hashCode(g.edges(), g.edgesWeights(key));
 		return h;
 	}
 
@@ -2978,15 +2978,15 @@ public class Graphs {
 
 		StringBuilder s = new StringBuilder();
 
-		Set<String> verticesWeightsKeys = g.getVerticesWeightsKeys();
+		Set<String> verticesWeightsKeys = g.verticesWeightsKeys();
 		List<Weights<V, ?>> verticesWeights = new ObjectArrayList<>(verticesWeightsKeys.size());
 		for (String key : verticesWeightsKeys)
-			verticesWeights.add(g.getVerticesWeights(key));
+			verticesWeights.add(g.verticesWeights(key));
 
-		Set<String> edgesWeightsKeys = g.getEdgesWeightsKeys();
+		Set<String> edgesWeightsKeys = g.edgesWeightsKeys();
 		List<Weights<E, ?>> edgesWeights = new ObjectArrayList<>(edgesWeightsKeys.size());
 		for (String key : edgesWeightsKeys)
-			edgesWeights.add(g.getEdgesWeights(key));
+			edgesWeights.add(g.edgesWeights(key));
 
 		BiConsumer<Collection<Weights<Object, ?>>, Object> appendWeights = (weights, id) -> {
 			s.append('{');
@@ -3049,15 +3049,15 @@ public class Graphs {
 	private static String toString(IntGraph g) {
 		StringBuilder s = new StringBuilder();
 
-		Set<String> verticesWeightsKeys = g.getVerticesWeightsKeys();
+		Set<String> verticesWeightsKeys = g.verticesWeightsKeys();
 		Collection<IWeights<?>> verticesWeights = new ObjectArrayList<>(verticesWeightsKeys.size());
 		for (String key : verticesWeightsKeys)
-			verticesWeights.add((IWeights<?>) g.getVerticesWeights(key));
+			verticesWeights.add((IWeights<?>) g.verticesWeights(key));
 
-		Set<String> edgesWeightsKeys = g.getEdgesWeightsKeys();
+		Set<String> edgesWeightsKeys = g.edgesWeightsKeys();
 		Collection<IWeights<?>> edgesWeights = new ObjectArrayList<>(edgesWeightsKeys.size());
 		for (String key : edgesWeightsKeys)
-			edgesWeights.add((IWeights<?>) g.getEdgesWeights(key));
+			edgesWeights.add((IWeights<?>) g.edgesWeights(key));
 
 		ObjIntConsumer<Collection<IWeights<?>>> appendWeights = (weights, id) -> {
 			s.append('{');

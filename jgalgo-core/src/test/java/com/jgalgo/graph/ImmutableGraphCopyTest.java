@@ -503,9 +503,9 @@ public class ImmutableGraphCopyTest extends TestBase {
 				Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph<Integer, Integer> gImmutable = immutableCopy(gOrig, true, true, fastLookup);
 
-				assertEquals(gOrig.getVerticesWeightsKeys(), gImmutable.getVerticesWeightsKeys());
-				WeightsInt<Integer> wOrig = gOrig.getVerticesWeights(VerticesWeightsKey);
-				WeightsInt<Integer> wImmutable = gImmutable.getVerticesWeights(VerticesWeightsKey);
+				assertEquals(gOrig.verticesWeightsKeys(), gImmutable.verticesWeightsKeys());
+				WeightsInt<Integer> wOrig = gOrig.verticesWeights(VerticesWeightsKey);
+				WeightsInt<Integer> wImmutable = gImmutable.verticesWeights(VerticesWeightsKey);
 
 				for (Integer v : gImmutable.vertices())
 					assertEquals(wOrig.get(v), wImmutable.get(v));
@@ -529,9 +529,9 @@ public class ImmutableGraphCopyTest extends TestBase {
 				Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph<Integer, Integer> gImmutable = immutableCopy(gOrig, true, true, fastLookup);
 
-				assertEquals(gOrig.getEdgesWeightsKeys(), gImmutable.getEdgesWeightsKeys());
-				WeightsInt<Integer> wOrig = gOrig.getEdgesWeights(EdgesWeightsKey);
-				WeightsInt<Integer> wImmutable = gImmutable.getEdgesWeights(EdgesWeightsKey);
+				assertEquals(gOrig.edgesWeightsKeys(), gImmutable.edgesWeightsKeys());
+				WeightsInt<Integer> wOrig = gOrig.edgesWeights(EdgesWeightsKey);
+				WeightsInt<Integer> wImmutable = gImmutable.edgesWeights(EdgesWeightsKey);
 
 				for (Integer e : gImmutable.edges())
 					assertEquals(wOrig.get(e), wImmutable.get(e));
@@ -597,14 +597,14 @@ public class ImmutableGraphCopyTest extends TestBase {
 					assertEquals(gImmutable.copy(copyVerticesWeights, copyEdgesWeights), gImmutable2);
 
 					if (copyVerticesWeights) {
-						assertEquals(gImmutable.getVerticesWeightsKeys(), gImmutable2.getVerticesWeightsKeys());
+						assertEquals(gImmutable.verticesWeightsKeys(), gImmutable2.verticesWeightsKeys());
 					} else {
-						assertEquals(Set.of(), gImmutable2.getVerticesWeightsKeys());
+						assertEquals(Set.of(), gImmutable2.verticesWeightsKeys());
 					}
 					if (copyEdgesWeights) {
-						assertEquals(gImmutable.getEdgesWeightsKeys(), gImmutable2.getEdgesWeightsKeys());
+						assertEquals(gImmutable.edgesWeightsKeys(), gImmutable2.edgesWeightsKeys());
 					} else {
-						assertEquals(Set.of(), gImmutable2.getEdgesWeightsKeys());
+						assertEquals(Set.of(), gImmutable2.edgesWeightsKeys());
 					}
 
 					assertEquals(gImmutable2, immutableCopy(gImmutable2, true, true, fastLookup));
@@ -628,14 +628,14 @@ public class ImmutableGraphCopyTest extends TestBase {
 					assertEquals(gImmutable.copy(copyVerticesWeights, copyEdgesWeights), gImmutable2);
 
 					if (copyVerticesWeights) {
-						assertEquals(gImmutable.getVerticesWeightsKeys(), gImmutable2.getVerticesWeightsKeys());
+						assertEquals(gImmutable.verticesWeightsKeys(), gImmutable2.verticesWeightsKeys());
 					} else {
-						assertEquals(Set.of(), gImmutable2.getVerticesWeightsKeys());
+						assertEquals(Set.of(), gImmutable2.verticesWeightsKeys());
 					}
 					if (copyEdgesWeights) {
-						assertEquals(gImmutable.getEdgesWeightsKeys(), gImmutable2.getEdgesWeightsKeys());
+						assertEquals(gImmutable.edgesWeightsKeys(), gImmutable2.edgesWeightsKeys());
 					} else {
-						assertEquals(Set.of(), gImmutable2.getEdgesWeightsKeys());
+						assertEquals(Set.of(), gImmutable2.edgesWeightsKeys());
 					}
 
 					assertEquals(gImmutable2, immutableCopy(gImmutable2, true, true, fastLookup));

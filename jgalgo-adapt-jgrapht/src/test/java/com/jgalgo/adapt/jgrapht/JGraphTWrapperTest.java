@@ -64,21 +64,21 @@ public class JGraphTWrapperTest {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			assertEquals(directed, g.isDirected());
-			assertEquals(Set.of(), g.getEdgesWeightsKeys());
+			assertEquals(Set.of(), g.edgesWeightsKeys());
 			assertIndexGraphValid(g);
 		}
 		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig, null);
 			assertEquals(directed, g.isDirected());
-			assertEquals(Set.of(), g.getEdgesWeightsKeys());
+			assertEquals(Set.of(), g.edgesWeightsKeys());
 			assertIndexGraphValid(g);
 		}
 		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig, "weights");
 			assertEquals(directed, g.isDirected());
-			assertEquals(Set.of("weights"), g.getEdgesWeightsKeys());
+			assertEquals(Set.of("weights"), g.edgesWeightsKeys());
 			assertIndexGraphValid(g);
 		}
 	}
@@ -729,8 +729,8 @@ public class JGraphTWrapperTest {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig, "weights");
 
-			assertEquals(Set.of("weights"), g.getEdgesWeightsKeys());
-			WeightsDouble<Integer> weights = g.getEdgesWeights("weights");
+			assertEquals(Set.of("weights"), g.edgesWeightsKeys());
+			WeightsDouble<Integer> weights = g.edgesWeights("weights");
 			assertNotNull(weights);
 
 			assertEquals(1, weights.defaultWeight());
@@ -757,17 +757,17 @@ public class JGraphTWrapperTest {
 				org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed, true, true, weighted);
 				Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig, weighted ? "weights" : null);
 
-				assertEquals(Set.of(), g.getVerticesWeightsKeys());
-				assertNull(g.getVerticesWeights("weights"));
+				assertEquals(Set.of(), g.verticesWeightsKeys());
+				assertNull(g.verticesWeights("weights"));
 				assertThrows(UnsupportedOperationException.class, () -> g.addVerticesWeights("newWeights", int.class));
 				assertThrows(IllegalArgumentException.class, () -> g.removeVerticesWeights("non-existing-weights"));
 
-				assertEquals(weighted ? Set.of("weights") : Set.of(), g.getEdgesWeightsKeys());
-				assertNull(g.getEdgesWeights("non-existing-weights"));
+				assertEquals(weighted ? Set.of("weights") : Set.of(), g.edgesWeightsKeys());
+				assertNull(g.edgesWeights("non-existing-weights"));
 				if (weighted) {
-					assertNotNull(g.getEdgesWeights("weights"));
+					assertNotNull(g.edgesWeights("weights"));
 				} else {
-					assertNull(g.getEdgesWeights("weights"));
+					assertNull(g.edgesWeights("weights"));
 				}
 				assertThrows(UnsupportedOperationException.class, () -> g.addEdgesWeights("newWeights", int.class));
 				assertThrows(IllegalArgumentException.class, () -> g.removeEdgesWeights("non-existing-weights"));
@@ -1315,8 +1315,8 @@ public class JGraphTWrapperTest {
 			IndexGraph ig = g.indexGraph();
 			IndexIdMap<Integer> eiMap = g.indexGraphEdgesMap();
 
-			assertEquals(Set.of("weights"), ig.getEdgesWeightsKeys());
-			IWeightsDouble weights = ig.getEdgesWeights("weights");
+			assertEquals(Set.of("weights"), ig.edgesWeightsKeys());
+			IWeightsDouble weights = ig.edgesWeights("weights");
 			assertNotNull(weights);
 
 			assertEquals(1, weights.defaultWeight());
@@ -1340,18 +1340,18 @@ public class JGraphTWrapperTest {
 				Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig, weighted ? "weights" : null);
 				IndexGraph ig = g.indexGraph();
 
-				assertEquals(Set.of(), ig.getVerticesWeightsKeys());
-				assertNull(ig.getVerticesWeights("weights"));
+				assertEquals(Set.of(), ig.verticesWeightsKeys());
+				assertNull(ig.verticesWeights("weights"));
 				assertThrows(UnsupportedOperationException.class, () -> ig.addVerticesWeights("newWeights", int.class));
 				assertThrows(UnsupportedOperationException.class,
 						() -> ig.removeVerticesWeights("non-existing-weights"));
 
-				assertEquals(weighted ? Set.of("weights") : Set.of(), ig.getEdgesWeightsKeys());
-				assertNull(ig.getEdgesWeights("non-existing-weights"));
+				assertEquals(weighted ? Set.of("weights") : Set.of(), ig.edgesWeightsKeys());
+				assertNull(ig.edgesWeights("non-existing-weights"));
 				if (weighted) {
-					assertNotNull(ig.getEdgesWeights("weights"));
+					assertNotNull(ig.edgesWeights("weights"));
 				} else {
-					assertNull(ig.getEdgesWeights("weights"));
+					assertNull(ig.edgesWeights("weights"));
 				}
 				assertThrows(UnsupportedOperationException.class, () -> ig.addEdgesWeights("newWeights", int.class));
 				assertThrows(UnsupportedOperationException.class, () -> ig.removeEdgesWeights("weights"));

@@ -502,7 +502,7 @@ public class JGraphTWrapper<V, E> extends com.jgalgo.graph.AbstractGraph<V, E> {
 	public void ensureEdgeCapacity(int edgeCapacity) {}
 
 	@Override
-	public <T, WeightsT extends Weights<V, T>> WeightsT getVerticesWeights(String key) {
+	public <T, WeightsT extends Weights<V, T>> WeightsT verticesWeights(String key) {
 		return null;
 	}
 
@@ -518,13 +518,13 @@ public class JGraphTWrapper<V, E> extends com.jgalgo.graph.AbstractGraph<V, E> {
 	}
 
 	@Override
-	public Set<String> getVerticesWeightsKeys() {
+	public Set<String> verticesWeightsKeys() {
 		return Set.of();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, WeightsT extends Weights<E, T>> WeightsT getEdgesWeights(String key) {
+	public <T, WeightsT extends Weights<E, T>> WeightsT edgesWeights(String key) {
 		if (edgeWeightKey == null || !edgeWeightKey.equals(key))
 			return null;
 		return (WeightsT) weights;
@@ -545,7 +545,7 @@ public class JGraphTWrapper<V, E> extends com.jgalgo.graph.AbstractGraph<V, E> {
 	}
 
 	@Override
-	public Set<String> getEdgesWeightsKeys() {
+	public Set<String> edgesWeightsKeys() {
 		return edgeWeightKey != null ? Set.of(edgeWeightKey) : Set.of();
 	}
 
@@ -826,13 +826,13 @@ public class JGraphTWrapper<V, E> extends com.jgalgo.graph.AbstractGraph<V, E> {
 		}
 
 		@Override
-		public <T, WeightsT extends Weights<Integer, T>> WeightsT getVerticesWeights(String key) {
+		public <T, WeightsT extends Weights<Integer, T>> WeightsT verticesWeights(String key) {
 			return null;
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key) {
+		public <T, WeightsT extends Weights<Integer, T>> WeightsT edgesWeights(String key) {
 			if (edgeWeightKey == null || !edgeWeightKey.equals(key))
 				return null;
 			return (WeightsT) weights;
@@ -855,12 +855,12 @@ public class JGraphTWrapper<V, E> extends com.jgalgo.graph.AbstractGraph<V, E> {
 		public void ensureEdgeCapacity(int edgeCapacity) {}
 
 		@Override
-		public Set<String> getVerticesWeightsKeys() {
+		public Set<String> verticesWeightsKeys() {
 			return Set.of();
 		}
 
 		@Override
-		public Set<String> getEdgesWeightsKeys() {
+		public Set<String> edgesWeightsKeys() {
 			return edgeWeightKey != null ? Set.of(edgeWeightKey) : Set.of();
 		}
 

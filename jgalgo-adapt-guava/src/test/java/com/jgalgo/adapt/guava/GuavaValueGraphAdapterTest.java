@@ -355,7 +355,7 @@ public class GuavaValueGraphAdapterTest {
 		final Random rand = new Random(0x78520be26e536bc6L);
 		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
-			WeightsDouble<Integer> weights = gOrig.getEdgesWeights("weights");
+			WeightsDouble<Integer> weights = gOrig.edgesWeights("weights");
 			ValueGraph<Integer, Double> g = new GuavaValueGraphAdapter<>(gOrig, "weights");
 
 			for (EndpointPair<Integer> e : g.edges())

@@ -48,8 +48,8 @@ import com.jgalgo.graph.Weights;
  * for each connection. Each connection has a non unique value, similar to a map from the endpoints to the value. The
  * values of the edges are represented as {@linkplain com.jgalgo.graph.Weights weights} in the underlying JGAlgo graph,
  * and weights the key is passed in the {@linkplain #GuavaValueGraphAdapter(com.jgalgo.graph.Graph, String)
- * constructor}, see {@linkplain com.jgalgo.graph.Graph#getEdgesWeights(String)}. The type of the value is specified as
- * a generic {@code ValueT} parameter. The edge generic type {@code E} is not reflected in the Guava graph, and is only
+ * constructor}, see {@linkplain com.jgalgo.graph.Graph#edgesWeights(String)}. The type of the value is specified as a
+ * generic {@code ValueT} parameter. The edge generic type {@code E} is not reflected in the Guava graph, and is only
  * used internally for safe access to the underlying JGAlgo graph.
  *
  * <p>
@@ -98,7 +98,7 @@ public class GuavaValueGraphAdapter<V, E, ValueT> extends AbstractValueGraph<V, 
 		if (graph.isAllowParallelEdges())
 			throw new UnsupportedOperationException("Parallel edges are not supported by Guava Graph object");
 
-		weights = graph.getEdgesWeights(edgeWeightKey);
+		weights = graph.edgesWeights(edgeWeightKey);
 		if (weights == null)
 			throw new IllegalArgumentException("No edges weights for key '" + edgeWeightKey + "'");
 	}

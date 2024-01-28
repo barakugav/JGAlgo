@@ -194,26 +194,26 @@ public class GmlGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V, E>
 		List<Pair<String, WeightsStringifier<V>>> vWeights = new ArrayList<>();
 		List<Pair<String, WeightsStringifier<E>>> eWeights = new ArrayList<>();
 		if (verticesWeightsKeys == null) {
-			for (String key : graph.getVerticesWeightsKeys()) {
-				Weights<V, ?> weights = graph.getVerticesWeights(key);
+			for (String key : graph.verticesWeightsKeys()) {
+				Weights<V, ?> weights = graph.verticesWeights(key);
 				vWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));
 			}
 		} else {
 			for (String key : verticesWeightsKeys) {
-				Weights<V, ?> weights = graph.getVerticesWeights(key);
+				Weights<V, ?> weights = graph.verticesWeights(key);
 				if (weights == null)
 					throw new IllegalArgumentException("Vertices weights key '" + key + "' does not exist");
 				vWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));
 			}
 		}
 		if (edgesWeightsKeys == null) {
-			for (String key : graph.getEdgesWeightsKeys()) {
-				Weights<E, ?> weights = graph.getEdgesWeights(key);
+			for (String key : graph.edgesWeightsKeys()) {
+				Weights<E, ?> weights = graph.edgesWeights(key);
 				eWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));
 			}
 		} else {
 			for (String key : edgesWeightsKeys) {
-				Weights<E, ?> weights = graph.getEdgesWeights(key);
+				Weights<E, ?> weights = graph.edgesWeights(key);
 				if (weights == null)
 					throw new IllegalArgumentException("Edges weights key '" + key + "' does not exist");
 				eWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));

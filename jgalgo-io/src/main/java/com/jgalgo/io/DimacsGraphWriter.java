@@ -98,7 +98,7 @@ public class DimacsGraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer,
 	 * The weights must be integer, namely the {@link Weights} must be {@link WeightFunctionInt}. It can be any of the
 	 * following: {@link WeightsByte}, {@link WeightsShort} or {@link WeightsInt}.
 	 *
-	 * @see              Graph#getEdgesWeights(String)
+	 * @see              Graph#edgesWeights(String)
 	 * @param weightsKey the key of the edge weights to write, or {@code null} to write the graph in the 'edge' format
 	 *                       (unweighted)
 	 */
@@ -120,7 +120,7 @@ public class DimacsGraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer,
 		final boolean hasWeights = weightsKey != null;
 		Function<Integer, String> w = null;
 		if (hasWeights) {
-			Weights<Integer, ?> w0 = graph.getEdgesWeights(weightsKey);
+			Weights<Integer, ?> w0 = graph.edgesWeights(weightsKey);
 			if (w0 == null)
 				throw new IllegalArgumentException("the graph does not have weights for key: " + weightsKey);
 			if (!(w0 instanceof WeightFunctionInt))

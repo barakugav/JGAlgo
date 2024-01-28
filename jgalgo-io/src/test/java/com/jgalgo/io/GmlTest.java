@@ -648,9 +648,8 @@ public class GmlTest {
 		text.addLine("    weight 1");
 		text.addLine("  ]");
 		text.addLine("]");
-		assertTrue(reader
-				.readGraph(new StringReader(text.getAndClear()))
-				.getVerticesWeights("weight") instanceof WeightsInt);
+		assertTrue(
+				reader.readGraph(new StringReader(text.getAndClear())).verticesWeights("weight") instanceof WeightsInt);
 
 		text.addLine("graph [");
 		text.addLine("  directed 1");
@@ -665,7 +664,7 @@ public class GmlTest {
 		text.addLine("]");
 		assertTrue(reader
 				.readGraph(new StringReader(text.getAndClear()))
-				.getVerticesWeights("weight") instanceof WeightsDouble);
+				.verticesWeights("weight") instanceof WeightsDouble);
 
 		text.addLine("graph [");
 		text.addLine("  directed 1");
@@ -680,7 +679,7 @@ public class GmlTest {
 		text.addLine("]");
 		assertTrue(reader
 				.readGraph(new StringReader(text.getAndClear()))
-				.getVerticesWeights("weight") instanceof WeightsDouble);
+				.verticesWeights("weight") instanceof WeightsDouble);
 
 		text.addLine("graph [");
 		text.addLine("  directed 1");
@@ -695,7 +694,7 @@ public class GmlTest {
 		text.addLine("]");
 		assertTrue(reader
 				.readGraph(new StringReader(text.getAndClear()))
-				.getVerticesWeights("weight") instanceof WeightsDouble);
+				.verticesWeights("weight") instanceof WeightsDouble);
 
 		text.addLine("graph [");
 		text.addLine("  directed 1");
@@ -708,9 +707,8 @@ public class GmlTest {
 		text.addLine("    weight \"hello\"");
 		text.addLine("  ]");
 		text.addLine("]");
-		assertTrue(reader
-				.readGraph(new StringReader(text.getAndClear()))
-				.getVerticesWeights("weight") instanceof WeightsObj);
+		assertTrue(
+				reader.readGraph(new StringReader(text.getAndClear())).verticesWeights("weight") instanceof WeightsObj);
 
 		text.addLine("graph [");
 		text.addLine("  directed 1");
@@ -723,9 +721,8 @@ public class GmlTest {
 		text.addLine("    weight \"hello\"");
 		text.addLine("  ]");
 		text.addLine("]");
-		assertTrue(reader
-				.readGraph(new StringReader(text.getAndClear()))
-				.getVerticesWeights("weight") instanceof WeightsObj);
+		assertTrue(
+				reader.readGraph(new StringReader(text.getAndClear())).verticesWeights("weight") instanceof WeightsObj);
 
 		text.addLine("graph [");
 		text.addLine("  directed 1");
@@ -738,9 +735,8 @@ public class GmlTest {
 		text.addLine("    weight 1");
 		text.addLine("  ]");
 		text.addLine("]");
-		assertTrue(reader
-				.readGraph(new StringReader(text.getAndClear()))
-				.getVerticesWeights("weight") instanceof WeightsObj);
+		assertTrue(
+				reader.readGraph(new StringReader(text.getAndClear())).verticesWeights("weight") instanceof WeightsObj);
 
 		text.addLine("graph [");
 		text.addLine("  directed 1");
@@ -753,9 +749,8 @@ public class GmlTest {
 		text.addLine("    weight 1.1");
 		text.addLine("  ]");
 		text.addLine("]");
-		assertTrue(reader
-				.readGraph(new StringReader(text.getAndClear()))
-				.getVerticesWeights("weight") instanceof WeightsObj);
+		assertTrue(
+				reader.readGraph(new StringReader(text.getAndClear())).verticesWeights("weight") instanceof WeightsObj);
 	}
 
 	@SuppressWarnings("boxing")
@@ -993,8 +988,8 @@ public class GmlTest {
 		text.addLine("]");
 		Graph<Integer, Integer> g = reader.readGraph(new StringReader(text.getAndClear()));
 
-		assertNull(g.getVerticesWeights("comment"));
-		assertNull(g.getEdgesWeights("comment"));
+		assertNull(g.verticesWeights("comment"));
+		assertNull(g.edgesWeights("comment"));
 	}
 
 	@Test
@@ -1068,8 +1063,8 @@ public class GmlTest {
 		writer.getBuffer().setLength(0);
 		gmlWriter.writeGraph(g, writer);
 		IntGraph g1 = (IntGraph) gmlReader.readGraph(new StringReader(writer.toString()));
-		IWeightsInt vwByte1 = g1.getVerticesWeights("weightsByte");
-		IWeightsInt ewByte1 = g1.getEdgesWeights("weightsByte");
+		IWeightsInt vwByte1 = g1.verticesWeights("weightsByte");
+		IWeightsInt ewByte1 = g1.edgesWeights("weightsByte");
 		assertNotNull(vwByte1);
 		assertNotNull(ewByte1);
 		for (int v : g.vertices())
@@ -1088,8 +1083,8 @@ public class GmlTest {
 		writer.getBuffer().setLength(0);
 		gmlWriter.writeGraph(g, writer);
 		g1 = (IntGraph) gmlReader.readGraph(new StringReader(writer.toString()));
-		IWeightsInt vwShort1 = g1.getVerticesWeights("weightsShort");
-		IWeightsInt ewShort1 = g1.getEdgesWeights("weightsShort");
+		IWeightsInt vwShort1 = g1.verticesWeights("weightsShort");
+		IWeightsInt ewShort1 = g1.edgesWeights("weightsShort");
 		assertNotNull(vwShort1);
 		assertNotNull(ewShort1);
 		for (int v : g.vertices())
@@ -1108,8 +1103,8 @@ public class GmlTest {
 		writer.getBuffer().setLength(0);
 		gmlWriter.writeGraph(g, writer);
 		g1 = (IntGraph) gmlReader.readGraph(new StringReader(writer.toString()));
-		IWeightsInt vwInt1 = g1.getVerticesWeights("weightsInt");
-		IWeightsInt ewInt1 = g1.getEdgesWeights("weightsInt");
+		IWeightsInt vwInt1 = g1.verticesWeights("weightsInt");
+		IWeightsInt ewInt1 = g1.edgesWeights("weightsInt");
 		assertNotNull(vwInt1);
 		assertNotNull(ewInt1);
 		for (int v : g.vertices())
@@ -1128,8 +1123,8 @@ public class GmlTest {
 		writer.getBuffer().setLength(0);
 		gmlWriter.writeGraph(g, writer);
 		g1 = (IntGraph) gmlReader.readGraph(new StringReader(writer.toString()));
-		IWeightsDouble vwLong1 = g1.getVerticesWeights("weightsLong");
-		IWeightsDouble ewLong1 = g1.getEdgesWeights("weightsLong");
+		IWeightsDouble vwLong1 = g1.verticesWeights("weightsLong");
+		IWeightsDouble ewLong1 = g1.edgesWeights("weightsLong");
 		assertNotNull(vwLong1);
 		assertNotNull(ewLong1);
 		for (int v : g.vertices())
@@ -1148,8 +1143,8 @@ public class GmlTest {
 		writer.getBuffer().setLength(0);
 		gmlWriter.writeGraph(g, writer);
 		g1 = (IntGraph) gmlReader.readGraph(new StringReader(writer.toString()));
-		IWeightsDouble vwFloat1 = g1.getVerticesWeights("weightsFloat");
-		IWeightsDouble ewFloat1 = g1.getEdgesWeights("weightsFloat");
+		IWeightsDouble vwFloat1 = g1.verticesWeights("weightsFloat");
+		IWeightsDouble ewFloat1 = g1.edgesWeights("weightsFloat");
 		assertNotNull(vwFloat1);
 		assertNotNull(ewFloat1);
 		for (int v : g.vertices())
@@ -1168,8 +1163,8 @@ public class GmlTest {
 		writer.getBuffer().setLength(0);
 		gmlWriter.writeGraph(g, writer);
 		g1 = (IntGraph) gmlReader.readGraph(new StringReader(writer.toString()));
-		IWeightsDouble vwDouble1 = g1.getVerticesWeights("weightsDouble");
-		IWeightsDouble ewDouble1 = g1.getEdgesWeights("weightsDouble");
+		IWeightsDouble vwDouble1 = g1.verticesWeights("weightsDouble");
+		IWeightsDouble ewDouble1 = g1.edgesWeights("weightsDouble");
 		assertNotNull(vwDouble1);
 		assertNotNull(ewDouble1);
 		for (int v : g.vertices())
@@ -1188,8 +1183,8 @@ public class GmlTest {
 		writer.getBuffer().setLength(0);
 		gmlWriter.writeGraph(g, writer);
 		g1 = (IntGraph) gmlReader.readGraph(new StringReader(writer.toString()));
-		IWeightsInt vwBool1 = g1.getVerticesWeights("weightsBool");
-		IWeightsInt ewBool1 = g1.getEdgesWeights("weightsBool");
+		IWeightsInt vwBool1 = g1.verticesWeights("weightsBool");
+		IWeightsInt ewBool1 = g1.edgesWeights("weightsBool");
 		assertNotNull(vwBool1);
 		assertNotNull(ewBool1);
 		for (int v : g.vertices())
@@ -1208,8 +1203,8 @@ public class GmlTest {
 		writer.getBuffer().setLength(0);
 		gmlWriter.writeGraph(g, writer);
 		g1 = (IntGraph) gmlReader.readGraph(new StringReader(writer.toString()));
-		IWeightsObj<String> vwChar1 = g1.getVerticesWeights("weightsChar");
-		IWeightsObj<String> ewChar1 = g1.getEdgesWeights("weightsChar");
+		IWeightsObj<String> vwChar1 = g1.verticesWeights("weightsChar");
+		IWeightsObj<String> ewChar1 = g1.edgesWeights("weightsChar");
 		assertNotNull(vwChar1);
 		assertNotNull(ewChar1);
 		for (int v : g.vertices())
@@ -1228,8 +1223,8 @@ public class GmlTest {
 		writer.getBuffer().setLength(0);
 		gmlWriter.writeGraph(g, writer);
 		g1 = (IntGraph) gmlReader.readGraph(new StringReader(writer.toString()));
-		IWeightsObj<String> vwString1 = g1.getVerticesWeights("weightsString");
-		IWeightsObj<String> ewString1 = g1.getEdgesWeights("weightsString");
+		IWeightsObj<String> vwString1 = g1.verticesWeights("weightsString");
+		IWeightsObj<String> ewString1 = g1.edgesWeights("weightsString");
 		assertNotNull(vwString1);
 		assertNotNull(ewString1);
 		for (int v : g.vertices())
@@ -1248,8 +1243,8 @@ public class GmlTest {
 		writer.getBuffer().setLength(0);
 		gmlWriter.writeGraph(g, writer);
 		g1 = (IntGraph) gmlReader.readGraph(new StringReader(writer.toString()));
-		IWeightsObj<String> vwObj1 = g1.getVerticesWeights("weightsObj");
-		IWeightsObj<String> ewObj1 = g1.getEdgesWeights("weightsObj");
+		IWeightsObj<String> vwObj1 = g1.verticesWeights("weightsObj");
+		IWeightsObj<String> ewObj1 = g1.edgesWeights("weightsObj");
 		assertNotNull(vwObj1);
 		assertNotNull(ewObj1);
 		for (int v : g.vertices())
@@ -1297,16 +1292,16 @@ public class GmlTest {
 		writer.getBuffer().setLength(0);
 		gmlWriter.writeGraph(g, writer);
 		IntGraph g1 = (IntGraph) gmlReader.readGraph(new StringReader(writer.toString()));
-		assertEquals(verticesWeights, g1.getVerticesWeightsKeys());
-		assertEquals(edgesWeights, g1.getEdgesWeightsKeys());
+		assertEquals(verticesWeights, g1.verticesWeightsKeys());
+		assertEquals(edgesWeights, g1.edgesWeightsKeys());
 
 		gmlWriter.setVerticesWeightsKeys(null);
 		gmlWriter.setEdgesWeightsKeys(null);
 		writer.getBuffer().setLength(0);
 		gmlWriter.writeGraph(g, writer);
 		g1 = (IntGraph) gmlReader.readGraph(new StringReader(writer.toString()));
-		assertEquals(g.getVerticesWeightsKeys(), g1.getVerticesWeightsKeys());
-		assertEquals(g.getEdgesWeightsKeys(), g1.getEdgesWeightsKeys());
+		assertEquals(g.verticesWeightsKeys(), g1.verticesWeightsKeys());
+		assertEquals(g.edgesWeightsKeys(), g1.edgesWeightsKeys());
 
 		gmlWriter.setVerticesWeightsKeys(Set.of("nonexistentweights"));
 		gmlWriter.setEdgesWeightsKeys(edgesWeights);

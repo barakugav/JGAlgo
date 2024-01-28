@@ -99,7 +99,7 @@ public class ChinesePostmanTest extends TestBase {
 						.allMatch(v -> nonSelfEdgesDegree(eulerianGraph, v) % 2 == 0))
 				.mapToDouble(eulerianGraph -> {
 					Path<V, Integer> eulerianTour = EulerianTourAlgo.newInstance().computeEulerianTour(eulerianGraph);
-					WeightsInt<Integer> bWeights = eulerianGraph.getEdgesWeights("weights");
+					WeightsInt<Integer> bWeights = eulerianGraph.edgesWeights("weights");
 					return bWeights.weightSum(eulerianTour.edges());
 				})
 				.min()

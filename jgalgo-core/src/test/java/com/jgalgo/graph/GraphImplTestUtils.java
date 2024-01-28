@@ -2336,12 +2336,12 @@ class GraphImplTestUtils extends TestUtils {
 				}
 
 				/* Assert no weights were copied */
-				IWeights<Object> copyVData = copy.getVerticesWeights(gVDataKey);
-				IWeights<Object> copyEData = copy.getEdgesWeights(gEDataKey);
+				IWeights<Object> copyVData = copy.verticesWeights(gVDataKey);
+				IWeights<Object> copyEData = copy.edgesWeights(gEDataKey);
 				assertNull(copyVData);
 				assertNull(copyEData);
-				assertEquals(copy.getVerticesWeightsKeys(), Collections.emptySet());
-				assertEquals(copy.getEdgesWeightsKeys(), Collections.emptySet());
+				assertEquals(copy.verticesWeightsKeys(), Collections.emptySet());
+				assertEquals(copy.edgesWeightsKeys(), Collections.emptySet());
 			});
 		}
 	}
@@ -2389,8 +2389,8 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* Assert weights were copied */
-			WeightsObj<Integer, Object> copyVData = copy.getVerticesWeights(gVDataKey);
-			WeightsObj<Integer, Object> copyEData = copy.getEdgesWeights(gEDataKey);
+			WeightsObj<Integer, Object> copyVData = copy.verticesWeights(gVDataKey);
+			WeightsObj<Integer, Object> copyEData = copy.edgesWeights(gEDataKey);
 			assertNotNull(copyVData);
 			assertNotNull(copyEData);
 			Object2ObjectMap<Integer, Object> copyVDataMap = new Object2ObjectOpenHashMap<>(gVDataMap);
@@ -2408,25 +2408,25 @@ class GraphImplTestUtils extends TestUtils {
 			for (int ops = 0; ops < g.vertices().size() / 4; ops++) {
 				Integer u = Graphs.randVertex(g, rand);
 				Object data = labeledObj("data" + u + "new");
-				g.<Object, WeightsObj<Integer, Object>>getVerticesWeights(gVDataKey).set(u, data);
+				g.<Object, WeightsObj<Integer, Object>>verticesWeights(gVDataKey).set(u, data);
 				gVDataMap.put(u, data);
 			}
 			for (int ops = 0; ops < copy.vertices().size() / 4; ops++) {
 				Integer u = Graphs.randVertex(copy, rand);
 				Object data = labeledObj("data" + u + "new");
-				copy.<Object, WeightsObj<Integer, Object>>getVerticesWeights(gVDataKey).set(u, data);
+				copy.<Object, WeightsObj<Integer, Object>>verticesWeights(gVDataKey).set(u, data);
 				copyVDataMap.put(u, data);
 			}
 			for (int ops = 0; ops < g.edges().size() / 4; ops++) {
 				Integer e = Graphs.randEdge(g, rand);
 				Object data = labeledObj("data" + e + "new");
-				g.<Object, WeightsObj<Integer, Object>>getEdgesWeights(gEDataKey).set(e, data);
+				g.<Object, WeightsObj<Integer, Object>>edgesWeights(gEDataKey).set(e, data);
 				gEDataMap.put(e, data);
 			}
 			for (int ops = 0; ops < copy.edges().size() / 4; ops++) {
 				Integer e = Graphs.randEdge(copy, rand);
 				Object data = labeledObj("data" + e + "new");
-				copy.<Object, WeightsObj<Integer, Object>>getEdgesWeights(gEDataKey).set(e, data);
+				copy.<Object, WeightsObj<Integer, Object>>edgesWeights(gEDataKey).set(e, data);
 				copyEDataMap.put(e, data);
 			}
 
@@ -2485,12 +2485,12 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* Assert weights were copied */
-			IWeights<Object> copyVData = copy.getVerticesWeights(gVDataKey);
-			IWeights<Object> copyEData = copy.getEdgesWeights(gEDataKey);
+			IWeights<Object> copyVData = copy.verticesWeights(gVDataKey);
+			IWeights<Object> copyEData = copy.edgesWeights(gEDataKey);
 			assertNull(copyVData);
 			assertNull(copyEData);
-			assertEquals(copy.getVerticesWeightsKeys(), Collections.emptySet());
-			assertEquals(copy.getEdgesWeightsKeys(), Collections.emptySet());
+			assertEquals(copy.verticesWeightsKeys(), Collections.emptySet());
+			assertEquals(copy.edgesWeightsKeys(), Collections.emptySet());
 		});
 	}
 
@@ -2538,8 +2538,8 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* Assert weights were copied */
-			WeightsObj<Integer, Object> copyVData = copy.getVerticesWeights(gVDataKey);
-			WeightsObj<Integer, Object> copyEData = copy.getEdgesWeights(gEDataKey);
+			WeightsObj<Integer, Object> copyVData = copy.verticesWeights(gVDataKey);
+			WeightsObj<Integer, Object> copyEData = copy.edgesWeights(gEDataKey);
 			assertNotNull(copyVData);
 			assertNotNull(copyEData);
 			Object2ObjectMap<Integer, Object> copyVDataMap = new Object2ObjectOpenHashMap<>(gVDataMap);
@@ -2557,13 +2557,13 @@ class GraphImplTestUtils extends TestUtils {
 			for (int ops = 0; ops < g.vertices().size() / 4; ops++) {
 				Integer u = Graphs.randVertex(g, rand);
 				Object data = labeledObj("data" + u + "new");
-				g.<Object, WeightsObj<Integer, Object>>getVerticesWeights(gVDataKey).set(u, data);
+				g.<Object, WeightsObj<Integer, Object>>verticesWeights(gVDataKey).set(u, data);
 				gVDataMap.put(u, data);
 			}
 			for (int ops = 0; ops < g.edges().size() / 4; ops++) {
 				Integer e = Graphs.randEdge(g, rand);
 				Object data = labeledObj("data" + e + "new");
-				g.<Object, WeightsObj<Integer, Object>>getEdgesWeights(gEDataKey).set(e, data);
+				g.<Object, WeightsObj<Integer, Object>>edgesWeights(gEDataKey).set(e, data);
 				gEDataMap.put(e, data);
 			}
 
@@ -3153,7 +3153,7 @@ class GraphImplTestUtils extends TestUtils {
 
 		void checkEdgesEqual(Graph<Integer, Integer> g) {
 			assertEquals(edgesNum(), g.edges().size());
-			WeightsInt<Integer> edgeData = g.getEdgesWeights(dataKey);
+			WeightsInt<Integer> edgeData = g.edgesWeights(dataKey);
 
 			List<IntList> actual = new ObjectArrayList<>();
 			List<IntList> expected = new ObjectArrayList<>();

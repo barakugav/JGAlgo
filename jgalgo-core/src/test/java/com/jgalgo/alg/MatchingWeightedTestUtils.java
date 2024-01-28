@@ -73,7 +73,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		tester.addPhase().withArgs(1024, 1024, 1024).repeat(1);
 		tester.run((sn, tn, m) -> {
 			Graph<Integer, Integer> g = GraphsTestUtils.randBipartiteGraph(sn, tn, m, false, seedGen.nextSeed());
-			WeightsBool<Integer> partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
+			WeightsBool<Integer> partition = g.verticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 			Supplier<Integer> edgeSupplier = () -> {
 				for (;;) {
 					Integer e = Integer.valueOf(rand.nextInt());
