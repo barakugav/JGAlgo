@@ -220,7 +220,7 @@ public class ArraysUtilsTest extends TestBase {
 		tester.run(n -> {
 			int[] a = randArray(n, 0, n / 4, seedGen.nextSeed());
 			int pivot = a[rand.nextInt(a.length)];
-			ArraysUtils.pivotPartition(a, 0, a.length, pivot, null);
+			int firstGreater = ArraysUtils.pivotPartition(a, 0, a.length, pivot, null);
 
 			int i = 0;
 			for (; i < n; i++)
@@ -229,6 +229,7 @@ public class ArraysUtilsTest extends TestBase {
 			for (; i < n; i++)
 				if (!(a[i] == pivot))
 					break;
+			assertEquals(i, firstGreater);
 			for (; i < n; i++)
 				if (!(a[i] > pivot))
 					break;
@@ -250,7 +251,7 @@ public class ArraysUtilsTest extends TestBase {
 		tester.run(n -> {
 			Integer[] a = toIntegerArr(randArray(n, 0, n / 4, seedGen.nextSeed()));
 			int pivot = a[rand.nextInt(a.length)];
-			ArraysUtils.pivotPartition(a, 0, a.length, pivot, null);
+			int firstGreater = ArraysUtils.pivotPartition(a, 0, a.length, pivot, null);
 
 			int i = 0;
 			for (; i < n; i++)
@@ -259,6 +260,7 @@ public class ArraysUtilsTest extends TestBase {
 			for (; i < n; i++)
 				if (!(a[i] == pivot))
 					break;
+			assertEquals(i, firstGreater);
 			for (; i < n; i++)
 				if (!(a[i] > pivot))
 					break;
