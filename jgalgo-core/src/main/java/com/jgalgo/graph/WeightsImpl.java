@@ -105,6 +105,7 @@ interface WeightsImpl {
 				container = new WeightsImplChar.IndexMutable(elements, isEdges, defVal0);
 
 			} else {
+				Objects.requireNonNull(type);
 				container = new WeightsImplObj.IndexMutable<>(elements, isEdges, defVal);
 			}
 			@SuppressWarnings("unchecked")
