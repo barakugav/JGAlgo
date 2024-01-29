@@ -71,7 +71,7 @@ import com.jgalgo.graph.WeightsInt;
  * &lt;p&gt;
  * The reader will identify the format automatically by looking at the header of the file. If the format contains edge
  * weights ('sp' format), the built graph will have edges {@linkplain WeightsInt integer weights} keys by &quot;weight&quot;, or a
- * key chosen by the user using {@link #setEdgeWeightsKey(String)}. See {@link Graph#getEdgesWeights(String)}.
+ * key chosen by the user using {@link #setEdgeWeightsKey(String)}. See {@link Graph#edgesWeights(String)}.
  *
  * @see    &lt;a href=&quot;http://www.diag.uniroma1.it/challenge9/format.shtml#graph&quot;&gt;DIMACS Graph Format&lt;/a&gt;
  * @see    DimacsGraphWriter
@@ -94,7 +94,7 @@ public class DimacsGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 	 * By default, the weights will be added with key &quot;weight&quot;. Use this method to specify a different key.
 	 *
 	 * @param weightsKey the key of the edge weights that will be read
-	 * @see              Graph#getEdgesWeights(String)
+	 * @see              Graph#edgesWeights(String)
 	 */
 	public void setEdgeWeightsKey(String weightsKey) {
 <span class="fc" id="L100">		this.weightsKey = Objects.requireNonNull(weightsKey);</span>

@@ -154,8 +154,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
-	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getVerticesWeights(String key) {
-<span class="fc" id="L158">		WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.getVerticesWeights(key);</span>
+	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT verticesWeights(String key) {
+<span class="fc" id="L158">		WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.verticesWeights(key);</span>
 <span class="fc bfc" id="L159" title="All 2 branches covered.">		if (indexWeights == null)</span>
 <span class="fc" id="L160">			return null;</span>
 <span class="fc" id="L161">		return (WeightsT) verticesWeights</span>
@@ -166,18 +166,18 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
 <span class="fc" id="L168">		ibuilder.addVerticesWeights(key, type, defVal);</span>
-<span class="fc" id="L169">		return getVerticesWeights(key);</span>
+<span class="fc" id="L169">		return verticesWeights(key);</span>
 	}
 
 	@Override
-	public Set&lt;String&gt; getVerticesWeightsKeys() {
-<span class="fc" id="L174">		return ibuilder.getVerticesWeightsKeys();</span>
+	public Set&lt;String&gt; verticesWeightsKeys() {
+<span class="fc" id="L174">		return ibuilder.verticesWeightsKeys();</span>
 	}
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
-	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getEdgesWeights(String key) {
-<span class="fc" id="L180">		WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.getEdgesWeights(key);</span>
+	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT edgesWeights(String key) {
+<span class="fc" id="L180">		WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.edgesWeights(key);</span>
 <span class="fc bfc" id="L181" title="All 2 branches covered.">		if (indexWeights == null)</span>
 <span class="fc" id="L182">			return null;</span>
 <span class="fc" id="L183">		return (WeightsT) edgesWeights</span>
@@ -188,12 +188,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
 <span class="fc" id="L190">		ibuilder.addEdgesWeights(key, type, defVal);</span>
-<span class="fc" id="L191">		return getEdgesWeights(key);</span>
+<span class="fc" id="L191">		return edgesWeights(key);</span>
 	}
 
 	@Override
-	public Set&lt;String&gt; getEdgesWeightsKeys() {
-<span class="fc" id="L196">		return ibuilder.getEdgesWeightsKeys();</span>
+	public Set&lt;String&gt; edgesWeightsKeys() {
+<span class="fc" id="L196">		return ibuilder.edgesWeightsKeys();</span>
 	}
 
 	@Override

@@ -56,7 +56,7 @@ public class Assertions {
 <span class="fc" id="L56">	}</span>
 
 	public static IWeightsBool onlyBipartite(IndexGraph g) {
-<span class="fc" id="L59">		IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);</span>
+<span class="fc" id="L59">		IWeightsBool partition = g.verticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);</span>
 <span class="fc bfc" id="L60" title="All 2 branches covered.">		if (partition == null)</span>
 <span class="fc" id="L61">			throw new IllegalArgumentException(</span>
 					&quot;Bipartiteness vertices weights is not found. See BipartiteGraphs.VertexBiPartitionWeightKey&quot;);

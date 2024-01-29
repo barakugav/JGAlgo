@@ -502,7 +502,7 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 <span class="fc" id="L502">	public void ensureEdgeCapacity(int edgeCapacity) {}</span>
 
 	@Override
-	public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT getVerticesWeights(String key) {
+	public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT verticesWeights(String key) {
 <span class="fc" id="L506">		return null;</span>
 	}
 
@@ -518,13 +518,13 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 	}
 
 	@Override
-	public Set&lt;String&gt; getVerticesWeightsKeys() {
+	public Set&lt;String&gt; verticesWeightsKeys() {
 <span class="fc" id="L522">		return Set.of();</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
-	public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT getEdgesWeights(String key) {
+	public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT edgesWeights(String key) {
 <span class="fc bfc" id="L528" title="All 4 branches covered.">		if (edgeWeightKey == null || !edgeWeightKey.equals(key))</span>
 <span class="fc" id="L529">			return null;</span>
 <span class="fc" id="L530">		return (WeightsT) weights;</span>
@@ -545,7 +545,7 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 	}
 
 	@Override
-	public Set&lt;String&gt; getEdgesWeightsKeys() {
+	public Set&lt;String&gt; edgesWeightsKeys() {
 <span class="fc bfc" id="L549" title="All 2 branches covered.">		return edgeWeightKey != null ? Set.of(edgeWeightKey) : Set.of();</span>
 	}
 
@@ -826,13 +826,13 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 		}
 
 		@Override
-		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getVerticesWeights(String key) {
+		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT verticesWeights(String key) {
 <span class="fc" id="L830">			return null;</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
-		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getEdgesWeights(String key) {
+		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT edgesWeights(String key) {
 <span class="fc bfc" id="L836" title="All 4 branches covered.">			if (edgeWeightKey == null || !edgeWeightKey.equals(key))</span>
 <span class="fc" id="L837">				return null;</span>
 <span class="fc" id="L838">			return (WeightsT) weights;</span>
@@ -855,12 +855,12 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 <span class="fc" id="L855">		public void ensureEdgeCapacity(int edgeCapacity) {}</span>
 
 		@Override
-		public Set&lt;String&gt; getVerticesWeightsKeys() {
+		public Set&lt;String&gt; verticesWeightsKeys() {
 <span class="fc" id="L859">			return Set.of();</span>
 		}
 
 		@Override
-		public Set&lt;String&gt; getEdgesWeightsKeys() {
+		public Set&lt;String&gt; edgesWeightsKeys() {
 <span class="fc bfc" id="L864" title="All 2 branches covered.">			return edgeWeightKey != null ? Set.of(edgeWeightKey) : Set.of();</span>
 		}
 

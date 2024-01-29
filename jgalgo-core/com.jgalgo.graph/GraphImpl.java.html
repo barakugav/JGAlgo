@@ -354,8 +354,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
-	public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT getVerticesWeights(String key) {
-<span class="fc" id="L358">		WeightsImpl.Index&lt;T&gt; indexWeights = indexGraph.getVerticesWeights(key);</span>
+	public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT verticesWeights(String key) {
+<span class="fc" id="L358">		WeightsImpl.Index&lt;T&gt; indexWeights = indexGraph.verticesWeights(key);</span>
 <span class="fc bfc" id="L359" title="All 2 branches covered.">		if (indexWeights == null)</span>
 <span class="fc" id="L360">			return null;</span>
 <span class="fc" id="L361">		return (WeightsT) verticesWeights</span>
@@ -364,8 +364,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
-	public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT getEdgesWeights(String key) {
-<span class="fc" id="L368">		WeightsImpl.Index&lt;T&gt; indexWeights = indexGraph.getEdgesWeights(key);</span>
+	public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT edgesWeights(String key) {
+<span class="fc" id="L368">		WeightsImpl.Index&lt;T&gt; indexWeights = indexGraph.edgesWeights(key);</span>
 <span class="fc bfc" id="L369" title="All 2 branches covered.">		if (indexWeights == null)</span>
 <span class="fc" id="L370">			return null;</span>
 <span class="fc" id="L371">		return (WeightsT) edgesWeights</span>

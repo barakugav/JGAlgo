@@ -651,7 +651,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
 	 *                        {@link WeightsInt}, {@link WeightsDouble} ect.
 	 */
-	&lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT getVerticesWeights(String key);
+	&lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT verticesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the vertices of this graph.
@@ -748,7 +748,7 @@ public interface Graph&lt;V, E&gt; {
 	 *
 	 * @return the keys of all the associated vertices weights
 	 */
-	Set&lt;String&gt; getVerticesWeightsKeys();
+	Set&lt;String&gt; verticesWeightsKeys();
 
 	/**
 	 * Get the edges weights of some key.
@@ -762,7 +762,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @param  key        key of the weights
 	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
 	 */
-	&lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT getEdgesWeights(String key);
+	&lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT edgesWeights(String key);
 
 	/**
 	 * Add a new weights container associated with the edges of this graph.
@@ -865,7 +865,7 @@ public interface Graph&lt;V, E&gt; {
 	 *
 	 * @return the keys of all the associated edges weights
 	 */
-	Set&lt;String&gt; getEdgesWeightsKeys();
+	Set&lt;String&gt; edgesWeightsKeys();
 
 	/**
 	 * Checks whether the graph is directed.

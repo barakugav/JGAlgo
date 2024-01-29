@@ -231,8 +231,8 @@ public class Graphs {
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
-		public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT getVerticesWeights(String key) {
-<span class="fc" id="L235">			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.getVerticesWeights(key));</span>
+		public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT verticesWeights(String key) {
+<span class="fc" id="L235">			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.verticesWeights(key));</span>
 		}
 
 		@Override
@@ -247,14 +247,14 @@ public class Graphs {
 		}
 
 		@Override
-		public Set&lt;String&gt; getVerticesWeightsKeys() {
-<span class="fc" id="L251">			return graph.getVerticesWeightsKeys();</span>
+		public Set&lt;String&gt; verticesWeightsKeys() {
+<span class="fc" id="L251">			return graph.verticesWeightsKeys();</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
-		public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT getEdgesWeights(String key) {
-<span class="fc" id="L257">			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.getEdgesWeights(key));</span>
+		public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT edgesWeights(String key) {
+<span class="fc" id="L257">			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.edgesWeights(key));</span>
 		}
 
 		@Override
@@ -269,8 +269,8 @@ public class Graphs {
 		}
 
 		@Override
-		public Set&lt;String&gt; getEdgesWeightsKeys() {
-<span class="fc" id="L273">			return graph.getEdgesWeightsKeys();</span>
+		public Set&lt;String&gt; edgesWeightsKeys() {
+<span class="fc" id="L273">			return graph.edgesWeightsKeys();</span>
 		}
 
 		@Override
@@ -427,8 +427,8 @@ public class Graphs {
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
-		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getVerticesWeights(String key) {
-<span class="fc" id="L431">			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.getVerticesWeights(key));</span>
+		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT verticesWeights(String key) {
+<span class="fc" id="L431">			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.verticesWeights(key));</span>
 		}
 
 		@Override
@@ -443,14 +443,14 @@ public class Graphs {
 		}
 
 		@Override
-		public Set&lt;String&gt; getVerticesWeightsKeys() {
-<span class="fc" id="L447">			return graph.getVerticesWeightsKeys();</span>
+		public Set&lt;String&gt; verticesWeightsKeys() {
+<span class="fc" id="L447">			return graph.verticesWeightsKeys();</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
-		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getEdgesWeights(String key) {
-<span class="fc" id="L453">			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.getEdgesWeights(key));</span>
+		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT edgesWeights(String key) {
+<span class="fc" id="L453">			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.edgesWeights(key));</span>
 		}
 
 		@Override
@@ -465,8 +465,8 @@ public class Graphs {
 		}
 
 		@Override
-		public Set&lt;String&gt; getEdgesWeightsKeys() {
-<span class="fc" id="L469">			return graph.getEdgesWeightsKeys();</span>
+		public Set&lt;String&gt; edgesWeightsKeys() {
+<span class="fc" id="L469">			return graph.edgesWeightsKeys();</span>
 		}
 
 		@Override
@@ -789,8 +789,8 @@ public class Graphs {
 <span class="fc" id="L789">		}</span>
 
 		@Override
-		public Set&lt;String&gt; getVerticesWeightsKeys() {
-<span class="fc" id="L793">			return graph().getVerticesWeightsKeys();</span>
+		public Set&lt;String&gt; verticesWeightsKeys() {
+<span class="fc" id="L793">			return graph().verticesWeightsKeys();</span>
 		}
 
 		@Override
@@ -805,8 +805,8 @@ public class Graphs {
 <span class="fc" id="L805">		}</span>
 
 		@Override
-		public Set&lt;String&gt; getEdgesWeightsKeys() {
-<span class="fc" id="L809">			return graph().getEdgesWeightsKeys();</span>
+		public Set&lt;String&gt; edgesWeightsKeys() {
+<span class="fc" id="L809">			return graph().edgesWeightsKeys();</span>
 		}
 
 		@Override
@@ -944,13 +944,13 @@ public class Graphs {
 		}
 
 		@Override
-		public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT getVerticesWeights(String key) {
-<span class="fc" id="L948">			return graph().getVerticesWeights(key);</span>
+		public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT verticesWeights(String key) {
+<span class="fc" id="L948">			return graph().verticesWeights(key);</span>
 		}
 
 		@Override
-		public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT getEdgesWeights(String key) {
-<span class="fc" id="L953">			return graph().getEdgesWeights(key);</span>
+		public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT edgesWeights(String key) {
+<span class="fc" id="L953">			return graph().edgesWeights(key);</span>
 		}
 
 		@Override
@@ -1067,13 +1067,13 @@ public class Graphs {
 		}
 
 		@Override
-		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getVerticesWeights(String key) {
-<span class="fc" id="L1071">			return graph().getVerticesWeights(key);</span>
+		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT verticesWeights(String key) {
+<span class="fc" id="L1071">			return graph().verticesWeights(key);</span>
 		}
 
 		@Override
-		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getEdgesWeights(String key) {
-<span class="fc" id="L1076">			return graph().getEdgesWeights(key);</span>
+		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT edgesWeights(String key) {
+<span class="fc" id="L1076">			return graph().edgesWeights(key);</span>
 		}
 	}
 
@@ -2462,16 +2462,16 @@ public class Graphs {
 		}
 
 <span class="fc bfc" id="L2464" title="All 2 branches covered.">		if (copyVerticesWeights) {</span>
-<span class="fc bfc" id="L2465" title="All 2 branches covered.">			for (String key : g.getVerticesWeightsKeys()) {</span>
-<span class="fc" id="L2466">				Weights wSrc = g.getVerticesWeights(key);</span>
+<span class="fc bfc" id="L2465" title="All 2 branches covered.">			for (String key : g.verticesWeightsKeys()) {</span>
+<span class="fc" id="L2466">				Weights wSrc = g.verticesWeights(key);</span>
 <span class="fc" id="L2467">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
 <span class="fc" id="L2468">				Weights wDst = gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
 <span class="fc" id="L2469">				copyWeights(wSrc, wDst, type, gb.vertices());</span>
 <span class="fc" id="L2470">			}</span>
 		}
 <span class="fc bfc" id="L2472" title="All 2 branches covered.">		if (copyEdgesWeights) {</span>
-<span class="fc bfc" id="L2473" title="All 2 branches covered.">			for (String key : g.getEdgesWeightsKeys()) {</span>
-<span class="fc" id="L2474">				Weights wSrc = g.getEdgesWeights(key);</span>
+<span class="fc bfc" id="L2473" title="All 2 branches covered.">			for (String key : g.edgesWeightsKeys()) {</span>
+<span class="fc" id="L2474">				Weights wSrc = g.edgesWeights(key);</span>
 <span class="fc" id="L2475">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
 <span class="fc" id="L2476">				Weights wDst = gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
 <span class="fc" id="L2477">				copyWeights(wSrc, wDst, type, gb.edges());</span>
@@ -2582,16 +2582,16 @@ public class Graphs {
 		}
 
 <span class="fc bfc" id="L2584" title="All 2 branches covered.">		if (copyVerticesWeights) {</span>
-<span class="fc bfc" id="L2585" title="All 2 branches covered.">			for (String key : g.getVerticesWeightsKeys()) {</span>
-<span class="fc" id="L2586">				IWeights wSrc = g.getVerticesWeights(key);</span>
+<span class="fc bfc" id="L2585" title="All 2 branches covered.">			for (String key : g.verticesWeightsKeys()) {</span>
+<span class="fc" id="L2586">				IWeights wSrc = g.verticesWeights(key);</span>
 <span class="fc" id="L2587">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
 <span class="fc" id="L2588">				IWeights wDst = (IWeights) gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
 <span class="fc" id="L2589">				copyWeights(wSrc, wDst, type, gb.vertices());</span>
 <span class="fc" id="L2590">			}</span>
 		}
 <span class="fc bfc" id="L2592" title="All 2 branches covered.">		if (copyEdgesWeights) {</span>
-<span class="fc bfc" id="L2593" title="All 2 branches covered.">			for (String key : g.getEdgesWeightsKeys()) {</span>
-<span class="fc" id="L2594">				IWeights wSrc = g.getEdgesWeights(key);</span>
+<span class="fc bfc" id="L2593" title="All 2 branches covered.">			for (String key : g.edgesWeightsKeys()) {</span>
+<span class="fc" id="L2594">				IWeights wSrc = g.edgesWeights(key);</span>
 <span class="fc" id="L2595">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
 <span class="fc" id="L2596">				IWeights wDst = (IWeights) gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
 <span class="fc" id="L2597">				copyWeights(wSrc, wDst, type, gb.edges());</span>
@@ -2642,16 +2642,16 @@ public class Graphs {
 		}
 
 <span class="fc bfc" id="L2644" title="All 2 branches covered.">		if (copyVerticesWeights) {</span>
-<span class="fc bfc" id="L2645" title="All 2 branches covered.">			for (String key : g.getVerticesWeightsKeys()) {</span>
-<span class="fc" id="L2646">				IWeights wSrc = g.getVerticesWeights(key);</span>
+<span class="fc bfc" id="L2645" title="All 2 branches covered.">			for (String key : g.verticesWeightsKeys()) {</span>
+<span class="fc" id="L2646">				IWeights wSrc = g.verticesWeights(key);</span>
 <span class="fc" id="L2647">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
 <span class="fc" id="L2648">				IWeights wDst = (IWeights) gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
 <span class="fc" id="L2649">				copyWeights(wSrc, wDst, type, gb.vertices());</span>
 <span class="fc" id="L2650">			}</span>
 		}
 <span class="fc bfc" id="L2652" title="All 2 branches covered.">		if (copyEdgesWeights) {</span>
-<span class="fc bfc" id="L2653" title="All 2 branches covered.">			for (String key : g.getEdgesWeightsKeys()) {</span>
-<span class="fc" id="L2654">				IWeights wSrc = g.getEdgesWeights(key);</span>
+<span class="fc bfc" id="L2653" title="All 2 branches covered.">			for (String key : g.edgesWeightsKeys()) {</span>
+<span class="fc" id="L2654">				IWeights wSrc = g.edgesWeights(key);</span>
 <span class="fc" id="L2655">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
 <span class="fc" id="L2656">				IWeights wDst = (IWeights) gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
 <span class="fc" id="L2657">				copyWeights(wSrc, wDst, type, gb.edges());</span>
@@ -2877,17 +2877,17 @@ public class Graphs {
 <span class="fc" id="L2877">			}</span>
 		}
 
-<span class="fc bfc" id="L2880" title="All 2 branches covered.">		if (!g1.getVerticesWeightsKeys().equals(g2.getVerticesWeightsKeys()))</span>
+<span class="fc bfc" id="L2880" title="All 2 branches covered.">		if (!g1.verticesWeightsKeys().equals(g2.verticesWeightsKeys()))</span>
 <span class="fc" id="L2881">			return false;</span>
-<span class="fc bfc" id="L2882" title="All 2 branches covered.">		for (String key : g1.getVerticesWeightsKeys()) {</span>
-<span class="fc" id="L2883">			Weights&lt;V, ?&gt; w1 = g1.getVerticesWeights(key), w2 = g2.getVerticesWeights(key);</span>
+<span class="fc bfc" id="L2882" title="All 2 branches covered.">		for (String key : g1.verticesWeightsKeys()) {</span>
+<span class="fc" id="L2883">			Weights&lt;V, ?&gt; w1 = g1.verticesWeights(key), w2 = g2.verticesWeights(key);</span>
 <span class="fc bfc" id="L2884" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(g1.vertices(), w1, w2))</span>
 <span class="fc" id="L2885">				return false;</span>
 <span class="fc" id="L2886">		}</span>
-<span class="fc bfc" id="L2887" title="All 2 branches covered.">		if (!g1.getEdgesWeightsKeys().equals(g2.getEdgesWeightsKeys()))</span>
+<span class="fc bfc" id="L2887" title="All 2 branches covered.">		if (!g1.edgesWeightsKeys().equals(g2.edgesWeightsKeys()))</span>
 <span class="fc" id="L2888">			return false;</span>
-<span class="fc bfc" id="L2889" title="All 2 branches covered.">		for (String key : g1.getEdgesWeightsKeys()) {</span>
-<span class="fc" id="L2890">			Weights&lt;E, ?&gt; w1 = g1.getEdgesWeights(key), w2 = g2.getEdgesWeights(key);</span>
+<span class="fc bfc" id="L2889" title="All 2 branches covered.">		for (String key : g1.edgesWeightsKeys()) {</span>
+<span class="fc" id="L2890">			Weights&lt;E, ?&gt; w1 = g1.edgesWeights(key), w2 = g2.edgesWeights(key);</span>
 <span class="fc bfc" id="L2891" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(g1.edges(), w1, w2))</span>
 <span class="fc" id="L2892">				return false;</span>
 <span class="fc" id="L2893">		}</span>
@@ -2915,17 +2915,17 @@ public class Graphs {
 <span class="fc" id="L2915">			}</span>
 		}
 
-<span class="fc bfc" id="L2918" title="All 2 branches covered.">		if (!g1.getVerticesWeightsKeys().equals(g2.getVerticesWeightsKeys()))</span>
+<span class="fc bfc" id="L2918" title="All 2 branches covered.">		if (!g1.verticesWeightsKeys().equals(g2.verticesWeightsKeys()))</span>
 <span class="fc" id="L2919">			return false;</span>
-<span class="fc bfc" id="L2920" title="All 2 branches covered.">		for (String key : g1.getVerticesWeightsKeys()) {</span>
-<span class="fc" id="L2921">			IWeights&lt;?&gt; w1 = (IWeights&lt;?&gt;) g1.getVerticesWeights(key), w2 = (IWeights&lt;?&gt;) g2.getVerticesWeights(key);</span>
+<span class="fc bfc" id="L2920" title="All 2 branches covered.">		for (String key : g1.verticesWeightsKeys()) {</span>
+<span class="fc" id="L2921">			IWeights&lt;?&gt; w1 = (IWeights&lt;?&gt;) g1.verticesWeights(key), w2 = (IWeights&lt;?&gt;) g2.verticesWeights(key);</span>
 <span class="fc bfc" id="L2922" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(g1.vertices(), w1, w2))</span>
 <span class="fc" id="L2923">				return false;</span>
 <span class="fc" id="L2924">		}</span>
-<span class="fc bfc" id="L2925" title="All 2 branches covered.">		if (!g1.getEdgesWeightsKeys().equals(g2.getEdgesWeightsKeys()))</span>
+<span class="fc bfc" id="L2925" title="All 2 branches covered.">		if (!g1.edgesWeightsKeys().equals(g2.edgesWeightsKeys()))</span>
 <span class="fc" id="L2926">			return false;</span>
-<span class="fc bfc" id="L2927" title="All 2 branches covered.">		for (String key : g1.getEdgesWeightsKeys()) {</span>
-<span class="fc" id="L2928">			IWeights&lt;?&gt; w1 = (IWeights&lt;?&gt;) g1.getEdgesWeights(key), w2 = (IWeights&lt;?&gt;) g2.getEdgesWeights(key);</span>
+<span class="fc bfc" id="L2927" title="All 2 branches covered.">		for (String key : g1.edgesWeightsKeys()) {</span>
+<span class="fc" id="L2928">			IWeights&lt;?&gt; w1 = (IWeights&lt;?&gt;) g1.edgesWeights(key), w2 = (IWeights&lt;?&gt;) g2.edgesWeights(key);</span>
 <span class="fc bfc" id="L2929" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(g1.edges(), w1, w2))</span>
 <span class="fc" id="L2930">				return false;</span>
 <span class="fc" id="L2931">		}</span>
@@ -2947,10 +2947,10 @@ public class Graphs {
 <span class="fc bfc" id="L2947" title="All 2 branches covered.">			for (E e : g.edges())</span>
 <span class="fc" id="L2948">				h += g.edgeSource(e).hashCode() + g.edgeTarget(e).hashCode();</span>
 		}
-<span class="fc bfc" id="L2950" title="All 2 branches covered.">		for (String key : g.getVerticesWeightsKeys())</span>
-<span class="fc" id="L2951">			h += WeightsImpl.hashCode(g.vertices(), g.getVerticesWeights(key));</span>
-<span class="fc bfc" id="L2952" title="All 2 branches covered.">		for (String key : g.getEdgesWeightsKeys())</span>
-<span class="fc" id="L2953">			h += WeightsImpl.hashCode(g.edges(), g.getEdgesWeights(key));</span>
+<span class="fc bfc" id="L2950" title="All 2 branches covered.">		for (String key : g.verticesWeightsKeys())</span>
+<span class="fc" id="L2951">			h += WeightsImpl.hashCode(g.vertices(), g.verticesWeights(key));</span>
+<span class="fc bfc" id="L2952" title="All 2 branches covered.">		for (String key : g.edgesWeightsKeys())</span>
+<span class="fc" id="L2953">			h += WeightsImpl.hashCode(g.edges(), g.edgesWeights(key));</span>
 <span class="fc" id="L2954">		return h;</span>
 	}
 
@@ -2965,10 +2965,10 @@ public class Graphs {
 <span class="fc bfc" id="L2965" title="All 2 branches covered.">			for (int e : g.edges())</span>
 <span class="fc" id="L2966">				h += g.edgeSource(e) + g.edgeTarget(e);</span>
 		}
-<span class="fc bfc" id="L2968" title="All 2 branches covered.">		for (String key : g.getVerticesWeightsKeys())</span>
-<span class="fc" id="L2969">			h += WeightsImpl.hashCode(g.vertices(), g.getVerticesWeights(key));</span>
-<span class="fc bfc" id="L2970" title="All 2 branches covered.">		for (String key : g.getEdgesWeightsKeys())</span>
-<span class="fc" id="L2971">			h += WeightsImpl.hashCode(g.edges(), g.getEdgesWeights(key));</span>
+<span class="fc bfc" id="L2968" title="All 2 branches covered.">		for (String key : g.verticesWeightsKeys())</span>
+<span class="fc" id="L2969">			h += WeightsImpl.hashCode(g.vertices(), g.verticesWeights(key));</span>
+<span class="fc bfc" id="L2970" title="All 2 branches covered.">		for (String key : g.edgesWeightsKeys())</span>
+<span class="fc" id="L2971">			h += WeightsImpl.hashCode(g.edges(), g.edgesWeights(key));</span>
 <span class="fc" id="L2972">		return h;</span>
 	}
 
@@ -2978,15 +2978,15 @@ public class Graphs {
 
 <span class="fc" id="L2979">		StringBuilder s = new StringBuilder();</span>
 
-<span class="fc" id="L2981">		Set&lt;String&gt; verticesWeightsKeys = g.getVerticesWeightsKeys();</span>
+<span class="fc" id="L2981">		Set&lt;String&gt; verticesWeightsKeys = g.verticesWeightsKeys();</span>
 <span class="fc" id="L2982">		List&lt;Weights&lt;V, ?&gt;&gt; verticesWeights = new ObjectArrayList&lt;&gt;(verticesWeightsKeys.size());</span>
 <span class="fc bfc" id="L2983" title="All 2 branches covered.">		for (String key : verticesWeightsKeys)</span>
-<span class="fc" id="L2984">			verticesWeights.add(g.getVerticesWeights(key));</span>
+<span class="fc" id="L2984">			verticesWeights.add(g.verticesWeights(key));</span>
 
-<span class="fc" id="L2986">		Set&lt;String&gt; edgesWeightsKeys = g.getEdgesWeightsKeys();</span>
+<span class="fc" id="L2986">		Set&lt;String&gt; edgesWeightsKeys = g.edgesWeightsKeys();</span>
 <span class="fc" id="L2987">		List&lt;Weights&lt;E, ?&gt;&gt; edgesWeights = new ObjectArrayList&lt;&gt;(edgesWeightsKeys.size());</span>
 <span class="fc bfc" id="L2988" title="All 2 branches covered.">		for (String key : edgesWeightsKeys)</span>
-<span class="fc" id="L2989">			edgesWeights.add(g.getEdgesWeights(key));</span>
+<span class="fc" id="L2989">			edgesWeights.add(g.edgesWeights(key));</span>
 
 <span class="fc" id="L2991">		BiConsumer&lt;Collection&lt;Weights&lt;Object, ?&gt;&gt;, Object&gt; appendWeights = (weights, id) -&gt; {</span>
 <span class="fc" id="L2992">			s.append('{');</span>
@@ -3049,15 +3049,15 @@ public class Graphs {
 	private static String toString(IntGraph g) {
 <span class="fc" id="L3050">		StringBuilder s = new StringBuilder();</span>
 
-<span class="fc" id="L3052">		Set&lt;String&gt; verticesWeightsKeys = g.getVerticesWeightsKeys();</span>
+<span class="fc" id="L3052">		Set&lt;String&gt; verticesWeightsKeys = g.verticesWeightsKeys();</span>
 <span class="fc" id="L3053">		Collection&lt;IWeights&lt;?&gt;&gt; verticesWeights = new ObjectArrayList&lt;&gt;(verticesWeightsKeys.size());</span>
 <span class="fc bfc" id="L3054" title="All 2 branches covered.">		for (String key : verticesWeightsKeys)</span>
-<span class="fc" id="L3055">			verticesWeights.add((IWeights&lt;?&gt;) g.getVerticesWeights(key));</span>
+<span class="fc" id="L3055">			verticesWeights.add((IWeights&lt;?&gt;) g.verticesWeights(key));</span>
 
-<span class="fc" id="L3057">		Set&lt;String&gt; edgesWeightsKeys = g.getEdgesWeightsKeys();</span>
+<span class="fc" id="L3057">		Set&lt;String&gt; edgesWeightsKeys = g.edgesWeightsKeys();</span>
 <span class="fc" id="L3058">		Collection&lt;IWeights&lt;?&gt;&gt; edgesWeights = new ObjectArrayList&lt;&gt;(edgesWeightsKeys.size());</span>
 <span class="fc bfc" id="L3059" title="All 2 branches covered.">		for (String key : edgesWeightsKeys)</span>
-<span class="fc" id="L3060">			edgesWeights.add((IWeights&lt;?&gt;) g.getEdgesWeights(key));</span>
+<span class="fc" id="L3060">			edgesWeights.add((IWeights&lt;?&gt;) g.edgesWeights(key));</span>
 
 <span class="fc" id="L3062">		ObjIntConsumer&lt;Collection&lt;IWeights&lt;?&gt;&gt;&gt; appendWeights = (weights, id) -&gt; {</span>
 <span class="fc" id="L3063">			s.append('{');</span>

@@ -236,7 +236,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 * {@link IWeightsDouble}.
 	 */
 	@Override
-	&lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getVerticesWeights(String key);
+	&lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT verticesWeights(String key);
 
 	/**
 	 * {@inheritDoc}
@@ -246,7 +246,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 * {@link IWeightsDouble}.
 	 */
 	@Override
-	&lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getEdgesWeights(String key);
+	&lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT edgesWeights(String key);
 
 	@Override
 	IdBuilderInt vertexBuilder();

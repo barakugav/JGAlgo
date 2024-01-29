@@ -132,14 +132,14 @@ public class GexfGraphWriter&lt;V, E&gt; extends GraphIoUtils.AbstractGraphWrite
 <span class="fc" id="L132">			rootElm.appendChild(graphElm);</span>
 
 <span class="fc" id="L134">			Element nodeAttributesElm = null;</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">			if (!graph.getVerticesWeightsKeys().isEmpty()) {</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">			if (!graph.verticesWeightsKeys().isEmpty()) {</span>
 <span class="fc" id="L136">				nodeAttributesElm = document.createElement(&quot;attributes&quot;);</span>
 <span class="fc" id="L137">				nodeAttributesElm.setAttribute(&quot;class&quot;, &quot;node&quot;);</span>
 <span class="fc" id="L138">				graphElm.appendChild(nodeAttributesElm);</span>
 			}
 <span class="fc" id="L140">			List&lt;Function&lt;V, Element&gt;&gt; vWeightsWriters = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">			for (String weightKey : graph.getVerticesWeightsKeys()) {</span>
-<span class="fc" id="L142">				Weights&lt;V, ?&gt; weights = graph.getVerticesWeights(weightKey);</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			for (String weightKey : graph.verticesWeightsKeys()) {</span>
+<span class="fc" id="L142">				Weights&lt;V, ?&gt; weights = graph.verticesWeights(weightKey);</span>
 <span class="fc" id="L143">				Pair&lt;String, Function&lt;Object, String&gt;&gt; attrWriter0 = attrWriter(weights, graph.vertices());</span>
 <span class="fc bfc" id="L144" title="All 2 branches covered.">				if (attrWriter0 == null)</span>
 <span class="fc" id="L145">					throw new IllegalArgumentException(</span>
@@ -172,14 +172,14 @@ public class GexfGraphWriter&lt;V, E&gt; extends GraphIoUtils.AbstractGraphWrite
 <span class="fc" id="L172">			}</span>
 
 <span class="fc" id="L174">			Element edgeAttributesElm = null;</span>
-<span class="fc bfc" id="L175" title="All 2 branches covered.">			if (!graph.getEdgesWeightsKeys().isEmpty()) {</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">			if (!graph.edgesWeightsKeys().isEmpty()) {</span>
 <span class="fc" id="L176">				edgeAttributesElm = document.createElement(&quot;attributes&quot;);</span>
 <span class="fc" id="L177">				edgeAttributesElm.setAttribute(&quot;class&quot;, &quot;edge&quot;);</span>
 <span class="fc" id="L178">				graphElm.appendChild(edgeAttributesElm);</span>
 			}
 <span class="fc" id="L180">			List&lt;Function&lt;E, Element&gt;&gt; eWeightsWriters = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L181" title="All 2 branches covered.">			for (String weightKey : graph.getEdgesWeightsKeys()) {</span>
-<span class="fc" id="L182">				Weights&lt;E, ?&gt; weights = graph.getEdgesWeights(weightKey);</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">			for (String weightKey : graph.edgesWeightsKeys()) {</span>
+<span class="fc" id="L182">				Weights&lt;E, ?&gt; weights = graph.edgesWeights(weightKey);</span>
 <span class="fc" id="L183">				Pair&lt;String, Function&lt;Object, String&gt;&gt; attrWriter0 = attrWriter(weights, graph.edges());</span>
 <span class="fc bfc" id="L184" title="All 2 branches covered.">				if (attrWriter0 == null)</span>
 <span class="fc" id="L185">					throw new IllegalArgumentException(&quot;Edges weights with key '&quot; + weightKey + &quot;' are not supported&quot;);</span>

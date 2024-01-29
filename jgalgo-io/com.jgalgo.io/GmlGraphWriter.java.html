@@ -194,26 +194,26 @@ public class GmlGraphWriter&lt;V, E&gt; extends GraphIoUtils.AbstractGraphWriter
 <span class="fc" id="L194">		List&lt;Pair&lt;String, WeightsStringifier&lt;V&gt;&gt;&gt; vWeights = new ArrayList&lt;&gt;();</span>
 <span class="fc" id="L195">		List&lt;Pair&lt;String, WeightsStringifier&lt;E&gt;&gt;&gt; eWeights = new ArrayList&lt;&gt;();</span>
 <span class="fc bfc" id="L196" title="All 2 branches covered.">		if (verticesWeightsKeys == null) {</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">			for (String key : graph.getVerticesWeightsKeys()) {</span>
-<span class="fc" id="L198">				Weights&lt;V, ?&gt; weights = graph.getVerticesWeights(key);</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">			for (String key : graph.verticesWeightsKeys()) {</span>
+<span class="fc" id="L198">				Weights&lt;V, ?&gt; weights = graph.verticesWeights(key);</span>
 <span class="fc" id="L199">				vWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>
 <span class="fc" id="L200">			}</span>
 		} else {
 <span class="fc bfc" id="L202" title="All 2 branches covered.">			for (String key : verticesWeightsKeys) {</span>
-<span class="fc" id="L203">				Weights&lt;V, ?&gt; weights = graph.getVerticesWeights(key);</span>
+<span class="fc" id="L203">				Weights&lt;V, ?&gt; weights = graph.verticesWeights(key);</span>
 <span class="fc bfc" id="L204" title="All 2 branches covered.">				if (weights == null)</span>
 <span class="fc" id="L205">					throw new IllegalArgumentException(&quot;Vertices weights key '&quot; + key + &quot;' does not exist&quot;);</span>
 <span class="fc" id="L206">				vWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>
 			}
 		}
 <span class="fc bfc" id="L209" title="All 2 branches covered.">		if (edgesWeightsKeys == null) {</span>
-<span class="fc bfc" id="L210" title="All 2 branches covered.">			for (String key : graph.getEdgesWeightsKeys()) {</span>
-<span class="fc" id="L211">				Weights&lt;E, ?&gt; weights = graph.getEdgesWeights(key);</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">			for (String key : graph.edgesWeightsKeys()) {</span>
+<span class="fc" id="L211">				Weights&lt;E, ?&gt; weights = graph.edgesWeights(key);</span>
 <span class="fc" id="L212">				eWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>
 <span class="fc" id="L213">			}</span>
 		} else {
 <span class="fc bfc" id="L215" title="All 2 branches covered.">			for (String key : edgesWeightsKeys) {</span>
-<span class="fc" id="L216">				Weights&lt;E, ?&gt; weights = graph.getEdgesWeights(key);</span>
+<span class="fc" id="L216">				Weights&lt;E, ?&gt; weights = graph.edgesWeights(key);</span>
 <span class="fc bfc" id="L217" title="All 2 branches covered.">				if (weights == null)</span>
 <span class="fc" id="L218">					throw new IllegalArgumentException(&quot;Edges weights key '&quot; + key + &quot;' does not exist&quot;);</span>
 <span class="fc" id="L219">				eWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>

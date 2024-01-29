@@ -177,7 +177,7 @@ public class BipartiteGraphs {
 	private static IWeightsBool getOrCreateBoolWeights(IndexGraph g, boolean addPartitionWeight) {
 <span class="fc bfc" id="L178" title="All 2 branches covered.">		if (!addPartitionWeight)</span>
 <span class="fc" id="L179">			return IWeights.createExternalEdgesWeights(g, boolean.class);</span>
-<span class="fc" id="L180">		Object existingPartition = g.getVerticesWeights(VertexBiPartitionWeightKey);</span>
+<span class="fc" id="L180">		Object existingPartition = g.verticesWeights(VertexBiPartitionWeightKey);</span>
 <span class="fc bfc" id="L181" title="All 2 branches covered.">		if (existingPartition == null)</span>
 <span class="fc" id="L182">			return g.addVerticesWeights(VertexBiPartitionWeightKey, boolean.class);</span>
 <span class="fc bfc" id="L183" title="All 2 branches covered.">		if (!(existingPartition instanceof IWeightsBool))</span>
@@ -212,7 +212,7 @@ public class BipartiteGraphs {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;V, E&gt; Optional&lt;VertexBiPartition&lt;V, E&gt;&gt; getExistingPartition(Graph&lt;V, E&gt; g) {
 <span class="fc bfc" id="L214" title="All 2 branches covered.">		IndexGraph ig = g instanceof IndexGraph ? (IndexGraph) g : g.indexGraph();</span>
-<span class="fc" id="L215">		Object existingPartition = ig.getVerticesWeights(VertexBiPartitionWeightKey);</span>
+<span class="fc" id="L215">		Object existingPartition = ig.verticesWeights(VertexBiPartitionWeightKey);</span>
 <span class="fc bfc" id="L216" title="All 2 branches covered.">		if (existingPartition == null)</span>
 <span class="fc" id="L217">			return Optional.empty();</span>
 <span class="fc bfc" id="L218" title="All 2 branches covered.">		if (!(existingPartition instanceof IWeightsBool))</span>

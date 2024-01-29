@@ -342,8 +342,8 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 * 		.copyWeights(true, false)
 	 * 		.verticesWeightsKeys(Set.of(&quot;w1&quot;))
 	 * 		.generate();
-	 * assert union.getVerticesWeightsKeys().equals(Set.of(&quot;w1&quot;));
-	 * WeightsInt&lt;Integer&gt; union_w1 = union.getVerticesWeights(&quot;w1&quot;);
+	 * assert union.verticesWeightsKeys().equals(Set.of(&quot;w1&quot;));
+	 * WeightsInt&lt;Integer&gt; union_w1 = union.verticesWeights(&quot;w1&quot;);
 	 * assert union_w1.defaultWeight() == -1;
 	 * assert union_w1.get(0) == 100;
 	 * assert union_w1.get(1) == 500;
@@ -655,8 +655,8 @@ public class UnionGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 <span class="fc" id="L655">		final int graphsNum = graphs.size();</span>
 <span class="fc bfc" id="L656" title="All 2 branches covered.">		for (int graphIdx : range(graphsNum)) {</span>
 <span class="fc" id="L657">			Graph&lt;V, E&gt; graph = graphs.get(graphIdx);</span>
-<span class="fc bfc" id="L658" title="All 4 branches covered.">			for (String key : vertices ? graph.getVerticesWeightsKeys() : graph.getEdgesWeightsKeys()) {</span>
-<span class="fc bfc" id="L659" title="All 2 branches covered.">				Weights&lt;?, ?&gt; weights = vertices ? graph.getVerticesWeights(key) : graph.getEdgesWeights(key);</span>
+<span class="fc bfc" id="L658" title="All 4 branches covered.">			for (String key : vertices ? graph.verticesWeightsKeys() : graph.edgesWeightsKeys()) {</span>
+<span class="fc bfc" id="L659" title="All 2 branches covered.">				Weights&lt;?, ?&gt; weights = vertices ? graph.verticesWeights(key) : graph.edgesWeights(key);</span>
 <span class="fc" id="L660">				Weights&lt;?, ?&gt;[] weightsPerGraphArr =</span>
 <span class="fc" id="L661">						graphsContainingWeightsBitmaps.computeIfAbsent(key, k -&gt; new Weights&lt;?, ?&gt;[graphsNum]);</span>
 <span class="fc" id="L662">				weightsPerGraphArr[graphIdx] = weights;</span>

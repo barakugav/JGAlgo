@@ -98,7 +98,7 @@ public class DimacsGraphWriter extends GraphIoUtils.AbstractGraphWriter&lt;Integ
 	 * The weights must be integer, namely the {@link Weights} must be {@link WeightFunctionInt}. It can be any of the
 	 * following: {@link WeightsByte}, {@link WeightsShort} or {@link WeightsInt}.
 	 *
-	 * @see              Graph#getEdgesWeights(String)
+	 * @see              Graph#edgesWeights(String)
 	 * @param weightsKey the key of the edge weights to write, or {@code null} to write the graph in the 'edge' format
 	 *                       (unweighted)
 	 */
@@ -120,7 +120,7 @@ public class DimacsGraphWriter extends GraphIoUtils.AbstractGraphWriter&lt;Integ
 <span class="fc bfc" id="L120" title="All 2 branches covered.">		final boolean hasWeights = weightsKey != null;</span>
 <span class="fc" id="L121">		Function&lt;Integer, String&gt; w = null;</span>
 <span class="fc bfc" id="L122" title="All 2 branches covered.">		if (hasWeights) {</span>
-<span class="fc" id="L123">			Weights&lt;Integer, ?&gt; w0 = graph.getEdgesWeights(weightsKey);</span>
+<span class="fc" id="L123">			Weights&lt;Integer, ?&gt; w0 = graph.edgesWeights(weightsKey);</span>
 <span class="fc bfc" id="L124" title="All 2 branches covered.">			if (w0 == null)</span>
 <span class="fc" id="L125">				throw new IllegalArgumentException(&quot;the graph does not have weights for key: &quot; + weightsKey);</span>
 <span class="fc bfc" id="L126" title="All 2 branches covered.">			if (!(w0 instanceof WeightFunctionInt))</span>

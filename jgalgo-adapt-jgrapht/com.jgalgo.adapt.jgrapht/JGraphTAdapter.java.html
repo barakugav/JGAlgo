@@ -41,8 +41,8 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
  * {@link com.jgalgo.graph.Graph#isDirected()}, {@link com.jgalgo.graph.Graph#isAllowParallelEdges()},
  * {@link com.jgalgo.graph.Graph#isAllowSelfEdges()}). Wether the adapter is weighted or not is determined in the
  * {@linkplain #JGraphTAdapter(com.jgalgo.graph.Graph, String) constructor} by passing the edge weight key, see
- * {@link com.jgalgo.graph.Graph#getEdgesWeights(String)}. Although JGAlgo graphs support multiple types of weights,
- * both for vertices and edges, JGraphT graphs support only one double weight type, for edges.
+ * {@link com.jgalgo.graph.Graph#edgesWeights(String)}. Although JGAlgo graphs support multiple types of weights, both
+ * for vertices and edges, JGraphT graphs support only one double weight type, for edges.
  *
  * &lt;p&gt;
  * For adapting the other way around, from JGraphT to JGAlgo, see {@link JGraphTWrapper}.
@@ -79,8 +79,8 @@ public class JGraphTAdapter&lt;V, E&gt; extends org.jgrapht.graph.AbstractGraph&
 	 *
 	 * @param  graph                    the JGAlgo graph
 	 * @param  edgeWeightKey            the edge weight key of the {@linkplain WeightsDouble double weights} of the
-	 *                                      JGAlgo graph (see {@link com.jgalgo.graph.Graph#getEdgesWeights(String)}),
-	 *                                      or {@code null} for unweighted
+	 *                                      JGAlgo graph (see {@link com.jgalgo.graph.Graph#edgesWeights(String)}), or
+	 *                                      {@code null} for unweighted
 	 * @throws IllegalArgumentException if the edge weight key is not {@code null} and it is not found in the JGAlgo
 	 *                                      graph
 	 */
@@ -92,7 +92,7 @@ public class JGraphTAdapter&lt;V, E&gt; extends org.jgrapht.graph.AbstractGraph&
 <span class="fc bfc" id="L92" title="All 2 branches covered.">		if (edgeWeightKey == null) {</span>
 <span class="fc" id="L93">			weights = null;</span>
 		} else {
-<span class="fc" id="L95">			weights = graph.getEdgesWeights(edgeWeightKey);</span>
+<span class="fc" id="L95">			weights = graph.edgesWeights(edgeWeightKey);</span>
 <span class="fc bfc" id="L96" title="All 2 branches covered.">			if (weights == null)</span>
 <span class="fc" id="L97">				throw new IllegalArgumentException(&quot;No edges weights for key '&quot; + edgeWeightKey + &quot;'&quot;);</span>
 		}

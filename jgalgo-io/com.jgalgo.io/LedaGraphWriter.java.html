@@ -65,7 +65,7 @@ import com.jgalgo.graph.WeightsShort;
 	 * By default, the writer will write the graph without any weights. Use this method to specify the key of the
 	 * vertices weights to write.
 	 *
-	 * @see                      Graph#getVerticesWeights(String)
+	 * @see                      Graph#verticesWeights(String)
 	 * @param verticesWeightsKey the key of the vertices weights to write, or {@code null} to write no vertices weights
 	 */
 	public void setVerticesWeightsKey(String verticesWeightsKey) {
@@ -79,7 +79,7 @@ import com.jgalgo.graph.WeightsShort;
 	 * By default, the writer will write the graph without any weights. Use this method to specify the key of the edges
 	 * weights to write.
 	 *
-	 * @see                   Graph#getEdgesWeights(String)
+	 * @see                   Graph#edgesWeights(String)
 	 * @param edgesWeightsKey the key of the edges weights to write, or {@code null} to write no edges weights
 	 */
 	public void setEdgesWeightsKey(String edgesWeightsKey) {
@@ -97,13 +97,13 @@ import com.jgalgo.graph.WeightsShort;
 
 <span class="fc" id="L98">		Weights&lt;Integer, ?&gt; verticesWeights = null;</span>
 <span class="fc bfc" id="L99" title="All 2 branches covered.">		if (verticesWeightsKey != null) {</span>
-<span class="fc" id="L100">			verticesWeights = graph.getVerticesWeights(verticesWeightsKey);</span>
+<span class="fc" id="L100">			verticesWeights = graph.verticesWeights(verticesWeightsKey);</span>
 <span class="fc bfc" id="L101" title="All 2 branches covered.">			if (verticesWeights == null)</span>
 <span class="fc" id="L102">				throw new IllegalArgumentException(&quot;vertices weights key '&quot; + verticesWeightsKey + &quot;' not found&quot;);</span>
 		}
 <span class="fc" id="L104">		Weights&lt;Integer, ?&gt; edgesWeights = null;</span>
 <span class="fc bfc" id="L105" title="All 2 branches covered.">		if (edgesWeightsKey != null) {</span>
-<span class="fc" id="L106">			edgesWeights = graph.getEdgesWeights(edgesWeightsKey);</span>
+<span class="fc" id="L106">			edgesWeights = graph.edgesWeights(edgesWeightsKey);</span>
 <span class="fc bfc" id="L107" title="All 2 branches covered.">			if (edgesWeights == null)</span>
 <span class="fc" id="L108">				throw new IllegalArgumentException(&quot;edges weights key '&quot; + edgesWeightsKey + &quot;' not found&quot;);</span>
 		}

@@ -70,13 +70,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L70">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), false);</span>
 <span class="fc" id="L71">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), true);</span>
 <span class="fc bfc" id="L72" title="All 2 branches covered.">		if (copyVerticesWeights) {</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">			for (String key : g.getVerticesWeightsKeys())</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">			for (String key : g.verticesWeightsKeys())</span>
 <span class="fc" id="L74">				verticesUserWeights</span>
-<span class="fc" id="L75">						.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), vertices, false));</span>
+<span class="fc" id="L75">						.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.verticesWeights(key), vertices, false));</span>
 		}
 <span class="fc bfc" id="L77" title="All 2 branches covered.">		if (copyEdgesWeights) {</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">			for (String key : g.getEdgesWeightsKeys())</span>
-<span class="fc" id="L79">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edges, true));</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			for (String key : g.edgesWeightsKeys())</span>
+<span class="fc" id="L79">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.edgesWeights(key), edges, true));</span>
 		}
 
 		/* internal data containers should be copied manually */
@@ -593,12 +593,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L593">	}</span>
 
 	@Override
-	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getVerticesWeights(String key) {
+	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT verticesWeights(String key) {
 <span class="fc" id="L597">		return verticesUserWeights.getWeights(key);</span>
 	}
 
 	@Override
-	public Set&lt;String&gt; getVerticesWeightsKeys() {
+	public Set&lt;String&gt; verticesWeightsKeys() {
 <span class="fc" id="L602">		return verticesUserWeights.weightsKeys();</span>
 	}
 
@@ -608,12 +608,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L608">	}</span>
 
 	@Override
-	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getEdgesWeights(String key) {
+	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT edgesWeights(String key) {
 <span class="fc" id="L612">		return edgesUserWeights.getWeights(key);</span>
 	}
 
 	@Override
-	public Set&lt;String&gt; getEdgesWeightsKeys() {
+	public Set&lt;String&gt; edgesWeightsKeys() {
 <span class="fc" id="L617">		return edgesUserWeights.weightsKeys();</span>
 	}
 

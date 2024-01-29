@@ -82,8 +82,8 @@ public class GraphMlGraphWriter&lt;V, E&gt; extends GraphIoUtils.AbstractGraphWr
 <span class="fc" id="L82">			int nextWeightsIdx = 0;</span>
 <span class="fc" id="L83">			List&lt;BiConsumer&lt;V, Element&gt;&gt; vWeightsWriters = new ArrayList&lt;&gt;();</span>
 <span class="fc" id="L84">			List&lt;BiConsumer&lt;E, Element&gt;&gt; eWeightsWriters = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">			for (String weightKey : graph.getVerticesWeightsKeys()) {</span>
-<span class="fc" id="L86">				Weights&lt;V, ?&gt; weights = graph.getVerticesWeights(weightKey);</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			for (String weightKey : graph.verticesWeightsKeys()) {</span>
+<span class="fc" id="L86">				Weights&lt;V, ?&gt; weights = graph.verticesWeights(weightKey);</span>
 <span class="fc" id="L87">				String type = attrType(weights, graph.vertices());</span>
 <span class="fc bfc" id="L88" title="All 2 branches covered.">				if (type == null)</span>
 <span class="fc" id="L89">					throw new IllegalArgumentException(</span>
@@ -113,8 +113,8 @@ public class GraphMlGraphWriter&lt;V, E&gt; extends GraphIoUtils.AbstractGraphWr
 <span class="fc" id="L113">					vertexElm.appendChild(dataElm);</span>
 <span class="fc" id="L114">				});</span>
 <span class="fc" id="L115">			}</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">			for (String weightKey : graph.getEdgesWeightsKeys()) {</span>
-<span class="fc" id="L117">				Weights&lt;E, ?&gt; weights = graph.getEdgesWeights(weightKey);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">			for (String weightKey : graph.edgesWeightsKeys()) {</span>
+<span class="fc" id="L117">				Weights&lt;E, ?&gt; weights = graph.edgesWeights(weightKey);</span>
 <span class="fc" id="L118">				String type = attrType(weights, graph.edges());</span>
 <span class="fc bfc" id="L119" title="All 2 branches covered.">				if (type == null)</span>
 <span class="fc" id="L120">					throw new IllegalArgumentException(&quot;Edges weights with key '&quot; + weightKey + &quot;' are not supported&quot;);</span>
