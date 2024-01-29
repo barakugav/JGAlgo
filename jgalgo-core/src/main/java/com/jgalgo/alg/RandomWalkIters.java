@@ -31,38 +31,19 @@ class RandomWalkIters {
 
 	private RandomWalkIters() {}
 
-	static class UnweightedIndexIter implements RandomWalkIter.Int {
+	private abstract static class IndexIterBase implements RandomWalkIter.Int {
 
-		private final IndexGraph g;
-		private final int[] edges;
-		private final int[] edgesOffset;
-		private int currentVertex;
-		private int lastEdge = -1;
-		private final Random rand = new Random();
+		final IndexGraph g;
+		final int[] edgesOffset;
+		int currentVertex;
+		int lastEdge = -1;
+		final Random rand = new Random();
 
-		UnweightedIndexIter(IndexGraph g, int source) {
+		IndexIterBase(IndexGraph g, int source) {
 			this.g = g;
 			final int n = g.vertices().size();
 			Assertions.checkVertex(source, n);
-
-			final int edgesArrSize;
-			if (g.isDirected()) {
-				edgesArrSize = g.edges().size();
-			} else {
-				edgesArrSize = range(n).map(u -> g.outEdges(u).size()).sum();
-			}
-
-			edges = new int[edgesArrSize];
 			edgesOffset = new int[n + 1];
-			int offset = 0;
-			for (int u : range(n)) {
-				edgesOffset[u] = offset;
-				for (int e : g.outEdges(u))
-					edges[offset++] = e;
-			}
-			assert offset == edgesArrSize;
-			edgesOffset[n] = offset;
-
 			currentVertex = source;
 		}
 
@@ -70,15 +51,6 @@ class RandomWalkIters {
 		public boolean hasNext() {
 			int uOutEdgesNum = edgesOffset[currentVertex + 1] - edgesOffset[currentVertex];
 			return uOutEdgesNum > 0;
-		}
-
-		@Override
-		public int nextInt() {
-			int uOutEdgesNum = edgesOffset[currentVertex + 1] - edgesOffset[currentVertex];
-			if (uOutEdgesNum <= 0)
-				throw new NoSuchElementException();
-			lastEdge = edges[edgesOffset[currentVertex] + rand.nextInt(uOutEdgesNum)];
-			return currentVertex = g.edgeEndpoint(lastEdge, currentVertex);
 		}
 
 		@Override
@@ -92,20 +64,50 @@ class RandomWalkIters {
 		}
 	}
 
-	static class WeightedIndexIter implements RandomWalkIter.Int {
+	static class UnweightedIndexIter extends IndexIterBase {
 
-		private final IndexGraph g;
+		private final int[] edges;
+
+		UnweightedIndexIter(IndexGraph g, int source) {
+			super(g, source);
+			final int n = g.vertices().size();
+
+			final int edgesArrSize;
+			if (g.isDirected()) {
+				edgesArrSize = g.edges().size();
+			} else {
+				edgesArrSize = range(n).map(u -> g.outEdges(u).size()).sum();
+			}
+
+			edges = new int[edgesArrSize];
+			int offset = 0;
+			for (int u : range(n)) {
+				edgesOffset[u] = offset;
+				for (int e : g.outEdges(u))
+					edges[offset++] = e;
+			}
+			assert offset == edgesArrSize;
+			edgesOffset[n] = offset;
+		}
+
+		@Override
+		public int nextInt() {
+			int uOutEdgesNum = edgesOffset[currentVertex + 1] - edgesOffset[currentVertex];
+			if (uOutEdgesNum <= 0)
+				throw new NoSuchElementException();
+			lastEdge = edges[edgesOffset[currentVertex] + rand.nextInt(uOutEdgesNum)];
+			return currentVertex = g.edgeEndpoint(lastEdge, currentVertex);
+		}
+	}
+
+	static class WeightedIndexIter extends IndexIterBase {
+
 		private final int[] edges;
 		private final double[] edgesWeights;
-		private final int[] edgesOffset;
-		private int currentVertex;
-		private int lastEdge = -1;
-		private final Random rand = new Random();
 
 		WeightedIndexIter(IndexGraph g, int source, IWeightFunction weightFunc) {
-			this.g = g;
+			super(g, source);
 			final int n = g.vertices().size();
-			Assertions.checkVertex(source, n);
 			Objects.requireNonNull(weightFunc);
 
 			int outEdgesSize = 0;
@@ -121,7 +123,6 @@ class RandomWalkIters {
 
 			edges = new int[outEdgesSize];
 			edgesWeights = new double[outEdgesSize];
-			edgesOffset = new int[n + 1];
 			int offset = 0;
 			for (int u : range(n)) {
 				edgesOffset[u] = offset;
@@ -138,14 +139,6 @@ class RandomWalkIters {
 			}
 			assert offset == outEdgesSize;
 			edgesOffset[n] = offset;
-
-			currentVertex = source;
-		}
-
-		@Override
-		public boolean hasNext() {
-			int uOutEdgesNum = edgesOffset[currentVertex + 1] - edgesOffset[currentVertex];
-			return uOutEdgesNum > 0;
 		}
 
 		@Override
@@ -172,16 +165,6 @@ class RandomWalkIters {
 
 			lastEdge = edges[from];
 			return currentVertex = g.edgeEndpoint(lastEdge, currentVertex);
-		}
-
-		@Override
-		public int lastEdgeInt() {
-			return lastEdge;
-		}
-
-		@Override
-		public void setSeed(long seed) {
-			rand.setSeed(seed);
 		}
 	}
 
