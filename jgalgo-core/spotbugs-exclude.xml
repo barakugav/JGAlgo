@@ -161,7 +161,6 @@
       <Class name="com.jgalgo.alg.ColoringDSaturHeap" />
       <Class name="com.jgalgo.alg.MSTFredmanTarjan" />
       <Class name="com.jgalgo.alg.MSTPrim" />
-      <Class name="com.jgalgo.alg.MatchingWeightedBipartiteHungarianMethod" />
     </Or>
     <Method name="setHeapBuilder" />
     <Bug pattern="EI_EXPOSE_REP2" />

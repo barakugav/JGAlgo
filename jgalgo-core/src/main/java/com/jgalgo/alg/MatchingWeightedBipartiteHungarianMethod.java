@@ -18,13 +18,12 @@ package com.jgalgo.alg;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
-import java.util.Objects;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.ds.IntReferenceableHeap;
-import com.jgalgo.internal.ds.ReferenceableHeap;
+import com.jgalgo.internal.ds.IndexHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -44,21 +43,10 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  */
 class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.MaximumBased {
 
-	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
-
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
 	MatchingWeightedBipartiteHungarianMethod() {}
-
-	/**
-	 * Set the implementation of the heap used by this algorithm.
-	 *
-	 * @param heapBuilder a builder for heaps used by this algorithm
-	 */
-	void setHeapBuilder(ReferenceableHeap.Builder heapBuilder) {
-		this.heapBuilder = Objects.requireNonNull(heapBuilder);
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -88,7 +76,7 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 		return new Worker(g, partition, w).computeMaxMatching(true);
 	}
 
-	private class Worker {
+	private static class Worker {
 
 		private final IndexGraph g;
 		private final IWeightsBool partition;
@@ -97,8 +85,8 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 		private final Bitmap inTree;
 
 		private final IntComparator edgeSlackComparator;
-		private final IntReferenceableHeap nextTightEdge;
-		private final IntReferenceableHeap.Ref[] nextTightEdgePerOutV;
+		private final IndexHeap nextTightEdgeHeap;
+		private final int[] nextTightEdge;
 
 		private double deltaTotal;
 		private final double[] dualValBase;
@@ -116,8 +104,9 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 			inTree = new Bitmap(n);
 
 			edgeSlackComparator = (e1, e2) -> Double.compare(edgeSlack(e1), edgeSlack(e2));
-			nextTightEdge = (IntReferenceableHeap) heapBuilder.build(int.class, void.class, edgeSlackComparator);
-			nextTightEdgePerOutV = new IntReferenceableHeap.Ref[n];
+			nextTightEdge = new int[n];
+			nextTightEdgeHeap = IndexHeap
+					.newInstance(n, (v1, v2) -> edgeSlackComparator.compare(nextTightEdge[v1], nextTightEdge[v2]));
 
 			dualValBase = new double[n];
 			dualVal0 = new double[n];
@@ -145,29 +134,31 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 					if (!partition.get(u) || matched[u] != EdgeNone)
 						continue;
 					vertexAddedToTree(u);
-					for (int e : g.outEdges(u))
-						nextTightEdgeAdd(u, e);
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						int e = eit.nextInt();
+						int v = eit.targetInt();
+						if (!inTree.get(v))
+							nextTightEdgeAdd(e, v);
+					}
 				}
 
 				currentTree: for (;;) {
-					while (nextTightEdge.isNotEmpty()) {
-						IntReferenceableHeap.Ref minRef = nextTightEdge.findMin();
-						int e = minRef.key();
-						int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);
+					while (nextTightEdgeHeap.isNotEmpty()) {
+						int v = nextTightEdgeHeap.findMin();
 
-						if (inTree.get(u0) && inTree.get(v0)) {
+						if (inTree.get(v)) {
 							// Vertex already in tree, edge is irrelevant
-							nextTightEdge.remove(minRef);
+							nextTightEdgeHeap.extractMin(); /* remove(v) */
 							continue;
 						}
-						int v = inTree.get(u0) ? v0 : u0;
+						int e = nextTightEdge[v];
 
 						// No more tight edges from the tree, go out and adjust dual values
 						if (edgeSlack(e) > 0)
 							break;
 
 						// Edge is tight, add it to the tree
-						nextTightEdge.remove(minRef);
+						nextTightEdgeHeap.extractMin(); /* remove(v) */
 						parent[v] = e;
 						vertexAddedToTree(v);
 
@@ -190,13 +181,18 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 						parent[v] = matchedEdge;
 						vertexAddedToTree(v);
 
-						for (int e1 : g.outEdges(v))
-							nextTightEdgeAdd(v, e1);
+						for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
+							int e1 = eit.nextInt();
+							int w = eit.targetInt();
+							if (!inTree.get(w))
+								nextTightEdgeAdd(e1, w);
+						}
 					}
 
 					// Adjust dual values
 					double delta1 = delta1Threshold - deltaTotal;
-					double delta2 = nextTightEdge.isEmpty() ? -1 : edgeSlack(nextTightEdge.findMin().key());
+					double delta2 =
+							nextTightEdgeHeap.isEmpty() ? -1 : edgeSlack(nextTightEdge[nextTightEdgeHeap.findMin()]);
 					if ((!perfect && delta1 <= delta2) || delta2 == -1)
 						break mainLoop;
 					deltaTotal += delta2;
@@ -212,20 +208,20 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 				inTree.clear();
 
 				// Reset heap
-				nextTightEdge.clear();
-				Arrays.fill(nextTightEdgePerOutV, null);
+				nextTightEdgeHeap.clear();
 			}
 
 			return new Matchings.IndexMatching(g, matched);
 		}
 
-		private void nextTightEdgeAdd(int u, int e) {
-			int v = g.edgeEndpoint(e, u);
-			IntReferenceableHeap.Ref ref = nextTightEdgePerOutV[v];
-			if (ref == null)
-				nextTightEdgePerOutV[v] = nextTightEdge.insert(e);
-			else if (edgeSlackComparator.compare(e, ref.key()) < 0)
-				nextTightEdge.decreaseKey(ref, e);
+		private void nextTightEdgeAdd(int e, int v) {
+			if (!nextTightEdgeHeap.isInserted(v)) {
+				nextTightEdge[v] = e;
+				nextTightEdgeHeap.insert(v);
+			} else if (edgeSlackComparator.compare(e, nextTightEdge[v]) < 0) {
+				nextTightEdge[v] = e;
+				nextTightEdgeHeap.decreaseKey(v);
+			}
 		}
 
 		private double dualVal(int v) {
