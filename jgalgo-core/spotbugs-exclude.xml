@@ -32,6 +32,17 @@
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
   <Match>
+    <!-- The array of keys should be used carfully by the user, this is not a safe API -->
+    <Or>
+      <Class name="com.jgalgo.internal.ds.IndexPairingHeapInt" />
+      <Class name="com.jgalgo.internal.ds.IndexPairingHeapDouble" />
+      <Class name="com.jgalgo.internal.ds.IndexPairingHeapObj" />
+    </Or>
+    <Constructor />
+    <Local name="key" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
     <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
     <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*HeapBinomial" />
     <Method name="refsSet" />
