@@ -29,13 +29,11 @@ import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.RecursiveTask;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
-import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 
 public class JGAlgoUtils {
@@ -183,67 +181,6 @@ public class JGAlgoUtils {
 	@SuppressWarnings("unchecked")
 	public static <T> Consumer<T> consumerNoOp() {
 		return ConsumerNoOp;
-	}
-
-	public static int lowerBound(int from, int to, int key, IntUnaryOperator idx2key) {
-		if (from > to)
-			throw new IllegalArgumentException("from > to: " + from + " > " + to);
-		return lowerBound0(from, to, key, idx2key);
-	}
-
-	private static int lowerBound0(int from, int to, int key, IntUnaryOperator idx2key) {
-		for (int len = to - from; len > 0;) {
-			int half = len / 2;
-			int mid = from + half;
-			if (idx2key.applyAsInt(mid) < key) {
-				from = mid + 1;
-				len = len - half - 1;
-			} else {
-				len = half;
-			}
-		}
-		return from;
-	}
-
-	public static int upperBound(int from, int to, int key, IntUnaryOperator idx2key) {
-		if (from > to)
-			throw new IllegalArgumentException("from > to: " + from + " > " + to);
-		return upperBound0(from, to, key, idx2key);
-	}
-
-	private static int upperBound0(int from, int to, int key, IntUnaryOperator idx2key) {
-		for (int len = to - from; len > 0;) {
-			int half = len >> 1;
-			int mid = from + half;
-			if (key < idx2key.applyAsInt(mid)) {
-				len = half;
-			} else {
-				from = mid + 1;
-				len = len - half - 1;
-			}
-		}
-		return from;
-	}
-
-	public static IntIntPair equalRange(int from, int to, int key, IntUnaryOperator idx2key) {
-		if (from > to)
-			throw new IllegalArgumentException("from > to: " + from + " > " + to);
-		for (int len = to - from; len > 0;) {
-			int half = len / 2;
-			int mid = from + half;
-			int midKey = idx2key.applyAsInt(mid);
-			if (midKey < key) {
-				from = mid + 1;
-				len = len - half - 1;
-			} else if (key < midKey) {
-				len = half;
-			} else {
-				int left = lowerBound0(from, mid, key, idx2key);
-				int right = upperBound0(mid + 1, from + len, key, idx2key);
-				return IntIntPair.of(left, right);
-			}
-		}
-		return null;
 	}
 
 	private static class Variant {

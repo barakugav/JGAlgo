@@ -18,7 +18,7 @@ package com.jgalgo.graph;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Optional;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.BinarySearch;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -184,7 +184,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 
 			checkVertex(source);
 			int eBegin = edgesOutBegin[source], eEnd = edgesOutBegin[source + 1];
-			int e = JGAlgoUtils.lowerBound(eBegin, eEnd, target, this::edgeTarget);
+			int e = BinarySearch.lowerBound(eBegin, eEnd, target, this::edgeTarget);
 			if (e < eEnd && target(e) == target) {
 				return e;
 			} else {
@@ -204,7 +204,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		} else {
 			checkVertex(source);
 			int eBegin = edgesOutBegin[source], eEnd = edgesOutBegin[source + 1];
-			IntIntPair edgeRange = JGAlgoUtils.equalRange(eBegin, eEnd, target, this::edgeTarget);
+			IntIntPair edgeRange = BinarySearch.equalRange(eBegin, eEnd, target, this::edgeTarget);
 			if (edgeRange == null) {
 				checkVertex(target);
 				edgeRange = IntIntPair.of(eBegin, eBegin);
