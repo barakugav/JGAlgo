@@ -94,9 +94,8 @@ public class UnionGraphGeneratorTest extends TestBase {
 		graph1.addVertices(range(0, 10));
 		Graph<Integer, Integer> graph2 = IntGraph.newDirected();
 		graph2.addVertices(range(5, 15));
-		Graph<Integer, Integer> complement =
-				new UnionGraphGenerator<Integer, Integer>().graphs(graph1, graph2).generate();
-		assertEquals(range(15), complement.vertices());
+		Graph<Integer, Integer> union = new UnionGraphGenerator<Integer, Integer>().graphs(graph1, graph2).generate();
+		assertEquals(range(15), union.vertices());
 	}
 
 	@Test

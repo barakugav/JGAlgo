@@ -72,11 +72,11 @@ public class IntersectionGraphGeneratorTest extends TestBase {
 	@Test
 	public void directed() {
 		foreachBoolConfig(directed -> {
-			Graph<Integer, Integer> union = new IntersectionGraphGenerator<Integer, Integer>()
+			Graph<Integer, Integer> intersection = new IntersectionGraphGenerator<Integer, Integer>()
 					.graphs(directed ? IntGraph.newDirected() : IntGraph.newUndirected(),
 							directed ? IntGraph.newDirected() : IntGraph.newUndirected())
 					.generate();
-			assertEqualsBool(directed, union.isDirected());
+			assertEqualsBool(directed, intersection.isDirected());
 		});
 	}
 
@@ -86,9 +86,9 @@ public class IntersectionGraphGeneratorTest extends TestBase {
 		graph1.addVertices(range(0, 10));
 		Graph<Integer, Integer> graph2 = IntGraph.newDirected();
 		graph2.addVertices(range(5, 15));
-		Graph<Integer, Integer> complement =
+		Graph<Integer, Integer> intersection =
 				new IntersectionGraphGenerator<Integer, Integer>().graphs(graph1, graph2).generate();
-		assertEquals(range(5, 10), complement.vertices());
+		assertEquals(range(5, 10), intersection.vertices());
 	}
 
 	@Test

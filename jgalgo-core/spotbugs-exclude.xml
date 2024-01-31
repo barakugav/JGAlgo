@@ -218,4 +218,10 @@
     <Method name="graph" />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
+  <Match>
+    <!-- Provided graphs are input, not internal state of the generator -->
+    <Class name="com.jgalgo.gen.DifferenceGraphGenerator" />
+    <Method name="graphs" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
 </FindBugsFilter>
