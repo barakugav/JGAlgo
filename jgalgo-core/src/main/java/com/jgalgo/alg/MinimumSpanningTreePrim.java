@@ -177,16 +177,14 @@ class MinimumSpanningTreePrim implements MinimumSpanningTreeBase {
 				}
 
 				/* find next lightest edge */
-				int e, v;
-				for (;;) {
-					if (heap.isEmpty())
-						/* reached all vertices from current root, continue to next tree */
-						break treeLoop;
-					e = heap.extractMin().value();
-					if (!visited.get(v = g.edgeSource(e)))
-						break;
-					if (!visited.get(v = g.edgeTarget(e)))
-						break;
+				if (heap.isEmpty())
+					/* reached all vertices from current root, continue to next tree */
+					break treeLoop;
+				int e = heap.extractMin().value();
+				int v = g.edgeSource(e);
+				if (visited.get(v)) {
+					v = g.edgeTarget(e);
+					assert !visited.get(v);
 				}
 
 				/* add lightest edge to MST */
