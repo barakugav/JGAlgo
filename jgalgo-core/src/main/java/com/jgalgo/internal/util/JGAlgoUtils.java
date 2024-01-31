@@ -82,12 +82,6 @@ public class JGAlgoUtils {
 		return ((Comparable<E>) e1).compareTo(e2);
 	}
 
-	public static boolean isEqual(double a, double b) {
-		double mag = Math.max(Math.abs(a), Math.abs(b));
-		double eps = mag * 1E-6;
-		return Math.abs(a - b) <= eps;
-	}
-
 	static class NullIterator<E> implements Iterator<E> {
 
 		private int size;

@@ -39,7 +39,6 @@ import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.DebugPrinter;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
@@ -629,7 +628,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 						growStep();
 					} else if (deltaNext == delta3) {
 						EdgeEvent event = extractNextBlossomEvent();
-						assert JGAlgoUtils.isEqual(delta, event.slack / 2);
+						assert Assertions.isEqual(delta, event.slack / 2);
 						int e = event.e;
 						int u = g.edgeSource(e), v = g.edgeTarget(e);
 						assert isEven(u) && isEven(v);
@@ -692,7 +691,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 		void expandStep() {
 			debug.println("expandStep");
 
-			assert JGAlgoUtils.isEqual(delta, expandEvents.findMin().key());
+			assert Assertions.isEqual(delta, expandEvents.findMin().key());
 			final Blossom B = expandEvents.extractMin().value();
 
 			assert B.root >= 0 && !B.isEven && !B.isSingleton() && dualVal(B) <= 1e-5;
