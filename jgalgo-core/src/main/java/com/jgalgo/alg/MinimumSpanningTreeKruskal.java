@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Objects;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -81,7 +82,7 @@ class MinimumSpanningTreeKruskal implements MinimumSpanningTreeBase {
 			return MinimumSpanningTrees.IndexResult.Empty;
 
 		/* sort edges */
-		int[] edges = g.edges().toIntArray();
+		int[] edges = range(m).toIntArray();
 		JGAlgoUtils.sort(edges, 0, m, w, parallelEnable);
 
 		/* create union find data structure for each vertex */
@@ -99,7 +100,6 @@ class MinimumSpanningTreeKruskal implements MinimumSpanningTreeBase {
 				mst.add(e);
 			}
 		}
-		uf.clear();
 		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
 		return new MinimumSpanningTrees.IndexResult(mstSet);
 	}
