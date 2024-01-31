@@ -301,18 +301,6 @@ public class JGAlgoUtils {
 		}
 	}
 
-	public static long longPack(int low, int high) {
-		return ((high & 0xffffffffL) << 32) | ((low & 0xffffffffL) << 0);
-	}
-
-	public static int long2low(long val) {
-		return (int) ((val >> 0) & 0xffffffffL);
-	}
-
-	public static int long2high(long val) {
-		return (int) ((val >> 32) & 0xffffffffL);
-	}
-
 	public static <T> void clearAllUnsafe(T[] arr, IntCollection nonNullIndices) {
 		/* TODO: need to benchmark when its better to clear each entry independently */
 		if (nonNullIndices.size() < arr.length / 8) {

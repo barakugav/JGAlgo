@@ -30,7 +30,7 @@ import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
 import com.jgalgo.internal.util.IntAdapters;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
@@ -163,11 +163,11 @@ public interface SteinerTreeAlgo {
 		LongPriorityQueue queue = new FIFOQueueLongNoReduce();
 		int root = terminals0.iterator().nextInt();
 		visited.set(root);
-		queue.enqueue(JGAlgoUtils.longPack(root, -1));
+		queue.enqueue(IntPair.of(root, -1));
 		while (!queue.isEmpty()) {
 			long l = queue.dequeueLong();
-			int u = JGAlgoUtils.long2low(l);
-			int parentEdge = JGAlgoUtils.long2high(l);
+			int u = IntPair.first(l);
+			int parentEdge = IntPair.second(l);
 			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				if (!edgesBitmap.get(e) || e == parentEdge)
@@ -176,7 +176,7 @@ public interface SteinerTreeAlgo {
 				if (visited.get(v))
 					return false; /* cycle */
 				visited.set(v);
-				queue.enqueue(JGAlgoUtils.longPack(v, e));
+				queue.enqueue(IntPair.of(v, e));
 			}
 		}
 		for (int t : terminals0)

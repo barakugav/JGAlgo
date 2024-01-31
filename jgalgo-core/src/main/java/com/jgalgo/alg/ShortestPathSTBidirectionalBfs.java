@@ -21,7 +21,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.ints.Int2LongMap;
 import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -125,15 +125,15 @@ class ShortestPathSTBidirectionalBfs implements ShortestPathSTBase {
 	}
 
 	static long info(int backtrack, int distance) {
-		return JGAlgoUtils.longPack(backtrack, distance);
+		return IntPair.of(backtrack, distance);
 	}
 
 	static int backtrack(long info) {
-		return JGAlgoUtils.long2low(info);
+		return IntPair.first(info);
 	}
 
 	static int distance(long info) {
-		return JGAlgoUtils.long2high(info);
+		return IntPair.second(info);
 	}
 
 }

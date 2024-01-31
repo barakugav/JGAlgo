@@ -33,7 +33,7 @@ import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
 import com.jgalgo.internal.util.IntAdapters;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -228,11 +228,11 @@ public interface MinimumSpanningTree {
 			if (root[r] >= 0)
 				continue;
 			root[r] = r;
-			queue.enqueue(JGAlgoUtils.longPack(r, -1));
+			queue.enqueue(IntPair.of(r, -1));
 			while (!queue.isEmpty()) {
 				long l = queue.dequeueLong();
-				int u = JGAlgoUtils.long2low(l);
-				int parentEdge = JGAlgoUtils.long2high(l);
+				int u = IntPair.first(l);
+				int parentEdge = IntPair.second(l);
 				for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					if (!edgesBitmap.get(e) || e == parentEdge)
@@ -241,7 +241,7 @@ public interface MinimumSpanningTree {
 					if (root[v] == r)
 						return false; /* cycle */
 					root[v] = r;
-					queue.enqueue(JGAlgoUtils.longPack(v, e));
+					queue.enqueue(IntPair.of(v, e));
 				}
 			}
 		}

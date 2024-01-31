@@ -31,7 +31,7 @@ import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.util.Bitmap;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -526,7 +526,7 @@ public class GnmBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 					v = leftVertices.get(vIdx);
 					uIdx += leftSize;
 				}
-				if (parallelEdges || edges.add(JGAlgoUtils.longPack(uIdx, vIdx)))
+				if (parallelEdges || edges.add(IntPair.of(uIdx, vIdx)))
 					g.addEdge(u, v, edgeBuilder.build(g.edges()));
 			}
 

@@ -110,8 +110,8 @@ public class ArraysUtils {
 			int pivotIdx = m;
 
 			long p = pivotPartition0(x, from, to, x[pivotIdx], comp);
-			int lastSmaller = JGAlgoUtils.long2low(p);
-			int firstGreater = JGAlgoUtils.long2high(p);
+			int lastSmaller = IntPair.first(p);
+			int firstGreater = IntPair.second(p);
 			if (k <= lastSmaller) {
 				to = lastSmaller + 1;
 			} else if (k >= firstGreater) {
@@ -143,8 +143,8 @@ public class ArraysUtils {
 
 			int pivotIdx = m;
 			long p = pivotPartition0(x, from, to, x[pivotIdx], comp);
-			int lastSmaller = JGAlgoUtils.long2low(p);
-			int firstGreater = JGAlgoUtils.long2high(p);
+			int lastSmaller = IntPair.first(p);
+			int firstGreater = IntPair.second(p);
 			if (k <= lastSmaller) {
 				to = lastSmaller + 1;
 			} else if (k >= firstGreater) {
@@ -188,7 +188,7 @@ public class ArraysUtils {
 	static <E> int pivotPartition(E[] a, int from, int to, E pivot, Comparator<? super E> c) {
 		Assertions.checkArrayFromTo(from, to, a.length);
 		c = c != null ? c : JGAlgoUtils.getDefaultComparator();
-		return JGAlgoUtils.long2high(pivotPartition0(a, from, to, pivot, c));
+		return IntPair.second(pivotPartition0(a, from, to, pivot, c));
 	}
 
 	/**
@@ -208,7 +208,7 @@ public class ArraysUtils {
 	public static int pivotPartition(int[] a, int from, int to, int pivot, IntComparator c) {
 		Assertions.checkArrayFromTo(from, to, a.length);
 		c = c != null ? c : Integer::compare;
-		return JGAlgoUtils.long2high(pivotPartition0(a, from, to, pivot, c));
+		return IntPair.second(pivotPartition0(a, from, to, pivot, c));
 	}
 
 	private static <E> long pivotPartition0(E[] x, int from, int to, E pivot, Comparator<? super E> cmp) {
@@ -241,7 +241,7 @@ public class ArraysUtils {
 
 		int lastSmaller = from + (b - a) - 1;
 		int firstGreater = to - (d - c);
-		return JGAlgoUtils.longPack(lastSmaller, firstGreater);
+		return IntPair.of(lastSmaller, firstGreater);
 	}
 
 	private static long pivotPartition0(int[] x, int from, int to, int pivot, IntComparator cmp) {
@@ -274,7 +274,7 @@ public class ArraysUtils {
 
 		int lastSmaller = from + (b - a) - 1;
 		int firstGreater = to - (d - c);
-		return JGAlgoUtils.longPack(lastSmaller, firstGreater);
+		return IntPair.of(lastSmaller, firstGreater);
 	}
 
 	/**

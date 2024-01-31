@@ -22,7 +22,7 @@ import java.util.function.Function;
 import com.jgalgo.gen.GnmBipartiteGraphGenerator;
 import com.jgalgo.gen.GnmGraphGenerator;
 import com.jgalgo.gen.UniformTreeGenerator;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.RandomIntUnique;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Stack;
@@ -92,14 +92,14 @@ public class GraphsTestUtils extends TestUtils {
 			if (!parallelEdges) {
 				for (int e : g.edges()) {
 					int u = g.edgeSource(e), v = g.edgeTarget(e);
-					edges.add(u > v ? JGAlgoUtils.longPack(u, v) : JGAlgoUtils.longPack(v, u));
+					edges.add(u > v ? IntPair.of(u, v) : IntPair.of(v, u));
 				}
 			}
 			while (g.edges().size() < m) {
 				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
 				if (!selfEdges && u == v)
 					continue;
-				if (!parallelEdges && !edges.add(u > v ? JGAlgoUtils.longPack(u, v) : JGAlgoUtils.longPack(v, u)))
+				if (!parallelEdges && !edges.add(u > v ? IntPair.of(u, v) : IntPair.of(v, u)))
 					continue;
 				g.addEdge(u, v, g.edges().size() + 1);
 			}
@@ -132,14 +132,14 @@ public class GraphsTestUtils extends TestUtils {
 			if (!parallelEdges) {
 				for (int e : g.edges()) {
 					int u = g.edgeSource(e), v = g.edgeTarget(e);
-					edges.add(JGAlgoUtils.longPack(u, v));
+					edges.add(IntPair.of(u, v));
 				}
 			}
 			while (g.edges().size() < m) {
 				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
 				if (!selfEdges && u == v)
 					continue;
-				if (!parallelEdges && !edges.add(JGAlgoUtils.longPack(u, v)))
+				if (!parallelEdges && !edges.add(IntPair.of(u, v)))
 					continue;
 				g.addEdge(u, v, g.edges().size());
 			}

@@ -41,7 +41,7 @@ import com.jgalgo.bench.util.TestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.internal.ds.RMQStatic;
 import com.jgalgo.internal.ds.RMQStaticComparator;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -176,7 +176,7 @@ public class RMQStaticBench {
 			}
 			long[] queries0 = new long[queriesNum];
 			for (int q = 0; q < queriesNum; q++)
-				queries0[q] = JGAlgoUtils.longPack(queries[q * 2 + 0], queries[q * 2 + 1]);
+				queries0[q] = IntPair.of(queries[q * 2 + 0], queries[q * 2 + 1]);
 			return Pair.of(rmqDS, queries0);
 		}
 
@@ -200,8 +200,8 @@ public class RMQStaticBench {
 
 		private void benchQuery(Blackhole blackhole) {
 			for (long q : queries) {
-				int queryI = JGAlgoUtils.long2low(q);
-				int queryJ = JGAlgoUtils.long2high(q);
+				int queryI = IntPair.first(q);
+				int queryJ = IntPair.second(q);
 				int res = rmq.findMinimumInRange(queryI, queryJ);
 				blackhole.consume(res);
 			}

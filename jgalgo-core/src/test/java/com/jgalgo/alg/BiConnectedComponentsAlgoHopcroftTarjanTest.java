@@ -31,7 +31,7 @@ import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsObj;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2LongFunc;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -180,7 +180,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 			inter.retainAll(s2);
 			return inter;
 		};
-		BiInt2LongFunc key = (b1, b2) -> JGAlgoUtils.longPack(Math.min(b1, b2), Math.max(b1, b2));
+		BiInt2LongFunc key = (b1, b2) -> IntPair.of(Math.min(b1, b2), Math.max(b1, b2));
 		LongSet expectedBlockEdges = new LongOpenHashSet();
 		for (int b1 : range(res.getNumberOfBiCcs()))
 			for (int b2 : range(b1 + 1, res.getNumberOfBiCcs()))

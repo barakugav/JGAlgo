@@ -16,7 +16,7 @@
 package com.jgalgo.graph;
 
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -140,15 +140,15 @@ abstract class IndexGraphBase extends AbstractGraph<Integer, Integer> implements
 	}
 
 	static long sourceTarget2Endpoints(int source, int target) {
-		return JGAlgoUtils.longPack(source, target);
+		return IntPair.of(source, target);
 	}
 
 	static int endpoints2Source(long endpoints) {
-		return JGAlgoUtils.long2low(endpoints);
+		return IntPair.first(endpoints);
 	}
 
 	static int endpoints2Target(long endpoints) {
-		return JGAlgoUtils.long2high(endpoints);
+		return IntPair.second(endpoints);
 	}
 
 	@Override

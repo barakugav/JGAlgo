@@ -28,7 +28,7 @@ import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -59,7 +59,7 @@ class BfsIterImpl {
 				int source = sources.nextInt();
 				Assertions.checkVertex(source, n);
 				visited.set(source);
-				queue.enqueue(JGAlgoUtils.longPack(source, -1));
+				queue.enqueue(IntPair.of(source, -1));
 				if (firstVInLayer < 0)
 					firstVInLayer = source;
 			} while (sources.hasNext());
@@ -108,8 +108,8 @@ class BfsIterImpl {
 		public int nextInt() {
 			Assertions.hasNext(this);
 			long l = queue.dequeueLong();
-			final int u = JGAlgoUtils.long2low(l);
-			inEdge = JGAlgoUtils.long2high(l);
+			final int u = IntPair.first(l);
+			inEdge = IntPair.second(l);
 			if (u == firstVInLayer) {
 				layer++;
 				firstVInLayer = -1;
@@ -121,7 +121,7 @@ class BfsIterImpl {
 				if (visited.get(v))
 					continue;
 				visited.set(v);
-				queue.enqueue(JGAlgoUtils.longPack(v, e));
+				queue.enqueue(IntPair.of(v, e));
 				if (firstVInLayer < 0)
 					firstVInLayer = v;
 			}

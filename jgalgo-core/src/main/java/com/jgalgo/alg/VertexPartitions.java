@@ -31,7 +31,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.internal.util.BitmapSet;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2LongFunc;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2ObjFunc;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -232,13 +232,13 @@ class VertexPartitions {
 				} else {
 					/* number of blocks is high, use hashtable */
 					Long2ObjectOpenHashMap<int[]> map = new Long2ObjectOpenHashMap<>();
-					BiInt2LongFunc buildKey = g.isDirected() ? JGAlgoUtils::longPack : (b1, b2) -> {
+					BiInt2LongFunc buildKey = g.isDirected() ? IntPair::of : (b1, b2) -> {
 						if (b1 < b2) {
 							int temp = b1;
 							b1 = b2;
 							b2 = temp;
 						}
-						return JGAlgoUtils.longPack(b1, b2);
+						return IntPair.of(b1, b2);
 					};
 					for (int e : range(m)) {
 						int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];

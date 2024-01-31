@@ -44,7 +44,7 @@ import com.jgalgo.graph.IEdgeSet;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexGraphFactory;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -84,7 +84,7 @@ public class GraphBench {
 						u1 = v1;
 						v1 = tmp;
 					}
-					long key = JGAlgoUtils.longPack(u1, v1);
+					long key = IntPair.of(u1, v1);
 					if (!existingEdges.add(key))
 						continue;
 				}
@@ -113,7 +113,7 @@ public class GraphBench {
 						v = tmp;
 					}
 				}
-				queryUVertices0[q] = JGAlgoUtils.longPack(u, v);
+				queryUVertices0[q] = IntPair.of(u, v);
 			}
 			queryUVIter = circularIterator(LongImmutableList.of(queryUVertices0));
 		}
@@ -206,22 +206,22 @@ public class GraphBench {
 
 		private void benchGetEdge(Blackhole blackhole) {
 			long l = queryUVIter.nextLong();
-			int u = JGAlgoUtils.long2low(l);
-			int v = JGAlgoUtils.long2high(l);
+			int u = IntPair.first(l);
+			int v = IntPair.second(l);
 			blackhole.consume(g.getEdge(u, v));
 		}
 
 		private void benchGetEdges(Blackhole blackhole) {
 			long l = queryUVIter.nextLong();
-			int u = JGAlgoUtils.long2low(l);
-			int v = JGAlgoUtils.long2high(l);
+			int u = IntPair.first(l);
+			int v = IntPair.second(l);
 			blackhole.consume(g.getEdges(u, v));
 		}
 
 		private void benchGetEdgesIteration(Blackhole blackhole) {
 			long l = queryUVIter.nextLong();
-			int u = JGAlgoUtils.long2low(l);
-			int v = JGAlgoUtils.long2high(l);
+			int u = IntPair.first(l);
+			int v = IntPair.second(l);
 			for (IEdgeIter eit = g.getEdges(u, v).iterator(); eit.hasNext();)
 				blackhole.consume(eit.nextInt());
 		}
@@ -1529,7 +1529,7 @@ public class GraphBench {
 						u1 = v1;
 						v1 = tmp;
 					}
-					long key = JGAlgoUtils.longPack(u1, v1);
+					long key = IntPair.of(u1, v1);
 					if (!existingEdges.add(key))
 						continue;
 				}

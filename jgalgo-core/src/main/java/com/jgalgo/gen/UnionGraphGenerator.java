@@ -47,8 +47,8 @@ import com.jgalgo.graph.WeightsLong;
 import com.jgalgo.graph.WeightsObj;
 import com.jgalgo.graph.WeightsShort;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.IterTools;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
@@ -492,7 +492,7 @@ public class UnionGraphGenerator<V, E> implements GraphGenerator<V, E> {
 				uGlobalIdx = vGlobalIdx;
 				vGlobalIdx = temp;
 			}
-			return JGAlgoUtils.longPack(uGlobalIdx, vGlobalIdx);
+			return IntPair.of(uGlobalIdx, vGlobalIdx);
 		};
 
 		/* Add all edges to the union graph */

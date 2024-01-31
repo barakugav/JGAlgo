@@ -29,7 +29,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
@@ -106,17 +106,17 @@ class TreePathMaximaUtils {
 
 		@Override
 		public void addQuery(int u, int v) {
-			qs.add(JGAlgoUtils.longPack(u, v));
+			qs.add(IntPair.of(u, v));
 		}
 
 		@Override
 		public int getQuerySourceInt(int idx) {
-			return JGAlgoUtils.long2low(qs.getLong(idx));
+			return IntPair.first(qs.getLong(idx));
 		}
 
 		@Override
 		public int getQueryTargetInt(int idx) {
-			return JGAlgoUtils.long2high(qs.getLong(idx));
+			return IntPair.second(qs.getLong(idx));
 		}
 
 		@Override
