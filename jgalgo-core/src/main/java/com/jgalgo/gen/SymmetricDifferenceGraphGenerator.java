@@ -16,6 +16,7 @@
 package com.jgalgo.gen;
 
 import static com.jgalgo.internal.util.Range.range;
+
 import java.util.Arrays;
 import java.util.Objects;
 import com.jgalgo.graph.Graph;
@@ -29,17 +30,13 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
 
 /**
- * Generate a graph that contains the edges that exist in one graph but not in the other.
+ * Generate a graph that contains the edges that exist in one of two input graphs but not in both.
  *
  * <p>
- * Given two graphs with the same vertex set \(G_1=(V,E_1)\) and \(G_2=(V,E_2)\), the difference graph \(G=(V,E)\) is a
- * graph with the same vertex set that contains every edge that exists in \(E_1\) but not in \(E_2\). Saying one edge
- * from \(E_1\) is the same edge as another from \(E_2\) can be defined by the edge id or by the edge endpoints. See
- * {@link #edgeDifferenceById()} and {@link #edgeDifferenceByEndpoints()}.
- *
- * <p>
- * By default, the edges are compared by their id. Use {@link #edgeDifferenceByEndpoints()} to compare edges by their
- * endpoints.
+ * Given two graphs with the same vertex set \(G_1 = (V, E_1)\) and \(G_2 = (V, E_2)\), the symmetric difference graph
+ * \(G = (V, E)\) is defined as \(E = (E_1 \setminus E_2) \cup (E_2 \setminus E_1)\). There are two ways to define
+ * equality between a pair of edges: by their id or by their endpoints. The default is by id. See the
+ * {@link #edgeDifferenceById()} and {@link #edgeDifferenceByEndpoints()} methods.
  *
  * <p>
  * Weights are not copied from the input graphs to the generated graph(s). In the future there might be an option to do
@@ -49,21 +46,21 @@ import com.jgalgo.graph.IntGraphFactory;
  * @param  <E> the edges type
  * @author     Barak Ugav
  */
-public class DifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
+public class SymmetricDifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	private final GraphFactory<V, E> factory;
 	private Graph<V, E> graph1, graph2;
 	private boolean differenceById = true;
 
 	/**
-	 * Create a new difference graph generator that will use the default graph factory.
+	 * Create a new symmetric difference graph generator that will use the default graph factory.
 	 */
-	public DifferenceGraphGenerator() {
+	public SymmetricDifferenceGraphGenerator() {
 		this(GraphFactory.undirected());
 	}
 
 	/**
-	 * Create a new difference graph generator that will use the given graph factory.
+	 * Create a new symmetric difference graph generator that will use the given graph factory.
 	 *
 	 * <p>
 	 * The graph factory will be used to create the generated graph(s).
@@ -74,7 +71,7 @@ public class DifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 *
 	 * @param factory the graph factory that will be used to create the generated graph(s)
 	 */
-	public DifferenceGraphGenerator(GraphFactory<V, E> factory) {
+	public SymmetricDifferenceGraphGenerator(GraphFactory<V, E> factory) {
 		this.factory = Objects.requireNonNull(factory);
 	}
 
@@ -87,8 +84,8 @@ public class DifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 *
 	 * <p>
 	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
-	 * called to align the created graph with the generator configuration. If the first graph has self edges, the method
-	 * {@link GraphFactory#allowSelfEdges()} will be called. If the first graph has parallel edges, the method
+	 * called to align the created graph with the generator configuration. If one the graphs has self edges, the method
+	 * {@link GraphFactory#allowSelfEdges()} will be called. If one of the graphs has parallel edges, the method
 	 * {@link GraphFactory#allowParallelEdges()} will be called.
 	 *
 	 * @return the graph factory that will be used to create the generated graph(s)
@@ -98,13 +95,11 @@ public class DifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	}
 
 	/**
-	 * Set the input graphs whose difference graph will be generated.
+	 * Set the input graphs whose symmetric difference graph will be generated.
 	 *
 	 * <p>
-	 * Given two graphs with the same vertex set, the difference graph is a graph with the same vertex set that contains
-	 * every edge that exists in the first graph but not in the second graph. Saying one edge from the first graph is
-	 * the same edge as another from the second graph can be defined by the edge id or by the edge endpoints. See
-	 * {@link #edgeDifferenceById()} and {@link #edgeDifferenceByEndpoints()}.
+	 * Given two graphs with the same vertex set, the symmetric difference graph is defined as the graph with the same
+	 * vertex set and edges that exist in one of the graphs but not in both.
 	 *
 	 * @param  graph1                   the first graph
 	 * @param  graph2                   the second graph
@@ -112,7 +107,7 @@ public class DifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 * @throws IllegalArgumentException if the graphs have different directionality or if their vertex sets are not
 	 *                                      equal
 	 */
-	public DifferenceGraphGenerator<V, E> graphs(Graph<V, E> graph1, Graph<V, E> graph2) {
+	public SymmetricDifferenceGraphGenerator<V, E> graphs(Graph<V, E> graph1, Graph<V, E> graph2) {
 		if (graph1.isDirected() != graph2.isDirected())
 			throw new IllegalArgumentException("Input graphs must have the same directionality");
 		if (!graph1.vertices().equals(graph2.vertices()))
@@ -126,8 +121,8 @@ public class DifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 * Set the difference of edges to be by their id.
 	 *
 	 * <p>
-	 * Given two graphs with the same vertex set, the difference graph is a graph with the same vertex set that contains
-	 * every edge that exists in the first graph but not in the second graph. This method defines that one edge from the
+	 * Given two graphs with the same vertex set, the symmetric difference graph is defined as the graph with the same
+	 * vertex set and edges that exist in one of the graphs but not in both. This method defines that one edge from the
 	 * first graph is the same edge as another from the second graph if they have the same identifier. See
 	 * {@link #edgeDifferenceByEndpoints()} for an alternative definition.
 	 *
@@ -140,8 +135,8 @@ public class DifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 * generation.
 	 *
 	 * <p>
-	 * In the following example two directed graphs are created, and the difference graph of the two graphs is generated
-	 * by the edges identifiers:
+	 * In the following example two directed graphs are created, and the symmetric difference graph of the two graphs is
+	 * generated by the edges identifiers:
 	 *
 	 * <pre> {@code
 	 * Graph<String, Integer> graph1 = Graph.newDirected();
@@ -151,21 +146,22 @@ public class DifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 *
 	 * Graph<String, Integer> graph2 = Graph.newDirected();
 	 * graph2.addVertices(Set.of("A", "B", "C", "D"));
-	 * graph2.addEdge("A", "B", 10);
 	 * graph2.addEdge("A", "C", 2);
+	 * graph2.addEdge("A", "D", 10);
 	 *
-	 * Graph<String, Integer> difference = new DifferenceGraphGenerator<String, Integer>()
+	 * Graph<String, Integer> difference = new SymmetricDifferenceGraphGenerator<String, Integer>()
 	 * 		.graphs(graph1, graph2)
 	 * 		.edgeDifferenceById() // default, not really needed
 	 * 		.generate();
 	 * assert Set.of("A", "B", "C", "D").equals(difference.vertices());
-	 * assert Set.of(1).equals(difference.edges());
+	 * assert Set.of(1, 10).equals(difference.edges());
 	 * assert difference.edgeSource(1).equals("A") && difference.edgeTarget(1).equals("B");
+	 * assert difference.edgeSource(10).equals("A") && difference.edgeTarget(10).equals("D");
 	 * }</pre>
 	 *
 	 * @return this generator
 	 */
-	public DifferenceGraphGenerator<V, E> edgeDifferenceById() {
+	public SymmetricDifferenceGraphGenerator<V, E> edgeDifferenceById() {
 		differenceById = true;
 		return this;
 	}
@@ -174,8 +170,8 @@ public class DifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 * Set the difference of edges to be by their endpoints.
 	 *
 	 * <p>
-	 * Given two graphs with the same vertex set, the difference graph is a graph with the same vertex set that contains
-	 * every edge that exists in the first graph but not in the second graph. This method defines that one edge from the
+	 * Given two graphs with the same vertex set, the symmetric difference graph is defined as the graph with the same
+	 * vertex set and edges that exist in one of the graphs but not in both. This method defines that one edge from the
 	 * first graph is the same edge as another from the second graph if they have the same endpoints. See
 	 * {@link #edgeDifferenceById()} for an alternative definition.
 	 *
@@ -183,8 +179,8 @@ public class DifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 * By default, the edges are compared by their id.
 	 *
 	 * <p>
-	 * In the following example two directed graphs are created, and the difference graph of the two graphs is generated
-	 * by the edges endpoints:
+	 * In the following example two directed graphs are created, and the symmetric difference graph of the two graphs is
+	 * generated by the edges endpoints:
 	 *
 	 * <pre> {@code
 	 * Graph<String, Integer> graph1 = Graph.newDirected();
@@ -197,18 +193,19 @@ public class DifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 * graph2.addEdge("A", "B", 10);
 	 * graph2.addEdge("A", "D", 20);
 	 *
-	 * Graph<String, Integer> difference = new DifferenceGraphGenerator<String, Integer>()
+	 * Graph<String, Integer> difference = new SymmetricDifferenceGraphGenerator<String, Integer>()
 	 * 		.graphs(graph1, graph2)
 	 * 		.edgeDifferenceByEndpoints()
 	 * 		.generate();
 	 * assert Set.of("A", "B", "C", "D").equals(difference.vertices());
-	 * assert Set.of(2).equals(difference.edges());
+	 * assert Set.of(2, 20).equals(difference.edges());
 	 * assert difference.edgeSource(2).equals("A") && difference.edgeTarget(2).equals("C");
+	 * assert difference.edgeSource(20).equals("A") && difference.edgeTarget(20).equals("D");
 	 * }</pre>
 	 *
 	 * @return this generator
 	 */
-	public DifferenceGraphGenerator<V, E> edgeDifferenceByEndpoints() {
+	public SymmetricDifferenceGraphGenerator<V, E> edgeDifferenceByEndpoints() {
 		differenceById = false;
 		return this;
 	}
@@ -254,10 +251,19 @@ public class DifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
 				}
 				difference.addEdge(u1, v1, e);
 			}
+			for (int eIdx2 : range(graph2.edges().size())) {
+				E e = eiMap2.indexToId(eIdx2);
+				V u2 = viMap2.indexToId(g2.edgeSource(eIdx2));
+				V v2 = viMap2.indexToId(g2.edgeTarget(eIdx2));
+				if (!graph1.edges().contains(e))
+					difference.addEdge(u2, v2, e);
+			}
 		} else {
 			final int n = g1.vertices().size();
-			int[] visit = new int[n];
-			Arrays.fill(visit, -1);
+			int[] visit1 = new int[n];
+			int[] visit2 = new int[n];
+			Arrays.fill(visit1, -1);
+			Arrays.fill(visit2, -1);
 
 			for (int uIdx2 : range(n)) {
 				final int visitIdx = uIdx2;
@@ -266,19 +272,34 @@ public class DifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
 					int vIdx2 = eit.targetInt();
 					V v = viMap2.indexToId(vIdx2);
 					int vIdx1 = viMap1.idToIndex(v);
-					visit[vIdx1] = visitIdx;
+					visit2[vIdx1] = visitIdx;
 				}
+
 				V u = viMap2.indexToId(uIdx2);
 				int uIdx1 = viMap1.idToIndex(u);
 				for (IEdgeIter eit = g1.outEdges(uIdx1).iterator(); eit.hasNext();) {
 					int eIdx = eit.nextInt();
 					int vIdx1 = eit.targetInt();
+					visit1[vIdx1] = visitIdx;
 					if (!directed && uIdx1 > vIdx1)
 						continue; /* avoid adding undirected edges twice */
-					if (visit[vIdx1] == visitIdx)
+					if (visit2[vIdx1] == visitIdx)
 						continue; /* edge exist in g2 */
 					V v = viMap1.indexToId(vIdx1);
 					E e = eiMap1.indexToId(eIdx);
+					difference.addEdge(u, v, e);
+				}
+
+				for (IEdgeIter eit = g2.outEdges(uIdx2).iterator(); eit.hasNext();) {
+					int eIdx = eit.nextInt();
+					int vIdx2 = eit.targetInt();
+					V v = viMap2.indexToId(vIdx2);
+					int vIdx1 = viMap1.idToIndex(v);
+					if (!directed && uIdx1 > vIdx1)
+						continue; /* avoid adding undirected edges twice */
+					if (visit1[vIdx1] == visitIdx)
+						continue; /* edge exist in g1 */
+					E e = eiMap2.indexToId(eIdx);
 					difference.addEdge(u, v, e);
 				}
 			}
