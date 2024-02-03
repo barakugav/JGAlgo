@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IndexPairingHeapBase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.ds</a> &gt; <span class="el_source">IndexPairingHeapBase.java</span></div><h1>IndexPairingHeapBase.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.ds;
+
+import java.util.Arrays;
+
+<span class="fc" id="L21">class IndexPairingHeapBase {</span>
+
+	int minRoot;
+	private final int[] nodeData;
+
+<span class="fc" id="L26">	IndexPairingHeapBase(int size) {</span>
+<span class="fc" id="L27">		nodeData = new int[3 * size];</span>
+<span class="fc" id="L28">		Arrays.fill(nodeData, -1);</span>
+<span class="fc" id="L29">		minRoot = -1;</span>
+<span class="fc" id="L30">	}</span>
+
+	public boolean isEmpty() {
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		return minRoot &lt; 0;</span>
+	}
+
+	public boolean isNotEmpty() {
+<span class="fc bfc" id="L37" title="All 2 branches covered.">		return minRoot &gt;= 0;</span>
+	}
+
+	public int findMin() {
+<span class="fc" id="L41">		return minRoot;</span>
+	}
+
+	public boolean isInserted(int node) {
+<span class="fc bfc" id="L45" title="All 4 branches covered.">		return prevOrParent(node) &gt;= 0 || minRoot == node;</span>
+	}
+
+	void cut(int n) {
+<span class="fc" id="L49">		int next = next(n);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		if (next &gt;= 0) {</span>
+<span class="fc" id="L51">			prevOrParent(next, prevOrParent(n));</span>
+<span class="fc" id="L52">			this.next(n, -1);</span>
+		}
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		if (child(prevOrParent(n)) == n) { /* n.parent.child == n */</span>
+<span class="fc" id="L55">			child(prevOrParent(n), next);</span>
+		} else {
+<span class="fc" id="L57">			next(prevOrParent(n), next);</span>
+		}
+<span class="fc" id="L59">		prevOrParent(n, -1);</span>
+<span class="fc" id="L60">	}</span>
+
+	void addChild(int parent, int newChild) {
+<span class="pc bnc" id="L63" title="All 2 branches missed.">		assert prevOrParent(newChild) &lt; 0;</span>
+<span class="pc bnc" id="L64" title="All 2 branches missed.">		assert next(newChild) &lt; 0;</span>
+<span class="fc" id="L65">		int oldChild = child(parent);</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">		if (oldChild &gt;= 0) {</span>
+<span class="fc" id="L67">			prevOrParent(oldChild, newChild);</span>
+<span class="fc" id="L68">			next(newChild, oldChild);</span>
+		}
+<span class="fc" id="L70">		child(parent, newChild);</span>
+<span class="fc" id="L71">		prevOrParent(newChild, parent);</span>
+<span class="fc" id="L72">	}</span>
+
+	public void clear() {
+<span class="fc bfc" id="L75" title="All 2 branches covered.">		if (minRoot &lt; 0)</span>
+<span class="fc" id="L76">			return;</span>
+
+<span class="fc" id="L78">		for (int p = minRoot;;) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">			while (child(p) &gt;= 0) {</span>
+<span class="fc" id="L80">				p = child(p);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">				while (next(p) &gt;= 0)</span>
+<span class="fc" id="L82">					p = next(p);</span>
+			}
+<span class="fc" id="L84">			int prev = prevOrParent(p);</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (prev &lt; 0)</span>
+<span class="fc" id="L86">				break;</span>
+<span class="fc" id="L87">			prevOrParent(p, -1);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			if (next(prev) == p) {</span>
+<span class="fc" id="L89">				next(prev, -1);</span>
+			} else {
+<span class="fc" id="L91">				child(prev, -1);</span>
+			}
+<span class="fc" id="L93">			p = prev;</span>
+<span class="fc" id="L94">		}</span>
+
+<span class="fc" id="L96">		minRoot = -1;</span>
+<span class="fc" id="L97">	}</span>
+
+	int next(int node) {
+<span class="fc" id="L100">		return nodeData[node * 3 + 0];</span>
+	}
+
+	void next(int node, int next) {
+<span class="fc" id="L104">		nodeData[node * 3 + 0] = next;</span>
+<span class="fc" id="L105">	}</span>
+
+	int prevOrParent(int node) {
+<span class="fc" id="L108">		return nodeData[node * 3 + 1];</span>
+	}
+
+	void prevOrParent(int node, int prevOrParent) {
+<span class="fc" id="L112">		nodeData[node * 3 + 1] = prevOrParent;</span>
+<span class="fc" id="L113">	}</span>
+
+	int child(int node) {
+<span class="fc" id="L116">		return nodeData[node * 3 + 2];</span>
+	}
+
+	void child(int node, int child) {
+<span class="fc" id="L120">		nodeData[node * 3 + 2] = child;</span>
+<span class="fc" id="L121">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

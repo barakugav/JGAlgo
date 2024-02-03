@@ -18,7 +18,7 @@ package com.jgalgo.graph;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Optional;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.BinarySearch;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -184,7 +184,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 <span class="fc" id="L185">			checkVertex(source);</span>
 <span class="fc" id="L186">			int eBegin = edgesOutBegin[source], eEnd = edgesOutBegin[source + 1];</span>
-<span class="fc" id="L187">			int e = JGAlgoUtils.lowerBound(eBegin, eEnd, target, this::edgeTarget);</span>
+<span class="fc" id="L187">			int e = BinarySearch.lowerBound(eBegin, eEnd, target, this::edgeTarget);</span>
 <span class="fc bfc" id="L188" title="All 4 branches covered.">			if (e &lt; eEnd &amp;&amp; target(e) == target) {</span>
 <span class="fc" id="L189">				return e;</span>
 			} else {
@@ -204,7 +204,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 		} else {
 <span class="fc" id="L205">			checkVertex(source);</span>
 <span class="fc" id="L206">			int eBegin = edgesOutBegin[source], eEnd = edgesOutBegin[source + 1];</span>
-<span class="fc" id="L207">			IntIntPair edgeRange = JGAlgoUtils.equalRange(eBegin, eEnd, target, this::edgeTarget);</span>
+<span class="fc" id="L207">			IntIntPair edgeRange = BinarySearch.equalRange(eBegin, eEnd, target, this::edgeTarget);</span>
 <span class="fc bfc" id="L208" title="All 2 branches covered.">			if (edgeRange == null) {</span>
 <span class="fc" id="L209">				checkVertex(target);</span>
 <span class="fc" id="L210">				edgeRange = IntIntPair.of(eBegin, eBegin);</span>

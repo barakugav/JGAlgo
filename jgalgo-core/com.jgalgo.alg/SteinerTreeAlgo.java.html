@@ -30,7 +30,7 @@ import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
 import com.jgalgo.internal.util.IntAdapters;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
@@ -163,11 +163,11 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 <span class="fc" id="L163">		LongPriorityQueue queue = new FIFOQueueLongNoReduce();</span>
 <span class="fc" id="L164">		int root = terminals0.iterator().nextInt();</span>
 <span class="fc" id="L165">		visited.set(root);</span>
-<span class="fc" id="L166">		queue.enqueue(JGAlgoUtils.longPack(root, -1));</span>
+<span class="fc" id="L166">		queue.enqueue(IntPair.of(root, -1));</span>
 <span class="fc bfc" id="L167" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
 <span class="fc" id="L168">			long l = queue.dequeueLong();</span>
-<span class="fc" id="L169">			int u = JGAlgoUtils.long2low(l);</span>
-<span class="fc" id="L170">			int parentEdge = JGAlgoUtils.long2high(l);</span>
+<span class="fc" id="L169">			int u = IntPair.first(l);</span>
+<span class="fc" id="L170">			int parentEdge = IntPair.second(l);</span>
 <span class="fc bfc" id="L171" title="All 2 branches covered.">			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L172">				int e = eit.nextInt();</span>
 <span class="fc bfc" id="L173" title="All 4 branches covered.">				if (!edgesBitmap.get(e) || e == parentEdge)</span>
@@ -176,7 +176,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 <span class="pc bpc" id="L176" title="1 of 2 branches missed.">				if (visited.get(v))</span>
 <span class="nc" id="L177">					return false; /* cycle */</span>
 <span class="fc" id="L178">				visited.set(v);</span>
-<span class="fc" id="L179">				queue.enqueue(JGAlgoUtils.longPack(v, e));</span>
+<span class="fc" id="L179">				queue.enqueue(IntPair.of(v, e));</span>
 <span class="fc" id="L180">			}</span>
 <span class="fc" id="L181">		}</span>
 <span class="fc bfc" id="L182" title="All 2 branches covered.">		for (int t : terminals0)</span>

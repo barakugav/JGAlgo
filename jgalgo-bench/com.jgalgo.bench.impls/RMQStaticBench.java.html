@@ -41,7 +41,7 @@ import com.jgalgo.bench.util.TestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.internal.ds.RMQStatic;
 import com.jgalgo.internal.ds.RMQStaticComparator;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -176,7 +176,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 			}
 <span class="fc" id="L177">			long[] queries0 = new long[queriesNum];</span>
 <span class="fc bfc" id="L178" title="All 2 branches covered.">			for (int q = 0; q &lt; queriesNum; q++)</span>
-<span class="fc" id="L179">				queries0[q] = JGAlgoUtils.longPack(queries[q * 2 + 0], queries[q * 2 + 1]);</span>
+<span class="fc" id="L179">				queries0[q] = IntPair.of(queries[q * 2 + 0], queries[q * 2 + 1]);</span>
 <span class="fc" id="L180">			return Pair.of(rmqDS, queries0);</span>
 		}
 
@@ -200,8 +200,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		private void benchQuery(Blackhole blackhole) {
 <span class="fc bfc" id="L202" title="All 2 branches covered.">			for (long q : queries) {</span>
-<span class="fc" id="L203">				int queryI = JGAlgoUtils.long2low(q);</span>
-<span class="fc" id="L204">				int queryJ = JGAlgoUtils.long2high(q);</span>
+<span class="fc" id="L203">				int queryI = IntPair.first(q);</span>
+<span class="fc" id="L204">				int queryJ = IntPair.second(q);</span>
 <span class="fc" id="L205">				int res = rmq.findMinimumInRange(queryI, queryJ);</span>
 <span class="fc" id="L206">				blackhole.consume(res);</span>
 			}

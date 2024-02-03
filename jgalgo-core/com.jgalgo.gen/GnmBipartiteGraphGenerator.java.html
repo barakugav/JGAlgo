@@ -31,7 +31,7 @@ import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.util.Bitmap;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -526,7 +526,7 @@ public class GnmBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 <span class="fc" id="L526">					v = leftVertices.get(vIdx);</span>
 <span class="fc" id="L527">					uIdx += leftSize;</span>
 				}
-<span class="fc bfc" id="L529" title="All 4 branches covered.">				if (parallelEdges || edges.add(JGAlgoUtils.longPack(uIdx, vIdx)))</span>
+<span class="fc bfc" id="L529" title="All 4 branches covered.">				if (parallelEdges || edges.add(IntPair.of(uIdx, vIdx)))</span>
 <span class="fc" id="L530">					g.addEdge(u, v, edgeBuilder.build(g.edges()));</span>
 <span class="fc" id="L531">			}</span>
 

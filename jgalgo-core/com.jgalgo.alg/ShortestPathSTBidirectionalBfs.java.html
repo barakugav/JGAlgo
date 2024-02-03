@@ -21,7 +21,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.ints.Int2LongMap;
 import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -125,15 +125,15 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 	}
 
 	static long info(int backtrack, int distance) {
-<span class="fc" id="L128">		return JGAlgoUtils.longPack(backtrack, distance);</span>
+<span class="fc" id="L128">		return IntPair.of(backtrack, distance);</span>
 	}
 
 	static int backtrack(long info) {
-<span class="fc" id="L132">		return JGAlgoUtils.long2low(info);</span>
+<span class="fc" id="L132">		return IntPair.first(info);</span>
 	}
 
 	static int distance(long info) {
-<span class="fc" id="L136">		return JGAlgoUtils.long2high(info);</span>
+<span class="fc" id="L136">		return IntPair.second(info);</span>
 	}
 
 }

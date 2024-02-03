@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DifferenceGraphGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.gen</a> &gt; <span class="el_source">DifferenceGraphGenerator.java</span></div><h1>DifferenceGraphGenerator.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.gen;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Arrays;
+import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
+
+/**
+ * Generate a graph that contains the edges that exist in one graph but not in the other.
+ *
+ * &lt;p&gt;
+ * Given two graphs with the same vertex set \(G_1=(V,E_1)\) and \(G_2=(V,E_2)\), the difference graph \(G=(V,E)\) is a
+ * graph with the same vertex set that contains every edge that exists in \(E_1\) but not in \(E_2\). Saying one edge
+ * from \(E_1\) is the same edge as another from \(E_2\) can be defined by the edge id or by the edge endpoints. See
+ * {@link #edgeDifferenceById()} and {@link #edgeDifferenceByEndpoints()}.
+ *
+ * &lt;p&gt;
+ * By default, the edges are compared by their id. Use {@link #edgeDifferenceByEndpoints()} to compare edges by their
+ * endpoints.
+ *
+ * &lt;p&gt;
+ * Weights are not copied from the input graphs to the generated graph(s). In the future there might be an option to do
+ * so.
+ *
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
+ */
+<span class="fc" id="L52">public class DifferenceGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {</span>
+
+	private final GraphFactory&lt;V, E&gt; factory;
+	private Graph&lt;V, E&gt; graph1, graph2;
+<span class="fc" id="L56">	private boolean differenceById = true;</span>
+
+	/**
+	 * Create a new difference graph generator that will use the default graph factory.
+	 */
+	public DifferenceGraphGenerator() {
+<span class="fc" id="L62">		this(GraphFactory.undirected());</span>
+<span class="fc" id="L63">	}</span>
+
+	/**
+	 * Create a new difference graph generator that will use the given graph factory.
+	 *
+	 * &lt;p&gt;
+	 * The graph factory will be used to create the generated graph(s).
+	 *
+	 * &lt;p&gt;
+	 * To generate {@linkplain IntGraph int graphs}, pass an instance of {@linkplain IntGraphFactory} to this
+	 * constructor.
+	 *
+	 * @param factory the graph factory that will be used to create the generated graph(s)
+	 */
+<span class="fc" id="L77">	public DifferenceGraphGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
+<span class="fc" id="L78">		this.factory = Objects.requireNonNull(factory);</span>
+<span class="fc" id="L79">	}</span>
+
+	/**
+	 * Get the graph factory that will be used to create the generated graph(s).
+	 *
+	 * &lt;p&gt;
+	 * It's possible to customize the factory before generating the graph(s), for example by using
+	 * {@link GraphFactory#addHint(GraphFactory.Hint)} to optimize the generated graph(s) for a specific algorithm.
+	 *
+	 * &lt;p&gt;
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration. If the first graph has self edges, the method
+	 * {@link GraphFactory#allowSelfEdges()} will be called. If the first graph has parallel edges, the method
+	 * {@link GraphFactory#allowParallelEdges()} will be called.
+	 *
+	 * @return the graph factory that will be used to create the generated graph(s)
+	 */
+	public GraphFactory&lt;V, E&gt; graphFactory() {
+<span class="fc" id="L97">		return factory;</span>
+	}
+
+	/**
+	 * Set the input graphs whose difference graph will be generated.
+	 *
+	 * &lt;p&gt;
+	 * Given two graphs with the same vertex set, the difference graph is a graph with the same vertex set that contains
+	 * every edge that exists in the first graph but not in the second graph. Saying one edge from the first graph is
+	 * the same edge as another from the second graph can be defined by the edge id or by the edge endpoints. See
+	 * {@link #edgeDifferenceById()} and {@link #edgeDifferenceByEndpoints()}.
+	 *
+	 * @param  graph1                   the first graph
+	 * @param  graph2                   the second graph
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if the graphs have different directionality or if their vertex sets are not
+	 *                                      equal
+	 */
+	public DifferenceGraphGenerator&lt;V, E&gt; graphs(Graph&lt;V, E&gt; graph1, Graph&lt;V, E&gt; graph2) {
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (graph1.isDirected() != graph2.isDirected())</span>
+<span class="fc" id="L117">			throw new IllegalArgumentException(&quot;Input graphs must have the same directionality&quot;);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">		if (!graph1.vertices().equals(graph2.vertices()))</span>
+<span class="fc" id="L119">			throw new IllegalArgumentException(&quot;Input graphs must have the same set of vertices&quot;);</span>
+<span class="fc" id="L120">		this.graph1 = graph1;</span>
+<span class="fc" id="L121">		this.graph2 = graph2;</span>
+<span class="fc" id="L122">		return this;</span>
+	}
+
+	/**
+	 * Set the difference of edges to be by their id.
+	 *
+	 * &lt;p&gt;
+	 * Given two graphs with the same vertex set, the difference graph is a graph with the same vertex set that contains
+	 * every edge that exists in the first graph but not in the second graph. This method defines that one edge from the
+	 * first graph is the same edge as another from the second graph if they have the same identifier. See
+	 * {@link #edgeDifferenceByEndpoints()} for an alternative definition.
+	 *
+	 * &lt;p&gt;
+	 * By default, the edges are compared by their id.
+	 *
+	 * &lt;p&gt;
+	 * When difference of edges is done by their id, if an edge from the first graph and an edge from the second graph
+	 * have the same identifier, they also must have the same endpoints, otherwise an exception will be thrown during
+	 * generation.
+	 *
+	 * &lt;p&gt;
+	 * In the following example two directed graphs are created, and the difference graph of the two graphs is generated
+	 * by the edges identifiers:
+	 *
+	 * &lt;pre&gt; {@code
+	 * Graph&lt;String, Integer&gt; graph1 = Graph.newDirected();
+	 * graph1.addVertices(Set.of(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;));
+	 * graph1.addEdge(&quot;A&quot;, &quot;B&quot;, 1);
+	 * graph1.addEdge(&quot;A&quot;, &quot;C&quot;, 2);
+	 *
+	 * Graph&lt;String, Integer&gt; graph2 = Graph.newDirected();
+	 * graph2.addVertices(Set.of(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;));
+	 * graph2.addEdge(&quot;A&quot;, &quot;B&quot;, 10);
+	 * graph2.addEdge(&quot;A&quot;, &quot;C&quot;, 2);
+	 *
+	 * Graph&lt;String, Integer&gt; difference = new DifferenceGraphGenerator&lt;String, Integer&gt;()
+	 * 		.graphs(graph1, graph2)
+	 * 		.edgeDifferenceById() // default, not really needed
+	 * 		.generate();
+	 * assert Set.of(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;).equals(difference.vertices());
+	 * assert Set.of(1).equals(difference.edges());
+	 * assert difference.edgeSource(1).equals(&quot;A&quot;) &amp;&amp; difference.edgeTarget(1).equals(&quot;B&quot;);
+	 * }&lt;/pre&gt;
+	 *
+	 * @return this generator
+	 */
+	public DifferenceGraphGenerator&lt;V, E&gt; edgeDifferenceById() {
+<span class="fc" id="L169">		differenceById = true;</span>
+<span class="fc" id="L170">		return this;</span>
+	}
+
+	/**
+	 * Set the difference of edges to be by their endpoints.
+	 *
+	 * &lt;p&gt;
+	 * Given two graphs with the same vertex set, the difference graph is a graph with the same vertex set that contains
+	 * every edge that exists in the first graph but not in the second graph. This method defines that one edge from the
+	 * first graph is the same edge as another from the second graph if they have the same endpoints. See
+	 * {@link #edgeDifferenceById()} for an alternative definition.
+	 *
+	 * &lt;p&gt;
+	 * By default, the edges are compared by their id.
+	 *
+	 * &lt;p&gt;
+	 * In the following example two directed graphs are created, and the difference graph of the two graphs is generated
+	 * by the edges endpoints:
+	 *
+	 * &lt;pre&gt; {@code
+	 * Graph&lt;String, Integer&gt; graph1 = Graph.newDirected();
+	 * graph1.addVertices(Set.of(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;));
+	 * graph1.addEdge(&quot;A&quot;, &quot;B&quot;, 1);
+	 * graph1.addEdge(&quot;A&quot;, &quot;C&quot;, 2);
+	 *
+	 * Graph&lt;String, Integer&gt; graph2 = Graph.newDirected();
+	 * graph2.addVertices(Set.of(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;));
+	 * graph2.addEdge(&quot;A&quot;, &quot;B&quot;, 10);
+	 * graph2.addEdge(&quot;A&quot;, &quot;D&quot;, 20);
+	 *
+	 * Graph&lt;String, Integer&gt; difference = new DifferenceGraphGenerator&lt;String, Integer&gt;()
+	 * 		.graphs(graph1, graph2)
+	 * 		.edgeDifferenceByEndpoints()
+	 * 		.generate();
+	 * assert Set.of(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;, &quot;D&quot;).equals(difference.vertices());
+	 * assert Set.of(2).equals(difference.edges());
+	 * assert difference.edgeSource(2).equals(&quot;A&quot;) &amp;&amp; difference.edgeTarget(2).equals(&quot;C&quot;);
+	 * }&lt;/pre&gt;
+	 *
+	 * @return this generator
+	 */
+	public DifferenceGraphGenerator&lt;V, E&gt; edgeDifferenceByEndpoints() {
+<span class="fc" id="L212">		differenceById = false;</span>
+<span class="fc" id="L213">		return this;</span>
+	}
+
+	@Override
+	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
+<span class="fc bfc" id="L218" title="All 2 branches covered.">		if (graph1 == null)</span>
+<span class="fc" id="L219">			throw new IllegalStateException(&quot;Input graphs not provided&quot;);</span>
+
+<span class="fc" id="L221">		final boolean directed = graph1.isDirected();</span>
+<span class="fc" id="L222">		factory.setDirected(directed);</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">		if (!Graphs.selfEdges(graph1).isEmpty())</span>
+<span class="fc" id="L224">			factory.allowSelfEdges();</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">		if (Graphs.containsParallelEdges(graph1))</span>
+<span class="fc" id="L226">			factory.allowParallelEdges();</span>
+<span class="fc" id="L227">		GraphBuilder&lt;V, E&gt; difference = factory.newBuilder();</span>
+
+<span class="pc bnc" id="L229" title="All 2 branches missed.">		assert graph1.vertices().equals(graph2.vertices());</span>
+<span class="fc" id="L230">		difference.addVertices(graph1.vertices());</span>
+
+<span class="fc" id="L232">		IndexGraph g1 = graph1.indexGraph();</span>
+<span class="fc" id="L233">		IndexGraph g2 = graph2.indexGraph();</span>
+<span class="fc" id="L234">		IndexIdMap&lt;V&gt; viMap1 = graph1.indexGraphVerticesMap();</span>
+<span class="fc" id="L235">		IndexIdMap&lt;V&gt; viMap2 = graph2.indexGraphVerticesMap();</span>
+<span class="fc" id="L236">		IndexIdMap&lt;E&gt; eiMap1 = graph1.indexGraphEdgesMap();</span>
+<span class="fc" id="L237">		IndexIdMap&lt;E&gt; eiMap2 = graph2.indexGraphEdgesMap();</span>
+
+<span class="fc bfc" id="L239" title="All 2 branches covered.">		if (differenceById) {</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">			for (int eIdx1 : range(graph1.edges().size())) {</span>
+<span class="fc" id="L241">				E e = eiMap1.indexToId(eIdx1);</span>
+<span class="fc" id="L242">				V u1 = viMap1.indexToId(g1.edgeSource(eIdx1));</span>
+<span class="fc" id="L243">				V v1 = viMap1.indexToId(g1.edgeTarget(eIdx1));</span>
+
+<span class="fc" id="L245">				int eIdx2 = eiMap2.idToIndexIfExist(e);</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">				if (eIdx2 &gt;= 0) {</span>
+<span class="fc" id="L247">					V u2 = viMap2.indexToId(g2.edgeSource(eIdx2));</span>
+<span class="fc" id="L248">					V v2 = viMap2.indexToId(g2.edgeTarget(eIdx2));</span>
+<span class="fc" id="L249">					boolean sameEndpoints =</span>
+<span class="fc bfc" id="L250" title="All 10 branches covered.">							(u1.equals(u2) &amp;&amp; v1.equals(v2)) || (!directed &amp;&amp; u1.equals(v2) &amp;&amp; v1.equals(u2));</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">					if (!sameEndpoints)</span>
+<span class="fc" id="L252">						throw new IllegalArgumentException(&quot;Input graphs have the same edge with difference endpoints&quot;);</span>
+					continue;
+				}
+<span class="fc" id="L255">				difference.addEdge(u1, v1, e);</span>
+<span class="fc" id="L256">			}</span>
+		} else {
+<span class="fc" id="L258">			final int n = g1.vertices().size();</span>
+<span class="fc" id="L259">			int[] visit = new int[n];</span>
+<span class="fc" id="L260">			Arrays.fill(visit, -1);</span>
+
+<span class="fc bfc" id="L262" title="All 2 branches covered.">			for (int uIdx2 : range(n)) {</span>
+<span class="fc" id="L263">				final int visitIdx = uIdx2;</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">				for (IEdgeIter eit = g2.outEdges(uIdx2).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L265">					eit.nextInt();</span>
+<span class="fc" id="L266">					int vIdx2 = eit.targetInt();</span>
+<span class="fc" id="L267">					V v = viMap2.indexToId(vIdx2);</span>
+<span class="fc" id="L268">					int vIdx1 = viMap1.idToIndex(v);</span>
+<span class="fc" id="L269">					visit[vIdx1] = visitIdx;</span>
+<span class="fc" id="L270">				}</span>
+<span class="fc" id="L271">				V u = viMap2.indexToId(uIdx2);</span>
+<span class="fc" id="L272">				int uIdx1 = viMap1.idToIndex(u);</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">				for (IEdgeIter eit = g1.outEdges(uIdx1).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L274">					int eIdx = eit.nextInt();</span>
+<span class="fc" id="L275">					int vIdx1 = eit.targetInt();</span>
+<span class="fc bfc" id="L276" title="All 4 branches covered.">					if (!directed &amp;&amp; uIdx1 &gt; vIdx1)</span>
+<span class="fc" id="L277">						continue; /* avoid adding undirected edges twice */</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">					if (visit[vIdx1] == visitIdx)</span>
+<span class="fc" id="L279">						continue; /* edge exist in g2 */</span>
+<span class="fc" id="L280">					V v = viMap1.indexToId(vIdx1);</span>
+<span class="fc" id="L281">					E e = eiMap1.indexToId(eIdx);</span>
+<span class="fc" id="L282">					difference.addEdge(u, v, e);</span>
+<span class="fc" id="L283">				}</span>
+<span class="fc" id="L284">			}</span>
+		}
+<span class="fc" id="L286">		return difference;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

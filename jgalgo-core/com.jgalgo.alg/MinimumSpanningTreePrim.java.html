@@ -52,7 +52,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Prim%27s_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-class MinimumSpanningTreePrim implements MinimumSpanningTreeBase {
+<span class="fc" id="L55">class MinimumSpanningTreePrim implements MinimumSpanningTreeBase {</span>
 
 <span class="fc" id="L57">	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();</span>
 
@@ -177,27 +177,25 @@ class MinimumSpanningTreePrim implements MinimumSpanningTreeBase {
 <span class="fc" id="L177">				}</span>
 
 				/* find next lightest edge */
-				int e, v;
-				for (;;) {
-<span class="fc bfc" id="L182" title="All 2 branches covered.">					if (heap.isEmpty())</span>
-						/* reached all vertices from current root, continue to next tree */
-<span class="fc" id="L184">						break treeLoop;</span>
-<span class="fc" id="L185">					e = heap.extractMin().value();</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">					if (!visited.get(v = g.edgeSource(e)))</span>
-<span class="fc" id="L187">						break;</span>
-<span class="pc bpc" id="L188" title="1 of 2 branches missed.">					if (!visited.get(v = g.edgeTarget(e)))</span>
-<span class="fc" id="L189">						break;</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">				if (heap.isEmpty())</span>
+					/* reached all vertices from current root, continue to next tree */
+<span class="fc" id="L182">					break treeLoop;</span>
+<span class="fc" id="L183">				int e = heap.extractMin().value();</span>
+<span class="fc" id="L184">				int v = g.edgeSource(e);</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">				if (visited.get(v)) {</span>
+<span class="fc" id="L186">					v = g.edgeTarget(e);</span>
+<span class="pc bnc" id="L187" title="All 2 branches missed.">					assert !visited.get(v);</span>
 				}
 
 				/* add lightest edge to MST */
-<span class="fc" id="L193">				mst.add(e);</span>
-<span class="fc" id="L194">				u = v;</span>
-<span class="fc" id="L195">			}</span>
-<span class="fc" id="L196">		}</span>
+<span class="fc" id="L191">				mst.add(e);</span>
+<span class="fc" id="L192">				u = v;</span>
+<span class="fc" id="L193">			}</span>
+<span class="fc" id="L194">		}</span>
 		// Help GC
-<span class="fc" id="L198">		Arrays.fill(verticesPtrs, 0, n, null);</span>
-<span class="fc" id="L199">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
-<span class="fc" id="L200">		return new MinimumSpanningTrees.IndexResult(mstSet);</span>
+<span class="fc" id="L196">		Arrays.fill(verticesPtrs, 0, n, null);</span>
+<span class="fc" id="L197">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
+<span class="fc" id="L198">		return new MinimumSpanningTrees.IndexResult(mstSet);</span>
 	}
 
 }

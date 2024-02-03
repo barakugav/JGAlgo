@@ -27,7 +27,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.Bitmap;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
@@ -401,7 +401,7 @@ public class GnmGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 <span class="fc" id="L401">						uIdx = vIdx;</span>
 <span class="fc" id="L402">						vIdx = tmp;</span>
 					}
-<span class="fc bfc" id="L404" title="All 2 branches covered.">					if (!edges.add(JGAlgoUtils.longPack(uIdx, vIdx)))</span>
+<span class="fc bfc" id="L404" title="All 2 branches covered.">					if (!edges.add(IntPair.of(uIdx, vIdx)))</span>
 <span class="fc" id="L405">						continue;</span>
 				}
 <span class="fc" id="L407">				V u = vertices.get(uIdx), v = vertices.get(vIdx);</span>

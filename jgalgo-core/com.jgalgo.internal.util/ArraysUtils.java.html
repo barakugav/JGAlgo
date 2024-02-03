@@ -110,8 +110,8 @@ public class ArraysUtils {
 <span class="fc" id="L110">			int pivotIdx = m;</span>
 
 <span class="fc" id="L112">			long p = pivotPartition0(x, from, to, x[pivotIdx], comp);</span>
-<span class="fc" id="L113">			int lastSmaller = JGAlgoUtils.long2low(p);</span>
-<span class="fc" id="L114">			int firstGreater = JGAlgoUtils.long2high(p);</span>
+<span class="fc" id="L113">			int lastSmaller = IntPair.first(p);</span>
+<span class="fc" id="L114">			int firstGreater = IntPair.second(p);</span>
 <span class="fc bfc" id="L115" title="All 2 branches covered.">			if (k &lt;= lastSmaller) {</span>
 <span class="fc" id="L116">				to = lastSmaller + 1;</span>
 <span class="fc bfc" id="L117" title="All 2 branches covered.">			} else if (k &gt;= firstGreater) {</span>
@@ -143,8 +143,8 @@ public class ArraysUtils {
 
 <span class="fc" id="L144">			int pivotIdx = m;</span>
 <span class="fc" id="L145">			long p = pivotPartition0(x, from, to, x[pivotIdx], comp);</span>
-<span class="fc" id="L146">			int lastSmaller = JGAlgoUtils.long2low(p);</span>
-<span class="fc" id="L147">			int firstGreater = JGAlgoUtils.long2high(p);</span>
+<span class="fc" id="L146">			int lastSmaller = IntPair.first(p);</span>
+<span class="fc" id="L147">			int firstGreater = IntPair.second(p);</span>
 <span class="fc bfc" id="L148" title="All 2 branches covered.">			if (k &lt;= lastSmaller) {</span>
 <span class="fc" id="L149">				to = lastSmaller + 1;</span>
 <span class="fc bfc" id="L150" title="All 2 branches covered.">			} else if (k &gt;= firstGreater) {</span>
@@ -188,7 +188,7 @@ public class ArraysUtils {
 	static &lt;E&gt; int pivotPartition(E[] a, int from, int to, E pivot, Comparator&lt;? super E&gt; c) {
 <span class="fc" id="L189">		Assertions.checkArrayFromTo(from, to, a.length);</span>
 <span class="fc bfc" id="L190" title="All 2 branches covered.">		c = c != null ? c : JGAlgoUtils.getDefaultComparator();</span>
-<span class="fc" id="L191">		return JGAlgoUtils.long2high(pivotPartition0(a, from, to, pivot, c));</span>
+<span class="fc" id="L191">		return IntPair.second(pivotPartition0(a, from, to, pivot, c));</span>
 	}
 
 	/**
@@ -208,7 +208,7 @@ public class ArraysUtils {
 	public static int pivotPartition(int[] a, int from, int to, int pivot, IntComparator c) {
 <span class="fc" id="L209">		Assertions.checkArrayFromTo(from, to, a.length);</span>
 <span class="fc bfc" id="L210" title="All 2 branches covered.">		c = c != null ? c : Integer::compare;</span>
-<span class="fc" id="L211">		return JGAlgoUtils.long2high(pivotPartition0(a, from, to, pivot, c));</span>
+<span class="fc" id="L211">		return IntPair.second(pivotPartition0(a, from, to, pivot, c));</span>
 	}
 
 	private static &lt;E&gt; long pivotPartition0(E[] x, int from, int to, E pivot, Comparator&lt;? super E&gt; cmp) {
@@ -241,7 +241,7 @@ public class ArraysUtils {
 
 <span class="fc" id="L242">		int lastSmaller = from + (b - a) - 1;</span>
 <span class="fc" id="L243">		int firstGreater = to - (d - c);</span>
-<span class="fc" id="L244">		return JGAlgoUtils.longPack(lastSmaller, firstGreater);</span>
+<span class="fc" id="L244">		return IntPair.of(lastSmaller, firstGreater);</span>
 	}
 
 	private static long pivotPartition0(int[] x, int from, int to, int pivot, IntComparator cmp) {
@@ -274,7 +274,7 @@ public class ArraysUtils {
 
 <span class="fc" id="L275">		int lastSmaller = from + (b - a) - 1;</span>
 <span class="fc" id="L276">		int firstGreater = to - (d - c);</span>
-<span class="fc" id="L277">		return JGAlgoUtils.longPack(lastSmaller, firstGreater);</span>
+<span class="fc" id="L277">		return IntPair.of(lastSmaller, firstGreater);</span>
 	}
 
 	/**

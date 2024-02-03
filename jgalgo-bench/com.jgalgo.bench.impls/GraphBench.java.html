@@ -44,7 +44,7 @@ import com.jgalgo.graph.IEdgeSet;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexGraphFactory;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -84,7 +84,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 <span class="fc" id="L84">						u1 = v1;</span>
 <span class="fc" id="L85">						v1 = tmp;</span>
 					}
-<span class="fc" id="L87">					long key = JGAlgoUtils.longPack(u1, v1);</span>
+<span class="fc" id="L87">					long key = IntPair.of(u1, v1);</span>
 <span class="fc bfc" id="L88" title="All 2 branches covered.">					if (!existingEdges.add(key))</span>
 <span class="fc" id="L89">						continue;</span>
 				}
@@ -113,7 +113,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 <span class="fc" id="L113">						v = tmp;</span>
 					}
 				}
-<span class="fc" id="L116">				queryUVertices0[q] = JGAlgoUtils.longPack(u, v);</span>
+<span class="fc" id="L116">				queryUVertices0[q] = IntPair.of(u, v);</span>
 			}
 <span class="fc" id="L118">			queryUVIter = circularIterator(LongImmutableList.of(queryUVertices0));</span>
 <span class="fc" id="L119">		}</span>
@@ -206,22 +206,22 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 
 		private void benchGetEdge(Blackhole blackhole) {
 <span class="fc" id="L208">			long l = queryUVIter.nextLong();</span>
-<span class="fc" id="L209">			int u = JGAlgoUtils.long2low(l);</span>
-<span class="fc" id="L210">			int v = JGAlgoUtils.long2high(l);</span>
+<span class="fc" id="L209">			int u = IntPair.first(l);</span>
+<span class="fc" id="L210">			int v = IntPair.second(l);</span>
 <span class="fc" id="L211">			blackhole.consume(g.getEdge(u, v));</span>
 <span class="fc" id="L212">		}</span>
 
 		private void benchGetEdges(Blackhole blackhole) {
 <span class="fc" id="L215">			long l = queryUVIter.nextLong();</span>
-<span class="fc" id="L216">			int u = JGAlgoUtils.long2low(l);</span>
-<span class="fc" id="L217">			int v = JGAlgoUtils.long2high(l);</span>
+<span class="fc" id="L216">			int u = IntPair.first(l);</span>
+<span class="fc" id="L217">			int v = IntPair.second(l);</span>
 <span class="fc" id="L218">			blackhole.consume(g.getEdges(u, v));</span>
 <span class="fc" id="L219">		}</span>
 
 		private void benchGetEdgesIteration(Blackhole blackhole) {
 <span class="fc" id="L222">			long l = queryUVIter.nextLong();</span>
-<span class="fc" id="L223">			int u = JGAlgoUtils.long2low(l);</span>
-<span class="fc" id="L224">			int v = JGAlgoUtils.long2high(l);</span>
+<span class="fc" id="L223">			int u = IntPair.first(l);</span>
+<span class="fc" id="L224">			int v = IntPair.second(l);</span>
 <span class="fc bfc" id="L225" title="All 2 branches covered.">			for (IEdgeIter eit = g.getEdges(u, v).iterator(); eit.hasNext();)</span>
 <span class="fc" id="L226">				blackhole.consume(eit.nextInt());</span>
 <span class="fc" id="L227">		}</span>
@@ -1529,7 +1529,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 <span class="fc" id="L1529">						u1 = v1;</span>
 <span class="fc" id="L1530">						v1 = tmp;</span>
 					}
-<span class="fc" id="L1532">					long key = JGAlgoUtils.longPack(u1, v1);</span>
+<span class="fc" id="L1532">					long key = IntPair.of(u1, v1);</span>
 <span class="fc bfc" id="L1533" title="All 2 branches covered.">					if (!existingEdges.add(key))</span>
 <span class="fc" id="L1534">						continue;</span>
 				}
