@@ -47,26 +47,46 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class PathTest extends TestBase {
 
+	@SuppressWarnings("boxing")
 	@Test
 	public void vertices() {
-		IntGraph g = IntGraph.newUndirected();
-		int v1 = g.addVertexInt();
-		int v2 = g.addVertexInt();
-		int v3 = g.addVertexInt();
-		int v4 = g.addVertexInt();
-		int e1 = g.addEdge(v1, v2);
-		int e2 = g.addEdge(v2, v3);
-		int e3 = g.addEdge(v3, v4);
-		int e4 = g.addEdge(v4, v1);
-		int e5 = g.addEdge(v2, v4);
+		foreachBoolConfig(intGraph -> {
+			GraphFactory<Integer, Integer> factory =
+					intGraph ? IntGraphFactory.undirected() : GraphFactory.undirected();
+			Graph<Integer, Integer> g = factory
+					.setVertexBuilder(IdBuilderInt.defaultBuilder())
+					.setEdgeBuilder(IdBuilderInt.defaultBuilder())
+					.newGraph();
+			int v1 = g.addVertex();
+			int v2 = g.addVertex();
+			int v3 = g.addVertex();
+			int v4 = g.addVertex();
+			int e1 = g.addEdge(v1, v2);
+			int e2 = g.addEdge(v2, v3);
+			int e3 = g.addEdge(v3, v4);
+			int e4 = g.addEdge(v4, v1);
+			int e5 = g.addEdge(v2, v4);
 
-		assertEquals(IntList.of(v1, v2, v3, v4, v1), IPath.valueOf(g, v1, v1, IntList.of(e1, e2, e3, e4)).vertices());
-		assertEquals(IntList.of(v1, v2, v4, v3, v2), IPath.valueOf(g, v1, v2, IntList.of(e1, e5, e3, e2)).vertices());
-		assertEquals(IntList.of(v1, v2, v4, v2), IPath.valueOf(g, v1, v2, IntList.of(e1, e5, e5)).vertices());
-		assertEquals(IntList.of(v1, v2, v4, v3), IPath.valueOf(g, v1, v3, IntList.of(e1, e5, e3)).vertices());
+			assertEquals(IntList.of(v1, v2, v3, v4, v1),
+					Path.valueOf(g, v1, v1, IntList.of(e1, e2, e3, e4)).vertices());
+			assertEquals(IntList.of(v1, v2, v4, v3, v2),
+					Path.valueOf(g, v1, v2, IntList.of(e1, e5, e3, e2)).vertices());
+			assertEquals(IntList.of(v1, v2, v4, v2), Path.valueOf(g, v1, v2, IntList.of(e1, e5, e5)).vertices());
+			assertEquals(IntList.of(v1, v2, v4, v3), Path.valueOf(g, v1, v3, IntList.of(e1, e5, e3)).vertices());
+
+			assertEquals(IntList.of(v1, v2, v3, v4, v1),
+					new ObjectArrayList<>(Path.verticesIter(g, v1, IntList.of(e1, e2, e3, e4))));
+			assertEquals(IntList.of(v1, v2, v4, v3, v2),
+					new ObjectArrayList<>(Path.verticesIter(g, v1, IntList.of(e1, e5, e3, e2))));
+			assertEquals(IntList.of(v1, v2, v4, v2),
+					new ObjectArrayList<>(Path.verticesIter(g, v1, IntList.of(e1, e5, e5))));
+			assertEquals(IntList.of(v1, v2, v4, v3),
+					new ObjectArrayList<>(Path.verticesIter(g, v1, IntList.of(e1, e5, e3))));
+		});
 	}
 
 	@Test

@@ -252,6 +252,44 @@ public interface Path<V, E> {
 	}
 
 	/**
+	 * Create an iterator that iterate over the vertices visited by an edge path.
+	 *
+	 * <p>
+	 * The returned iterator will be identical to the iterator of {@link Path#vertices()}}.
+	 *
+	 * <p>
+	 * This method assume the list of edges is a valid path in the graph starting from the given source vertex, no
+	 * validation is performed to check that.
+	 *
+	 * <p>
+	 * If the passed graph is an instance of {@link IntGraph}, the returned iterator will be an instance of
+	 * {@link IntIterator}.
+	 *
+	 * @param  <V>    the vertices type
+	 * @param  <E>    the edges type
+	 * @param  g      a graph
+	 * @param  source the source vertex of the path
+	 * @param  edges  a list of edges that from a path starting from {@code source}
+	 * @return        an iterator that iterate over the vertices visited by the path
+	 */
+	@SuppressWarnings("unchecked")
+	static <V, E> Iterator<V> verticesIter(Graph<V, E> g, V source, List<E> edges) {
+		if (g instanceof IntGraph) {
+			int src = ((Integer) source).intValue();
+			IntList edges0 = IntAdapters.asIntList((List<Integer>) edges);
+			return (Iterator<V>) IPath.verticesIter((IntGraph) g, src, edges0);
+		} else {
+			IndexGraph ig = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+			int src = viMap.idToIndex(source);
+			IntList edges0 = IndexIdMaps.idToIndexList(edges, eiMap);
+			IntIterator indexIter = IPath.verticesIter(ig, src, edges0);
+			return IndexIdMaps.indexToIdIterator(indexIter, viMap);
+		}
+	}
+
+	/**
 	 * Find a valid path from \(u\) to \(v\).
 	 *
 	 * <p>

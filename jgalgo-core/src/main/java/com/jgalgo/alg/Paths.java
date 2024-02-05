@@ -203,17 +203,10 @@ class Paths {
 					vertices = IntImmutableList.of(source);
 				} else {
 					int[] res = new int[edges().size() + 1];
-					int resIdx = 0;
-					for (IEdgeIter it = edgeIter();;) {
-						it.nextInt();
-						res[resIdx++] = it.sourceInt();
-						if (!it.hasNext()) {
-							assert it.targetInt() == targetInt();
-							res[resIdx++] = targetInt();
-							assert resIdx == res.length;
-							break;
-						}
-					}
+					IntIterator vit = IPath.verticesIter(g, source, edges);
+					for (int i = 0; i < res.length; i++)
+						res[i] = vit.nextInt();
+					assert !vit.hasNext();
 					vertices = IntImmutableList.of(res);
 				}
 			}

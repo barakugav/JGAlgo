@@ -21,6 +21,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
@@ -204,6 +205,74 @@ public interface IPath extends Path<Integer, Integer> {
 	 */
 	static IntSet reachableVertices(IntGraph g, int source) {
 		return reachableVertices(g, IntIterators.singleton(source));
+	}
+
+	/**
+	 * Create an iterator that iterate over the vertices visited by an edge path.
+	 *
+	 * <p>
+	 * The returned iterator will be identical to the iterator of {@link IPath#vertices()}}.
+	 *
+	 * <p>
+	 * This method assume the list of edges is a valid path in the graph starting from the given source vertex, no
+	 * validation is performed to check that.
+	 *
+	 * @param  g      a graph
+	 * @param  source the source vertex of the path
+	 * @param  edges  a list of edges that from a path starting from {@code source}
+	 * @return        an iterator that iterate over the vertices visited by the path
+	 */
+	static IntIterator verticesIter(IntGraph g, int source, IntList edges) {
+		IndexGraph ig;
+		int src;
+		IntList edges0;
+		if (g instanceof IndexGraph) {
+			ig = (IndexGraph) g;
+			src = source;
+			edges0 = edges;
+			Assertions.checkVertex(src, ig.vertices().size());
+		} else {
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+			ig = g.indexGraph();
+			src = viMap.idToIndex(source);
+			edges0 = IndexIdMaps.idToIndexList(edges, eiMap);
+		}
+
+		IntIterator indexIter = new IntIterator() {
+			int v = src;
+			IntIterator eit = edges0.iterator();
+			final boolean directed = ig.isDirected();
+
+			@Override
+			public boolean hasNext() {
+				return v >= 0;
+			}
+
+			@Override
+			public int nextInt() {
+				Assertions.hasNext(this);
+				int u = v;
+				if (eit.hasNext()) {
+					int e = eit.nextInt();
+					if (directed) {
+						assert u == ig.edgeSource(e);
+						v = ig.edgeTarget(e);
+					} else {
+						v = ig.edgeEndpoint(e, u);
+					}
+				} else {
+					v = -1;
+				}
+				return u;
+			}
+		};
+
+		if (g instanceof IndexGraph) {
+			return indexIter;
+		} else {
+			return IndexIdMaps.indexToIdIterator(indexIter, g.indexGraphVerticesMap());
+		}
 	}
 
 	/**
