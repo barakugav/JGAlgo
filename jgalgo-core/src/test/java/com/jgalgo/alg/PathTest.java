@@ -63,10 +63,10 @@ public class PathTest extends TestBase {
 		int e4 = g.addEdge(v4, v1);
 		int e5 = g.addEdge(v2, v4);
 
-		assertEquals(IPath.valueOf(g, v1, v1, IntList.of(e1, e2, e3, e4)).vertices(), IntList.of(v1, v2, v3, v4));
-		assertEquals(IPath.valueOf(g, v1, v2, IntList.of(e1, e5, e3, e2)).vertices(), IntList.of(v1, v2, v4, v3, v2));
-		assertEquals(IPath.valueOf(g, v1, v2, IntList.of(e1, e5, e5)).vertices(), IntList.of(v1, v2, v4, v2));
-		assertEquals(IPath.valueOf(g, v1, v3, IntList.of(e1, e5, e3)).vertices(), IntList.of(v1, v2, v4, v3));
+		assertEquals(IntList.of(v1, v2, v3, v4, v1), IPath.valueOf(g, v1, v1, IntList.of(e1, e2, e3, e4)).vertices());
+		assertEquals(IntList.of(v1, v2, v4, v3, v2), IPath.valueOf(g, v1, v2, IntList.of(e1, e5, e3, e2)).vertices());
+		assertEquals(IntList.of(v1, v2, v4, v2), IPath.valueOf(g, v1, v2, IntList.of(e1, e5, e5)).vertices());
+		assertEquals(IntList.of(v1, v2, v4, v3), IPath.valueOf(g, v1, v3, IntList.of(e1, e5, e3)).vertices());
 	}
 
 	@Test
@@ -121,8 +121,6 @@ public class PathTest extends TestBase {
 				}
 				int target = vertices.getInt(vertices.size() - 1);
 				IntList verticesFull = new IntArrayList(vertices);
-				if (source == target && vertices.size() > 1)
-					vertices.removeInt(vertices.size() - 1);
 				Path<Integer, Integer> path = Path.valueOf(g, source, target, edges);
 
 				assertEquals(edges, path.edges());

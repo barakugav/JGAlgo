@@ -202,16 +202,15 @@ class Paths {
 					assert isCycle();
 					vertices = IntImmutableList.of(source);
 				} else {
-					int[] res = new int[edges().size() + (isCycle() ? 0 : 1)];
+					int[] res = new int[edges().size() + 1];
 					int resIdx = 0;
 					for (IEdgeIter it = edgeIter();;) {
 						it.nextInt();
 						res[resIdx++] = it.sourceInt();
 						if (!it.hasNext()) {
-							if (!isCycle()) {
-								assert it.targetInt() == targetInt();
-								res[resIdx++] = targetInt();
-							}
+							assert it.targetInt() == targetInt();
+							res[resIdx++] = targetInt();
+							assert resIdx == res.length;
 							break;
 						}
 					}

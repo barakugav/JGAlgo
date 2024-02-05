@@ -132,9 +132,11 @@ public interface Path<V, E> {
 	 * <p>
 	 * The path is defined as a list of edges \(e_1,e_2,\ldots\), where each target vertex of an edge \(e_i\) is the
 	 * source vertex of the next edge \(e_{i+1}\). The list of <b>vertices</b> of this path is the vertices visited by
-	 * this path, ordered by their visit order. If this path form a cycle, the vertices list size is the same as the
-	 * edge list (it does not include the source vertex, which is also the target vertex, twice), otherwise it is
-	 * greater by one.
+	 * this path, ordered by their visit order. The first vertex is the source of the path and the last vertex is the
+	 * target of the path. The size of the returned list is always the size of the edges list plus one.
+	 *
+	 * <p>
+	 * Note that if this path is a cycle, the first and last vertices in the returned list are the same vertex.
 	 *
 	 * @return the vertices visited by this path, by the path order
 	 */

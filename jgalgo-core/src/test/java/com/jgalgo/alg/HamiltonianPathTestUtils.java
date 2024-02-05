@@ -176,7 +176,7 @@ public class HamiltonianPathTestUtils extends TestBase {
 		for (Path<Integer, Integer> path : hamiltonianPaths) {
 			assertEquals(source, path.source());
 			assertEquals(target, path.target());
-			assertEquals(n, path.vertices().size());
+			assertEquals(n + (path.isCycle() ? 1 : 0), path.vertices().size());
 			assertEquals(n, new IntOpenHashSet(path.vertices()).size());
 			assertTrue(HamiltonianPathAlgo.isHamiltonianPath(g, path.edges()));
 		}
@@ -201,7 +201,7 @@ public class HamiltonianPathTestUtils extends TestBase {
 		final int n = g.vertices().size();
 		for (Path<Integer, Integer> cycle : hamiltonianCycles) {
 			assertTrue(cycle.isCycle());
-			assertEquals(n, cycle.vertices().size());
+			assertEquals(n + 1, cycle.vertices().size());
 			assertEquals(n, new IntOpenHashSet(cycle.vertices()).size());
 			assertTrue(HamiltonianPathAlgo.isHamiltonianPath(g, cycle.edges()));
 		}
