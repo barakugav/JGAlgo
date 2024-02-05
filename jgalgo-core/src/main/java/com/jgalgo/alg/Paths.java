@@ -200,7 +200,7 @@ class Paths {
 			if (vertices == null) {
 				if (edges.isEmpty()) {
 					assert isCycle();
-					vertices = IntList.of(source);
+					vertices = IntImmutableList.of(source);
 				} else {
 					int[] res = new int[edges().size() + (isCycle() ? 0 : 1)];
 					int resIdx = 0;

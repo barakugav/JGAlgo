@@ -112,7 +112,7 @@ public class Permutations {
 			elements = l.toIntArray();
 			n = elements.length;
 			indexes = new int[n];
-			next = new IntImmutableList(elements);
+			next = IntImmutableList.of(elements);
 			nextValid = n > 0;
 		}
 

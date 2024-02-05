@@ -33,6 +33,7 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 class MinimumCostFlows {
@@ -45,7 +46,8 @@ class MinimumCostFlows {
 		public IFlow computeMinCostMaxFlow(IndexGraph g, IWeightFunction capacity, IWeightFunction cost,
 				IWeightFunction lowerBound, int source, int sink) {
 			Objects.requireNonNull(lowerBound);
-			return computeMinCostMaxFlow(g, capacity, cost, lowerBound, IntList.of(source), IntList.of(sink));
+			return computeMinCostMaxFlow(g, capacity, cost, lowerBound, IntImmutableList.of(source),
+					IntImmutableList.of(sink));
 		}
 
 		@Override
@@ -557,7 +559,7 @@ class MinimumCostFlows {
 		@Override
 		public IFlow computeMinCostMaxFlow(IndexGraph g, IWeightFunction capacity, IWeightFunction cost, int source,
 				int sink) {
-			return computeMinCostMaxFlow(g, capacity, cost, IntList.of(source), IntList.of(sink));
+			return computeMinCostMaxFlow(g, capacity, cost, IntImmutableList.of(source), IntImmutableList.of(sink));
 		}
 
 		@Override

@@ -75,7 +75,7 @@ public class PathTest extends TestBase {
 		int v1 = g.addVertexInt();
 		int v2 = g.addVertexInt();
 		int e1 = g.addEdge(v1, v2);
-		IntList l1 = new IntImmutableList(new int[] { e1 });
+		IntList l1 = IntImmutableList.of(new int[] { e1 });
 		IntList l2 = IntLists.unmodifiable(l1);
 		IntList l3 = new IntArrayList(l1);
 		assertTrue(IPath.valueOf(g, v1, v2, l1).edges() == l1);

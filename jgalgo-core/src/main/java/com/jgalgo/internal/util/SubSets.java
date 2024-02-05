@@ -187,7 +187,7 @@ public class SubSets {
 			super(set.size(), k);
 			this.set = set.toIntArray();
 			next = new int[k];
-			nextList = new IntImmutableList(next);
+			nextList = IntImmutableList.of(next);
 		}
 
 		@Override
