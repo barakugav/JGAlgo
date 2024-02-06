@@ -15,13 +15,20 @@
  */
 package com.jgalgo.internal.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class JGAlgoUtilsTest extends TestBase {
 
@@ -45,6 +52,50 @@ public class JGAlgoUtilsTest extends TestBase {
 		assertNotEquals(Optional.empty(), v.getOptional(Integer.class));
 		assertEquals(55, v.get(Integer.class));
 		assertEquals("55", v.map(s -> s, x -> String.valueOf(x)));
+	}
+
+	@Test
+	public void iterSkip() {
+		foreachBoolConfig(objIter -> {
+			List<Integer> list = objIter ? new ObjectArrayList<>() : new ArrayList<>();
+			list.addAll(range(10));
+
+			Iterator<Integer> it1 = list.iterator();
+			assertEquals(0, it1.next());
+			assertEquals(1, it1.next());
+			assertEquals(3, JGAlgoUtils.objIterSkip(it1, 3));
+			assertEquals(5, it1.next());
+			assertEquals(2, JGAlgoUtils.objIterSkip(it1, 2));
+			assertEquals(8, it1.next());
+			assertEquals(1, JGAlgoUtils.objIterSkip(it1, 17));
+			assertFalse(it1.hasNext());
+
+			assertThrows(IllegalArgumentException.class, () -> JGAlgoUtils.objIterSkip(it1, -1));
+		});
+	}
+
+	@Test
+	public void iterBack() {
+		foreachBoolConfig(objIter -> {
+			List<Integer> list = objIter ? new ObjectArrayList<>() : new ArrayList<>();
+			list.addAll(range(10));
+
+			ListIterator<Integer> it1 = list.listIterator(list.size());
+			assertEquals(9, it1.previous());
+			assertEquals(8, it1.previous());
+			// assertEquals(3, JGAlgoUtils.objIterBack(it1, 3)); // TODO Bug in fastutil
+			assertEquals(1, JGAlgoUtils.objIterBack(it1, 1));
+			assertEquals(2, JGAlgoUtils.objIterBack(it1, 2));
+			assertEquals(4, it1.previous());
+			assertEquals(2, JGAlgoUtils.objIterBack(it1, 2));
+			assertEquals(1, it1.previous());
+			if (!objIter) { // TODO Bug in fastutil
+				assertEquals(1, JGAlgoUtils.objIterBack(it1, 17));
+				assertFalse(it1.hasPrevious());
+			}
+
+			assertThrows(IllegalArgumentException.class, () -> JGAlgoUtils.objIterBack(it1, -1));
+		});
 	}
 
 }

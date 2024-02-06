@@ -110,6 +110,11 @@ public class IntAdapters {
 		public void remove() {
 			it.remove();
 		}
+
+		@Override
+		public int skip(int n) {
+			return JGAlgoUtils.objIterSkip(it, n);
+		}
 	}
 
 	private static class IntListIteratorWrapper implements IntListIterator {
@@ -147,6 +152,16 @@ public class IntAdapters {
 		@Override
 		public int previousIndex() {
 			return it.previousIndex();
+		}
+
+		@Override
+		public int skip(int n) {
+			return JGAlgoUtils.objIterSkip(it, n);
+		}
+
+		@Override
+		public int back(int n) {
+			return JGAlgoUtils.objIterBack(it, n);
 		}
 	}
 

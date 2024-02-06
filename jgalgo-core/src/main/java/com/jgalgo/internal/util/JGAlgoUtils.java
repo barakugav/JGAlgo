@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ForkJoinPool;
@@ -35,6 +36,8 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 
 public class JGAlgoUtils {
 	private JGAlgoUtils() {}
@@ -274,6 +277,32 @@ public class JGAlgoUtils {
 				return queue.dequeue();
 			}
 		};
+	}
+
+	public static int objIterSkip(Iterator<?> it, int n) {
+		if (it instanceof ObjectIterator) {
+			return ((ObjectIterator<?>) it).skip(n);
+		} else {
+			if (n < 0)
+				throw new IllegalArgumentException("Argument must be nonnegative: " + n);
+			int i = n;
+			while (i-- != 0 && it.hasNext())
+				it.next();
+			return n - i - 1;
+		}
+	}
+
+	public static int objIterBack(ListIterator<?> it, int n) {
+		if (it instanceof ObjectListIterator) {
+			return ((ObjectListIterator<?>) it).back(n);
+		} else {
+			if (n < 0)
+				throw new IllegalArgumentException("Argument must be nonnegative: " + n);
+			int i = n;
+			while (i-- != 0 && it.hasPrevious())
+				it.previous();
+			return n - i - 1;
+		}
 	}
 
 }

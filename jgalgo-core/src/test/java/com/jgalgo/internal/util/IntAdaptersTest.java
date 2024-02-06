@@ -72,6 +72,12 @@ public class IntAdaptersTest extends TestBase {
 		intIter.nextInt();
 		intIter.remove();
 		assertEquals(objList, IntList.of(5, 3, 4, 86));
+
+		intIter = IntAdapters.asIntIterator(objList.iterator());
+		intIter.skip(2);
+		assertEquals(4, intIter.nextInt());
+		intIter.skip(1);
+		assertFalse(intIter.hasNext());
 	}
 
 	private static void assertEqualsIters(Iterator<Integer> objIter, IntIterator intIter) {
@@ -130,7 +136,7 @@ public class IntAdaptersTest extends TestBase {
 
 		asIntCollectionAbstract(s -> new ArrayList<>(s));
 
-		List<Integer> objList = new ArrayList<>(IntSet.of(5, 7, 9, 3, 4, 86));
+		List<Integer> objList = new ArrayList<>(IntSet.of(5, 7, 9, 3, 4, 86, 99));
 		objList.addAll(objList); /* duplicate so indexOf() != lastIndexOf() */
 		IntList intList = IntAdapters.asIntList(objList);
 
@@ -147,6 +153,39 @@ public class IntAdaptersTest extends TestBase {
 			assertEquals(objIter.previous().intValue(), intIter.previousInt());
 		}
 		assertEqualsBool(objIter.hasPrevious(), intIter.hasPrevious());
+		for (int i = 0; objIter.hasNext() && intIter.hasNext(); i++) {
+			if (i % 2 == 0) {
+				assertEquals(objIter.next().intValue(), intIter.nextInt());
+			} else {
+				int skipped = 0;
+				if (objIter.hasNext()) {
+					objIter.next();
+					skipped++;
+				}
+				if (objIter.hasNext()) {
+					objIter.next();
+					skipped++;
+				}
+				assertEquals(skipped, intIter.skip(2));
+			}
+		}
+		assertEqualsBool(objIter.hasNext(), intIter.hasNext());
+		for (int i = 0; objIter.hasPrevious() && intIter.hasPrevious(); i++) {
+			if (i % 2 == 0) {
+				assertEquals(objIter.previous().intValue(), intIter.previousInt());
+			} else {
+				int skipped = 0;
+				if (objIter.hasPrevious()) {
+					objIter.previous();
+					skipped++;
+				}
+				if (objIter.hasPrevious()) {
+					objIter.previous();
+					skipped++;
+				}
+				assertEquals(skipped, intIter.back(2));
+			}
+		}
 
 		/* get(index) */
 		for (int i : range(objList.size()))
