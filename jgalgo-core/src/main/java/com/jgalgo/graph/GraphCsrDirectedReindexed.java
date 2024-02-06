@@ -370,7 +370,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 			int firstEdge = edgesLookupTable[source].get(target);
 			if (firstEdge < 0)
 				return 0;
-			for (int e = firstEdge, m = edges.size;;) {
+			for (int e = firstEdge, m = edgesOutBegin[source + 1];;) {
 				e++;
 				if (e == m || target(e) != target)
 					return e - firstEdge;
@@ -396,12 +396,14 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 	private class SourceTargetEdgesIterFastLookup implements IEdgeIter {
 
 		private final int source, target;
+		private final int sourceEnd;
 		private int edge;
 
 		SourceTargetEdgesIterFastLookup(int source, int target) {
 			this.source = source;
 			this.target = target;
 			this.edge = edgesLookupTable[source].get(target);
+			sourceEnd = edgesOutBegin[source + 1];
 		}
 
 		@Override
@@ -414,7 +416,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 			Assertions.hasNext(this);
 			int e = edge;
 			edge++;
-			if (edge == edges.size || GraphCsrDirectedReindexed.this.target(edge) != target)
+			if (edge == sourceEnd || GraphCsrDirectedReindexed.this.target(edge) != target)
 				edge = -1;
 			return e;
 		}

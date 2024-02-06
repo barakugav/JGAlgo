@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.gen.GnmGraphGenerator;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class ImmutableGraphCopyTest extends TestBase {
 
@@ -409,6 +410,19 @@ public class ImmutableGraphCopyTest extends TestBase {
 						.getEdges(Graphs.randVertex(gOrig, rand), GraphsTestUtils.nonExistingVertex(gOrig, rand)));
 			});
 		});
+
+		IntGraphBuilder b = IntGraphFactory
+				.directed()
+				.allowSelfEdges()
+				.allowParallelEdges()
+				.addHint(GraphFactory.Hint.FastEdgeLookup)
+				.newBuilder();
+		b.addVertices(range(3));
+		int e1 = b.addEdge(0, 1);
+		b.addEdge(1, 1);
+		IntGraph g = b.build();
+		IEdgeSet es = g.getEdges(0, 1);
+		assertEquals(IntSet.of(e1), es);
 	}
 
 	@Test
