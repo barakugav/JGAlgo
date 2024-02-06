@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Map;
@@ -500,6 +501,64 @@ public class PathTest extends TestBase {
 			IPath path = IPath.valueOf(g, v1, v3, IntList.of(e1, e5, e3));
 			assertTrue(path.isSimple());
 			assertTrue(path.isSimple()); /* value should be cached */
+		});
+	}
+
+	@Test
+	public void subPath() {
+		final Random rand = new Random(0xd6e3f91be3f1f60bL);
+		foreachBoolConfig((intGraph, indexGraph, directed) -> {
+			Graph<Integer, Integer> g0 =
+					GraphsTestUtils.randGraph(20, 60, directed, true, true, intGraph, rand.nextLong());
+			Graph<Integer, Integer> g = indexGraph ? g0.indexGraph() : g0;
+
+			for (int repeat = 0; repeat < 100; repeat++) {
+				Path<Integer, Integer> path = randPath(g, rand);
+
+				final boolean compareVertices = rand.nextBoolean();
+				List<Integer> originalVertices = compareVertices ? path.vertices() : null;
+
+				int size = path.edges().size();
+				int from = size == 0 ? 0 : rand.nextInt(size);
+				int to = from + rand.nextInt(size - from + 1);
+				Path<Integer, Integer> subPath = path.subPath(from, to);
+
+				List<Integer> expectedEdges = path.edges().subList(from, to);
+				Integer expectedSource = path.vertices().get(from);
+				Integer expectedTarget = path.vertices().get(to);
+				Path<Integer, Integer> expectedPath = Path.valueOf(g, expectedSource, expectedTarget, expectedEdges);
+
+				assertEquals(expectedEdges, subPath.edges());
+				assertEquals(expectedSource, subPath.source());
+				assertEquals(expectedTarget, subPath.target());
+				assertEquals(expectedPath, subPath);
+
+				if (compareVertices) {
+					List<Integer> expectedVertices = originalVertices.subList(from, to + 1);
+					assertEquals(expectedVertices, subPath.vertices());
+				}
+			}
+			for (int repeat = 0; repeat < 3; repeat++) {
+				Path<Integer, Integer> path = randPath(g, rand);
+				int size = path.edges().size();
+				int from = -1 - rand.nextInt(3);
+				int to = rand.nextInt(size + 1);
+				assertThrows(IndexOutOfBoundsException.class, () -> path.subPath(from, to));
+			}
+			for (int repeat = 0; repeat < 3; repeat++) {
+				Path<Integer, Integer> path = randPath(g, rand);
+				int size = path.edges().size();
+				int from = size == 0 ? 0 : rand.nextInt(size);
+				int to = size + 1 + rand.nextInt(3);
+				assertThrows(IndexOutOfBoundsException.class, () -> path.subPath(from, to));
+			}
+			for (int repeat = 0; repeat < 3; repeat++) {
+				Path<Integer, Integer> path = randPath(g, rand);
+				int size = path.edges().size();
+				int to = size == 0 ? 0 : rand.nextInt(size);
+				int from = to + 1 + rand.nextInt(size - to + 1);
+				assertThrows(RuntimeException.class, () -> path.subPath(from, to));
+			}
 		});
 	}
 

@@ -102,6 +102,9 @@ public interface IPath extends Path<Integer, Integer> {
 	@Override
 	IntGraph graph();
 
+	@Override
+	IPath subPath(int fromEdgeIndex, int toEdgeIndex);
+
 	/**
 	 * Create a new path from an edge list, a source and a target vertices.
 	 *
@@ -121,7 +124,7 @@ public interface IPath extends Path<Integer, Integer> {
 	 */
 	static IPath valueOf(IntGraph g, int source, int target, IntList edges) {
 		if (g instanceof IndexGraph) {
-			return new Paths.IndexPath((IndexGraph) g, source, target, edges);
+			return Paths.valueOf((IndexGraph) g, source, target, edges);
 
 		} else {
 			IndexGraph iGraph = g.indexGraph();
@@ -131,8 +134,8 @@ public interface IPath extends Path<Integer, Integer> {
 			int iTarget = viMap.idToIndex(target);
 			IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
 
-			IPath indexPath = new Paths.IndexPath(iGraph, iSource, iTarget, iEdges);
-			return Paths.intPathFromIndexPath(g, indexPath);
+			IPath indexPath = Paths.valueOf(iGraph, iSource, iTarget, iEdges);
+			return (IPath) Paths.pathFromIndexPath(g, indexPath);
 		}
 	}
 
@@ -154,19 +157,17 @@ public interface IPath extends Path<Integer, Integer> {
 	 */
 	static boolean isPath(IntGraph g, int source, int target, IntList edges) {
 		IndexGraph ig;
-		IntIterator eit;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
-			eit = edges.iterator();
 		} else {
 			ig = g.indexGraph();
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 			source = viMap.idToIndex(source);
 			target = viMap.idToIndex(target);
-			eit = IndexIdMaps.idToIndexIterator(edges.iterator(), eiMap);
+			edges = IndexIdMaps.idToIndexList(edges, eiMap);
 		}
-		return Paths.isPath(ig, source, target, eit);
+		return Paths.isPath(ig, source, target, edges);
 	}
 
 	/**
@@ -192,7 +193,7 @@ public interface IPath extends Path<Integer, Integer> {
 			int iTarget = viMap.idToIndex(target);
 
 			IPath indexPath = Paths.findPath(iGraph, iSource, iTarget);
-			return Paths.intPathFromIndexPath(g, indexPath);
+			return (IPath) Paths.pathFromIndexPath(g, indexPath);
 		}
 	}
 

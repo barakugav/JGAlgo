@@ -150,6 +150,28 @@ public interface Path<V, E> {
 	Graph<V, E> graph();
 
 	/**
+	 * Create a sub path of this path that contains the edges between the specified {@code fromEdgeIndex}, inclusive,
+	 * and {@code toEdgeIndex}, exclusive.
+	 *
+	 * <p>
+	 * This method is equivalent to the following code:
+	 *
+	 * <pre>{@code
+	 * List<E> edges = edges().subList(fromEdgeIndex, toEdgeIndex);
+	 * V source = vertices().get(fromEdgeIndex);
+	 * V target = vertices().get(toEdgeIndex);
+	 * return Path.valueOf(graph(), source, target, edges);
+	 * }</pre>
+	 *
+	 * @param  fromEdgeIndex                 low endpoint (inclusive) of the edges subList
+	 * @param  toEdgeIndex                   high endpoint (exclusive) of the edges subList
+	 * @return                           a sub path of the specified edges range within this path edges list
+	 * @throws IndexOutOfBoundsException if {@code fromEdgeIndex < 0} or {@code toEdgeIndex > edgesNum} or
+	 *                                       {@code fromEdgeIndex > toEdgeIndex}
+	 */
+	Path<V, E> subPath(int fromEdgeIndex, int toEdgeIndex);
+
+	/**
 	 * Check whether this path equals another object.
 	 *
 	 * <p>
@@ -206,8 +228,8 @@ public interface Path<V, E> {
 			int iTarget = viMap.idToIndex(target);
 			IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
 
-			IPath indexPath = new Paths.IndexPath(iGraph, iSource, iTarget, iEdges);
-			return Paths.objPathFromIndexPath(g, indexPath);
+			IPath indexPath = Paths.valueOf(iGraph, iSource, iTarget, iEdges);
+			return Paths.pathFromIndexPath(g, indexPath);
 		}
 	}
 
@@ -233,22 +255,22 @@ public interface Path<V, E> {
 	static <V, E> boolean isPath(Graph<V, E> g, V source, V target, List<E> edges) {
 		IndexGraph ig;
 		int source0, target0;
-		IntIterator eit;
+		IntList edges0;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
 			source0 = ((Integer) source).intValue();
 			target0 = ((Integer) target).intValue();
-			eit = IntAdapters.asIntIterator(((List<Integer>) edges).iterator());
+			edges0 = IntAdapters.asIntList((List<Integer>) edges);
 		} else {
 			ig = g.indexGraph();
 			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 			source0 = viMap.idToIndex(source);
 			target0 = viMap.idToIndex(target);
-			eit = IndexIdMaps.idToIndexIterator(edges.iterator(), eiMap);
+			edges0 = IndexIdMaps.idToIndexList(edges, eiMap);
 		}
 
-		return Paths.isPath(ig, source0, target0, eit);
+		return Paths.isPath(ig, source0, target0, edges0);
 	}
 
 	/**
@@ -317,7 +339,7 @@ public interface Path<V, E> {
 		int iTarget = viMap.idToIndex(target);
 
 		IPath indexPath = Paths.findPath(iGraph, iSource, iTarget);
-		return Paths.objPathFromIndexPath(g, indexPath);
+		return Paths.pathFromIndexPath(g, indexPath);
 	}
 
 	/**

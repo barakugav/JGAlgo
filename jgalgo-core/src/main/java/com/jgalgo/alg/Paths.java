@@ -148,6 +148,11 @@ class Paths {
 		}
 	}
 
+	static IndexPath valueOf(IndexGraph g, int source, int target, IntList edges) {
+		boolean unmodifiable = edges instanceof IntLists.UnmodifiableList || edges instanceof IntImmutableList;
+		return new IndexPath(g, source, target, unmodifiable ? edges : IntLists.unmodifiable(edges));
+	}
+
 	static class IndexPath extends AbstractPath<Integer, Integer> implements IPath {
 
 		private final IndexGraph g;
@@ -157,22 +162,12 @@ class Paths {
 		private IntList vertices;
 		private boolean isSimple, isSimpleValid;
 
-		/**
-		 * Construct a new path in a graph from an edge list, a source and a target vertices.
-		 *
-		 * @param g      a graph
-		 * @param source a source vertex
-		 * @param target a target vertex
-		 * @param edges  a list of edges that form a path from the {@code source} to the {@code target} vertices in the
-		 *                   graph.
-		 */
-		IndexPath(IndexGraph g, int source, int target, IntList edges) {
+		private IndexPath(IndexGraph g, int source, int target, IntList edges) {
 			assert IPath.isPath(g, source, target, edges);
 			this.g = g;
 			this.source = source;
 			this.target = target;
-			this.edges = edges instanceof IntLists.UnmodifiableList || edges instanceof IntImmutableList ? edges
-					: IntLists.unmodifiable(edges);
+			this.edges = edges;
 		}
 
 		@Override
@@ -216,6 +211,39 @@ class Paths {
 		@Override
 		public IndexGraph graph() {
 			return g;
+		}
+
+		@Override
+		public IPath subPath(int fromEdgeIndex, int toEdgeIndex) {
+			IntList subEdges;
+			if (!(edges instanceof IntImmutableList)) {
+				subEdges = edges.subList(fromEdgeIndex, toEdgeIndex);
+			} else {
+				/* fastutil 8.5.12 IntImmutableList has a bug in subList(), we must copy */
+				/* TODO use regular subList when next release is available */
+				final int subSize = toEdgeIndex - fromEdgeIndex;
+				int[] sub = new int[subSize];
+				edges.getElements(fromEdgeIndex, sub, 0, subSize);
+				subEdges = IntImmutableList.of(sub);
+			}
+
+			int subSource, subTarget;
+			if (vertices != null) {
+				subSource = vertices.getInt(fromEdgeIndex);
+				subTarget = vertices.getInt(toEdgeIndex);
+			} else {
+				IntIterator vit = IPath.verticesIter(g, source, edges);
+				vit.skip(fromEdgeIndex);
+				subSource = vit.nextInt();
+
+				if (fromEdgeIndex == toEdgeIndex) {
+					subTarget = subSource;
+				} else {
+					vit.skip(toEdgeIndex - fromEdgeIndex - 1);
+					subTarget = vit.nextInt();
+				}
+			}
+			return new IndexPath(g, subSource, subTarget, subEdges);
 		}
 
 		@Override
@@ -345,18 +373,11 @@ class Paths {
 		}
 	}
 
-	static IPath intPathFromIndexPath(IntGraph g, IPath indexPath) {
-		return indexPath == null ? null : new IntPathFromIndexPath(g, indexPath);
-	}
-
-	static <V, E> Path<V, E> objPathFromIndexPath(Graph<V, E> g, IPath indexPath) {
-		return indexPath == null ? null : new ObjPathFromIndexPath<>(g, indexPath);
-	}
-
 	@SuppressWarnings("unchecked")
 	static <V, E> Path<V, E> pathFromIndexPath(Graph<V, E> g, IPath indexPath) {
 		if (indexPath == null)
 			return null;
+		assert !(g instanceof IndexGraph);
 		if (g instanceof IntGraph) {
 			return (Path<V, E>) new IntPathFromIndexPath((IntGraph) g, indexPath);
 		} else {
@@ -406,16 +427,18 @@ class Paths {
 
 	}
 
-	static boolean isPath(IndexGraph g, int source, int target, IntIterator edges) {
+	static boolean isPath(IndexGraph g, int source, int target, IntList edges) {
 		if (!g.vertices().contains(source) || !g.vertices().contains(target))
 			return false;
-		if (!edges.hasNext())
+		int size = edges.size();
+		if (size == 0)
 			return source == target;
 
+		IntIterator eit = edges.iterator();
 		if (g.isDirected()) {
 			int v = source;
-			while (edges.hasNext()) {
-				int e = edges.nextInt();
+			for (int i = size; i-- > 0;) {
+				int e = eit.nextInt();
 				if (!g.edges().contains(e) || g.edgeSource(e) != v)
 					return false;
 				v = g.edgeTarget(e);
@@ -424,8 +447,8 @@ class Paths {
 
 		} else {
 			int v = source;
-			while (edges.hasNext()) {
-				int e = edges.nextInt();
+			for (int i = size; i-- > 0;) {
+				int e = eit.nextInt();
 				if (!g.edges().contains(e))
 					return false;
 				if (g.edgeSource(e) == v) {
@@ -485,6 +508,11 @@ class Paths {
 		}
 
 		@Override
+		public Path<V, E> subPath(int fromEdgeIndex, int toEdgeIndex) {
+			return new ObjPathFromIndexPath<>(g, indexPath.subPath(fromEdgeIndex, toEdgeIndex));
+		}
+
+		@Override
 		public boolean isSimple() {
 			return indexPath.isSimple();
 		}
@@ -532,6 +560,11 @@ class Paths {
 		@Override
 		public IntGraph graph() {
 			return g;
+		}
+
+		@Override
+		public IPath subPath(int fromEdgeIndex, int toEdgeIndex) {
+			return new IntPathFromIndexPath(g, indexPath.subPath(fromEdgeIndex, toEdgeIndex));
 		}
 
 		@Override

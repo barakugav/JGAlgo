@@ -157,7 +157,7 @@ class ShortestPathSingleSourceUtils {
 
 		@Override
 		public Path<V, E> getPath(V target) {
-			return Paths.objPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));
+			return Paths.pathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));
 		}
 
 		@Override
@@ -235,7 +235,7 @@ class ShortestPathSingleSourceUtils {
 
 		@Override
 		public IPath getPath(int target) {
-			return Paths.intPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));
+			return (IPath) Paths.pathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));
 		}
 
 		@Override
