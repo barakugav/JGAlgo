@@ -234,6 +234,17 @@ public class FIFOQueueLongNoReduce implements LongPriorityQueue, Serializable, L
 				return ret;
 			}
 
+			@Override
+			public int skip(int n) {
+				if (n < 0)
+					throw new IllegalArgumentException("Argument must be nonnegative: " + n);
+				int remaining = idx < end ? end - idx : length - idx + end;
+				n = Math.min(n, remaining);
+				idx += n;
+				if (idx > length)
+					idx -= length;
+				return n;
+			}
 		};
 	}
 }
