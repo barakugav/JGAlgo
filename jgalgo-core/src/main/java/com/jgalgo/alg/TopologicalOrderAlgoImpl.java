@@ -23,7 +23,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import it.unimi.dsi.fastutil.ints.IntImmutableList;
+import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -72,7 +72,7 @@ class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
 		private int[] vertexOrderIndex;
 
 		Res(int[] topolSort) {
-			orderedVertices = IntImmutableList.of(topolSort);
+			orderedVertices = Fastutil.list(topolSort);
 		}
 
 		@Override

@@ -25,7 +25,7 @@ import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import it.unimi.dsi.fastutil.ints.IntImmutableList;
+import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -132,7 +132,7 @@ public interface IPath extends Path<Integer, Integer> {
 			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
 			int iSource = viMap.idToIndex(source);
 			int iTarget = viMap.idToIndex(target);
-			IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
+			IntList iEdges = Fastutil.list(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
 
 			IPath indexPath = Paths.valueOf(iGraph, iSource, iTarget, iEdges);
 			return (IPath) Paths.pathFromIndexPath(g, indexPath);

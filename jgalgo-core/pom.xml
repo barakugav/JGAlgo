@@ -107,6 +107,9 @@
           <excludes>
             <exclude>com/jgalgo/internal/util/FIFOQueueIntNoReduce**</exclude>
             <exclude>com/jgalgo/internal/util/FIFOQueueLongNoReduce**</exclude>
+            <exclude>com/jgalgo/internal/util/Fastutil**</exclude>
+            <exclude>com/jgalgo/internal/util/IntLists2**</exclude>
+            <exclude>com/jgalgo/internal/util/IntImmutableList2**</exclude>
             <exclude>com/jgalgo/internal/util/DebugPrinter**</exclude>
           </excludes>
         </configuration>

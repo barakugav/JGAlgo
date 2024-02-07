@@ -230,4 +230,18 @@
     <Method name="graphs" />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
+  <Match>
+    <!-- Classes copied from fastutil -->
+    <Or>
+      <Class name="com.jgalgo.internal.util.IntImmutableList2" />
+      <Class name="com.jgalgo.internal.util.IntImmutableList2$ImmutableSubList" />
+    </Or>
+    <Or>
+      <Bug pattern="CN_IDIOM_NO_SUPER_CALL" />
+      <Bug pattern="EI_EXPOSE_REP2" />
+      <Bug pattern="HE_EQUALS_NO_HASHCODE" />
+      <Bug pattern="RV_NEGATING_RESULT_OF_COMPARETO" />
+      <Bug pattern="EI_EXPOSE_REP2" />
+    </Or>
+  </Match>
 </FindBugsFilter>

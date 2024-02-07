@@ -26,7 +26,7 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.IntAdapters;
-import it.unimi.dsi.fastutil.ints.IntImmutableList;
+import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -163,8 +163,8 @@ public interface Path<V, E> {
 	 * return Path.valueOf(graph(), source, target, edges);
 	 * }</pre>
 	 *
-	 * @param  fromEdgeIndex                 low endpoint (inclusive) of the edges subList
-	 * @param  toEdgeIndex                   high endpoint (exclusive) of the edges subList
+	 * @param  fromEdgeIndex             low endpoint (inclusive) of the edges subList
+	 * @param  toEdgeIndex               high endpoint (exclusive) of the edges subList
 	 * @return                           a sub path of the specified edges range within this path edges list
 	 * @throws IndexOutOfBoundsException if {@code fromEdgeIndex < 0} or {@code toEdgeIndex > edgesNum} or
 	 *                                       {@code fromEdgeIndex > toEdgeIndex}
@@ -226,7 +226,7 @@ public interface Path<V, E> {
 			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 			int iSource = viMap.idToIndex(source);
 			int iTarget = viMap.idToIndex(target);
-			IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
+			IntList iEdges = Fastutil.list(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
 
 			IPath indexPath = Paths.valueOf(iGraph, iSource, iTarget, iEdges);
 			return Paths.pathFromIndexPath(g, indexPath);

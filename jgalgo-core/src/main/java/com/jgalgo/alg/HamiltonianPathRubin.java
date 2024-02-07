@@ -20,18 +20,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.BitmapSet;
+import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectIterators;
@@ -59,7 +57,7 @@ class HamiltonianPathRubin implements HamiltonianPathAlgoBase.CycleBased {
 		if (n == 0)
 			return Collections.emptyIterator();
 		if (n == 1)
-			return ObjectIterators.singleton(IPath.valueOf(g, 0, 0, IntList.of()));
+			return ObjectIterators.singleton(IPath.valueOf(g, 0, 0, Fastutil.list()));
 		if (g.isDirected()) {
 			return new IterDirected(g);
 		} else {
@@ -300,7 +298,7 @@ class HamiltonianPathRubin implements HamiltonianPathAlgoBase.CycleBased {
 							int[] nextPath = new int[n];
 							path.toArray(nextPath);
 							nextPath[n - 1] = e;
-							return IPath.valueOf(g, originVertex, originVertex, IntImmutableList.of(nextPath));
+							return IPath.valueOf(g, originVertex, originVertex, Fastutil.list(nextPath));
 						}
 					}
 				} else {
@@ -653,7 +651,7 @@ class HamiltonianPathRubin implements HamiltonianPathAlgoBase.CycleBased {
 							int[] nextPath = new int[n];
 							path.toArray(nextPath);
 							nextPath[n - 1] = e;
-							return IPath.valueOf(g, originVertex, originVertex, IntImmutableList.of(nextPath));
+							return IPath.valueOf(g, originVertex, originVertex, Fastutil.list(nextPath));
 						}
 					}
 				} else {

@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import it.unimi.dsi.fastutil.objects.ObjectImmutableList;
@@ -112,7 +111,7 @@ public class Permutations {
 			elements = l.toIntArray();
 			n = elements.length;
 			indexes = new int[n];
-			next = IntImmutableList.of(elements);
+			next = Fastutil.list(elements);
 			nextValid = n > 0;
 		}
 

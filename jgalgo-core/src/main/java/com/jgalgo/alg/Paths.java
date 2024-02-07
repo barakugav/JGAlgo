@@ -32,8 +32,9 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import com.jgalgo.internal.util.Fastutil;
+import com.jgalgo.internal.util.IntImmutableList2;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
@@ -149,7 +150,7 @@ class Paths {
 	}
 
 	static IndexPath valueOf(IndexGraph g, int source, int target, IntList edges) {
-		boolean unmodifiable = edges instanceof IntLists.UnmodifiableList || edges instanceof IntImmutableList;
+		boolean unmodifiable = edges instanceof IntLists.UnmodifiableList || edges instanceof IntImmutableList2;
 		return new IndexPath(g, source, target, unmodifiable ? edges : IntLists.unmodifiable(edges));
 	}
 
@@ -195,14 +196,14 @@ class Paths {
 			if (vertices == null) {
 				if (edges.isEmpty()) {
 					assert isCycle();
-					vertices = IntImmutableList.of(source);
+					vertices = Fastutil.list(source);
 				} else {
 					int[] res = new int[edges().size() + 1];
 					IntIterator vit = IPath.verticesIter(g, source, edges);
 					for (int i = 0; i < res.length; i++)
 						res[i] = vit.nextInt();
 					assert !vit.hasNext();
-					vertices = IntImmutableList.of(res);
+					vertices = Fastutil.list(res);
 				}
 			}
 			return vertices;
@@ -215,18 +216,7 @@ class Paths {
 
 		@Override
 		public IPath subPath(int fromEdgeIndex, int toEdgeIndex) {
-			IntList subEdges;
-			if (!(edges instanceof IntImmutableList)) {
-				subEdges = edges.subList(fromEdgeIndex, toEdgeIndex);
-			} else {
-				/* fastutil 8.5.12 IntImmutableList has a bug in subList(), we must copy */
-				/* TODO use regular subList when next release is available */
-				final int subSize = toEdgeIndex - fromEdgeIndex;
-				int[] sub = new int[subSize];
-				edges.getElements(fromEdgeIndex, sub, 0, subSize);
-				subEdges = IntImmutableList.of(sub);
-			}
-
+			IntList subEdges = edges.subList(fromEdgeIndex, toEdgeIndex);
 			int subSource, subTarget;
 			if (vertices != null) {
 				subSource = vertices.getInt(fromEdgeIndex);

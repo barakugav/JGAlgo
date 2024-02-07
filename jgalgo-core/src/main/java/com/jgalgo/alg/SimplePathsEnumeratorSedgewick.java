@@ -20,8 +20,8 @@ import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
 /**
@@ -40,7 +40,7 @@ class SimplePathsEnumeratorSedgewick implements SimplePathsEnumeratorBase {
 	@Override
 	public Iterator<IPath> simplePathsIter(IndexGraph g, int source, int target) {
 		if (source == target)
-			return ObjectIterators.singleton(IPath.valueOf(g, source, target, IntList.of()));
+			return ObjectIterators.singleton(IPath.valueOf(g, source, target, Fastutil.list()));
 		return new Iterator<>() {
 
 			final int n = g.vertices().size();

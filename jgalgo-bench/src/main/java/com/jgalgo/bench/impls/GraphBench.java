@@ -45,7 +45,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.internal.util.IntPair;
-import it.unimi.dsi.fastutil.ints.IntImmutableList;
+import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.longs.LongImmutableList;
@@ -94,7 +94,7 @@ public class GraphBench {
 			g = graphImplementation.apply(g);
 
 			int[] queryVertices = TestUtils.randArray(n * 16, 0, n, seed);
-			queryVIter = circularIterator(IntImmutableList.of(queryVertices));
+			queryVIter = circularIterator(Fastutil.list(queryVertices));
 
 			int[] queryUVertices = TestUtils.randArray(n * 32, 0, n, seed);
 			long[] queryUVertices0 = new long[queryUVertices.length / 2];
@@ -1579,7 +1579,7 @@ public class GraphBench {
 
 				assert m > OperationsPerInvocation;
 				int[] removeEdges = TestUtils.randArray(m * 16, 0, m - OperationsPerInvocation, rand.nextLong());
-				removeEIter = circularIterator(IntImmutableList.of(removeEdges));
+				removeEIter = circularIterator(Fastutil.list(removeEdges));
 			}
 
 			private void bench(Blackhole blackhole) {
@@ -1964,7 +1964,7 @@ public class GraphBench {
 
 				assert n > OperationsPerInvocation;
 				int[] removeVertices = TestUtils.randArray(n * 16, 0, n - OperationsPerInvocation, rand.nextLong());
-				removeVIter = circularIterator(IntImmutableList.of(removeVertices));
+				removeVIter = circularIterator(Fastutil.list(removeVertices));
 			}
 
 			private void bench(Blackhole blackhole) {

@@ -21,8 +21,8 @@ import java.io.Writer;
 import java.util.Arrays;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.JGAlgoUtils;
-import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Write a graph in 'sparse6' format.
@@ -252,7 +252,7 @@ public class Sparse6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer
 		/* add padding to a multiple of 6 */
 		if (bitsWriter.paddingRequired()) {
 			boolean zeroPrefix = true;
-			zeroPrefix = zeroPrefix && IntList.of(2, 4, 8, 16).contains(n);
+			zeroPrefix = zeroPrefix && Fastutil.list(2, 4, 8, 16).contains(n);
 			zeroPrefix = zeroPrefix && !graph.outEdges(Integer.valueOf(n - 2)).isEmpty();
 			zeroPrefix = zeroPrefix && graph.outEdges(Integer.valueOf(n - 1)).isEmpty();
 			if (zeroPrefix)

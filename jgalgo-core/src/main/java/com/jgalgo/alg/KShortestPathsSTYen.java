@@ -29,6 +29,7 @@ import com.jgalgo.internal.ds.DoubleObjReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.BitmapSet;
+import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -64,7 +65,7 @@ class KShortestPathsSTYen implements KShortestPathsSTBase {
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		Assertions.onlyPositiveEdgesWeights(g, w);
 		if (source == target)
-			return ObjectList.of(IPath.valueOf(g, source, target, IntList.of()));
+			return ObjectList.of(IPath.valueOf(g, source, target, Fastutil.list()));
 
 		final int n = g.vertices().size();
 		final int m = g.edges().size();

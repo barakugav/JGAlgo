@@ -24,6 +24,7 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -266,7 +267,7 @@ public interface HamiltonianPathAlgo {
 
 		} else {
 			int firstEdge = ipath.getInt(0);
-			srcLoop: for (int source : IntList.of(ig.edgeSource(firstEdge), ig.edgeTarget(firstEdge))) {
+			srcLoop: for (int source : Fastutil.list(ig.edgeSource(firstEdge), ig.edgeTarget(firstEdge))) {
 				visited.clear();
 				visited.set(source);
 

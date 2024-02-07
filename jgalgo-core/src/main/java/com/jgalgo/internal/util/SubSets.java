@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectImmutableList;
 
@@ -187,7 +186,7 @@ public class SubSets {
 			super(set.size(), k);
 			this.set = set.toIntArray();
 			next = new int[k];
-			nextList = IntImmutableList.of(next);
+			nextList = Fastutil.list(next);
 		}
 
 		@Override

@@ -24,6 +24,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -86,7 +87,7 @@ interface HamiltonianPathAlgoBase extends HamiltonianPathAlgo {
 			if (n == 0)
 				return Collections.emptyIterator();
 			if (n == 1)
-				return ObjectIterators.singleton(IPath.valueOf(g, 0, 0, IntList.of()));
+				return ObjectIterators.singleton(IPath.valueOf(g, 0, 0, Fastutil.list()));
 
 			/*
 			 * We find all Hamiltonian paths using a reduction to the problem of finding all Hamiltonian cycles. We
@@ -139,7 +140,7 @@ interface HamiltonianPathAlgoBase extends HamiltonianPathAlgo {
 			Assertions.checkVertex(source, n);
 			Assertions.checkVertex(target, n);
 			if (n == 1)
-				return ObjectIterators.singleton(IPath.valueOf(g, 0, 0, IntList.of()));
+				return ObjectIterators.singleton(IPath.valueOf(g, 0, 0, Fastutil.list()));
 
 			/* if source and target are the same vertex, we actually want an Hamiltonian cycle */
 			if (source == target) {

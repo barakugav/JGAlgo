@@ -25,7 +25,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntImmutableList;
+import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -81,7 +81,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycleBase {
 						cycle != null ? w.weightSum(cycle.edges()) / cycle.edges().size() : Double.POSITIVE_INFINITY;
 				if (bestSelfEdgeWeight < bestCycleWeight) {
 					int selfEdgeVertex = g.edgeSource(bestSelfEdge);
-					cycle = IPath.valueOf(g, selfEdgeVertex, selfEdgeVertex, IntImmutableList.of(bestSelfEdge));
+					cycle = IPath.valueOf(g, selfEdgeVertex, selfEdgeVertex, Fastutil.list(bestSelfEdge));
 				}
 			}
 		}

@@ -32,7 +32,7 @@ import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntImmutableList;
+import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -126,7 +126,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase {
 		for (int e : Graphs.selfEdges(g))
 			if (w0.weightInt(e) < 0)
 				throw new NegativeCycleException(g,
-						IPath.valueOf(g, g.edgeSource(e), g.edgeTarget(e), IntImmutableList.of(e)));
+						IPath.valueOf(g, g.edgeSource(e), g.edgeTarget(e), Fastutil.list(e)));
 
 		Bitmap connected = new Bitmap(n);
 		int[] layerSize = new int[n + 1];

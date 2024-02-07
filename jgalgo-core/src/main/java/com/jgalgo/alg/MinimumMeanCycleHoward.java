@@ -27,7 +27,7 @@ import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntImmutableList;
+import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -206,7 +206,7 @@ class MinimumMeanCycleHoward implements MinimumMeanCycleBase {
 			}
 			if (bestSelfEdge >= 0 && bestSelfEdgeWeight < overallBestCycleMeanWeight) {
 				int cycleVertex = g.edgeSource(bestSelfEdge);
-				return IPath.valueOf(g, cycleVertex, cycleVertex, IntImmutableList.of(bestSelfEdge));
+				return IPath.valueOf(g, cycleVertex, cycleVertex, Fastutil.list(bestSelfEdge));
 			}
 		}
 

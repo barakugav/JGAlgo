@@ -22,7 +22,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntImmutableList;
+import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -62,9 +62,9 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
 			double ew = w.weight(e);
 			if (ew < 0) {
 				if (u == v) {
-					throw new NegativeCycleException(g, IPath.valueOf(g, u, u, IntImmutableList.of(e)));
+					throw new NegativeCycleException(g, IPath.valueOf(g, u, u, Fastutil.list(e)));
 				} else {
-					throw new NegativeCycleException(g, IPath.valueOf(g, u, u, IntImmutableList.of(e, e)));
+					throw new NegativeCycleException(g, IPath.valueOf(g, u, u, Fastutil.list(e, e)));
 				}
 			}
 			if (ew < res.distance(u, v)) {
@@ -106,7 +106,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
 			double ew = w.weight(e);
 			if (u == v) {
 				if (ew < 0)
-					throw new NegativeCycleException(g, IPath.valueOf(g, u, u, IntImmutableList.of(e)));
+					throw new NegativeCycleException(g, IPath.valueOf(g, u, u, Fastutil.list(e)));
 				continue;
 			}
 			if (ew < res.distance(u, v)) {
