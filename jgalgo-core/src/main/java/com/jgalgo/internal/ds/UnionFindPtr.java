@@ -75,6 +75,7 @@ class UnionFindPtr implements UnionFind {
 		IntSet elms = range(size, size + count);
 		for (int x : elms)
 			elements[x] = new Elm(x);
+		size += count;
 		return elms;
 	}
 
