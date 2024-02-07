@@ -34,7 +34,7 @@ public class KShortestPathsSTYenTest extends TestBase {
 
 	@Test
 	public void invalidArgsTest() {
-		KShortestPathsSTTestUtils.invalidArgsTest(new KShortestPathsSTYen());
+		KShortestPathsSTTestUtils.invalidArgsTest(new KShortestPathsSTYen(), true);
 	}
 
 }

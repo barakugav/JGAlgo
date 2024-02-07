@@ -17,6 +17,7 @@ package com.jgalgo.alg;
 
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Iterator;
@@ -28,11 +29,14 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 
@@ -42,6 +46,8 @@ class KShortestPathsSTTestUtils extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(2, 1, 200).repeat(10);
+		tester.addPhase().withArgs(3, 3, 200).repeat(64);
 		tester.addPhase().withArgs(4, 8, 5).repeat(128);
 		tester.addPhase().withArgs(16, 32, 5).repeat(128);
 		tester.addPhase().withArgs(19, 39, 5).repeat(128);
@@ -54,7 +60,7 @@ class KShortestPathsSTTestUtils extends TestBase {
 			g = maybeIndexGraph(g, rand);
 			WeightFunctionInt<Integer> w = null;
 			if (rand.nextInt(10) != 0)
-				GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+				w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			Integer source = Graphs.randVertex(g, rand);
 			Integer target = Graphs.randVertex(g, rand);
 
@@ -94,9 +100,11 @@ class KShortestPathsSTTestUtils extends TestBase {
 	}
 
 	@SuppressWarnings("boxing")
-	static void invalidArgsTest(KShortestPathsST algo) {
+	static void invalidArgsTest(KShortestPathsST algo, boolean directed) {
 		foreachBoolConfig((intGraph, indexGraph) -> {
-			Graph<Integer, Integer> g0 = intGraph ? IntGraph.newDirected() : Graph.newDirected();
+			GraphFactory<Integer, Integer> factory =
+					intGraph ? IntGraphFactory.newInstance(directed) : GraphFactory.newInstance(directed);
+			Graph<Integer, Integer> g0 = factory.newGraph();
 			Graph<Integer, Integer> g = indexGraph ? g0.indexGraph() : g0;
 			g.addVertices(range(10));
 			g.addEdge(0, 1, 0);
@@ -114,7 +122,28 @@ class KShortestPathsSTTestUtils extends TestBase {
 	@Test
 	public void testDefaultImpl() {
 		KShortestPathsST algo = KShortestPathsST.newInstance();
-		assertEquals(KShortestPathsSTYen.class, algo.getClass());
+		foreachBoolConfig(directed -> {
+			IntGraph g = IntGraphFactory.newInstance(directed).newGraph();
+			g.addVertices(range(2));
+			g.addEdge(0, 1, 17);
+			@SuppressWarnings("boxing")
+			List<Path<Integer, Integer>> paths = algo.computeKShortestPaths(g, null, 0, 1, 1);
+			assertEquals(List.of(IPath.valueOf(g, 0, 1, Fastutil.list(17))), paths);
+		});
+	}
+
+	@Test
+	public void testSetOption() {
+		KShortestPathsST.Builder builder = KShortestPathsST.builder();
+
+		assertThrows(IllegalArgumentException.class, () -> builder.setOption("jdasg", "lhfj"));
+
+		builder.setOption("impl", "yen");
+		assertNotNull(builder.build());
+		builder.setOption("impl", "katoh-ibaraki-mine");
+		assertNotNull(builder.build());
+		builder.setOption("impl", "dmksm");
+		assertThrows(IllegalArgumentException.class, () -> builder.build());
 	}
 
 }
