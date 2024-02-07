@@ -45,6 +45,10 @@ class IndexPairingHeapBase {
 		return prevOrParent(node) >= 0 || minRoot == node;
 	}
 
+	boolean isSubtreeRoot(int node) {
+		return prevOrParent(node) < 0 && next(node) < 0;
+	}
+
 	void cut(int n) {
 		int next = next(n);
 		if (next >= 0) {
@@ -60,8 +64,7 @@ class IndexPairingHeapBase {
 	}
 
 	void addChild(int parent, int newChild) {
-		assert prevOrParent(newChild) < 0;
-		assert next(newChild) < 0;
+		assert isSubtreeRoot(newChild);
 		int oldChild = child(parent);
 		if (oldChild >= 0) {
 			prevOrParent(oldChild, newChild);

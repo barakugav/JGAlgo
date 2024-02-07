@@ -23,15 +23,13 @@ public class IndexPairingHeapInt extends IndexPairingHeapBase implements IndexHe
 
 	private int[] key;
 
-	public IndexPairingHeapInt(int size, int[] key) {
-		super(size);
-		if (key.length != size)
-			throw new IllegalArgumentException("key.length != size");
+	public IndexPairingHeapInt(int[] key) {
+		super(key.length);
 		this.key = key;
 	}
 
 	public IndexPairingHeapInt(int size) {
-		this(size, new int[size]);
+		this(new int[size]);
 	}
 
 	@Override
@@ -46,6 +44,7 @@ public class IndexPairingHeapInt extends IndexPairingHeapBase implements IndexHe
 	}
 
 	private void insertNode(int node) {
+		assert !isInserted(node);
 		if (minRoot < 0) {
 			minRoot = node;
 		} else {
@@ -62,7 +61,7 @@ public class IndexPairingHeapInt extends IndexPairingHeapBase implements IndexHe
 
 	@Override
 	public void remove(int node) {
-		assert minRoot >= 0;
+		assert isInserted(node);
 		if (node != minRoot) {
 			cut(node);
 			addChild(node, minRoot);
@@ -72,8 +71,7 @@ public class IndexPairingHeapInt extends IndexPairingHeapBase implements IndexHe
 	}
 
 	private int meld(int n1, int n2) {
-		assert prevOrParent(n1) < 0 && next(n1) < 0;
-		assert prevOrParent(n2) < 0 && next(n2) < 0;
+		assert isSubtreeRoot(n1) && isSubtreeRoot(n2);
 
 		/* assume n1 has smaller key than n2 */
 		if (key[n1] > key[n2]) {

@@ -24,16 +24,14 @@ public class IndexPairingHeapObj<K extends Comparable<? super K>> extends IndexP
 
 	private K[] key;
 
-	public IndexPairingHeapObj(int size, K[] key) {
-		super(size);
-		if (key.length != size)
-			throw new IllegalArgumentException("key.length != size");
+	public IndexPairingHeapObj(K[] key) {
+		super(key.length);
 		this.key = key;
 	}
 
 	@SuppressWarnings("unchecked")
 	public IndexPairingHeapObj(int size) {
-		this(size, (K[]) new Comparable[size]);
+		this((K[]) new Comparable[size]);
 	}
 
 	@Override
@@ -48,6 +46,7 @@ public class IndexPairingHeapObj<K extends Comparable<? super K>> extends IndexP
 	}
 
 	private void insertNode(int node) {
+		assert !isInserted(node);
 		if (minRoot < 0) {
 			minRoot = node;
 		} else {
@@ -64,7 +63,7 @@ public class IndexPairingHeapObj<K extends Comparable<? super K>> extends IndexP
 
 	@Override
 	public void remove(int node) {
-		assert minRoot >= 0;
+		assert isInserted(node);
 		if (node != minRoot) {
 			cut(node);
 			addChild(node, minRoot);
@@ -74,8 +73,7 @@ public class IndexPairingHeapObj<K extends Comparable<? super K>> extends IndexP
 	}
 
 	private int meld(int n1, int n2) {
-		assert prevOrParent(n1) < 0 && next(n1) < 0;
-		assert prevOrParent(n2) < 0 && next(n2) < 0;
+		assert isSubtreeRoot(n1) && isSubtreeRoot(n2);
 
 		/* assume n1 has smaller key than n2 */
 		if (key[n1].compareTo(key[n2]) > 0) {

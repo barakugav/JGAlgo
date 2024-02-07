@@ -34,6 +34,7 @@ class IndexPairingHeap extends IndexPairingHeapBase implements IndexHeap {
 	}
 
 	private void insertNode(int node) {
+		assert !isInserted(node);
 		if (minRoot < 0) {
 			minRoot = node;
 		} else {
@@ -50,7 +51,7 @@ class IndexPairingHeap extends IndexPairingHeapBase implements IndexHeap {
 
 	@Override
 	public void remove(int node) {
-		assert minRoot >= 0;
+		assert isInserted(node);
 		if (node != minRoot) {
 			cut(node);
 			addChild(node, minRoot);
@@ -60,8 +61,7 @@ class IndexPairingHeap extends IndexPairingHeapBase implements IndexHeap {
 	}
 
 	private int meld(int n1, int n2) {
-		assert prevOrParent(n1) < 0 && next(n1) < 0;
-		assert prevOrParent(n2) < 0 && next(n2) < 0;
+		assert isSubtreeRoot(n1) && isSubtreeRoot(n2);
 
 		/* assume n1 has smaller key than n2 */
 		if (c.compare(n1, n2) > 0) {
