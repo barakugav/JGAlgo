@@ -40,7 +40,7 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
-    <fastutil.version>8.5.12</fastutil.version>
+    <fastutil.version>8.5.13</fastutil.version>
     <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
     <junit-jupiter-engine.version>5.9.1</junit-jupiter-engine.version>
     <spotbugs-maven-plugin.version>4.7.3.4</spotbugs-maven-plugin.version>
