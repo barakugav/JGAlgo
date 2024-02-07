@@ -21,8 +21,8 @@ import java.io.Writer;
 import java.util.Arrays;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.JGAlgoUtils;
-import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Write a graph in 'sparse6' format.
@@ -252,7 +252,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		/* add padding to a multiple of 6 */
 <span class="fc bfc" id="L253" title="All 2 branches covered.">		if (bitsWriter.paddingRequired()) {</span>
 <span class="fc" id="L254">			boolean zeroPrefix = true;</span>
-<span class="pc bpc" id="L255" title="1 of 4 branches missed.">			zeroPrefix = zeroPrefix &amp;&amp; IntList.of(2, 4, 8, 16).contains(n);</span>
+<span class="pc bpc" id="L255" title="1 of 4 branches missed.">			zeroPrefix = zeroPrefix &amp;&amp; Fastutil.list(2, 4, 8, 16).contains(n);</span>
 <span class="pc bpc" id="L256" title="1 of 4 branches missed.">			zeroPrefix = zeroPrefix &amp;&amp; !graph.outEdges(Integer.valueOf(n - 2)).isEmpty();</span>
 <span class="fc bfc" id="L257" title="All 4 branches covered.">			zeroPrefix = zeroPrefix &amp;&amp; graph.outEdges(Integer.valueOf(n - 1)).isEmpty();</span>
 <span class="fc bfc" id="L258" title="All 2 branches covered.">			if (zeroPrefix)</span>

@@ -20,8 +20,8 @@ import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
 /**
@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 	@Override
 	public Iterator&lt;IPath&gt; simplePathsIter(IndexGraph g, int source, int target) {
 <span class="fc bfc" id="L42" title="All 2 branches covered.">		if (source == target)</span>
-<span class="fc" id="L43">			return ObjectIterators.singleton(IPath.valueOf(g, source, target, IntList.of()));</span>
+<span class="fc" id="L43">			return ObjectIterators.singleton(IPath.valueOf(g, source, target, Fastutil.list()));</span>
 <span class="fc" id="L44">		return new Iterator&lt;&gt;() {</span>
 
 <span class="fc" id="L46">			final int n = g.vertices().size();</span>

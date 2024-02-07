@@ -139,7 +139,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 		@Override
 		public Path&lt;V, E&gt; getPath(V target) {
 <span class="fc" id="L141">			IPath indexPath = indexRes().getPath(viMap.idToIndex(target));</span>
-<span class="fc" id="L142">			return Paths.objPathFromIndexPath(graph(), indexPath);</span>
+<span class="fc" id="L142">			return Paths.pathFromIndexPath(graph(), indexPath);</span>
 		}
 
 		@Override
@@ -174,7 +174,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 		@Override
 		public IPath getPath(int target) {
 <span class="fc" id="L176">			IPath indexPath = indexRes().getPath(viMap.idToIndex(target));</span>
-<span class="fc" id="L177">			return Paths.intPathFromIndexPath(graph(), indexPath);</span>
+<span class="fc" id="L177">			return (IPath) Paths.pathFromIndexPath(graph(), indexPath);</span>
 		}
 
 		@Override

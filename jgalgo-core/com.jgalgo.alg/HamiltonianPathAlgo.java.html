@@ -24,6 +24,7 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -56,7 +57,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Hamiltonian_path&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">public interface HamiltonianPathAlgo {</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">public interface HamiltonianPathAlgo {</span>
 
 	/**
 	 * Find a Hamiltonian path in the given graph.
@@ -79,8 +80,8 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 * @return     an Hamiltonian path if one exists, or {@link Optional#empty()} otherwise
 	 */
 	default &lt;V, E&gt; Optional&lt;Path&lt;V, E&gt;&gt; hamiltonianPath(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L82">		Iterator&lt;Path&lt;V, E&gt;&gt; hamiltonianPaths = hamiltonianPathsIter(g);</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">		return hamiltonianPaths.hasNext() ? Optional.of(hamiltonianPaths.next()) : Optional.empty();</span>
+<span class="fc" id="L83">		Iterator&lt;Path&lt;V, E&gt;&gt; hamiltonianPaths = hamiltonianPathsIter(g);</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		return hamiltonianPaths.hasNext() ? Optional.of(hamiltonianPaths.next()) : Optional.empty();</span>
 	}
 
 	/**
@@ -107,8 +108,8 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 * @throws NoSuchVertexException if {@code source} or {@code target} are not vertices in {@code g}
 	 */
 	default &lt;V, E&gt; Optional&lt;Path&lt;V, E&gt;&gt; hamiltonianPath(Graph&lt;V, E&gt; g, V source, V target) {
-<span class="fc" id="L110">		Iterator&lt;Path&lt;V, E&gt;&gt; hamiltonianPaths = hamiltonianPathsIter(g, source, target);</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">		return hamiltonianPaths.hasNext() ? Optional.of(hamiltonianPaths.next()) : Optional.empty();</span>
+<span class="fc" id="L111">		Iterator&lt;Path&lt;V, E&gt;&gt; hamiltonianPaths = hamiltonianPathsIter(g, source, target);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		return hamiltonianPaths.hasNext() ? Optional.of(hamiltonianPaths.next()) : Optional.empty();</span>
 	}
 
 	/**
@@ -178,8 +179,8 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 * @return     an Hamiltonian cycle if one exists, or {@link Optional#empty()} otherwise
 	 */
 	default &lt;V, E&gt; Optional&lt;Path&lt;V, E&gt;&gt; hamiltonianCycle(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L181">		Iterator&lt;Path&lt;V, E&gt;&gt; hamiltonianPaths = hamiltonianCyclesIter(g);</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">		return hamiltonianPaths.hasNext() ? Optional.of(hamiltonianPaths.next()) : Optional.empty();</span>
+<span class="fc" id="L182">		Iterator&lt;Path&lt;V, E&gt;&gt; hamiltonianPaths = hamiltonianCyclesIter(g);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">		return hamiltonianPaths.hasNext() ? Optional.of(hamiltonianPaths.next()) : Optional.empty();</span>
 	}
 
 	/**
@@ -227,70 +228,70 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	static &lt;V, E&gt; boolean isHamiltonianPath(Graph&lt;V, E&gt; g, List&lt;E&gt; path) {
 		IndexGraph ig;
 		IntList ipath;
-<span class="fc bfc" id="L230" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L231">			ig = (IndexGraph) g;</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L232">			ig = (IndexGraph) g;</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L233">			IntList ipath0 = IntAdapters.asIntList((List&lt;Integer&gt;) path);</span>
-<span class="fc" id="L234">			ipath = ipath0;</span>
-<span class="fc" id="L235">		} else {</span>
-<span class="fc" id="L236">			ig = g.indexGraph();</span>
-<span class="fc" id="L237">			ipath = IndexIdMaps.idToIndexList(path, g.indexGraphEdgesMap());</span>
+<span class="fc" id="L234">			IntList ipath0 = IntAdapters.asIntList((List&lt;Integer&gt;) path);</span>
+<span class="fc" id="L235">			ipath = ipath0;</span>
+<span class="fc" id="L236">		} else {</span>
+<span class="fc" id="L237">			ig = g.indexGraph();</span>
+<span class="fc" id="L238">			ipath = IndexIdMaps.idToIndexList(path, g.indexGraphEdgesMap());</span>
 		}
 
-<span class="fc" id="L240">		final int n = ig.vertices().size();</span>
-<span class="pc bpc" id="L241" title="1 of 2 branches missed.">		if (n &lt;= 1)</span>
-<span class="nc" id="L242">			return ipath.isEmpty();</span>
-<span class="pc bpc" id="L243" title="1 of 4 branches missed.">		if (ipath.size() != n &amp;&amp; ipath.size() != n - 1)</span>
-<span class="nc" id="L244">			return false;</span>
-<span class="fc bfc" id="L245" title="All 2 branches covered.">		boolean cycle = ipath.size() == n;</span>
+<span class="fc" id="L241">		final int n = ig.vertices().size();</span>
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">		if (n &lt;= 1)</span>
+<span class="nc" id="L243">			return ipath.isEmpty();</span>
+<span class="pc bpc" id="L244" title="1 of 4 branches missed.">		if (ipath.size() != n &amp;&amp; ipath.size() != n - 1)</span>
+<span class="nc" id="L245">			return false;</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">		boolean cycle = ipath.size() == n;</span>
 
-<span class="fc" id="L247">		Bitmap visited = new Bitmap(n);</span>
-<span class="fc bfc" id="L248" title="All 2 branches covered.">		if (ig.isDirected()) {</span>
-<span class="fc" id="L249">			int source = ig.edgeSource(ipath.getInt(0));</span>
-<span class="fc" id="L250">			visited.set(source);</span>
+<span class="fc" id="L248">		Bitmap visited = new Bitmap(n);</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">		if (ig.isDirected()) {</span>
+<span class="fc" id="L250">			int source = ig.edgeSource(ipath.getInt(0));</span>
+<span class="fc" id="L251">			visited.set(source);</span>
 
-<span class="fc" id="L252">			int v = source;</span>
-<span class="fc bfc" id="L253" title="All 2 branches covered.">			for (IntIterator it = ipath.iterator(); it.hasNext();) {</span>
-<span class="fc" id="L254">				int e = it.nextInt();</span>
-<span class="pc bpc" id="L255" title="1 of 2 branches missed.">				if (v != ig.edgeSource(e))</span>
-<span class="nc" id="L256">					return false;</span>
-<span class="fc" id="L257">				v = ig.edgeTarget(e);</span>
-<span class="fc bfc" id="L258" title="All 2 branches covered.">				if (!visited.set(v)) {</span>
-<span class="pc bpc" id="L259" title="3 of 6 branches missed.">					if (it.hasNext() || !cycle || v != source)</span>
-<span class="nc" id="L260">						return false;</span>
+<span class="fc" id="L253">			int v = source;</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">			for (IntIterator it = ipath.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L255">				int e = it.nextInt();</span>
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">				if (v != ig.edgeSource(e))</span>
+<span class="nc" id="L257">					return false;</span>
+<span class="fc" id="L258">				v = ig.edgeTarget(e);</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">				if (!visited.set(v)) {</span>
+<span class="pc bpc" id="L260" title="3 of 6 branches missed.">					if (it.hasNext() || !cycle || v != source)</span>
+<span class="nc" id="L261">						return false;</span>
 					break;
 				}
-<span class="fc" id="L263">			}</span>
-<span class="pc bpc" id="L264" title="3 of 4 branches missed.">			assert visited.cardinality() == n;</span>
-<span class="fc" id="L265">			return true;</span>
+<span class="fc" id="L264">			}</span>
+<span class="pc bpc" id="L265" title="3 of 4 branches missed.">			assert visited.cardinality() == n;</span>
+<span class="fc" id="L266">			return true;</span>
 
 		} else {
-<span class="fc" id="L268">			int firstEdge = ipath.getInt(0);</span>
-<span class="pc bpc" id="L269" title="1 of 2 branches missed.">			srcLoop: for (int source : IntList.of(ig.edgeSource(firstEdge), ig.edgeTarget(firstEdge))) {</span>
-<span class="fc" id="L270">				visited.clear();</span>
-<span class="fc" id="L271">				visited.set(source);</span>
+<span class="fc" id="L269">			int firstEdge = ipath.getInt(0);</span>
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">			srcLoop: for (int source : Fastutil.list(ig.edgeSource(firstEdge), ig.edgeTarget(firstEdge))) {</span>
+<span class="fc" id="L271">				visited.clear();</span>
+<span class="fc" id="L272">				visited.set(source);</span>
 
-<span class="fc" id="L273">				int v = source;</span>
-<span class="fc bfc" id="L274" title="All 2 branches covered.">				for (IntIterator it = ipath.iterator(); it.hasNext();) {</span>
-<span class="fc" id="L275">					int e = it.nextInt();</span>
-<span class="fc" id="L276">					int eu = ig.edgeSource(e), ev = ig.edgeTarget(e);</span>
-<span class="fc bfc" id="L277" title="All 2 branches covered.">					if (v == eu) {</span>
-<span class="fc" id="L278">						v = ev;</span>
-<span class="fc bfc" id="L279" title="All 2 branches covered.">					} else if (v == ev) {</span>
-<span class="fc" id="L280">						v = eu;</span>
+<span class="fc" id="L274">				int v = source;</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">				for (IntIterator it = ipath.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L276">					int e = it.nextInt();</span>
+<span class="fc" id="L277">					int eu = ig.edgeSource(e), ev = ig.edgeTarget(e);</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">					if (v == eu) {</span>
+<span class="fc" id="L279">						v = ev;</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">					} else if (v == ev) {</span>
+<span class="fc" id="L281">						v = eu;</span>
 					} else {
 						continue srcLoop;
 					}
-<span class="fc bfc" id="L284" title="All 2 branches covered.">					if (!visited.set(v)) {</span>
-<span class="pc bpc" id="L285" title="3 of 6 branches missed.">						if (it.hasNext() || !cycle || v != source)</span>
-<span class="nc" id="L286">							continue srcLoop;</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">					if (!visited.set(v)) {</span>
+<span class="pc bpc" id="L286" title="3 of 6 branches missed.">						if (it.hasNext() || !cycle || v != source)</span>
+<span class="nc" id="L287">							continue srcLoop;</span>
 						break;
 					}
-<span class="fc" id="L289">				}</span>
-<span class="pc bpc" id="L290" title="3 of 4 branches missed.">				assert visited.cardinality() == n;</span>
-<span class="fc" id="L291">				return true;</span>
+<span class="fc" id="L290">				}</span>
+<span class="pc bpc" id="L291" title="3 of 4 branches missed.">				assert visited.cardinality() == n;</span>
+<span class="fc" id="L292">				return true;</span>
 			}
-<span class="nc" id="L293">			return false;</span>
+<span class="nc" id="L294">			return false;</span>
 		}
 	}
 
@@ -303,7 +304,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 * @return a default implementation of {@link HamiltonianPathAlgo}
 	 */
 	static HamiltonianPathAlgo newInstance() {
-<span class="nc" id="L306">		return new HamiltonianPathRubin();</span>
+<span class="nc" id="L307">		return new HamiltonianPathRubin();</span>
 	}
 
 }

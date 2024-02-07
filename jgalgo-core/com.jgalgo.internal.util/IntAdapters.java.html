@@ -110,149 +110,164 @@ public class IntAdapters {
 		public void remove() {
 <span class="fc" id="L111">			it.remove();</span>
 <span class="fc" id="L112">		}</span>
+
+		@Override
+		public int skip(int n) {
+<span class="fc" id="L116">			return JGAlgoUtils.objIterSkip(it, n);</span>
+		}
 	}
 
 	private static class IntListIteratorWrapper implements IntListIterator {
 		private final ListIterator&lt;Integer&gt; it;
 
-<span class="fc" id="L118">		public IntListIteratorWrapper(ListIterator&lt;Integer&gt; it) {</span>
-<span class="fc" id="L119">			this.it = Objects.requireNonNull(it);</span>
-<span class="fc" id="L120">		}</span>
+<span class="fc" id="L123">		public IntListIteratorWrapper(ListIterator&lt;Integer&gt; it) {</span>
+<span class="fc" id="L124">			this.it = Objects.requireNonNull(it);</span>
+<span class="fc" id="L125">		}</span>
 
 		@Override
 		public int previousInt() {
-<span class="fc" id="L124">			return it.previous().intValue();</span>
+<span class="fc" id="L129">			return it.previous().intValue();</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L129">			return it.next().intValue();</span>
+<span class="fc" id="L134">			return it.next().intValue();</span>
 		}
 
 		@Override
 		public boolean hasPrevious() {
-<span class="fc" id="L134">			return it.hasPrevious();</span>
+<span class="fc" id="L139">			return it.hasPrevious();</span>
 		}
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L139">			return it.hasNext();</span>
+<span class="fc" id="L144">			return it.hasNext();</span>
 		}
 
 		@Override
 		public int nextIndex() {
-<span class="fc" id="L144">			return it.nextIndex();</span>
+<span class="fc" id="L149">			return it.nextIndex();</span>
 		}
 
 		@Override
 		public int previousIndex() {
-<span class="fc" id="L149">			return it.previousIndex();</span>
+<span class="fc" id="L154">			return it.previousIndex();</span>
+		}
+
+		@Override
+		public int skip(int n) {
+<span class="fc" id="L159">			return JGAlgoUtils.objIterSkip(it, n);</span>
+		}
+
+		@Override
+		public int back(int n) {
+<span class="fc" id="L164">			return JGAlgoUtils.objIterBack(it, n);</span>
 		}
 	}
 
 	private static class IntIterableWrapper implements IntIterable {
 		private final Iterable&lt;Integer&gt; it;
 
-<span class="fc" id="L156">		public IntIterableWrapper(Iterable&lt;Integer&gt; it) {</span>
-<span class="fc" id="L157">			this.it = Objects.requireNonNull(it);</span>
-<span class="fc" id="L158">		}</span>
+<span class="fc" id="L171">		public IntIterableWrapper(Iterable&lt;Integer&gt; it) {</span>
+<span class="fc" id="L172">			this.it = Objects.requireNonNull(it);</span>
+<span class="fc" id="L173">		}</span>
 
 		@Override
 		public IntIterator iterator() {
-<span class="fc" id="L162">			return new IntIteratorWrapper(it.iterator());</span>
+<span class="fc" id="L177">			return new IntIteratorWrapper(it.iterator());</span>
 		}
 	}
 
 	private static class IntCollectionWrapper extends AbstractIntCollection {
 		private final Collection&lt;Integer&gt; c;
 
-<span class="fc" id="L169">		public IntCollectionWrapper(Collection&lt;Integer&gt; c) {</span>
-<span class="fc" id="L170">			this.c = Objects.requireNonNull(c);</span>
-<span class="fc" id="L171">		}</span>
+<span class="fc" id="L184">		public IntCollectionWrapper(Collection&lt;Integer&gt; c) {</span>
+<span class="fc" id="L185">			this.c = Objects.requireNonNull(c);</span>
+<span class="fc" id="L186">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L175">			return c.size();</span>
+<span class="fc" id="L190">			return c.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L180">			return c.isEmpty();</span>
+<span class="fc" id="L195">			return c.isEmpty();</span>
 		}
 
 		@Override
 		public Object[] toArray() {
-<span class="fc" id="L185">			return c.toArray();</span>
+<span class="fc" id="L200">			return c.toArray();</span>
 		}
 
 		@Override
 		public &lt;T&gt; T[] toArray(T[] a) {
-<span class="fc" id="L190">			return c.toArray(a);</span>
+<span class="fc" id="L205">			return c.toArray(a);</span>
 		}
 
 		@Override
 		public boolean containsAll(Collection&lt;?&gt; c2) {
-<span class="fc" id="L195">			return c.containsAll(c2);</span>
+<span class="fc" id="L210">			return c.containsAll(c2);</span>
 		}
 
 		@Override
 		public boolean addAll(Collection&lt;? extends Integer&gt; c2) {
-<span class="fc" id="L200">			return c.addAll(c2);</span>
+<span class="fc" id="L215">			return c.addAll(c2);</span>
 		}
 
 		@Override
 		public boolean removeAll(Collection&lt;?&gt; c2) {
-<span class="fc" id="L205">			return c.removeAll(c2);</span>
+<span class="fc" id="L220">			return c.removeAll(c2);</span>
 		}
 
 		@Override
 		public boolean retainAll(Collection&lt;?&gt; c2) {
-<span class="fc" id="L210">			return c.retainAll(c2);</span>
+<span class="fc" id="L225">			return c.retainAll(c2);</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L215">			c.clear();</span>
-<span class="fc" id="L216">		}</span>
+<span class="fc" id="L230">			c.clear();</span>
+<span class="fc" id="L231">		}</span>
 
 		@Override
 		public IntIterator iterator() {
-<span class="fc" id="L220">			return asIntIterator(c.iterator());</span>
+<span class="fc" id="L235">			return asIntIterator(c.iterator());</span>
 		}
 
 		@Override
 		public boolean add(int key) {
-<span class="fc" id="L225">			return c.add(Integer.valueOf(key));</span>
+<span class="fc" id="L240">			return c.add(Integer.valueOf(key));</span>
 		}
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc" id="L230">			return c.contains(Integer.valueOf(key));</span>
+<span class="fc" id="L245">			return c.contains(Integer.valueOf(key));</span>
 		}
 
 		@Override
 		public boolean rem(int key) {
-<span class="fc" id="L235">			return c.remove(Integer.valueOf(key));</span>
+<span class="fc" id="L250">			return c.remove(Integer.valueOf(key));</span>
 		}
 
 		@Override
 		public boolean addAll(IntCollection c2) {
-<span class="fc" id="L240">			return c.addAll(c2);</span>
+<span class="fc" id="L255">			return c.addAll(c2);</span>
 		}
 
 		@Override
 		public boolean containsAll(IntCollection c2) {
-<span class="fc" id="L245">			return c.containsAll(c2);</span>
+<span class="fc" id="L260">			return c.containsAll(c2);</span>
 		}
 
 		@Override
 		public boolean removeAll(IntCollection c2) {
-<span class="fc" id="L250">			return c.removeAll(c2);</span>
+<span class="fc" id="L265">			return c.removeAll(c2);</span>
 		}
 
 		@Override
 		public boolean retainAll(IntCollection c2) {
-<span class="fc" id="L255">			return c.retainAll(c2);</span>
+<span class="fc" id="L270">			return c.retainAll(c2);</span>
 		}
 	}
 
@@ -260,93 +275,93 @@ public class IntAdapters {
 
 		private final Set&lt;Integer&gt; s;
 
-<span class="fc" id="L263">		public IntSetWrapper(Set&lt;Integer&gt; s) {</span>
-<span class="fc" id="L264">			this.s = Objects.requireNonNull(s);</span>
-<span class="fc" id="L265">		}</span>
+<span class="fc" id="L278">		public IntSetWrapper(Set&lt;Integer&gt; s) {</span>
+<span class="fc" id="L279">			this.s = Objects.requireNonNull(s);</span>
+<span class="fc" id="L280">		}</span>
 
 		@Override
 		public boolean add(int key) {
-<span class="fc" id="L269">			return s.add(Integer.valueOf(key));</span>
+<span class="fc" id="L284">			return s.add(Integer.valueOf(key));</span>
 		}
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc" id="L274">			return s.contains(Integer.valueOf(key));</span>
+<span class="fc" id="L289">			return s.contains(Integer.valueOf(key));</span>
 		}
 
 		@Override
 		public boolean addAll(IntCollection c) {
-<span class="fc" id="L279">			return s.addAll(c);</span>
+<span class="fc" id="L294">			return s.addAll(c);</span>
 		}
 
 		@Override
 		public boolean containsAll(IntCollection c) {
-<span class="fc" id="L284">			return s.containsAll(c);</span>
+<span class="fc" id="L299">			return s.containsAll(c);</span>
 		}
 
 		@Override
 		public boolean removeAll(IntCollection c) {
-<span class="fc" id="L289">			return s.removeAll(c);</span>
+<span class="fc" id="L304">			return s.removeAll(c);</span>
 		}
 
 		@Override
 		public boolean retainAll(IntCollection c) {
-<span class="fc" id="L294">			return s.retainAll(c);</span>
+<span class="fc" id="L309">			return s.retainAll(c);</span>
 		}
 
 		@Override
 		public boolean addAll(Collection&lt;? extends Integer&gt; c) {
-<span class="fc" id="L299">			return s.addAll(c);</span>
+<span class="fc" id="L314">			return s.addAll(c);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L304">			return s.size();</span>
+<span class="fc" id="L319">			return s.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L309">			return s.isEmpty();</span>
+<span class="fc" id="L324">			return s.isEmpty();</span>
 		}
 
 		@Override
 		public Object[] toArray() {
-<span class="fc" id="L314">			return s.toArray();</span>
+<span class="fc" id="L329">			return s.toArray();</span>
 		}
 
 		@Override
 		public &lt;T&gt; T[] toArray(T[] a) {
-<span class="fc" id="L319">			return s.toArray(a);</span>
+<span class="fc" id="L334">			return s.toArray(a);</span>
 		}
 
 		@Override
 		public boolean containsAll(Collection&lt;?&gt; c) {
-<span class="fc" id="L324">			return s.containsAll(c);</span>
+<span class="fc" id="L339">			return s.containsAll(c);</span>
 		}
 
 		@Override
 		public boolean retainAll(Collection&lt;?&gt; c) {
-<span class="fc" id="L329">			return s.retainAll(c);</span>
+<span class="fc" id="L344">			return s.retainAll(c);</span>
 		}
 
 		@Override
 		public boolean removeAll(Collection&lt;?&gt; c) {
-<span class="fc" id="L334">			return s.removeAll(c);</span>
+<span class="fc" id="L349">			return s.removeAll(c);</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L339">			s.clear();</span>
-<span class="fc" id="L340">		}</span>
+<span class="fc" id="L354">			s.clear();</span>
+<span class="fc" id="L355">		}</span>
 
 		@Override
 		public IntIterator iterator() {
-<span class="fc" id="L344">			return asIntIterator(s.iterator());</span>
+<span class="fc" id="L359">			return asIntIterator(s.iterator());</span>
 		}
 
 		@Override
 		public boolean remove(int k) {
-<span class="fc" id="L349">			return s.remove(Integer.valueOf(k));</span>
+<span class="fc" id="L364">			return s.remove(Integer.valueOf(k));</span>
 		}
 	}
 
@@ -354,136 +369,136 @@ public class IntAdapters {
 
 		private final List&lt;Integer&gt; l;
 
-<span class="fc" id="L357">		public IntListWrapper(List&lt;Integer&gt; l) {</span>
-<span class="fc" id="L358">			this.l = Objects.requireNonNull(l);</span>
-<span class="fc" id="L359">		}</span>
+<span class="fc" id="L372">		public IntListWrapper(List&lt;Integer&gt; l) {</span>
+<span class="fc" id="L373">			this.l = Objects.requireNonNull(l);</span>
+<span class="fc" id="L374">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L363">			return l.size();</span>
+<span class="fc" id="L378">			return l.size();</span>
 		}
 
 		@Override
 		public boolean addAll(int index, Collection&lt;? extends Integer&gt; c) {
-<span class="fc" id="L368">			return l.addAll(index, c);</span>
+<span class="fc" id="L383">			return l.addAll(index, c);</span>
 		}
 
 		@Override
 		public boolean removeAll(Collection&lt;?&gt; c) {
-<span class="fc" id="L373">			return l.removeAll(c);</span>
+<span class="fc" id="L388">			return l.removeAll(c);</span>
 		}
 
 		@Override
 		public boolean retainAll(Collection&lt;?&gt; c) {
-<span class="fc" id="L378">			return l.retainAll(c);</span>
+<span class="fc" id="L393">			return l.retainAll(c);</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L383">			l.clear();</span>
-<span class="fc" id="L384">		}</span>
+<span class="fc" id="L398">			l.clear();</span>
+<span class="fc" id="L399">		}</span>
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc" id="L388">			return l.contains(Integer.valueOf(key));</span>
+<span class="fc" id="L403">			return l.contains(Integer.valueOf(key));</span>
 		}
 
 		@Override
 		public boolean containsAll(Collection&lt;?&gt; c) {
-<span class="fc" id="L393">			return l.containsAll(c);</span>
+<span class="fc" id="L408">			return l.containsAll(c);</span>
 		}
 
 		@Override
 		public boolean containsAll(IntCollection c) {
-<span class="fc" id="L398">			return l.containsAll(c);</span>
+<span class="fc" id="L413">			return l.containsAll(c);</span>
 		}
 
 		@Override
 		public boolean rem(int key) {
-<span class="fc" id="L403">			return l.remove(Integer.valueOf(key));</span>
+<span class="fc" id="L418">			return l.remove(Integer.valueOf(key));</span>
 		}
 
 		@Override
 		public boolean removeAll(IntCollection c) {
-<span class="fc" id="L408">			return l.removeAll(c);</span>
+<span class="fc" id="L423">			return l.removeAll(c);</span>
 		}
 
 		@Override
 		public boolean retainAll(IntCollection c) {
-<span class="fc" id="L413">			return l.retainAll(c);</span>
+<span class="fc" id="L428">			return l.retainAll(c);</span>
 		}
 
 		@Override
 		public IntListIterator listIterator(int index) {
-<span class="fc" id="L418">			return new IntListIteratorWrapper(l.listIterator(index));</span>
+<span class="fc" id="L433">			return new IntListIteratorWrapper(l.listIterator(index));</span>
 		}
 
 		@Override
 		public void add(int index, int key) {
-<span class="fc" id="L423">			l.add(index, Integer.valueOf(key));</span>
-<span class="fc" id="L424">		}</span>
+<span class="fc" id="L438">			l.add(index, Integer.valueOf(key));</span>
+<span class="fc" id="L439">		}</span>
 
 		@Override
 		public boolean addAll(int index, IntCollection c) {
-<span class="fc" id="L428">			return l.addAll(index, c);</span>
+<span class="fc" id="L443">			return l.addAll(index, c);</span>
 		}
 
 		@Override
 		public int set(int index, int k) {
-<span class="fc" id="L433">			return l.set(index, Integer.valueOf(k)).intValue();</span>
+<span class="fc" id="L448">			return l.set(index, Integer.valueOf(k)).intValue();</span>
 		}
 
 		@Override
 		public int getInt(int index) {
-<span class="fc" id="L438">			return l.get(index).intValue();</span>
+<span class="fc" id="L453">			return l.get(index).intValue();</span>
 		}
 
 		@Override
 		public int indexOf(int k) {
-<span class="fc" id="L443">			return l.indexOf(Integer.valueOf(k));</span>
+<span class="fc" id="L458">			return l.indexOf(Integer.valueOf(k));</span>
 		}
 
 		@Override
 		public int lastIndexOf(int k) {
-<span class="fc" id="L448">			return l.lastIndexOf(Integer.valueOf(k));</span>
+<span class="fc" id="L463">			return l.lastIndexOf(Integer.valueOf(k));</span>
 		}
 
 		@Override
 		public int removeInt(int index) {
-<span class="fc" id="L453">			return l.remove(index).intValue();</span>
+<span class="fc" id="L468">			return l.remove(index).intValue();</span>
 		}
 
 	}
 
 	public static IntPredicate asIntPredicate(Predicate&lt;Integer&gt; pred) {
-<span class="fc bfc" id="L459" title="All 2 branches covered.">		if (pred instanceof IntPredicate) {</span>
-<span class="fc" id="L460">			return (IntPredicate) pred;</span>
+<span class="fc bfc" id="L474" title="All 2 branches covered.">		if (pred instanceof IntPredicate) {</span>
+<span class="fc" id="L475">			return (IntPredicate) pred;</span>
 		} else {
-<span class="fc" id="L462">			return v -&gt; pred.test(Integer.valueOf(v));</span>
+<span class="fc" id="L477">			return v -&gt; pred.test(Integer.valueOf(v));</span>
 		}
 	}
 
 	public static IntUnaryOperator asIntUnaryOperator(ToIntFunction&lt;Integer&gt; op) {
-<span class="fc bfc" id="L467" title="All 2 branches covered.">		if (op instanceof IntUnaryOperator) {</span>
-<span class="fc" id="L468">			return (IntUnaryOperator) op;</span>
+<span class="fc bfc" id="L482" title="All 2 branches covered.">		if (op instanceof IntUnaryOperator) {</span>
+<span class="fc" id="L483">			return (IntUnaryOperator) op;</span>
 		} else {
-<span class="fc" id="L470">			return v -&gt; op.applyAsInt(Integer.valueOf(v));</span>
+<span class="fc" id="L485">			return v -&gt; op.applyAsInt(Integer.valueOf(v));</span>
 		}
 	}
 
 	public static IntSupplier asIntSupplier(Supplier&lt;Integer&gt; sup) {
-<span class="fc bfc" id="L475" title="All 2 branches covered.">		if (sup instanceof IntSupplier) {</span>
-<span class="fc" id="L476">			return (IntSupplier) sup;</span>
+<span class="fc bfc" id="L490" title="All 2 branches covered.">		if (sup instanceof IntSupplier) {</span>
+<span class="fc" id="L491">			return (IntSupplier) sup;</span>
 		} else {
-<span class="fc" id="L478">			return () -&gt; sup.get().intValue();</span>
+<span class="fc" id="L493">			return () -&gt; sup.get().intValue();</span>
 		}
 	}
 
 	public static IntBinaryOperator asIntBiOperator(BiFunction&lt;Integer, Integer, Integer&gt; func) {
-<span class="fc bfc" id="L483" title="All 2 branches covered.">		if (func instanceof IntBinaryOperator) {</span>
-<span class="fc" id="L484">			return (IntBinaryOperator) func;</span>
+<span class="fc bfc" id="L498" title="All 2 branches covered.">		if (func instanceof IntBinaryOperator) {</span>
+<span class="fc" id="L499">			return (IntBinaryOperator) func;</span>
 		} else {
-<span class="fc" id="L486">			return (a, b) -&gt; func.apply(Integer.valueOf(a), Integer.valueOf(b)).intValue();</span>
+<span class="fc" id="L501">			return (a, b) -&gt; func.apply(Integer.valueOf(a), Integer.valueOf(b)).intValue();</span>
 		}
 	}
 

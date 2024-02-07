@@ -45,7 +45,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.internal.util.IntPair;
-import it.unimi.dsi.fastutil.ints.IntImmutableList;
+import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.longs.LongImmutableList;
@@ -94,7 +94,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 <span class="fc" id="L94">			g = graphImplementation.apply(g);</span>
 
 <span class="fc" id="L96">			int[] queryVertices = TestUtils.randArray(n * 16, 0, n, seed);</span>
-<span class="fc" id="L97">			queryVIter = circularIterator(IntImmutableList.of(queryVertices));</span>
+<span class="fc" id="L97">			queryVIter = circularIterator(Fastutil.list(queryVertices));</span>
 
 <span class="fc" id="L99">			int[] queryUVertices = TestUtils.randArray(n * 32, 0, n, seed);</span>
 <span class="fc" id="L100">			long[] queryUVertices0 = new long[queryUVertices.length / 2];</span>
@@ -1579,7 +1579,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 
 <span class="pc bnc" id="L1580" title="All 2 branches missed.">				assert m &gt; OperationsPerInvocation;</span>
 <span class="fc" id="L1581">				int[] removeEdges = TestUtils.randArray(m * 16, 0, m - OperationsPerInvocation, rand.nextLong());</span>
-<span class="fc" id="L1582">				removeEIter = circularIterator(IntImmutableList.of(removeEdges));</span>
+<span class="fc" id="L1582">				removeEIter = circularIterator(Fastutil.list(removeEdges));</span>
 <span class="fc" id="L1583">			}</span>
 
 			private void bench(Blackhole blackhole) {
@@ -1964,7 +1964,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 
 <span class="pc bnc" id="L1965" title="All 2 branches missed.">				assert n &gt; OperationsPerInvocation;</span>
 <span class="fc" id="L1966">				int[] removeVertices = TestUtils.randArray(n * 16, 0, n - OperationsPerInvocation, rand.nextLong());</span>
-<span class="fc" id="L1967">				removeVIter = circularIterator(IntImmutableList.of(removeVertices));</span>
+<span class="fc" id="L1967">				removeVIter = circularIterator(Fastutil.list(removeVertices));</span>
 <span class="fc" id="L1968">			}</span>
 
 			private void bench(Blackhole blackhole) {

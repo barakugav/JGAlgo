@@ -20,18 +20,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.BitmapSet;
+import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectIterators;
@@ -51,23 +49,23 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L54">class HamiltonianPathRubin implements HamiltonianPathAlgoBase.CycleBased {</span>
+<span class="fc" id="L52">class HamiltonianPathRubin implements HamiltonianPathAlgoBase.CycleBased {</span>
 
 	@Override
 	public Iterator&lt;IPath&gt; hamiltonianCyclesIter(IndexGraph g) {
-<span class="fc" id="L58">		final int n = g.vertices().size();</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">		if (n == 0)</span>
-<span class="fc" id="L60">			return Collections.emptyIterator();</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">		if (n == 1)</span>
-<span class="fc" id="L62">			return ObjectIterators.singleton(IPath.valueOf(g, 0, 0, IntList.of()));</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc" id="L64">			return new IterDirected(g);</span>
+<span class="fc" id="L56">		final int n = g.vertices().size();</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		if (n == 0)</span>
+<span class="fc" id="L58">			return Collections.emptyIterator();</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		if (n == 1)</span>
+<span class="fc" id="L60">			return ObjectIterators.singleton(IPath.valueOf(g, 0, 0, Fastutil.list()));</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc" id="L62">			return new IterDirected(g);</span>
 		} else {
-<span class="fc" id="L66">			return new IterUndirected(g);</span>
+<span class="fc" id="L64">			return new IterUndirected(g);</span>
 		}
 	}
 
-<span class="fc" id="L70">	private abstract static class IterBase implements Iterator&lt;IPath&gt; {</span>
+<span class="fc" id="L68">	private abstract static class IterBase implements Iterator&lt;IPath&gt; {</span>
 
 		final IndexGraph g;
 		final int n;
@@ -96,118 +94,118 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
 		private IPath next;
 
-<span class="fc" id="L99">		IterBase(IndexGraph g) {</span>
-<span class="fc" id="L100">			this.g = g;</span>
-<span class="fc" id="L101">			n = g.vertices().size();</span>
-<span class="pc bnc" id="L102" title="All 2 branches missed.">			assert n &gt;= 2;</span>
-<span class="fc" id="L103">			final int m = g.edges().size();</span>
+<span class="fc" id="L97">		IterBase(IndexGraph g) {</span>
+<span class="fc" id="L98">			this.g = g;</span>
+<span class="fc" id="L99">			n = g.vertices().size();</span>
+<span class="pc bnc" id="L100" title="All 2 branches missed.">			assert n &gt;= 2;</span>
+<span class="fc" id="L101">			final int m = g.edges().size();</span>
 
-<span class="fc" id="L105">			existingEdges = new Bitmap(m);</span>
-<span class="fc" id="L106">			existingOutDegree = new int[n];</span>
-<span class="fc" id="L107">			existingOutEdgeNext = new int[m];</span>
-<span class="fc" id="L108">			existingOutEdgePrev = new int[m];</span>
-<span class="fc" id="L109">			existingInEdgeNext = new int[m];</span>
-<span class="fc" id="L110">			existingInEdgePrev = new int[m];</span>
-<span class="fc" id="L111">			Arrays.fill(existingOutEdgeNext, -1);</span>
-<span class="fc" id="L112">			Arrays.fill(existingOutEdgePrev, -1);</span>
-<span class="fc" id="L113">			Arrays.fill(existingInEdgeNext, -1);</span>
-<span class="fc" id="L114">			Arrays.fill(existingInEdgePrev, -1);</span>
+<span class="fc" id="L103">			existingEdges = new Bitmap(m);</span>
+<span class="fc" id="L104">			existingOutDegree = new int[n];</span>
+<span class="fc" id="L105">			existingOutEdgeNext = new int[m];</span>
+<span class="fc" id="L106">			existingOutEdgePrev = new int[m];</span>
+<span class="fc" id="L107">			existingInEdgeNext = new int[m];</span>
+<span class="fc" id="L108">			existingInEdgePrev = new int[m];</span>
+<span class="fc" id="L109">			Arrays.fill(existingOutEdgeNext, -1);</span>
+<span class="fc" id="L110">			Arrays.fill(existingOutEdgePrev, -1);</span>
+<span class="fc" id="L111">			Arrays.fill(existingInEdgeNext, -1);</span>
+<span class="fc" id="L112">			Arrays.fill(existingInEdgePrev, -1);</span>
 
-<span class="fc" id="L116">			path = new IntArrayList(n);</span>
-<span class="fc" id="L117">			onPath = new Bitmap(n);</span>
+<span class="fc" id="L114">			path = new IntArrayList(n);</span>
+<span class="fc" id="L115">			onPath = new Bitmap(n);</span>
 
 			int dfsEdgesArrSize;
-<span class="fc bfc" id="L120" title="All 2 branches covered.">			if (g.isDirected()) {</span>
-<span class="fc" id="L121">				dfsEdgesArrSize = m;</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">			} else if (!g.isAllowSelfEdges()) {</span>
-<span class="fc" id="L123">				dfsEdgesArrSize = 2 * m;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc" id="L119">				dfsEdgesArrSize = m;</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">			} else if (!g.isAllowSelfEdges()) {</span>
+<span class="fc" id="L121">				dfsEdgesArrSize = 2 * m;</span>
 			} else {
-<span class="fc" id="L125">				dfsEdgesArrSize = range(n).map(v -&gt; g.outEdges(v).size()).sum();</span>
+<span class="fc" id="L123">				dfsEdgesArrSize = range(n).map(v -&gt; g.outEdges(v).size()).sum();</span>
 			}
-<span class="fc" id="L127">			dfsEdges = new int[dfsEdgesArrSize];</span>
-<span class="fc" id="L128">			dfsEdgesOffset = new int[n + 1];</span>
-<span class="fc" id="L129">			dfsEdgesNext = new int[n];</span>
+<span class="fc" id="L125">			dfsEdges = new int[dfsEdgesArrSize];</span>
+<span class="fc" id="L126">			dfsEdgesOffset = new int[n + 1];</span>
+<span class="fc" id="L127">			dfsEdgesNext = new int[n];</span>
 
-<span class="fc" id="L131">			verticesToExamine = new BitmapSet(n);</span>
-<span class="fc" id="L132">			visited = new BitmapSet(n);</span>
-<span class="fc" id="L133">			bfsStack = new IntArrayList(n);</span>
+<span class="fc" id="L129">			verticesToExamine = new BitmapSet(n);</span>
+<span class="fc" id="L130">			visited = new BitmapSet(n);</span>
+<span class="fc" id="L131">			bfsStack = new IntArrayList(n);</span>
 
-<span class="fc" id="L135">			originVertex = range(n)</span>
-<span class="fc" id="L136">					.&lt;IntIntPair&gt;mapToObj(v -&gt; IntIntPair.of(v, g.outEdges(v).size()))</span>
-<span class="fc" id="L137">					.min((p1, p2) -&gt; Integer.compare(p1.secondInt(), p2.secondInt()))</span>
-<span class="fc" id="L138">					.get()</span>
-<span class="fc" id="L139">					.firstInt();</span>
-<span class="fc" id="L140">		}</span>
+<span class="fc" id="L133">			originVertex = range(n)</span>
+<span class="fc" id="L134">					.&lt;IntIntPair&gt;mapToObj(v -&gt; IntIntPair.of(v, g.outEdges(v).size()))</span>
+<span class="fc" id="L135">					.min((p1, p2) -&gt; Integer.compare(p1.secondInt(), p2.secondInt()))</span>
+<span class="fc" id="L136">					.get()</span>
+<span class="fc" id="L137">					.firstInt();</span>
+<span class="fc" id="L138">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L144" title="All 4 branches covered.">			if (next == null &amp;&amp; pathHead &gt;= 0)</span>
-<span class="fc" id="L145">				next = advance();</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">			return next != null;</span>
+<span class="fc bfc" id="L142" title="All 4 branches covered.">			if (next == null &amp;&amp; pathHead &gt;= 0)</span>
+<span class="fc" id="L143">				next = advance();</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">			return next != null;</span>
 		}
 
 		@Override
 		public IPath next() {
-<span class="fc bfc" id="L151" title="All 2 branches covered.">			if (!hasNext())</span>
-<span class="fc" id="L152">				throw new NoSuchElementException();</span>
-<span class="fc" id="L153">			IPath ret = next;</span>
-<span class="fc" id="L154">			next = null;</span>
-<span class="fc" id="L155">			return ret;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">			if (!hasNext())</span>
+<span class="fc" id="L150">				throw new NoSuchElementException();</span>
+<span class="fc" id="L151">			IPath ret = next;</span>
+<span class="fc" id="L152">			next = null;</span>
+<span class="fc" id="L153">			return ret;</span>
 		}
 
 		abstract IPath advance();
 
 		void setupDfsHeadEdges() {
 			/* move all deleted edges to one side of the array */
-<span class="fc bfc" id="L162" title="All 2 branches covered.">			for (int i = dfsEdgesOffset[pathHead], j = dfsEdgesOffset[pathHead + 1] - 1; i &lt; j;) {</span>
-<span class="fc bfc" id="L163" title="All 4 branches covered.">				while (i &lt; j &amp;&amp; existingEdges.get(dfsEdges[i]))</span>
-<span class="fc" id="L164">					i++;</span>
-<span class="fc bfc" id="L165" title="All 4 branches covered.">				while (i &lt; j &amp;&amp; !existingEdges.get(dfsEdges[j]))</span>
-<span class="fc" id="L166">					j--;</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">				if (i &lt; j) {</span>
-<span class="fc" id="L168">					int tmp = dfsEdges[i];</span>
-<span class="fc" id="L169">					dfsEdges[i] = dfsEdges[j];</span>
-<span class="fc" id="L170">					dfsEdges[j] = tmp;</span>
-<span class="fc" id="L171">					i++;</span>
-<span class="fc" id="L172">					j--;</span>
-<span class="fc" id="L173">				}</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">			for (int i = dfsEdgesOffset[pathHead], j = dfsEdgesOffset[pathHead + 1] - 1; i &lt; j;) {</span>
+<span class="fc bfc" id="L161" title="All 4 branches covered.">				while (i &lt; j &amp;&amp; existingEdges.get(dfsEdges[i]))</span>
+<span class="fc" id="L162">					i++;</span>
+<span class="fc bfc" id="L163" title="All 4 branches covered.">				while (i &lt; j &amp;&amp; !existingEdges.get(dfsEdges[j]))</span>
+<span class="fc" id="L164">					j--;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">				if (i &lt; j) {</span>
+<span class="fc" id="L166">					int tmp = dfsEdges[i];</span>
+<span class="fc" id="L167">					dfsEdges[i] = dfsEdges[j];</span>
+<span class="fc" id="L168">					dfsEdges[j] = tmp;</span>
+<span class="fc" id="L169">					i++;</span>
+<span class="fc" id="L170">					j--;</span>
+<span class="fc" id="L171">				}</span>
 			}
 			/* sort existing edges by their degree */
-<span class="fc" id="L176">			int from = dfsEdgesOffset[pathHead], to = dfsEdgesOffset[pathHead] + existingOutDegree[pathHead];</span>
-<span class="fc bfc" id="L177" title="All 2 branches covered.">			if (g.isDirected()) {</span>
-<span class="fc" id="L178">				IntArrays.quickSort(dfsEdges, from, to, (e1, e2) -&gt; {</span>
-<span class="fc" id="L179">					int u1 = g.edgeTarget(e1), u2 = g.edgeTarget(e2);</span>
-<span class="fc" id="L180">					return Integer.compare(existingOutDegree[u1], existingOutDegree[u2]);</span>
+<span class="fc" id="L174">			int from = dfsEdgesOffset[pathHead], to = dfsEdgesOffset[pathHead] + existingOutDegree[pathHead];</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc" id="L176">				IntArrays.quickSort(dfsEdges, from, to, (e1, e2) -&gt; {</span>
+<span class="fc" id="L177">					int u1 = g.edgeTarget(e1), u2 = g.edgeTarget(e2);</span>
+<span class="fc" id="L178">					return Integer.compare(existingOutDegree[u1], existingOutDegree[u2]);</span>
 				});
 			} else {
-<span class="fc" id="L183">				IntArrays.quickSort(dfsEdges, from, to, (e1, e2) -&gt; {</span>
-<span class="fc" id="L184">					int u1 = g.edgeEndpoint(e1, pathHead), u2 = g.edgeEndpoint(e2, pathHead);</span>
-<span class="fc" id="L185">					return Integer.compare(existingOutDegree[u1], existingOutDegree[u2]);</span>
+<span class="fc" id="L181">				IntArrays.quickSort(dfsEdges, from, to, (e1, e2) -&gt; {</span>
+<span class="fc" id="L182">					int u1 = g.edgeEndpoint(e1, pathHead), u2 = g.edgeEndpoint(e2, pathHead);</span>
+<span class="fc" id="L183">					return Integer.compare(existingOutDegree[u1], existingOutDegree[u2]);</span>
 				});
 			}
-<span class="fc" id="L188">			dfsEdgesNext[path.size()] = from;</span>
-<span class="fc" id="L189">		}</span>
+<span class="fc" id="L186">			dfsEdgesNext[path.size()] = from;</span>
+<span class="fc" id="L187">		}</span>
 
 		IntIterable pathHeadEdges() {
-<span class="fc" id="L192">			return () -&gt; new IntIterator() {</span>
-<span class="fc" id="L193">				int depth = path.size();</span>
-<span class="fc" id="L194">				final int to = dfsEdgesOffset[pathHead] + existingOutDegree[pathHead];</span>
+<span class="fc" id="L190">			return () -&gt; new IntIterator() {</span>
+<span class="fc" id="L191">				int depth = path.size();</span>
+<span class="fc" id="L192">				final int to = dfsEdgesOffset[pathHead] + existingOutDegree[pathHead];</span>
 
 				@Override
 				public boolean hasNext() {
-<span class="fc bfc" id="L198" title="All 2 branches covered.">					return dfsEdgesNext[depth] &lt; to;</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">					return dfsEdgesNext[depth] &lt; to;</span>
 				}
 
 				@Override
 				public int nextInt() {
-<span class="fc" id="L203">					return dfsEdges[dfsEdgesNext[depth]++];</span>
+<span class="fc" id="L201">					return dfsEdges[dfsEdgesNext[depth]++];</span>
 				}
 			};
 		}
 
 	}
 
-<span class="fc" id="L210">	private static class IterDirected extends IterBase {</span>
+<span class="fc" id="L208">	private static class IterDirected extends IterBase {</span>
 
 		private final Bitmap requiredEdges;
 		private final Bitmap hasRequiredOutEdge;
@@ -221,195 +219,195 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 		private final int[] deletedEdgesHistoryOffset;
 
 		IterDirected(IndexGraph g) {
-<span class="fc" id="L224">			super(g);</span>
-<span class="pc bnc" id="L225" title="All 2 branches missed.">			assert g.isDirected();</span>
-<span class="fc" id="L226">			final int m = g.edges().size();</span>
+<span class="fc" id="L222">			super(g);</span>
+<span class="pc bnc" id="L223" title="All 2 branches missed.">			assert g.isDirected();</span>
+<span class="fc" id="L224">			final int m = g.edges().size();</span>
 
-<span class="fc" id="L228">			existingEdges.setAll();</span>
-<span class="fc" id="L229">			requiredEdges = new Bitmap(m);</span>
-<span class="fc" id="L230">			hasRequiredOutEdge = new Bitmap(n);</span>
-<span class="fc" id="L231">			hasRequiredInEdge = new Bitmap(n);</span>
-<span class="fc" id="L232">			requiredEdgesHistory = new int[m];</span>
-<span class="fc" id="L233">			requiredEdgesHistoryOffset = new int[n];</span>
+<span class="fc" id="L226">			existingEdges.setAll();</span>
+<span class="fc" id="L227">			requiredEdges = new Bitmap(m);</span>
+<span class="fc" id="L228">			hasRequiredOutEdge = new Bitmap(n);</span>
+<span class="fc" id="L229">			hasRequiredInEdge = new Bitmap(n);</span>
+<span class="fc" id="L230">			requiredEdgesHistory = new int[m];</span>
+<span class="fc" id="L231">			requiredEdgesHistoryOffset = new int[n];</span>
 
-<span class="fc" id="L235">			existingOutEdgeHead = new int[n];</span>
-<span class="fc" id="L236">			existingInEdgeHead = new int[n];</span>
-<span class="fc" id="L237">			Arrays.fill(existingOutEdgeHead, -1);</span>
-<span class="fc" id="L238">			Arrays.fill(existingInEdgeHead, -1);</span>
+<span class="fc" id="L233">			existingOutEdgeHead = new int[n];</span>
+<span class="fc" id="L234">			existingInEdgeHead = new int[n];</span>
+<span class="fc" id="L235">			Arrays.fill(existingOutEdgeHead, -1);</span>
+<span class="fc" id="L236">			Arrays.fill(existingInEdgeHead, -1);</span>
 
-<span class="fc bfc" id="L240" title="All 2 branches covered.">			for (int v : range(n)) {</span>
-<span class="fc" id="L241">				IntIterator outEdges = g.outEdges(v).iterator();</span>
-<span class="fc bfc" id="L242" title="All 2 branches covered.">				if (outEdges.hasNext()) {</span>
-<span class="fc" id="L243">					int head = outEdges.nextInt();</span>
-<span class="fc" id="L244">					existingOutEdgeHead[v] = head;</span>
-<span class="fc bfc" id="L245" title="All 2 branches covered.">					for (int prev = head; outEdges.hasNext();) {</span>
-<span class="fc" id="L246">						int e = outEdges.nextInt();</span>
-<span class="fc" id="L247">						existingOutEdgeNext[prev] = e;</span>
-<span class="fc" id="L248">						existingOutEdgePrev[e] = prev;</span>
-<span class="fc" id="L249">						prev = e;</span>
-<span class="fc" id="L250">					}</span>
-<span class="fc" id="L251">					existingOutDegree[v] = g.outEdges(v).size();</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc" id="L239">				IntIterator outEdges = g.outEdges(v).iterator();</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">				if (outEdges.hasNext()) {</span>
+<span class="fc" id="L241">					int head = outEdges.nextInt();</span>
+<span class="fc" id="L242">					existingOutEdgeHead[v] = head;</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">					for (int prev = head; outEdges.hasNext();) {</span>
+<span class="fc" id="L244">						int e = outEdges.nextInt();</span>
+<span class="fc" id="L245">						existingOutEdgeNext[prev] = e;</span>
+<span class="fc" id="L246">						existingOutEdgePrev[e] = prev;</span>
+<span class="fc" id="L247">						prev = e;</span>
+<span class="fc" id="L248">					}</span>
+<span class="fc" id="L249">					existingOutDegree[v] = g.outEdges(v).size();</span>
 				}
-<span class="fc" id="L253">				IntIterator inEdges = g.inEdges(v).iterator();</span>
-<span class="fc bfc" id="L254" title="All 2 branches covered.">				if (inEdges.hasNext()) {</span>
-<span class="fc" id="L255">					int head = inEdges.nextInt();</span>
-<span class="fc" id="L256">					existingInEdgeHead[v] = head;</span>
-<span class="fc bfc" id="L257" title="All 2 branches covered.">					for (int prev = head; inEdges.hasNext();) {</span>
-<span class="fc" id="L258">						int e = inEdges.nextInt();</span>
-<span class="fc" id="L259">						existingInEdgeNext[prev] = e;</span>
-<span class="fc" id="L260">						existingInEdgePrev[e] = prev;</span>
-<span class="fc" id="L261">						prev = e;</span>
-<span class="fc" id="L262">					}</span>
+<span class="fc" id="L251">				IntIterator inEdges = g.inEdges(v).iterator();</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">				if (inEdges.hasNext()) {</span>
+<span class="fc" id="L253">					int head = inEdges.nextInt();</span>
+<span class="fc" id="L254">					existingInEdgeHead[v] = head;</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">					for (int prev = head; inEdges.hasNext();) {</span>
+<span class="fc" id="L256">						int e = inEdges.nextInt();</span>
+<span class="fc" id="L257">						existingInEdgeNext[prev] = e;</span>
+<span class="fc" id="L258">						existingInEdgePrev[e] = prev;</span>
+<span class="fc" id="L259">						prev = e;</span>
+<span class="fc" id="L260">					}</span>
 				}
-<span class="fc" id="L264">			}</span>
+<span class="fc" id="L262">			}</span>
 
-<span class="fc" id="L266">			deletedEdgesHistory = new int[m];</span>
-<span class="fc" id="L267">			deletedEdgesHistoryOffset = new int[n];</span>
+<span class="fc" id="L264">			deletedEdgesHistory = new int[m];</span>
+<span class="fc" id="L265">			deletedEdgesHistoryOffset = new int[n];</span>
 
-<span class="fc" id="L269">			int nextDfsEdgeOffset = 0;</span>
-<span class="fc bfc" id="L270" title="All 2 branches covered.">			for (int v : range(n)) {</span>
-<span class="fc" id="L271">				dfsEdgesOffset[v] = nextDfsEdgeOffset;</span>
-<span class="fc bfc" id="L272" title="All 2 branches covered.">				for (int e : g.outEdges(v))</span>
-<span class="fc" id="L273">					dfsEdges[nextDfsEdgeOffset++] = e;</span>
-<span class="fc" id="L274">			}</span>
-<span class="pc bnc" id="L275" title="All 2 branches missed.">			assert nextDfsEdgeOffset == dfsEdges.length;</span>
-<span class="fc" id="L276">			dfsEdgesOffset[n] = nextDfsEdgeOffset;</span>
+<span class="fc" id="L267">			int nextDfsEdgeOffset = 0;</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc" id="L269">				dfsEdgesOffset[v] = nextDfsEdgeOffset;</span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">				for (int e : g.outEdges(v))</span>
+<span class="fc" id="L271">					dfsEdges[nextDfsEdgeOffset++] = e;</span>
+<span class="fc" id="L272">			}</span>
+<span class="pc bnc" id="L273" title="All 2 branches missed.">			assert nextDfsEdgeOffset == dfsEdges.length;</span>
+<span class="fc" id="L274">			dfsEdgesOffset[n] = nextDfsEdgeOffset;</span>
 
-<span class="fc" id="L278">			pathHead = originVertex;</span>
-<span class="fc" id="L279">			onPath.set(pathHead);</span>
-<span class="fc" id="L280">			onPathCount++;</span>
+<span class="fc" id="L276">			pathHead = originVertex;</span>
+<span class="fc" id="L277">			onPath.set(pathHead);</span>
+<span class="fc" id="L278">			onPathCount++;</span>
 
-<span class="fc" id="L282">			verticesToExamine.addAll(range(n));</span>
-<span class="fc" id="L283">			isAdmissiblePath0();</span>
-<span class="fc" id="L284">			verticesToExamine.clear();</span>
-<span class="fc" id="L285">			requiredEdgesHistoryOffset[0] = 0;</span>
-<span class="fc" id="L286">			deletedEdgesHistoryOffset[0] = 0;</span>
+<span class="fc" id="L280">			verticesToExamine.addAll(range(n));</span>
+<span class="fc" id="L281">			isAdmissiblePath0();</span>
+<span class="fc" id="L282">			verticesToExamine.clear();</span>
+<span class="fc" id="L283">			requiredEdgesHistoryOffset[0] = 0;</span>
+<span class="fc" id="L284">			deletedEdgesHistoryOffset[0] = 0;</span>
 
-<span class="fc" id="L288">			setupDfsHeadEdges();</span>
-<span class="fc" id="L289">		}</span>
+<span class="fc" id="L286">			setupDfsHeadEdges();</span>
+<span class="fc" id="L287">		}</span>
 
 		@Override
 		IPath advance() {
 			dfs: for (;;) {
-<span class="fc" id="L294">				final int u = pathHead;</span>
-<span class="fc" id="L295">				final int depth = path.size();</span>
-<span class="fc bfc" id="L296" title="All 2 branches covered.">				if (depth == n - 1) {</span>
-<span class="fc bfc" id="L297" title="All 2 branches covered.">					for (int e : pathHeadEdges()) {</span>
-<span class="fc" id="L298">						final int v = g.edgeTarget(e);</span>
-<span class="pc bpc" id="L299" title="1 of 2 branches missed.">						if (v == originVertex) {</span>
-<span class="fc" id="L300">							int[] nextPath = new int[n];</span>
-<span class="fc" id="L301">							path.toArray(nextPath);</span>
-<span class="fc" id="L302">							nextPath[n - 1] = e;</span>
-<span class="fc" id="L303">							return IPath.valueOf(g, originVertex, originVertex, IntImmutableList.of(nextPath));</span>
+<span class="fc" id="L292">				final int u = pathHead;</span>
+<span class="fc" id="L293">				final int depth = path.size();</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">				if (depth == n - 1) {</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">					for (int e : pathHeadEdges()) {</span>
+<span class="fc" id="L296">						final int v = g.edgeTarget(e);</span>
+<span class="pc bpc" id="L297" title="1 of 2 branches missed.">						if (v == originVertex) {</span>
+<span class="fc" id="L298">							int[] nextPath = new int[n];</span>
+<span class="fc" id="L299">							path.toArray(nextPath);</span>
+<span class="fc" id="L300">							nextPath[n - 1] = e;</span>
+<span class="fc" id="L301">							return IPath.valueOf(g, originVertex, originVertex, Fastutil.list(nextPath));</span>
 						}
-<span class="pc" id="L305">					}</span>
+<span class="pc" id="L303">					}</span>
 				} else {
-<span class="fc bfc" id="L307" title="All 2 branches covered.">					for (int e : pathHeadEdges()) {</span>
-<span class="pc bnc" id="L308" title="All 2 branches missed.">						assert existingEdges.get(e);</span>
-<span class="fc" id="L309">						final int v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L310" title="All 2 branches covered.">						if (!onPath.get(v)) {</span>
-<span class="fc" id="L311">							requiredEdgesHistoryOffset[depth] =</span>
-<span class="fc bfc" id="L312" title="All 2 branches covered.">									path.isEmpty() ? 0 : requiredEdgesHistoryOffset[depth - 1];</span>
-<span class="fc" id="L313">							deletedEdgesHistoryOffset[depth] =</span>
-<span class="fc bfc" id="L314" title="All 2 branches covered.">									path.isEmpty() ? 0 : deletedEdgesHistoryOffset[depth - 1];</span>
-<span class="fc" id="L315">							boolean isAdmissible = isAdmissiblePath(e, v);</span>
-<span class="fc bfc" id="L316" title="All 2 branches covered.">							if (isAdmissible) {</span>
-<span class="fc" id="L317">								pathHead = v;</span>
-<span class="fc" id="L318">								onPath.set(pathHead);</span>
-<span class="fc" id="L319">								onPathCount++;</span>
-<span class="fc" id="L320">								path.add(e);</span>
-<span class="fc" id="L321">								setupDfsHeadEdges();</span>
-<span class="fc" id="L322">								continue dfs;</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">					for (int e : pathHeadEdges()) {</span>
+<span class="pc bnc" id="L306" title="All 2 branches missed.">						assert existingEdges.get(e);</span>
+<span class="fc" id="L307">						final int v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">						if (!onPath.get(v)) {</span>
+<span class="fc" id="L309">							requiredEdgesHistoryOffset[depth] =</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">									path.isEmpty() ? 0 : requiredEdgesHistoryOffset[depth - 1];</span>
+<span class="fc" id="L311">							deletedEdgesHistoryOffset[depth] =</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">									path.isEmpty() ? 0 : deletedEdgesHistoryOffset[depth - 1];</span>
+<span class="fc" id="L313">							boolean isAdmissible = isAdmissiblePath(e, v);</span>
+<span class="fc bfc" id="L314" title="All 2 branches covered.">							if (isAdmissible) {</span>
+<span class="fc" id="L315">								pathHead = v;</span>
+<span class="fc" id="L316">								onPath.set(pathHead);</span>
+<span class="fc" id="L317">								onPathCount++;</span>
+<span class="fc" id="L318">								path.add(e);</span>
+<span class="fc" id="L319">								setupDfsHeadEdges();</span>
+<span class="fc" id="L320">								continue dfs;</span>
 							}
-<span class="fc" id="L324">							rollBackRequiredAndDeletedEdges();</span>
+<span class="fc" id="L322">							rollBackRequiredAndDeletedEdges();</span>
 						}
-<span class="fc" id="L326">					}</span>
+<span class="fc" id="L324">					}</span>
 				}
 
-<span class="fc" id="L329">				onPath.clear(u);</span>
-<span class="fc" id="L330">				onPathCount--;</span>
-<span class="fc bfc" id="L331" title="All 2 branches covered.">				if (path.isEmpty()) {</span>
-<span class="fc" id="L332">					pathHead = -1;</span>
-<span class="fc" id="L333">					return null;</span>
+<span class="fc" id="L327">				onPath.clear(u);</span>
+<span class="fc" id="L328">				onPathCount--;</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">				if (path.isEmpty()) {</span>
+<span class="fc" id="L330">					pathHead = -1;</span>
+<span class="fc" id="L331">					return null;</span>
 				}
-<span class="fc" id="L335">				int lastEdge = path.popInt();</span>
-<span class="fc" id="L336">				pathHead = g.edgeSource(lastEdge);</span>
-<span class="fc" id="L337">				rollBackRequiredAndDeletedEdges();</span>
-<span class="fc" id="L338">			}</span>
+<span class="fc" id="L333">				int lastEdge = path.popInt();</span>
+<span class="fc" id="L334">				pathHead = g.edgeSource(lastEdge);</span>
+<span class="fc" id="L335">				rollBackRequiredAndDeletedEdges();</span>
+<span class="fc" id="L336">			}</span>
 		}
 
 		private boolean isAdmissiblePath(int extendEdge, int newPathHead) {
-<span class="fc" id="L342">			requireEdge(extendEdge);</span>
-<span class="fc" id="L343">			boolean isAdmissible = isAdmissiblePath0();</span>
-<span class="fc bfc" id="L344" title="All 2 branches covered.">			if (!isAdmissible) {</span>
-<span class="fc" id="L345">				verticesToExamine.clear();</span>
-<span class="fc" id="L346">				return false;</span>
+<span class="fc" id="L340">			requireEdge(extendEdge);</span>
+<span class="fc" id="L341">			boolean isAdmissible = isAdmissiblePath0();</span>
+<span class="fc bfc" id="L342" title="All 2 branches covered.">			if (!isAdmissible) {</span>
+<span class="fc" id="L343">				verticesToExamine.clear();</span>
+<span class="fc" id="L344">				return false;</span>
 			}
 
 			/* F6. Fail if any set of required arcs forms a closed circuit, other than a Hamiltonian cycle */
-<span class="fc bfc" id="L350" title="All 2 branches covered.">			startLoop: for (int start : range(n)) {</span>
-<span class="fc bfc" id="L351" title="All 2 branches covered.">				if (!visited.add(start))</span>
-<span class="fc" id="L352">					continue;</span>
-<span class="fc bfc" id="L353" title="All 2 branches covered.">				for (int u = start; hasRequiredOutEdge.get(u);) {</span>
-<span class="pc bnc" id="L354" title="All 2 branches missed.">					assert existingOutDegree[u] == 1;</span>
-<span class="fc" id="L355">					int requiredEdge = existingOutEdgeHead[u];</span>
-<span class="fc" id="L356">					int v = g.edgeTarget(requiredEdge);</span>
-<span class="fc bfc" id="L357" title="All 2 branches covered.">					if (!visited.add(v)) {</span>
-<span class="fc bfc" id="L358" title="All 2 branches covered.">						if (v == start) {</span>
-<span class="fc bfc" id="L359" title="All 4 branches covered.">							boolean fullHamiltonianCycle = start == 0 &amp;&amp; visited.size() == n;</span>
-<span class="fc" id="L360">							visited.clear();</span>
-<span class="fc" id="L361">							return fullHamiltonianCycle;</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">			startLoop: for (int start : range(n)) {</span>
+<span class="fc bfc" id="L349" title="All 2 branches covered.">				if (!visited.add(start))</span>
+<span class="fc" id="L350">					continue;</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">				for (int u = start; hasRequiredOutEdge.get(u);) {</span>
+<span class="pc bnc" id="L352" title="All 2 branches missed.">					assert existingOutDegree[u] == 1;</span>
+<span class="fc" id="L353">					int requiredEdge = existingOutEdgeHead[u];</span>
+<span class="fc" id="L354">					int v = g.edgeTarget(requiredEdge);</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">					if (!visited.add(v)) {</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">						if (v == start) {</span>
+<span class="fc bfc" id="L357" title="All 4 branches covered.">							boolean fullHamiltonianCycle = start == 0 &amp;&amp; visited.size() == n;</span>
+<span class="fc" id="L358">							visited.clear();</span>
+<span class="fc" id="L359">							return fullHamiltonianCycle;</span>
 						}
 						continue startLoop;
 					}
-<span class="fc" id="L365">					u = v;</span>
-<span class="fc" id="L366">				}</span>
-<span class="fc" id="L367">			}</span>
-<span class="fc" id="L368">			visited.clear();</span>
+<span class="fc" id="L363">					u = v;</span>
+<span class="fc" id="L364">				}</span>
+<span class="fc" id="L365">			}</span>
+<span class="fc" id="L366">			visited.clear();</span>
 
 			/*
 			 * F7. Fail if for any node not in the partial path there is no directed path to that node from the last
 			 * node in the partial path.
 			 */
-<span class="fc" id="L374">			visited.set(newPathHead);</span>
-<span class="fc" id="L375">			bfsStack.add(newPathHead);</span>
-<span class="fc bfc" id="L376" title="All 2 branches covered.">			while (!bfsStack.isEmpty()) {</span>
-<span class="fc" id="L377">				int u = bfsStack.popInt();</span>
-<span class="fc bfc" id="L378" title="All 2 branches covered.">				for (int e : existingOutEdges(u)) {</span>
-<span class="fc" id="L379">					int v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L380" title="All 2 branches covered.">					if (onPath.get(v))</span>
-<span class="fc" id="L381">						continue;</span>
-<span class="fc bfc" id="L382" title="All 2 branches covered.">					if (visited.add(v))</span>
-<span class="fc" id="L383">						bfsStack.add(v);</span>
-<span class="fc" id="L384">				}</span>
-<span class="fc" id="L385">			}</span>
-<span class="fc" id="L386">			int visitedCount = visited.size();</span>
-<span class="fc" id="L387">			visited.clear();</span>
-<span class="fc bfc" id="L388" title="All 2 branches covered.">			if (visitedCount != n - onPathCount)</span>
-<span class="fc" id="L389">				return false; /* F7 */</span>
+<span class="fc" id="L372">			visited.set(newPathHead);</span>
+<span class="fc" id="L373">			bfsStack.add(newPathHead);</span>
+<span class="fc bfc" id="L374" title="All 2 branches covered.">			while (!bfsStack.isEmpty()) {</span>
+<span class="fc" id="L375">				int u = bfsStack.popInt();</span>
+<span class="fc bfc" id="L376" title="All 2 branches covered.">				for (int e : existingOutEdges(u)) {</span>
+<span class="fc" id="L377">					int v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L378" title="All 2 branches covered.">					if (onPath.get(v))</span>
+<span class="fc" id="L379">						continue;</span>
+<span class="fc bfc" id="L380" title="All 2 branches covered.">					if (visited.add(v))</span>
+<span class="fc" id="L381">						bfsStack.add(v);</span>
+<span class="fc" id="L382">				}</span>
+<span class="fc" id="L383">			}</span>
+<span class="fc" id="L384">			int visitedCount = visited.size();</span>
+<span class="fc" id="L385">			visited.clear();</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">			if (visitedCount != n - onPathCount)</span>
+<span class="fc" id="L387">				return false; /* F7 */</span>
 
 			/*
 			 * F8. Fail if for any node not in the partial path there is no directed path from that node to the initial
 			 * node of the partial path.
 			 */
-<span class="fc" id="L395">			visited.set(originVertex);</span>
-<span class="fc" id="L396">			bfsStack.add(originVertex);</span>
-<span class="fc bfc" id="L397" title="All 2 branches covered.">			while (!bfsStack.isEmpty()) {</span>
-<span class="fc" id="L398">				int v = bfsStack.popInt();</span>
-<span class="fc bfc" id="L399" title="All 2 branches covered.">				for (int e : existingInEdges(v)) {</span>
-<span class="fc" id="L400">					int u = g.edgeSource(e);</span>
-<span class="fc bfc" id="L401" title="All 2 branches covered.">					if (onPath.get(u))</span>
-<span class="fc" id="L402">						continue;</span>
-<span class="fc bfc" id="L403" title="All 2 branches covered.">					if (visited.add(u))</span>
-<span class="fc" id="L404">						bfsStack.add(u);</span>
-<span class="fc" id="L405">				}</span>
-<span class="fc" id="L406">			}</span>
-<span class="fc" id="L407">			visitedCount = visited.size() - 1; /* we should not count originVertex */</span>
-<span class="fc" id="L408">			visited.clear();</span>
-<span class="fc bfc" id="L409" title="All 2 branches covered.">			if (visitedCount != n - onPathCount)</span>
-<span class="fc" id="L410">				return false; /* F8 */</span>
+<span class="fc" id="L393">			visited.set(originVertex);</span>
+<span class="fc" id="L394">			bfsStack.add(originVertex);</span>
+<span class="fc bfc" id="L395" title="All 2 branches covered.">			while (!bfsStack.isEmpty()) {</span>
+<span class="fc" id="L396">				int v = bfsStack.popInt();</span>
+<span class="fc bfc" id="L397" title="All 2 branches covered.">				for (int e : existingInEdges(v)) {</span>
+<span class="fc" id="L398">					int u = g.edgeSource(e);</span>
+<span class="fc bfc" id="L399" title="All 2 branches covered.">					if (onPath.get(u))</span>
+<span class="fc" id="L400">						continue;</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">					if (visited.add(u))</span>
+<span class="fc" id="L402">						bfsStack.add(u);</span>
+<span class="fc" id="L403">				}</span>
+<span class="fc" id="L404">			}</span>
+<span class="fc" id="L405">			visitedCount = visited.size() - 1; /* we should not count originVertex */</span>
+<span class="fc" id="L406">			visited.clear();</span>
+<span class="fc bfc" id="L407" title="All 2 branches covered.">			if (visitedCount != n - onPathCount)</span>
+<span class="fc" id="L408">				return false; /* F8 */</span>
 
-<span class="fc" id="L412">			return true;</span>
+<span class="fc" id="L410">			return true;</span>
 		}
 
 		private boolean isAdmissiblePath0() {
@@ -418,8 +416,8 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 			 * circuit
 			 */
 
-<span class="fc bfc" id="L421" title="All 2 branches covered.">			while (!verticesToExamine.isEmpty()) {</span>
-<span class="fc" id="L422">				int v = verticesToExamine.pop();</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">			while (!verticesToExamine.isEmpty()) {</span>
+<span class="fc" id="L420">				int v = verticesToExamine.pop();</span>
 
 				/* F1. Fail if any vertex becomes isolated, that is, has no incident arc */
 				/* F2. Fail if any vertex has only one incident arc */
@@ -427,38 +425,38 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 				/* F4. Fail if any vertex has two required directed arcs entering (leaving) */
 				/* F5. Fail if any vertex has three required arcs incident */
 				/* R1. If a vertex has only one directed arc entering (leaving), then that arc is required */
-<span class="fc" id="L430">				IntIterator singleInIter = existingInEdges(v).iterator();</span>
-<span class="fc bfc" id="L431" title="All 2 branches covered.">				if (!singleInIter.hasNext())</span>
-<span class="fc" id="L432">					return false; /* F1, F2, F3 */</span>
-<span class="fc" id="L433">				int singleIn = singleInIter.nextInt();</span>
-<span class="fc" id="L434">				boolean moreThanOneIn = singleInIter.hasNext();</span>
-<span class="fc bfc" id="L435" title="All 2 branches covered.">				if (!moreThanOneIn) {</span>
+<span class="fc" id="L428">				IntIterator singleInIter = existingInEdges(v).iterator();</span>
+<span class="fc bfc" id="L429" title="All 2 branches covered.">				if (!singleInIter.hasNext())</span>
+<span class="fc" id="L430">					return false; /* F1, F2, F3 */</span>
+<span class="fc" id="L431">				int singleIn = singleInIter.nextInt();</span>
+<span class="fc" id="L432">				boolean moreThanOneIn = singleInIter.hasNext();</span>
+<span class="fc bfc" id="L433" title="All 2 branches covered.">				if (!moreThanOneIn) {</span>
 					// boolean admissible =
-<span class="fc" id="L437">					requireEdge(singleIn); /* R1 */</span>
+<span class="fc" id="L435">					requireEdge(singleIn); /* R1 */</span>
 					// if (!admissible)
 					// return false; /* F4, F5 */
 				}
-<span class="fc" id="L441">				IntIterator singleOutIter = existingOutEdges(v).iterator();</span>
-<span class="fc bfc" id="L442" title="All 2 branches covered.">				if (!singleOutIter.hasNext())</span>
-<span class="fc" id="L443">					return false; /* F1, F2, F3 */</span>
-<span class="fc" id="L444">				int singleOut = singleOutIter.nextInt();</span>
-<span class="fc" id="L445">				boolean moreThanOneOut = singleOutIter.hasNext();</span>
-<span class="fc bfc" id="L446" title="All 2 branches covered.">				if (!moreThanOneOut) {</span>
+<span class="fc" id="L439">				IntIterator singleOutIter = existingOutEdges(v).iterator();</span>
+<span class="fc bfc" id="L440" title="All 2 branches covered.">				if (!singleOutIter.hasNext())</span>
+<span class="fc" id="L441">					return false; /* F1, F2, F3 */</span>
+<span class="fc" id="L442">				int singleOut = singleOutIter.nextInt();</span>
+<span class="fc" id="L443">				boolean moreThanOneOut = singleOutIter.hasNext();</span>
+<span class="fc bfc" id="L444" title="All 2 branches covered.">				if (!moreThanOneOut) {</span>
 					// boolean admissible =
-<span class="fc" id="L448">					requireEdge(singleOut); /* R1 */</span>
+<span class="fc" id="L446">					requireEdge(singleOut); /* R1 */</span>
 					// if (!admissible)
 					// return false; /* F4, F5 */
 				}
-<span class="fc" id="L452">			}</span>
-<span class="fc" id="L453">			return true;</span>
+<span class="fc" id="L450">			}</span>
+<span class="fc" id="L451">			return true;</span>
 		}
 
 		private void requireEdge(int e) {
-<span class="fc bfc" id="L457" title="All 2 branches covered.">			if (!requiredEdges.set(e))</span>
-<span class="fc" id="L458">				return;</span>
+<span class="fc bfc" id="L455" title="All 2 branches covered.">			if (!requiredEdges.set(e))</span>
+<span class="fc" id="L456">				return;</span>
 
-<span class="fc" id="L460">			requiredEdgesHistory[requiredEdgesHistoryOffset[path.size()]++] = e;</span>
-<span class="fc" id="L461">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L458">			requiredEdgesHistory[requiredEdgesHistoryOffset[path.size()]++] = e;</span>
+<span class="fc" id="L459">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 
 			/* F4. Fail if any vertex has two required directed arcs entering (leaving) */
 			/* F5. Fail if any vertex has three required arcs incident */
@@ -467,9 +465,9 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 			// return false; /* F4, F5 */
 			// if (!hasRequiredInEdge.set(v))
 			// return false; /* F4, F5 */
-<span class="fc" id="L470">			boolean theOnlyRequiredEdge1 = hasRequiredOutEdge.set(u);</span>
-<span class="fc" id="L471">			boolean theOnlyRequiredEdge2 = hasRequiredInEdge.set(v);</span>
-<span class="pc bnc" id="L472" title="All 4 branches missed.">			assert theOnlyRequiredEdge1 &amp;&amp; theOnlyRequiredEdge2;</span>
+<span class="fc" id="L468">			boolean theOnlyRequiredEdge1 = hasRequiredOutEdge.set(u);</span>
+<span class="fc" id="L469">			boolean theOnlyRequiredEdge2 = hasRequiredInEdge.set(v);</span>
+<span class="pc bnc" id="L470" title="All 4 branches missed.">			assert theOnlyRequiredEdge1 &amp;&amp; theOnlyRequiredEdge2;</span>
 
 			/*
 			 * D2. If a vertex has a required directed arc entering (leaving), then all undecided directed arcs entering
@@ -481,109 +479,109 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 			 * edges always keep a pointer to the next edge, so we can delete the previous edge and continue the
 			 * iteration. Don't try this at home.
 			 */
-<span class="fc bfc" id="L484" title="All 2 branches covered.">			for (int e2 : existingOutEdges(u))</span>
-<span class="fc bfc" id="L485" title="All 2 branches covered.">				if (!requiredEdges.get(e2))</span>
-<span class="fc" id="L486">					deleteEdge(e2); /* D2 */</span>
-<span class="fc bfc" id="L487" title="All 2 branches covered.">			for (int e2 : existingInEdges(v))</span>
-<span class="fc bfc" id="L488" title="All 2 branches covered.">				if (!requiredEdges.get(e2))</span>
-<span class="fc" id="L489">					deleteEdge(e2); /* D2 */</span>
+<span class="fc bfc" id="L482" title="All 2 branches covered.">			for (int e2 : existingOutEdges(u))</span>
+<span class="fc bfc" id="L483" title="All 2 branches covered.">				if (!requiredEdges.get(e2))</span>
+<span class="fc" id="L484">					deleteEdge(e2); /* D2 */</span>
+<span class="fc bfc" id="L485" title="All 2 branches covered.">			for (int e2 : existingInEdges(v))</span>
+<span class="fc bfc" id="L486" title="All 2 branches covered.">				if (!requiredEdges.get(e2))</span>
+<span class="fc" id="L487">					deleteEdge(e2); /* D2 */</span>
 
-<span class="fc" id="L491">			verticesToExamine.add(u);</span>
-<span class="fc" id="L492">			verticesToExamine.add(v);</span>
-<span class="fc" id="L493">		}</span>
+<span class="fc" id="L489">			verticesToExamine.add(u);</span>
+<span class="fc" id="L490">			verticesToExamine.add(v);</span>
+<span class="fc" id="L491">		}</span>
 
 		private void deleteEdge(int e) {
-<span class="fc" id="L496">			boolean wasNonDeleted = existingEdges.clear(e);</span>
-<span class="pc bnc" id="L497" title="All 2 branches missed.">			assert wasNonDeleted;</span>
+<span class="fc" id="L494">			boolean wasNonDeleted = existingEdges.clear(e);</span>
+<span class="pc bnc" id="L495" title="All 2 branches missed.">			assert wasNonDeleted;</span>
 
-<span class="fc" id="L499">			deletedEdgesHistory[deletedEdgesHistoryOffset[path.size()]++] = e;</span>
-<span class="fc" id="L500">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L501">			int outPrev = existingOutEdgePrev[e], outNext = existingOutEdgeNext[e];</span>
-<span class="fc" id="L502">			int inPrev = existingInEdgePrev[e], inNext = existingInEdgeNext[e];</span>
-<span class="fc bfc" id="L503" title="All 2 branches covered.">			if (outPrev &gt;= 0) {</span>
-<span class="fc" id="L504">				existingOutEdgeNext[outPrev] = outNext;</span>
+<span class="fc" id="L497">			deletedEdgesHistory[deletedEdgesHistoryOffset[path.size()]++] = e;</span>
+<span class="fc" id="L498">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L499">			int outPrev = existingOutEdgePrev[e], outNext = existingOutEdgeNext[e];</span>
+<span class="fc" id="L500">			int inPrev = existingInEdgePrev[e], inNext = existingInEdgeNext[e];</span>
+<span class="fc bfc" id="L501" title="All 2 branches covered.">			if (outPrev &gt;= 0) {</span>
+<span class="fc" id="L502">				existingOutEdgeNext[outPrev] = outNext;</span>
 			} else {
-<span class="fc" id="L506">				existingOutEdgeHead[u] = outNext;</span>
+<span class="fc" id="L504">				existingOutEdgeHead[u] = outNext;</span>
 			}
-<span class="fc bfc" id="L508" title="All 2 branches covered.">			if (outNext &gt;= 0)</span>
-<span class="fc" id="L509">				existingOutEdgePrev[outNext] = outPrev;</span>
-<span class="fc" id="L510">			existingOutDegree[u]--;</span>
+<span class="fc bfc" id="L506" title="All 2 branches covered.">			if (outNext &gt;= 0)</span>
+<span class="fc" id="L507">				existingOutEdgePrev[outNext] = outPrev;</span>
+<span class="fc" id="L508">			existingOutDegree[u]--;</span>
 
-<span class="fc bfc" id="L512" title="All 2 branches covered.">			if (inPrev &gt;= 0) {</span>
-<span class="fc" id="L513">				existingInEdgeNext[inPrev] = inNext;</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">			if (inPrev &gt;= 0) {</span>
+<span class="fc" id="L511">				existingInEdgeNext[inPrev] = inNext;</span>
 			} else {
-<span class="fc" id="L515">				existingInEdgeHead[v] = inNext;</span>
+<span class="fc" id="L513">				existingInEdgeHead[v] = inNext;</span>
 			}
-<span class="fc bfc" id="L517" title="All 2 branches covered.">			if (inNext &gt;= 0)</span>
-<span class="fc" id="L518">				existingInEdgePrev[inNext] = inPrev;</span>
+<span class="fc bfc" id="L515" title="All 2 branches covered.">			if (inNext &gt;= 0)</span>
+<span class="fc" id="L516">				existingInEdgePrev[inNext] = inPrev;</span>
 
 			// existingOutEdgePrev[e] = existingOutEdgeNext[e] = existingInEdgePrev[e] = existingInEdgeNext[e] = -1;
 
-<span class="fc" id="L522">			verticesToExamine.add(u);</span>
-<span class="fc" id="L523">			verticesToExamine.add(v);</span>
-<span class="fc" id="L524">		}</span>
+<span class="fc" id="L520">			verticesToExamine.add(u);</span>
+<span class="fc" id="L521">			verticesToExamine.add(v);</span>
+<span class="fc" id="L522">		}</span>
 
 		private void rollBackRequiredAndDeletedEdges() {
-<span class="fc" id="L527">			int reqFrom = requiredEdgesHistoryOffset[path.size()];</span>
-<span class="fc bfc" id="L528" title="All 2 branches covered.">			int reqTo = path.isEmpty() ? 0 : requiredEdgesHistoryOffset[path.size() - 1];</span>
-<span class="fc bfc" id="L529" title="All 2 branches covered.">			for (int i = reqFrom - 1; i &gt;= reqTo; i--) {</span>
-<span class="fc" id="L530">				int e = requiredEdgesHistory[i];</span>
-<span class="fc" id="L531">				requiredEdges.clear(e);</span>
-<span class="fc" id="L532">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L533">				boolean wasRequired1 = hasRequiredOutEdge.clear(u);</span>
-<span class="fc" id="L534">				boolean wasRequired2 = hasRequiredInEdge.clear(v);</span>
-<span class="pc bnc" id="L535" title="All 4 branches missed.">				assert wasRequired1 &amp;&amp; wasRequired2;</span>
+<span class="fc" id="L525">			int reqFrom = requiredEdgesHistoryOffset[path.size()];</span>
+<span class="fc bfc" id="L526" title="All 2 branches covered.">			int reqTo = path.isEmpty() ? 0 : requiredEdgesHistoryOffset[path.size() - 1];</span>
+<span class="fc bfc" id="L527" title="All 2 branches covered.">			for (int i = reqFrom - 1; i &gt;= reqTo; i--) {</span>
+<span class="fc" id="L528">				int e = requiredEdgesHistory[i];</span>
+<span class="fc" id="L529">				requiredEdges.clear(e);</span>
+<span class="fc" id="L530">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L531">				boolean wasRequired1 = hasRequiredOutEdge.clear(u);</span>
+<span class="fc" id="L532">				boolean wasRequired2 = hasRequiredInEdge.clear(v);</span>
+<span class="pc bnc" id="L533" title="All 4 branches missed.">				assert wasRequired1 &amp;&amp; wasRequired2;</span>
 			}
 
-<span class="fc" id="L538">			int delFrom = deletedEdgesHistoryOffset[path.size()];</span>
-<span class="fc bfc" id="L539" title="All 2 branches covered.">			int delTo = path.isEmpty() ? 0 : deletedEdgesHistoryOffset[path.size() - 1];</span>
-<span class="fc bfc" id="L540" title="All 2 branches covered.">			for (int i = delFrom - 1; i &gt;= delTo; i--) {</span>
-<span class="fc" id="L541">				int e = deletedEdgesHistory[i];</span>
-<span class="fc" id="L542">				existingEdges.set(e);</span>
-<span class="fc" id="L543">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L544">				int outHead = existingOutEdgeHead[u], inHead = existingInEdgeHead[v];</span>
-<span class="fc" id="L545">				existingOutEdgeNext[e] = outHead;</span>
-<span class="fc bfc" id="L546" title="All 2 branches covered.">				if (outHead &gt;= 0)</span>
-<span class="fc" id="L547">					existingOutEdgePrev[outHead] = e;</span>
-<span class="fc" id="L548">				existingOutEdgeHead[u] = e;</span>
-<span class="fc" id="L549">				existingOutEdgePrev[e] = -1;</span>
-<span class="fc" id="L550">				existingOutDegree[u]++;</span>
-<span class="fc" id="L551">				existingInEdgeNext[e] = inHead;</span>
-<span class="fc bfc" id="L552" title="All 2 branches covered.">				if (inHead &gt;= 0)</span>
-<span class="fc" id="L553">					existingInEdgePrev[inHead] = e;</span>
-<span class="fc" id="L554">				existingInEdgeHead[v] = e;</span>
-<span class="fc" id="L555">				existingInEdgePrev[e] = -1;</span>
+<span class="fc" id="L536">			int delFrom = deletedEdgesHistoryOffset[path.size()];</span>
+<span class="fc bfc" id="L537" title="All 2 branches covered.">			int delTo = path.isEmpty() ? 0 : deletedEdgesHistoryOffset[path.size() - 1];</span>
+<span class="fc bfc" id="L538" title="All 2 branches covered.">			for (int i = delFrom - 1; i &gt;= delTo; i--) {</span>
+<span class="fc" id="L539">				int e = deletedEdgesHistory[i];</span>
+<span class="fc" id="L540">				existingEdges.set(e);</span>
+<span class="fc" id="L541">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L542">				int outHead = existingOutEdgeHead[u], inHead = existingInEdgeHead[v];</span>
+<span class="fc" id="L543">				existingOutEdgeNext[e] = outHead;</span>
+<span class="fc bfc" id="L544" title="All 2 branches covered.">				if (outHead &gt;= 0)</span>
+<span class="fc" id="L545">					existingOutEdgePrev[outHead] = e;</span>
+<span class="fc" id="L546">				existingOutEdgeHead[u] = e;</span>
+<span class="fc" id="L547">				existingOutEdgePrev[e] = -1;</span>
+<span class="fc" id="L548">				existingOutDegree[u]++;</span>
+<span class="fc" id="L549">				existingInEdgeNext[e] = inHead;</span>
+<span class="fc bfc" id="L550" title="All 2 branches covered.">				if (inHead &gt;= 0)</span>
+<span class="fc" id="L551">					existingInEdgePrev[inHead] = e;</span>
+<span class="fc" id="L552">				existingInEdgeHead[v] = e;</span>
+<span class="fc" id="L553">				existingInEdgePrev[e] = -1;</span>
 			}
-<span class="fc" id="L557">		}</span>
+<span class="fc" id="L555">		}</span>
 
 		private IntIterable existingOutEdges(int source) {
-<span class="fc" id="L560">			return edgesLinkedList(existingOutEdgeHead[source], existingOutEdgeNext);</span>
+<span class="fc" id="L558">			return edgesLinkedList(existingOutEdgeHead[source], existingOutEdgeNext);</span>
 		}
 
 		private IntIterable existingInEdges(int target) {
-<span class="fc" id="L564">			return edgesLinkedList(existingInEdgeHead[target], existingInEdgeNext);</span>
+<span class="fc" id="L562">			return edgesLinkedList(existingInEdgeHead[target], existingInEdgeNext);</span>
 		}
 
 		private static IntIterable edgesLinkedList(int firstEdge, int[] nextEdge) {
-<span class="fc" id="L568">			return () -&gt; new IntIterator() {</span>
-<span class="fc" id="L569">				int e = firstEdge;</span>
+<span class="fc" id="L566">			return () -&gt; new IntIterator() {</span>
+<span class="fc" id="L567">				int e = firstEdge;</span>
 
 				@Override
 				public boolean hasNext() {
-<span class="fc bfc" id="L573" title="All 2 branches covered.">					return e &gt;= 0;</span>
+<span class="fc bfc" id="L571" title="All 2 branches covered.">					return e &gt;= 0;</span>
 				}
 
 				@Override
 				public int nextInt() {
-<span class="fc" id="L578">					int ret = e;</span>
-<span class="fc" id="L579">					e = nextEdge[e];</span>
-<span class="fc" id="L580">					return ret;</span>
+<span class="fc" id="L576">					int ret = e;</span>
+<span class="fc" id="L577">					e = nextEdge[e];</span>
+<span class="fc" id="L578">					return ret;</span>
 				}
 			};
 		}
 	}
 
-<span class="fc" id="L586">	private static class IterUndirected extends IterBase {</span>
+<span class="fc" id="L584">	private static class IterUndirected extends IterBase {</span>
 
 		private final Bitmap requiredEdges;
 		private final Bitmap hasRequiredEdge;
@@ -597,97 +595,97 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 		private final IntSet usedOriginEdges;
 
 		IterUndirected(IndexGraph g) {
-<span class="fc" id="L600">			super(g);</span>
-<span class="pc bnc" id="L601" title="All 2 branches missed.">			assert !g.isDirected();</span>
-<span class="fc" id="L602">			final int m = g.edges().size();</span>
+<span class="fc" id="L598">			super(g);</span>
+<span class="pc bnc" id="L599" title="All 2 branches missed.">			assert !g.isDirected();</span>
+<span class="fc" id="L600">			final int m = g.edges().size();</span>
 
-<span class="fc" id="L604">			requiredEdges = new Bitmap(m);</span>
-<span class="fc" id="L605">			hasRequiredEdge = new Bitmap(2 * n);</span>
-<span class="fc" id="L606">			requiredEdgesHistory = new int[m];</span>
-<span class="fc" id="L607">			requiredEdgesHistoryOffset = new int[n];</span>
+<span class="fc" id="L602">			requiredEdges = new Bitmap(m);</span>
+<span class="fc" id="L603">			hasRequiredEdge = new Bitmap(2 * n);</span>
+<span class="fc" id="L604">			requiredEdgesHistory = new int[m];</span>
+<span class="fc" id="L605">			requiredEdgesHistoryOffset = new int[n];</span>
 
-<span class="fc" id="L609">			existingEdgeHead = new int[n];</span>
-<span class="fc" id="L610">			Arrays.fill(existingEdgeHead, -1);</span>
-<span class="fc bfc" id="L611" title="All 2 branches covered.">			for (int e : range(m))</span>
-<span class="fc bfc" id="L612" title="All 2 branches covered.">				if (g.edgeSource(e) != g.edgeTarget(e))</span>
-<span class="fc" id="L613">					addExistingEdge(e);</span>
+<span class="fc" id="L607">			existingEdgeHead = new int[n];</span>
+<span class="fc" id="L608">			Arrays.fill(existingEdgeHead, -1);</span>
+<span class="fc bfc" id="L609" title="All 2 branches covered.">			for (int e : range(m))</span>
+<span class="fc bfc" id="L610" title="All 2 branches covered.">				if (g.edgeSource(e) != g.edgeTarget(e))</span>
+<span class="fc" id="L611">					addExistingEdge(e);</span>
 
-<span class="fc" id="L615">			deletedEdgesHistory = new int[m];</span>
-<span class="fc" id="L616">			deletedEdgesHistoryOffset = new int[n];</span>
+<span class="fc" id="L613">			deletedEdgesHistory = new int[m];</span>
+<span class="fc" id="L614">			deletedEdgesHistoryOffset = new int[n];</span>
 
-<span class="fc" id="L618">			int nextDfsEdgeOffset = 0;</span>
-<span class="fc bfc" id="L619" title="All 2 branches covered.">			for (int v : range(n)) {</span>
-<span class="fc" id="L620">				dfsEdgesOffset[v] = nextDfsEdgeOffset;</span>
-<span class="fc bfc" id="L621" title="All 2 branches covered.">				for (int e : g.outEdges(v))</span>
-<span class="fc" id="L622">					dfsEdges[nextDfsEdgeOffset++] = e;</span>
-<span class="fc" id="L623">			}</span>
-<span class="pc bnc" id="L624" title="All 2 branches missed.">			assert nextDfsEdgeOffset == dfsEdges.length;</span>
-<span class="fc" id="L625">			dfsEdgesOffset[n] = nextDfsEdgeOffset;</span>
+<span class="fc" id="L616">			int nextDfsEdgeOffset = 0;</span>
+<span class="fc bfc" id="L617" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc" id="L618">				dfsEdgesOffset[v] = nextDfsEdgeOffset;</span>
+<span class="fc bfc" id="L619" title="All 2 branches covered.">				for (int e : g.outEdges(v))</span>
+<span class="fc" id="L620">					dfsEdges[nextDfsEdgeOffset++] = e;</span>
+<span class="fc" id="L621">			}</span>
+<span class="pc bnc" id="L622" title="All 2 branches missed.">			assert nextDfsEdgeOffset == dfsEdges.length;</span>
+<span class="fc" id="L623">			dfsEdgesOffset[n] = nextDfsEdgeOffset;</span>
 
-<span class="fc" id="L627">			pathHead = originVertex;</span>
-<span class="fc" id="L628">			onPath.set(pathHead);</span>
-<span class="fc" id="L629">			onPathCount++;</span>
+<span class="fc" id="L625">			pathHead = originVertex;</span>
+<span class="fc" id="L626">			onPath.set(pathHead);</span>
+<span class="fc" id="L627">			onPathCount++;</span>
 
-<span class="fc" id="L631">			verticesToExamine.addAll(range(n));</span>
-<span class="fc" id="L632">			isAdmissiblePath0();</span>
-<span class="fc" id="L633">			verticesToExamine.clear();</span>
-<span class="fc" id="L634">			requiredEdgesHistoryOffset[0] = 0;</span>
-<span class="fc" id="L635">			deletedEdgesHistoryOffset[0] = 0;</span>
+<span class="fc" id="L629">			verticesToExamine.addAll(range(n));</span>
+<span class="fc" id="L630">			isAdmissiblePath0();</span>
+<span class="fc" id="L631">			verticesToExamine.clear();</span>
+<span class="fc" id="L632">			requiredEdgesHistoryOffset[0] = 0;</span>
+<span class="fc" id="L633">			deletedEdgesHistoryOffset[0] = 0;</span>
 
-<span class="fc" id="L637">			usedOriginEdges = new IntOpenHashSet(g.outEdges(originVertex).size());</span>
+<span class="fc" id="L635">			usedOriginEdges = new IntOpenHashSet(g.outEdges(originVertex).size());</span>
 
-<span class="fc" id="L639">			setupDfsHeadEdges();</span>
-<span class="fc" id="L640">		}</span>
+<span class="fc" id="L637">			setupDfsHeadEdges();</span>
+<span class="fc" id="L638">		}</span>
 
 		@Override
 		IPath advance() {
 			dfs: for (;;) {
-<span class="fc" id="L645">				final int u = pathHead;</span>
-<span class="fc" id="L646">				final int depth = path.size();</span>
-<span class="fc bfc" id="L647" title="All 2 branches covered.">				if (depth == n - 1) {</span>
-<span class="fc bfc" id="L648" title="All 2 branches covered.">					for (int e : pathHeadEdges()) {</span>
-<span class="fc" id="L649">						final int v = g.edgeEndpoint(e, u);</span>
-<span class="fc bfc" id="L650" title="All 2 branches covered.">						if (v == originVertex) {</span>
-<span class="fc bfc" id="L651" title="All 2 branches covered.">							if (usedOriginEdges.contains(e))</span>
-<span class="fc" id="L652">								continue; /* removed edge to avoid undirected paths duplications */</span>
-<span class="fc" id="L653">							int[] nextPath = new int[n];</span>
-<span class="fc" id="L654">							path.toArray(nextPath);</span>
-<span class="fc" id="L655">							nextPath[n - 1] = e;</span>
-<span class="fc" id="L656">							return IPath.valueOf(g, originVertex, originVertex, IntImmutableList.of(nextPath));</span>
+<span class="fc" id="L643">				final int u = pathHead;</span>
+<span class="fc" id="L644">				final int depth = path.size();</span>
+<span class="fc bfc" id="L645" title="All 2 branches covered.">				if (depth == n - 1) {</span>
+<span class="fc bfc" id="L646" title="All 2 branches covered.">					for (int e : pathHeadEdges()) {</span>
+<span class="fc" id="L647">						final int v = g.edgeEndpoint(e, u);</span>
+<span class="fc bfc" id="L648" title="All 2 branches covered.">						if (v == originVertex) {</span>
+<span class="fc bfc" id="L649" title="All 2 branches covered.">							if (usedOriginEdges.contains(e))</span>
+<span class="fc" id="L650">								continue; /* removed edge to avoid undirected paths duplications */</span>
+<span class="fc" id="L651">							int[] nextPath = new int[n];</span>
+<span class="fc" id="L652">							path.toArray(nextPath);</span>
+<span class="fc" id="L653">							nextPath[n - 1] = e;</span>
+<span class="fc" id="L654">							return IPath.valueOf(g, originVertex, originVertex, Fastutil.list(nextPath));</span>
 						}
-<span class="fc" id="L658">					}</span>
+<span class="fc" id="L656">					}</span>
 				} else {
-<span class="fc bfc" id="L660" title="All 2 branches covered.">					for (int e : pathHeadEdges()) {</span>
-<span class="pc bnc" id="L661" title="All 2 branches missed.">						assert existingEdges.get(e);</span>
-<span class="fc" id="L662">						final int v = g.edgeEndpoint(e, u);</span>
-<span class="fc bfc" id="L663" title="All 2 branches covered.">						if (!onPath.get(v)) {</span>
-<span class="fc" id="L664">							requiredEdgesHistoryOffset[depth] =</span>
-<span class="fc bfc" id="L665" title="All 2 branches covered.">									path.isEmpty() ? 0 : requiredEdgesHistoryOffset[depth - 1];</span>
-<span class="fc" id="L666">							deletedEdgesHistoryOffset[depth] =</span>
-<span class="fc bfc" id="L667" title="All 2 branches covered.">									path.isEmpty() ? 0 : deletedEdgesHistoryOffset[depth - 1];</span>
-<span class="fc" id="L668">							boolean isAdmissible = isAdmissiblePath(e, v);</span>
-<span class="fc bfc" id="L669" title="All 2 branches covered.">							if (isAdmissible) {</span>
-<span class="fc" id="L670">								pathHead = v;</span>
-<span class="fc" id="L671">								onPath.set(pathHead);</span>
-<span class="fc" id="L672">								onPathCount++;</span>
-<span class="fc" id="L673">								path.add(e);</span>
-<span class="fc" id="L674">								setupDfsHeadEdges();</span>
-<span class="fc" id="L675">								continue dfs;</span>
+<span class="fc bfc" id="L658" title="All 2 branches covered.">					for (int e : pathHeadEdges()) {</span>
+<span class="pc bnc" id="L659" title="All 2 branches missed.">						assert existingEdges.get(e);</span>
+<span class="fc" id="L660">						final int v = g.edgeEndpoint(e, u);</span>
+<span class="fc bfc" id="L661" title="All 2 branches covered.">						if (!onPath.get(v)) {</span>
+<span class="fc" id="L662">							requiredEdgesHistoryOffset[depth] =</span>
+<span class="fc bfc" id="L663" title="All 2 branches covered.">									path.isEmpty() ? 0 : requiredEdgesHistoryOffset[depth - 1];</span>
+<span class="fc" id="L664">							deletedEdgesHistoryOffset[depth] =</span>
+<span class="fc bfc" id="L665" title="All 2 branches covered.">									path.isEmpty() ? 0 : deletedEdgesHistoryOffset[depth - 1];</span>
+<span class="fc" id="L666">							boolean isAdmissible = isAdmissiblePath(e, v);</span>
+<span class="fc bfc" id="L667" title="All 2 branches covered.">							if (isAdmissible) {</span>
+<span class="fc" id="L668">								pathHead = v;</span>
+<span class="fc" id="L669">								onPath.set(pathHead);</span>
+<span class="fc" id="L670">								onPathCount++;</span>
+<span class="fc" id="L671">								path.add(e);</span>
+<span class="fc" id="L672">								setupDfsHeadEdges();</span>
+<span class="fc" id="L673">								continue dfs;</span>
 							}
-<span class="fc" id="L677">							rollBackRequiredAndDeletedEdges();</span>
+<span class="fc" id="L675">							rollBackRequiredAndDeletedEdges();</span>
 						}
-<span class="fc" id="L679">					}</span>
+<span class="fc" id="L677">					}</span>
 				}
 
-<span class="fc" id="L682">				onPath.clear(u);</span>
-<span class="fc" id="L683">				onPathCount--;</span>
-<span class="fc bfc" id="L684" title="All 2 branches covered.">				if (path.isEmpty()) {</span>
-<span class="fc" id="L685">					pathHead = -1;</span>
-<span class="fc" id="L686">					return null;</span>
+<span class="fc" id="L680">				onPath.clear(u);</span>
+<span class="fc" id="L681">				onPathCount--;</span>
+<span class="fc bfc" id="L682" title="All 2 branches covered.">				if (path.isEmpty()) {</span>
+<span class="fc" id="L683">					pathHead = -1;</span>
+<span class="fc" id="L684">					return null;</span>
 				}
-<span class="fc" id="L688">				int lastEdge = path.popInt();</span>
-<span class="fc" id="L689">				pathHead = g.edgeEndpoint(lastEdge, pathHead);</span>
-<span class="fc" id="L690">				rollBackRequiredAndDeletedEdges();</span>
+<span class="fc" id="L686">				int lastEdge = path.popInt();</span>
+<span class="fc" id="L687">				pathHead = g.edgeEndpoint(lastEdge, pathHead);</span>
+<span class="fc" id="L688">				rollBackRequiredAndDeletedEdges();</span>
 
 				/*
 				 * &quot;Since the algorithm and deduction rules are oriented toward directed graphs, the Hamilton circuits
@@ -697,77 +695,77 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 				 * being considered should be deleted. Thus if 0 is the origin and 1, 2, ... , K are its successors,
 				 * delete arcs (0, 1), (0, 2), -.., (0, i - 1) when considering successor i.&quot;
 				 */
-<span class="fc bfc" id="L700" title="All 2 branches covered.">				if (pathHead == originVertex)</span>
-<span class="fc" id="L701">					usedOriginEdges.add(lastEdge);</span>
-<span class="fc" id="L702">			}</span>
+<span class="fc bfc" id="L698" title="All 2 branches covered.">				if (pathHead == originVertex)</span>
+<span class="fc" id="L699">					usedOriginEdges.add(lastEdge);</span>
+<span class="fc" id="L700">			}</span>
 		}
 
 		private boolean isAdmissiblePath(int extendEdge, int newPathHead) {
-<span class="pc bpc" id="L706" title="1 of 4 branches missed.">			boolean isAdmissible = requireEdge(extendEdge) &amp;&amp; isAdmissiblePath0();</span>
-<span class="fc bfc" id="L707" title="All 2 branches covered.">			if (!isAdmissible) {</span>
-<span class="fc" id="L708">				verticesToExamine.clear();</span>
-<span class="fc" id="L709">				return false;</span>
+<span class="pc bpc" id="L704" title="1 of 4 branches missed.">			boolean isAdmissible = requireEdge(extendEdge) &amp;&amp; isAdmissiblePath0();</span>
+<span class="fc bfc" id="L705" title="All 2 branches covered.">			if (!isAdmissible) {</span>
+<span class="fc" id="L706">				verticesToExamine.clear();</span>
+<span class="fc" id="L707">				return false;</span>
 			}
 
 			/* F6. Fail if any set of required arcs forms a closed circuit, other than a Hamiltonian cycle */
-<span class="fc bfc" id="L713" title="All 2 branches covered.">			startLoop: for (int start : range(n)) {</span>
-<span class="fc bfc" id="L714" title="All 2 branches covered.">				if (!visited.add(start))</span>
-<span class="fc" id="L715">					continue;</span>
-<span class="fc" id="L716">				int lastEdge = -1;</span>
-<span class="fc bfc" id="L717" title="All 2 branches covered.">				for (int u = start; hasRequiredEdge.get(u * 2 + 1);) {</span>
-<span class="pc bnc" id="L718" title="All 2 branches missed.">					assert existingOutDegree[u] == 2;</span>
-<span class="fc" id="L719">					IntIterator requiredEdges = existingEdges(u).iterator();</span>
-<span class="fc" id="L720">					int requiredEdge = requiredEdges.nextInt();</span>
-<span class="fc bfc" id="L721" title="All 2 branches covered.">					if (requiredEdge == lastEdge)</span>
-<span class="fc" id="L722">						requiredEdge = requiredEdges.nextInt();</span>
-<span class="fc" id="L723">					int v = g.edgeEndpoint(requiredEdge, u);</span>
-<span class="fc bfc" id="L724" title="All 2 branches covered.">					if (!visited.add(v)) {</span>
-<span class="fc bfc" id="L725" title="All 2 branches covered.">						if (v == start) {</span>
-<span class="fc bfc" id="L726" title="All 4 branches covered.">							boolean fullHamiltonianCycle = start == 0 &amp;&amp; visited.size() == n;</span>
-<span class="fc" id="L727">							visited.clear();</span>
-<span class="fc" id="L728">							return fullHamiltonianCycle;</span>
+<span class="fc bfc" id="L711" title="All 2 branches covered.">			startLoop: for (int start : range(n)) {</span>
+<span class="fc bfc" id="L712" title="All 2 branches covered.">				if (!visited.add(start))</span>
+<span class="fc" id="L713">					continue;</span>
+<span class="fc" id="L714">				int lastEdge = -1;</span>
+<span class="fc bfc" id="L715" title="All 2 branches covered.">				for (int u = start; hasRequiredEdge.get(u * 2 + 1);) {</span>
+<span class="pc bnc" id="L716" title="All 2 branches missed.">					assert existingOutDegree[u] == 2;</span>
+<span class="fc" id="L717">					IntIterator requiredEdges = existingEdges(u).iterator();</span>
+<span class="fc" id="L718">					int requiredEdge = requiredEdges.nextInt();</span>
+<span class="fc bfc" id="L719" title="All 2 branches covered.">					if (requiredEdge == lastEdge)</span>
+<span class="fc" id="L720">						requiredEdge = requiredEdges.nextInt();</span>
+<span class="fc" id="L721">					int v = g.edgeEndpoint(requiredEdge, u);</span>
+<span class="fc bfc" id="L722" title="All 2 branches covered.">					if (!visited.add(v)) {</span>
+<span class="fc bfc" id="L723" title="All 2 branches covered.">						if (v == start) {</span>
+<span class="fc bfc" id="L724" title="All 4 branches covered.">							boolean fullHamiltonianCycle = start == 0 &amp;&amp; visited.size() == n;</span>
+<span class="fc" id="L725">							visited.clear();</span>
+<span class="fc" id="L726">							return fullHamiltonianCycle;</span>
 						}
 						continue startLoop;
 					}
-<span class="fc" id="L732">					u = v;</span>
-<span class="fc" id="L733">					lastEdge = requiredEdge;</span>
-<span class="fc" id="L734">				}</span>
-<span class="fc" id="L735">			}</span>
-<span class="fc" id="L736">			visited.clear();</span>
+<span class="fc" id="L730">					u = v;</span>
+<span class="fc" id="L731">					lastEdge = requiredEdge;</span>
+<span class="fc" id="L732">				}</span>
+<span class="fc" id="L733">			}</span>
+<span class="fc" id="L734">			visited.clear();</span>
 
 			/*
 			 * F7. Fail if for any node not in the partial path there is no directed path to that node from the last
 			 * node in the partial path.
 			 */
-<span class="fc" id="L742">			visited.set(newPathHead);</span>
-<span class="fc" id="L743">			bfsStack.add(newPathHead);</span>
-<span class="fc bfc" id="L744" title="All 2 branches covered.">			while (!bfsStack.isEmpty()) {</span>
-<span class="fc" id="L745">				int v = bfsStack.popInt();</span>
-<span class="fc bfc" id="L746" title="All 2 branches covered.">				for (int e : existingEdges(v)) {</span>
-<span class="fc" id="L747">					int w = g.edgeEndpoint(e, v);</span>
-<span class="fc bfc" id="L748" title="All 2 branches covered.">					if (onPath.get(w))</span>
-<span class="fc" id="L749">						continue;</span>
-<span class="fc bfc" id="L750" title="All 2 branches covered.">					if (visited.add(w))</span>
-<span class="fc" id="L751">						bfsStack.add(w);</span>
-<span class="fc" id="L752">				}</span>
-<span class="fc" id="L753">			}</span>
-<span class="fc" id="L754">			int visitedCount = visited.size();</span>
-<span class="fc" id="L755">			visited.clear();</span>
-<span class="fc bfc" id="L756" title="All 2 branches covered.">			if (visitedCount != n - onPathCount)</span>
-<span class="fc" id="L757">				return false; /* F7 */</span>
+<span class="fc" id="L740">			visited.set(newPathHead);</span>
+<span class="fc" id="L741">			bfsStack.add(newPathHead);</span>
+<span class="fc bfc" id="L742" title="All 2 branches covered.">			while (!bfsStack.isEmpty()) {</span>
+<span class="fc" id="L743">				int v = bfsStack.popInt();</span>
+<span class="fc bfc" id="L744" title="All 2 branches covered.">				for (int e : existingEdges(v)) {</span>
+<span class="fc" id="L745">					int w = g.edgeEndpoint(e, v);</span>
+<span class="fc bfc" id="L746" title="All 2 branches covered.">					if (onPath.get(w))</span>
+<span class="fc" id="L747">						continue;</span>
+<span class="fc bfc" id="L748" title="All 2 branches covered.">					if (visited.add(w))</span>
+<span class="fc" id="L749">						bfsStack.add(w);</span>
+<span class="fc" id="L750">				}</span>
+<span class="fc" id="L751">			}</span>
+<span class="fc" id="L752">			int visitedCount = visited.size();</span>
+<span class="fc" id="L753">			visited.clear();</span>
+<span class="fc bfc" id="L754" title="All 2 branches covered.">			if (visitedCount != n - onPathCount)</span>
+<span class="fc" id="L755">				return false; /* F7 */</span>
 
 			/*
 			 * F8. Fail if for any node not in the partial path there is no directed path from that node to the initial
 			 * node of the partial path.
 			 */
-<span class="fc" id="L763">			boolean canConnectToOrigin = IterTools</span>
-<span class="fc" id="L764">					.stream(existingEdges(originVertex))</span>
-<span class="fc" id="L765">					.map(e -&gt; g.edgeEndpoint(e, originVertex))</span>
-<span class="fc bfc" id="L766" title="All 2 branches covered.">					.anyMatch(v -&gt; !onPath.get(v));</span>
-<span class="fc bfc" id="L767" title="All 2 branches covered.">			if (!canConnectToOrigin)</span>
-<span class="fc" id="L768">				return false; /* F8 */</span>
+<span class="fc" id="L761">			boolean canConnectToOrigin = IterTools</span>
+<span class="fc" id="L762">					.stream(existingEdges(originVertex))</span>
+<span class="fc" id="L763">					.map(e -&gt; g.edgeEndpoint(e, originVertex))</span>
+<span class="fc bfc" id="L764" title="All 2 branches covered.">					.anyMatch(v -&gt; !onPath.get(v));</span>
+<span class="fc bfc" id="L765" title="All 2 branches covered.">			if (!canConnectToOrigin)</span>
+<span class="fc" id="L766">				return false; /* F8 */</span>
 
-<span class="fc" id="L770">			return true;</span>
+<span class="fc" id="L768">			return true;</span>
 		}
 
 		private boolean isAdmissiblePath0() {
@@ -776,8 +774,8 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 			 * circuit
 			 */
 
-<span class="fc bfc" id="L779" title="All 2 branches covered.">			while (!verticesToExamine.isEmpty()) {</span>
-<span class="fc" id="L780">				int v = verticesToExamine.pop();</span>
+<span class="fc bfc" id="L777" title="All 2 branches covered.">			while (!verticesToExamine.isEmpty()) {</span>
+<span class="fc" id="L778">				int v = verticesToExamine.pop();</span>
 
 				/* F1. Fail if any vertex becomes isolated, that is, has no incident arc */
 				/* F2. Fail if any vertex has only one incident arc */
@@ -785,39 +783,39 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 				/* F4. Fail if any vertex has two required directed arcs entering (leaving) */
 				/* F5. Fail if any vertex has three required arcs incident */
 				/* R2. If a vertex has only two arcs incident, then both arcs are required */
-<span class="fc" id="L788">				IntIterator edgeIter = existingEdges(v).iterator();</span>
-<span class="fc bfc" id="L789" title="All 2 branches covered.">				if (!edgeIter.hasNext())</span>
-<span class="fc" id="L790">					return false; /* F1, F3 */</span>
-<span class="fc" id="L791">				int edge1 = edgeIter.nextInt();</span>
-<span class="fc bfc" id="L792" title="All 2 branches covered.">				if (!edgeIter.hasNext())</span>
-<span class="fc" id="L793">					return false; /* F2 */</span>
-<span class="fc" id="L794">				int edge2 = edgeIter.nextInt();</span>
-<span class="fc" id="L795">				boolean moreThanOneIn = edgeIter.hasNext();</span>
-<span class="fc bfc" id="L796" title="All 2 branches covered.">				if (!moreThanOneIn) {</span>
-<span class="fc" id="L797">					boolean admissible1 = requireEdge(edge1); /* R2 */</span>
-<span class="pc bpc" id="L798" title="1 of 2 branches missed.">					if (!admissible1)</span>
-<span class="nc" id="L799">						return false; /* F4, F5 */</span>
+<span class="fc" id="L786">				IntIterator edgeIter = existingEdges(v).iterator();</span>
+<span class="fc bfc" id="L787" title="All 2 branches covered.">				if (!edgeIter.hasNext())</span>
+<span class="fc" id="L788">					return false; /* F1, F3 */</span>
+<span class="fc" id="L789">				int edge1 = edgeIter.nextInt();</span>
+<span class="fc bfc" id="L790" title="All 2 branches covered.">				if (!edgeIter.hasNext())</span>
+<span class="fc" id="L791">					return false; /* F2 */</span>
+<span class="fc" id="L792">				int edge2 = edgeIter.nextInt();</span>
+<span class="fc" id="L793">				boolean moreThanOneIn = edgeIter.hasNext();</span>
+<span class="fc bfc" id="L794" title="All 2 branches covered.">				if (!moreThanOneIn) {</span>
+<span class="fc" id="L795">					boolean admissible1 = requireEdge(edge1); /* R2 */</span>
+<span class="pc bpc" id="L796" title="1 of 2 branches missed.">					if (!admissible1)</span>
+<span class="nc" id="L797">						return false; /* F4, F5 */</span>
 
-<span class="fc" id="L801">					boolean admissible2 = requireEdge(edge2); /* R2 */</span>
-<span class="fc bfc" id="L802" title="All 2 branches covered.">					if (!admissible2)</span>
-<span class="fc" id="L803">						return false; /* F4, F5 */</span>
+<span class="fc" id="L799">					boolean admissible2 = requireEdge(edge2); /* R2 */</span>
+<span class="fc bfc" id="L800" title="All 2 branches covered.">					if (!admissible2)</span>
+<span class="fc" id="L801">						return false; /* F4, F5 */</span>
 				}
-<span class="fc" id="L805">			}</span>
-<span class="fc" id="L806">			return true;</span>
+<span class="fc" id="L803">			}</span>
+<span class="fc" id="L804">			return true;</span>
 		}
 
 		private boolean requireEdge(int e) {
-<span class="fc bfc" id="L810" title="All 2 branches covered.">			if (requiredEdges.get(e))</span>
-<span class="fc" id="L811">				return true;</span>
-<span class="fc" id="L812">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L808" title="All 2 branches covered.">			if (requiredEdges.get(e))</span>
+<span class="fc" id="L809">				return true;</span>
+<span class="fc" id="L810">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 
 			/* F4. Fail if any vertex has two required directed arcs entering (leaving) */
 			/* F5. Fail if any vertex has three required arcs incident */
-<span class="fc bfc" id="L816" title="All 4 branches covered.">			if (hasRequiredEdge.get(2 * u + 1) || hasRequiredEdge.get(2 * v + 1))</span>
-<span class="fc" id="L817">				return false; /* F4, F5 */</span>
+<span class="fc bfc" id="L814" title="All 4 branches covered.">			if (hasRequiredEdge.get(2 * u + 1) || hasRequiredEdge.get(2 * v + 1))</span>
+<span class="fc" id="L815">				return false; /* F4, F5 */</span>
 
-<span class="fc" id="L819">			requiredEdges.set(e);</span>
-<span class="fc" id="L820">			requiredEdgesHistory[requiredEdgesHistoryOffset[path.size()]++] = e;</span>
+<span class="fc" id="L817">			requiredEdges.set(e);</span>
+<span class="fc" id="L818">			requiredEdgesHistory[requiredEdgesHistoryOffset[path.size()]++] = e;</span>
 
 			/* D1. If a vertex has two required arcs incident, then all undecided arcs incident may be deleted */
 			/*
@@ -826,139 +824,139 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 			 * always keep a pointer to the next edge, so we can delete the previous edge and continue the iteration.
 			 * Don't try this at home.
 			 */
-<span class="fc bfc" id="L829" title="All 2 branches covered.">			if (!hasRequiredEdge.set(2 * u + 0)) {</span>
-<span class="fc" id="L830">				hasRequiredEdge.set(2 * u + 1);</span>
-<span class="fc bfc" id="L831" title="All 2 branches covered.">				for (int e2 : existingEdges(u))</span>
-<span class="fc bfc" id="L832" title="All 2 branches covered.">					if (!requiredEdges.get(e2))</span>
-<span class="fc" id="L833">						deleteEdge(e2); /* D1 */</span>
+<span class="fc bfc" id="L827" title="All 2 branches covered.">			if (!hasRequiredEdge.set(2 * u + 0)) {</span>
+<span class="fc" id="L828">				hasRequiredEdge.set(2 * u + 1);</span>
+<span class="fc bfc" id="L829" title="All 2 branches covered.">				for (int e2 : existingEdges(u))</span>
+<span class="fc bfc" id="L830" title="All 2 branches covered.">					if (!requiredEdges.get(e2))</span>
+<span class="fc" id="L831">						deleteEdge(e2); /* D1 */</span>
 			}
-<span class="fc bfc" id="L835" title="All 2 branches covered.">			if (!hasRequiredEdge.set(2 * v + 0)) {</span>
-<span class="fc" id="L836">				hasRequiredEdge.set(2 * v + 1);</span>
-<span class="fc bfc" id="L837" title="All 2 branches covered.">				for (int e2 : existingEdges(v))</span>
-<span class="fc bfc" id="L838" title="All 2 branches covered.">					if (!requiredEdges.get(e2))</span>
-<span class="fc" id="L839">						deleteEdge(e2); /* D1 */</span>
+<span class="fc bfc" id="L833" title="All 2 branches covered.">			if (!hasRequiredEdge.set(2 * v + 0)) {</span>
+<span class="fc" id="L834">				hasRequiredEdge.set(2 * v + 1);</span>
+<span class="fc bfc" id="L835" title="All 2 branches covered.">				for (int e2 : existingEdges(v))</span>
+<span class="fc bfc" id="L836" title="All 2 branches covered.">					if (!requiredEdges.get(e2))</span>
+<span class="fc" id="L837">						deleteEdge(e2); /* D1 */</span>
 			}
 
-<span class="fc" id="L842">			verticesToExamine.add(u);</span>
-<span class="fc" id="L843">			verticesToExamine.add(v);</span>
-<span class="fc" id="L844">			return true;</span>
+<span class="fc" id="L840">			verticesToExamine.add(u);</span>
+<span class="fc" id="L841">			verticesToExamine.add(v);</span>
+<span class="fc" id="L842">			return true;</span>
 		}
 
 		private void deleteEdge(int e) {
-<span class="fc" id="L848">			boolean wasNonDeleted = existingEdges.clear(e);</span>
-<span class="pc bnc" id="L849" title="All 2 branches missed.">			assert wasNonDeleted;</span>
+<span class="fc" id="L846">			boolean wasNonDeleted = existingEdges.clear(e);</span>
+<span class="pc bnc" id="L847" title="All 2 branches missed.">			assert wasNonDeleted;</span>
 
-<span class="fc" id="L851">			deletedEdgesHistory[deletedEdgesHistoryOffset[path.size()]++] = e;</span>
-<span class="fc" id="L852">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L853">			int outPrev = existingOutEdgePrev[e], outNext = existingOutEdgeNext[e];</span>
-<span class="fc" id="L854">			int inPrev = existingInEdgePrev[e], inNext = existingInEdgeNext[e];</span>
-<span class="fc bfc" id="L855" title="All 2 branches covered.">			if (outPrev &gt;= 0) {</span>
-<span class="fc" id="L856">				setExistingEdgeNext(outPrev, u, outNext);</span>
+<span class="fc" id="L849">			deletedEdgesHistory[deletedEdgesHistoryOffset[path.size()]++] = e;</span>
+<span class="fc" id="L850">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L851">			int outPrev = existingOutEdgePrev[e], outNext = existingOutEdgeNext[e];</span>
+<span class="fc" id="L852">			int inPrev = existingInEdgePrev[e], inNext = existingInEdgeNext[e];</span>
+<span class="fc bfc" id="L853" title="All 2 branches covered.">			if (outPrev &gt;= 0) {</span>
+<span class="fc" id="L854">				setExistingEdgeNext(outPrev, u, outNext);</span>
 			} else {
-<span class="fc" id="L858">				existingEdgeHead[u] = outNext;</span>
+<span class="fc" id="L856">				existingEdgeHead[u] = outNext;</span>
 			}
-<span class="fc bfc" id="L860" title="All 2 branches covered.">			if (outNext &gt;= 0)</span>
-<span class="fc" id="L861">				setExistingEdgePrev(outNext, u, outPrev);</span>
-<span class="fc" id="L862">			existingOutDegree[u]--;</span>
+<span class="fc bfc" id="L858" title="All 2 branches covered.">			if (outNext &gt;= 0)</span>
+<span class="fc" id="L859">				setExistingEdgePrev(outNext, u, outPrev);</span>
+<span class="fc" id="L860">			existingOutDegree[u]--;</span>
 
-<span class="fc bfc" id="L864" title="All 2 branches covered.">			if (inPrev &gt;= 0) {</span>
-<span class="fc" id="L865">				setExistingEdgeNext(inPrev, v, inNext);</span>
+<span class="fc bfc" id="L862" title="All 2 branches covered.">			if (inPrev &gt;= 0) {</span>
+<span class="fc" id="L863">				setExistingEdgeNext(inPrev, v, inNext);</span>
 			} else {
-<span class="fc" id="L867">				existingEdgeHead[v] = inNext;</span>
+<span class="fc" id="L865">				existingEdgeHead[v] = inNext;</span>
 			}
-<span class="fc bfc" id="L869" title="All 2 branches covered.">			if (inNext &gt;= 0)</span>
-<span class="fc" id="L870">				setExistingEdgePrev(inNext, v, inPrev);</span>
-<span class="fc" id="L871">			existingOutDegree[v]--;</span>
+<span class="fc bfc" id="L867" title="All 2 branches covered.">			if (inNext &gt;= 0)</span>
+<span class="fc" id="L868">				setExistingEdgePrev(inNext, v, inPrev);</span>
+<span class="fc" id="L869">			existingOutDegree[v]--;</span>
 
 			// existingOutEdgePrev[e] = existingOutEdgeNext[e] = existingInEdgePrev[e] = existingInEdgeNext[e] = -1;
 
-<span class="fc" id="L875">			verticesToExamine.add(u);</span>
-<span class="fc" id="L876">			verticesToExamine.add(v);</span>
-<span class="fc" id="L877">		}</span>
+<span class="fc" id="L873">			verticesToExamine.add(u);</span>
+<span class="fc" id="L874">			verticesToExamine.add(v);</span>
+<span class="fc" id="L875">		}</span>
 
 		private void rollBackRequiredAndDeletedEdges() {
-<span class="fc" id="L880">			int reqFrom = requiredEdgesHistoryOffset[path.size()];</span>
-<span class="fc bfc" id="L881" title="All 2 branches covered.">			int reqTo = path.isEmpty() ? 0 : requiredEdgesHistoryOffset[path.size() - 1];</span>
-<span class="fc bfc" id="L882" title="All 2 branches covered.">			for (int i = reqFrom - 1; i &gt;= reqTo; i--) {</span>
-<span class="fc" id="L883">				int e = requiredEdgesHistory[i];</span>
-<span class="fc" id="L884">				requiredEdges.clear(e);</span>
-<span class="fc" id="L885">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L886" title="All 2 branches covered.">				if (!hasRequiredEdge.clear(2 * u + 1)) {</span>
-<span class="fc" id="L887">					boolean wasRequired = hasRequiredEdge.clear(2 * u + 0);</span>
-<span class="pc bnc" id="L888" title="All 2 branches missed.">					assert wasRequired;</span>
+<span class="fc" id="L878">			int reqFrom = requiredEdgesHistoryOffset[path.size()];</span>
+<span class="fc bfc" id="L879" title="All 2 branches covered.">			int reqTo = path.isEmpty() ? 0 : requiredEdgesHistoryOffset[path.size() - 1];</span>
+<span class="fc bfc" id="L880" title="All 2 branches covered.">			for (int i = reqFrom - 1; i &gt;= reqTo; i--) {</span>
+<span class="fc" id="L881">				int e = requiredEdgesHistory[i];</span>
+<span class="fc" id="L882">				requiredEdges.clear(e);</span>
+<span class="fc" id="L883">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L884" title="All 2 branches covered.">				if (!hasRequiredEdge.clear(2 * u + 1)) {</span>
+<span class="fc" id="L885">					boolean wasRequired = hasRequiredEdge.clear(2 * u + 0);</span>
+<span class="pc bnc" id="L886" title="All 2 branches missed.">					assert wasRequired;</span>
 				}
-<span class="fc bfc" id="L890" title="All 2 branches covered.">				if (!hasRequiredEdge.clear(2 * v + 1)) {</span>
-<span class="fc" id="L891">					boolean wasRequired = hasRequiredEdge.clear(2 * v + 0);</span>
-<span class="pc bnc" id="L892" title="All 2 branches missed.">					assert wasRequired;</span>
+<span class="fc bfc" id="L888" title="All 2 branches covered.">				if (!hasRequiredEdge.clear(2 * v + 1)) {</span>
+<span class="fc" id="L889">					boolean wasRequired = hasRequiredEdge.clear(2 * v + 0);</span>
+<span class="pc bnc" id="L890" title="All 2 branches missed.">					assert wasRequired;</span>
 				}
 			}
 
-<span class="fc" id="L896">			int delFrom = deletedEdgesHistoryOffset[path.size()];</span>
-<span class="fc bfc" id="L897" title="All 2 branches covered.">			int delTo = path.isEmpty() ? 0 : deletedEdgesHistoryOffset[path.size() - 1];</span>
-<span class="fc bfc" id="L898" title="All 2 branches covered.">			for (int i = delFrom - 1; i &gt;= delTo; i--)</span>
-<span class="fc" id="L899">				addExistingEdge(deletedEdgesHistory[i]);</span>
-<span class="fc" id="L900">		}</span>
+<span class="fc" id="L894">			int delFrom = deletedEdgesHistoryOffset[path.size()];</span>
+<span class="fc bfc" id="L895" title="All 2 branches covered.">			int delTo = path.isEmpty() ? 0 : deletedEdgesHistoryOffset[path.size() - 1];</span>
+<span class="fc bfc" id="L896" title="All 2 branches covered.">			for (int i = delFrom - 1; i &gt;= delTo; i--)</span>
+<span class="fc" id="L897">				addExistingEdge(deletedEdgesHistory[i]);</span>
+<span class="fc" id="L898">		}</span>
 
 		private void addExistingEdge(int e) {
-<span class="fc" id="L903">			existingEdges.set(e);</span>
+<span class="fc" id="L901">			existingEdges.set(e);</span>
 
-<span class="fc" id="L905">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L903">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 
-<span class="fc" id="L907">			int outHead = existingEdgeHead[u];</span>
-<span class="fc" id="L908">			existingOutEdgeNext[e] = outHead;</span>
-<span class="fc bfc" id="L909" title="All 2 branches covered.">			if (outHead &gt;= 0)</span>
-<span class="fc" id="L910">				setExistingEdgePrev(outHead, u, e);</span>
-<span class="fc" id="L911">			existingEdgeHead[u] = e;</span>
-<span class="fc" id="L912">			existingOutEdgePrev[e] = -1;</span>
-<span class="fc" id="L913">			existingOutDegree[u]++;</span>
+<span class="fc" id="L905">			int outHead = existingEdgeHead[u];</span>
+<span class="fc" id="L906">			existingOutEdgeNext[e] = outHead;</span>
+<span class="fc bfc" id="L907" title="All 2 branches covered.">			if (outHead &gt;= 0)</span>
+<span class="fc" id="L908">				setExistingEdgePrev(outHead, u, e);</span>
+<span class="fc" id="L909">			existingEdgeHead[u] = e;</span>
+<span class="fc" id="L910">			existingOutEdgePrev[e] = -1;</span>
+<span class="fc" id="L911">			existingOutDegree[u]++;</span>
 
-<span class="fc" id="L915">			int inHead = existingEdgeHead[v];</span>
-<span class="fc" id="L916">			existingInEdgeNext[e] = inHead;</span>
-<span class="fc bfc" id="L917" title="All 2 branches covered.">			if (inHead &gt;= 0)</span>
-<span class="fc" id="L918">				setExistingEdgePrev(inHead, v, e);</span>
-<span class="fc" id="L919">			existingEdgeHead[v] = e;</span>
-<span class="fc" id="L920">			existingInEdgePrev[e] = -1;</span>
-<span class="fc" id="L921">			existingOutDegree[v]++;</span>
-<span class="fc" id="L922">		}</span>
+<span class="fc" id="L913">			int inHead = existingEdgeHead[v];</span>
+<span class="fc" id="L914">			existingInEdgeNext[e] = inHead;</span>
+<span class="fc bfc" id="L915" title="All 2 branches covered.">			if (inHead &gt;= 0)</span>
+<span class="fc" id="L916">				setExistingEdgePrev(inHead, v, e);</span>
+<span class="fc" id="L917">			existingEdgeHead[v] = e;</span>
+<span class="fc" id="L918">			existingInEdgePrev[e] = -1;</span>
+<span class="fc" id="L919">			existingOutDegree[v]++;</span>
+<span class="fc" id="L920">		}</span>
 
 		private void setExistingEdgeNext(int e, int endpoint, int next) {
-<span class="fc bfc" id="L925" title="All 2 branches covered.">			if (endpoint == g.edgeSource(e)) {</span>
-<span class="fc" id="L926">				existingOutEdgeNext[e] = next;</span>
+<span class="fc bfc" id="L923" title="All 2 branches covered.">			if (endpoint == g.edgeSource(e)) {</span>
+<span class="fc" id="L924">				existingOutEdgeNext[e] = next;</span>
 			} else {
-<span class="pc bnc" id="L928" title="All 2 branches missed.">				assert endpoint == g.edgeTarget(e);</span>
-<span class="fc" id="L929">				existingInEdgeNext[e] = next;</span>
+<span class="pc bnc" id="L926" title="All 2 branches missed.">				assert endpoint == g.edgeTarget(e);</span>
+<span class="fc" id="L927">				existingInEdgeNext[e] = next;</span>
 			}
-<span class="fc" id="L931">		}</span>
+<span class="fc" id="L929">		}</span>
 
 		private void setExistingEdgePrev(int e, int endpoint, int prev) {
-<span class="fc bfc" id="L934" title="All 2 branches covered.">			if (endpoint == g.edgeSource(e)) {</span>
-<span class="fc" id="L935">				existingOutEdgePrev[e] = prev;</span>
+<span class="fc bfc" id="L932" title="All 2 branches covered.">			if (endpoint == g.edgeSource(e)) {</span>
+<span class="fc" id="L933">				existingOutEdgePrev[e] = prev;</span>
 			} else {
-<span class="pc bnc" id="L937" title="All 2 branches missed.">				assert endpoint == g.edgeTarget(e);</span>
-<span class="fc" id="L938">				existingInEdgePrev[e] = prev;</span>
+<span class="pc bnc" id="L935" title="All 2 branches missed.">				assert endpoint == g.edgeTarget(e);</span>
+<span class="fc" id="L936">				existingInEdgePrev[e] = prev;</span>
 			}
-<span class="fc" id="L940">		}</span>
+<span class="fc" id="L938">		}</span>
 
 		private IntIterable existingEdges(int source) {
-<span class="fc" id="L943">			return () -&gt; new IntIterator() {</span>
-<span class="fc" id="L944">				int e = existingEdgeHead[source];</span>
+<span class="fc" id="L941">			return () -&gt; new IntIterator() {</span>
+<span class="fc" id="L942">				int e = existingEdgeHead[source];</span>
 
 				@Override
 				public boolean hasNext() {
-<span class="fc bfc" id="L948" title="All 2 branches covered.">					return e &gt;= 0;</span>
+<span class="fc bfc" id="L946" title="All 2 branches covered.">					return e &gt;= 0;</span>
 				}
 
 				@Override
 				public int nextInt() {
-<span class="fc" id="L953">					int ret = e;</span>
-<span class="fc" id="L954">					int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L955" title="All 2 branches covered.">					if (source == u) {</span>
-<span class="fc" id="L956">						e = existingOutEdgeNext[e];</span>
+<span class="fc" id="L951">					int ret = e;</span>
+<span class="fc" id="L952">					int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L953" title="All 2 branches covered.">					if (source == u) {</span>
+<span class="fc" id="L954">						e = existingOutEdgeNext[e];</span>
 					} else {
-<span class="pc bnc" id="L958" title="All 2 branches missed.">						assert source == v;</span>
-<span class="fc" id="L959">						e = existingInEdgeNext[e];</span>
+<span class="pc bnc" id="L956" title="All 2 branches missed.">						assert source == v;</span>
+<span class="fc" id="L957">						e = existingInEdgeNext[e];</span>
 					}
-<span class="fc" id="L961">					return ret;</span>
+<span class="fc" id="L959">					return ret;</span>
 				}
 			};
 		}

@@ -119,7 +119,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L119">			IPath indexPath = NegativeCycleException</span>
 <span class="fc" id="L120">					.runAndConvertException(g,</span>
 <span class="fc" id="L121">							() -&gt; computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic));</span>
-<span class="fc" id="L122">			return Paths.intPathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L122">			return (IPath) Paths.pathFromIndexPath(g, indexPath);</span>
 		}
 
 	}
