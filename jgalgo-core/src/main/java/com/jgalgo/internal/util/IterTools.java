@@ -260,4 +260,14 @@ public class IterTools {
 		return stream(it.iterator());
 	}
 
+	public static int get(IntIterator it, int index) {
+		if (index < 0)
+			throw new IndexOutOfBoundsException("Index must be non-negative");
+		if (index != 0)
+			it.skip(index);
+		if (!it.hasNext())
+			throw new IndexOutOfBoundsException("Index out of bounds");
+		return it.nextInt();
+	}
+
 }
