@@ -27,7 +27,6 @@ import com.jgalgo.internal.ds.DynamicTree;
 import com.jgalgo.internal.ds.DynamicTree.MinEdge;
 import com.jgalgo.internal.ds.DynamicTreeExtension;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
-import com.jgalgo.internal.ds.QueueFixSize;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.Stack;
@@ -87,7 +86,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 		final DynamicTreeExtension.TreeSize dtTreeSize;
 		final int maxTreeSize;
 
-		final QueueFixSize<Vertex> active;
+		final IntPriorityQueue active;
 		final Vertex[] vertexData;
 
 		/* Data structure maintaining the children of each vertex in the DT */
@@ -107,7 +106,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 			dtTreeSize = dt.getExtension(DynamicTreeExtension.TreeSize.class);
 			maxTreeSize = Math.max(1, n * n / g.edges().size());
 
-			active = new QueueFixSize<>(n);
+			active = new FIFOQueueIntNoReduce(n);
 			vertexData = new Vertex[n];
 			for (int u : range(n))
 				vertexData[u] = newVertex(u, dt.makeTree());
@@ -174,7 +173,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 			pushAsMuchFromSource();
 
 			while (!active.isEmpty()) {
-				Vertex U = active.pop();
+				Vertex U = vertexData[active.dequeueInt()];
 				assert U.v != source && U.v != sink;
 				assert U.dtVertex.getParent() == null;
 				IEdgeIter it = U.edgeIter;
@@ -216,7 +215,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 
 					if (hasExcess(W) && !W.isActive) {
 						W.isActive = true;
-						active.push(W);
+						active.enqueue(W.v);
 					}
 				}
 
@@ -229,7 +228,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 
 				/* Update isActive and add to queue if active */
 				if (U.isActive = hasExcess(U))
-					active.push(U);
+					active.enqueue(U.v);
 			}
 
 			/* Cleanup all the edges that stayed in the DT */
@@ -382,7 +381,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 					V.excess += f;
 					if (!V.isActive) {
 						V.isActive = true;
-						active.push(V);
+						active.enqueue(V.v);
 					}
 				}
 			}
@@ -415,7 +414,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 			wRoot.excess += f;
 			if (!wRoot.isActive) {
 				wRoot.isActive = true;
-				active.push(wRoot);
+				active.enqueue(wRoot.v);
 			}
 
 			/* Cut all saturated edges from u to u's tree root */
@@ -509,7 +508,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 					V.excess += f;
 					if (!V.isActive) {
 						V.isActive = true;
-						active.push(V);
+						active.enqueue(V.v);
 					}
 				}
 			}
@@ -542,7 +541,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 			wRoot.excess += f;
 			if (!wRoot.isActive) {
 				wRoot.isActive = true;
-				active.push(wRoot);
+				active.enqueue(wRoot.v);
 			}
 
 			/* Cut all saturated edges from u to u's tree root */
