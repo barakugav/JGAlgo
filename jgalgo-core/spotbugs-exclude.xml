@@ -241,7 +241,7 @@
       <Bug pattern="EI_EXPOSE_REP2" />
       <Bug pattern="HE_EQUALS_NO_HASHCODE" />
       <Bug pattern="RV_NEGATING_RESULT_OF_COMPARETO" />
-      <Bug pattern="EI_EXPOSE_REP2" />
+      <Bug pattern="CO_SELF_NO_OBJECT" />
     </Or>
   </Match>
 </FindBugsFilter>
