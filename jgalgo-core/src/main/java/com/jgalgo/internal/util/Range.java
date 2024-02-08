@@ -244,6 +244,20 @@ public final class Range extends AbstractIntSortedSet {
 				return x - begin;
 			}
 		}
+
+		@Override
+		public int back(final int n) {
+			if (n < 0)
+				throw new IllegalArgumentException("Argument must be nonnegative: " + n);
+			if (n < x - from) {
+				x -= n;
+				return n;
+			} else {
+				int begin = x;
+				x = from;
+				return begin - from;
+			}
+		}
 	}
 
 	private static class SplitIter implements IntSpliterator {

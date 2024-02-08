@@ -103,7 +103,29 @@ public class RangeTest extends TestBase {
 			}
 			assertEquals(expected, actual);
 		}
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int to = rand.nextInt(100);
+			Range range = range(to);
+			int prevExpected = to - 1;
+			IntList expected = new IntArrayList();
+			IntList actual = new IntArrayList();
+			for (IntListIterator it = range.asList().listIterator(to); prevExpected >= 0;) {
+				assertTrue(it.hasPrevious());
+				if (rand.nextBoolean()) {
+					expected.add(prevExpected--);
+					actual.add(it.previousInt());
+				} else {
+					int skipSize = rand.nextInt(8);
+					int skipExpected = Math.min(skipSize, prevExpected + 1);
+					int skipActual = it.back(skipSize);
+					assertEquals(skipExpected, skipActual);
+					prevExpected -= skipExpected;
+				}
+			}
+			assertEquals(expected, actual);
+		}
 		assertThrows(IllegalArgumentException.class, () -> range(5).iterator().skip(-1));
+		assertThrows(IllegalArgumentException.class, () -> range(5).asList().listIterator().back(-1));
 	}
 
 	@Test
