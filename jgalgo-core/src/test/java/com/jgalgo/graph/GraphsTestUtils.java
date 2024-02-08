@@ -280,7 +280,7 @@ public class GraphsTestUtils extends TestUtils {
 
 	public static <V, E> WeightsInt<E> assignRandWeightsIntPos(Graph<V, E> g, long seed) {
 		int m = g.edges().size();
-		int minWeight = 1;
+		int minWeight = 0;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		return assignRandWeightsInt(g, minWeight, maxWeight, seed);
 	}

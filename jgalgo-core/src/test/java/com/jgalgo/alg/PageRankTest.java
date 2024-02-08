@@ -22,6 +22,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.TestBase;
 
 class PageRankTest extends TestBase {
@@ -64,8 +65,12 @@ class PageRankTest extends TestBase {
 			g = maybeIndexGraph(g, rand);
 
 			WeightFunctionInt<Integer> w = null;
-			if (weighted)
-				w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			if (weighted) {
+				WeightsInt<Integer> w0 = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+				for (Integer e : g.edges())
+					w0.set(e, 1 + w0.get(e));
+				w = w0;
+			}
 			testPageRank(g, w);
 		});
 	}
