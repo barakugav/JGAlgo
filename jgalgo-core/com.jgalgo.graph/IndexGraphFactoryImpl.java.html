@@ -387,8 +387,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 <span class="fc bfc" id="L387" title="All 2 branches covered.">					if (graph instanceof GraphCsrDirectedReindexed) {</span>
 <span class="fc" id="L388">						IndexGraphBuilder.ReIndexedGraph reIndexedGraph = GraphCsrDirectedReindexed</span>
 <span class="fc" id="L389">								.newInstance(graph, copyVerticesWeights, copyEdgesWeights, fastLookup);</span>
-<span class="pc bnc" id="L390" title="All 2 branches missed.">						assert reIndexedGraph.verticesReIndexing().isEmpty()</span>
-<span class="nc bnc" id="L391" title="All 2 branches missed.">								&amp;&amp; reIndexedGraph.edgesReIndexing().isEmpty();</span>
+<span class="pc bpc" id="L390" title="1 of 2 branches missed.">						assert reIndexedGraph.verticesReIndexing().isEmpty()</span>
+<span class="pc bpc" id="L391" title="1 of 2 branches missed.">								&amp;&amp; reIndexedGraph.edgesReIndexing().isEmpty();</span>
 <span class="fc" id="L392">						return reIndexedGraph.graph();</span>
 					} else {
 <span class="fc" id="L394">						return new GraphCsrDirected(graph, copyVerticesWeights, copyEdgesWeights, fastLookup);</span>

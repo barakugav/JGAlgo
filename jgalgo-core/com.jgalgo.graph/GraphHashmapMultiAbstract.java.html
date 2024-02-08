@@ -114,7 +114,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 <span class="fc" id="L114">				Int2IntMap.Entry entry = eit.next();</span>
 <span class="fc" id="L115">				nextEndpoint = entry.getIntKey();</span>
 <span class="fc" id="L116">				nextEdge = entry.getIntValue();</span>
-<span class="pc bnc" id="L117" title="All 2 branches missed.">				assert nextEdge &gt;= 0;</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">				assert nextEdge &gt;= 0;</span>
 			}
 <span class="fc" id="L119">		}</span>
 
@@ -167,7 +167,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 <span class="fc bfc" id="L167" title="All 2 branches covered.">						if (GraphHashmapMultiAbstract.this.source(lastEdge) == vertex)</span>
 <span class="fc" id="L168">							clonedMap.replace(GraphHashmapMultiAbstract.this.target(lastEdge), lastEdge, prevEdge);</span>
 					} else {
-<span class="pc bnc" id="L170" title="All 2 branches missed.">						assert this instanceof EdgeIterIn;</span>
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">						assert this instanceof EdgeIterIn;</span>
 <span class="fc bfc" id="L171" title="All 2 branches covered.">						if (GraphHashmapMultiAbstract.this.target(lastEdge) == vertex)</span>
 <span class="fc" id="L172">							clonedMap.replace(GraphHashmapMultiAbstract.this.source(lastEdge), lastEdge, prevEdge);</span>
 					}

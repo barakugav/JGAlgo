@@ -108,13 +108,13 @@ abstract class GraphElementSet extends AbstractIntSet {
 		}
 
 		void addAll(int count) {
-<span class="pc bnc" id="L111" title="All 2 branches missed.">			assert count &gt;= 0;</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">			assert count &gt;= 0;</span>
 <span class="fc" id="L112">			size += count;</span>
 <span class="fc" id="L113">		}</span>
 
 		void removeIdx(int idx) {
-<span class="pc bnc" id="L116" title="All 2 branches missed.">			assert idx == size - 1;</span>
-<span class="pc bnc" id="L117" title="All 2 branches missed.">			assert size &gt; 0;</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">			assert idx == size - 1;</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">			assert size &gt; 0;</span>
 <span class="fc bfc" id="L118" title="All 2 branches covered.">			for (IndexRemoveListener listener : removeListeners)</span>
 <span class="fc" id="L119">				listener.removeLast(idx);</span>
 <span class="fc" id="L120">			size--;</span>
@@ -122,8 +122,8 @@ abstract class GraphElementSet extends AbstractIntSet {
 
 		/* identical to removeIdx without notifying listeners */
 		void rollBackAdd(int idx) {
-<span class="pc bnc" id="L125" title="All 2 branches missed.">			assert idx == size - 1;</span>
-<span class="pc bnc" id="L126" title="All 2 branches missed.">			assert size &gt; 0;</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">			assert idx == size - 1;</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">			assert size &gt; 0;</span>
 <span class="fc" id="L127">			size--;</span>
 <span class="fc" id="L128">		}</span>
 
@@ -135,8 +135,8 @@ abstract class GraphElementSet extends AbstractIntSet {
 		void swapAndRemove(int removedIdx, int swappedIdx) {
 <span class="fc" id="L136">			checkIdx(removedIdx);</span>
 <span class="fc" id="L137">			checkIdx(swappedIdx);</span>
-<span class="pc bnc" id="L138" title="All 2 branches missed.">			assert swappedIdx == size - 1;</span>
-<span class="pc bnc" id="L139" title="All 2 branches missed.">			assert size &gt; 0;</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">			assert swappedIdx == size - 1;</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">			assert size &gt; 0;</span>
 <span class="fc bfc" id="L140" title="All 2 branches covered.">			for (IndexRemoveListener listener : removeListeners)</span>
 <span class="fc" id="L141">				listener.swapAndRemove(removedIdx, swappedIdx);</span>
 <span class="fc" id="L142">			size--;</span>

@@ -46,16 +46,16 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 <span class="fc" id="L46">						: Optional.empty();</span>
 
 <span class="fc bfc" id="L48" title="All 2 branches covered.">		if (csrGraph.isPresent()) {</span>
-<span class="pc bnc" id="L49" title="All 2 branches missed.">			assert edgesReIndexing.isEmpty();</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">			assert edgesReIndexing.isEmpty();</span>
 <span class="fc" id="L50">			edgesIn = csrGraph.get().edgesIn;</span>
 <span class="fc" id="L51">			edgesInBegin = csrGraph.get().edgesInBegin;</span>
 
 		} else {
 <span class="fc" id="L54">			edgesIn = processEdges.edgesIn;</span>
 <span class="fc" id="L55">			edgesInBegin = processEdges.edgesInBegin;</span>
-<span class="pc bnc" id="L56" title="All 2 branches missed.">			assert processEdges.edgesOut.length == m;</span>
-<span class="pc bnc" id="L57" title="All 2 branches missed.">			assert edgesIn.length == m;</span>
-<span class="pc bnc" id="L58" title="All 2 branches missed.">			assert edgesInBegin.length == n + 1;</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">			assert processEdges.edgesOut.length == m;</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">			assert edgesIn.length == m;</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">			assert edgesInBegin.length == n + 1;</span>
 
 <span class="fc" id="L60">			IndexGraphBuilder.ReIndexingMap edgesReIndexing0 = edgesReIndexing.get();</span>
 <span class="fc bfc" id="L61" title="All 2 branches covered.">			for (int eIdx : range(m)) {</span>
@@ -66,7 +66,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 <span class="fc bfc" id="L67" title="All 2 branches covered.">			if (graphOrBuilder.contains(IndexGraph.class)) {</span>
 <span class="fc" id="L68">				IndexGraph g = graphOrBuilder.get(IndexGraph.class);</span>
-<span class="pc bnc" id="L69" title="All 2 branches missed.">				assert g.isDirected();</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">				assert g.isDirected();</span>
 
 <span class="fc bfc" id="L71" title="All 2 branches covered.">				for (int eCsr : range(m)) {</span>
 <span class="fc" id="L72">					int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);</span>
@@ -74,7 +74,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 <span class="fc" id="L74">				}</span>
 <span class="fc" id="L75">			} else {</span>
 <span class="fc" id="L76">				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);</span>
-<span class="pc bnc" id="L77" title="All 2 branches missed.">				assert builder.isDirected();</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">				assert builder.isDirected();</span>
 
 <span class="fc bfc" id="L79" title="All 2 branches covered.">				for (int eCsr : range(m)) {</span>
 <span class="fc" id="L80">					int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);</span>
@@ -108,7 +108,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 <span class="fc" id="L108">			int uniqueTargets = 0;</span>
 <span class="fc bfc" id="L109" title="All 2 branches covered.">			for (int lastTarget = -1, e = eBegin; e &lt; eEnd; e++) {</span>
 <span class="fc" id="L110">				int v = target(e);</span>
-<span class="pc bnc" id="L111" title="All 2 branches missed.">				assert lastTarget &lt;= v;</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">				assert lastTarget &lt;= v;</span>
 <span class="fc bfc" id="L112" title="All 2 branches covered.">				if (v != lastTarget) {</span>
 <span class="fc" id="L113">					lastTarget = v;</span>
 <span class="fc" id="L114">					uniqueTargets++;</span>
@@ -121,7 +121,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 <span class="fc bfc" id="L121" title="All 2 branches covered.">				if (v == lastTarget)</span>
 <span class="fc" id="L122">					continue; /* store in the map the first edge only of same target */</span>
 <span class="fc" id="L123">				int oldEdge = edgesLookupTable[u].put(v, e);</span>
-<span class="pc bnc" id="L124" title="All 2 branches missed.">				assert oldEdge &lt; 0;</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">				assert oldEdge &lt; 0;</span>
 <span class="fc" id="L125">				lastTarget = v;</span>
 			}
 <span class="fc" id="L127">		}</span>
@@ -134,7 +134,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 <span class="fc" id="L134">			int eEnd = edgesOutBegin[u + 1];</span>
 <span class="fc bfc" id="L135" title="All 2 branches covered.">			for (int lastTarget = -1, e = eBegin; e &lt; eEnd; e++) {</span>
 <span class="fc" id="L136">				int v = target(e);</span>
-<span class="pc bnc" id="L137" title="All 2 branches missed.">				assert lastTarget &lt;= v;</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">				assert lastTarget &lt;= v;</span>
 <span class="fc bfc" id="L138" title="All 2 branches covered.">				if (v == lastTarget)</span>
 <span class="fc" id="L139">					return true;</span>
 <span class="fc" id="L140">				lastTarget = v;</span>

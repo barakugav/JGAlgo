@@ -169,7 +169,7 @@ import com.jgalgo.alg.LowestCommonAncestorDynamicGabowSimple.CharacteristicAnces
 				}
 			}
 
-<span class="pc bnc" id="L172" title="All 2 branches missed.">			assert x1.subTree == y1.subTree;</span>
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">			assert x1.subTree == y1.subTree;</span>
 			/* calculate LCA within sub tree */
 <span class="fc" id="L174">			long commonAncestors1 = x1.ancestorsBitmap &amp; y1.ancestorsBitmap;</span>
 <span class="fc" id="L175">			Vertex1 a1 = x1.subTree.vertices[63 - Long.numberOfLeadingZeros(commonAncestors1)];</span>
@@ -192,7 +192,7 @@ import com.jgalgo.alg.LowestCommonAncestorDynamicGabowSimple.CharacteristicAnces
 <span class="fc" id="L192">				y2 = ay1.top.parent;</span>
 		}
 
-<span class="pc bnc" id="L195" title="All 2 branches missed.">		assert x2.subTree == y2.subTree;</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">		assert x2.subTree == y2.subTree;</span>
 		/* calculate LCA within sub tree */
 <span class="fc" id="L197">		long commonAncestors = x2.ancestorsBitmap &amp; y2.ancestorsBitmap;</span>
 <span class="fc" id="L198">		return x2.subTree.vertices[63 - Long.numberOfLeadingZeros(commonAncestors)];</span>
@@ -269,7 +269,7 @@ import com.jgalgo.alg.LowestCommonAncestorDynamicGabowSimple.CharacteristicAnces
 		}
 
 		void addVertex(Vertex2 vertex) {
-<span class="pc bnc" id="L272" title="All 2 branches missed.">			assert size &lt; SUB_TREE_MAX_SIZE;</span>
+<span class="pc bpc" id="L272" title="1 of 2 branches missed.">			assert size &lt; SUB_TREE_MAX_SIZE;</span>
 <span class="fc" id="L273">			vertex.idWithinSubTree = size++;</span>
 <span class="fc bfc" id="L274" title="All 2 branches covered.">			if (vertex.idWithinSubTree &gt;= vertices.length)</span>
 <span class="fc" id="L275">				vertices = Arrays.copyOf(vertices, Math.max(vertices.length * 2, 2));</span>
@@ -301,7 +301,7 @@ import com.jgalgo.alg.LowestCommonAncestorDynamicGabowSimple.CharacteristicAnces
 <span class="fc" id="L301">		}</span>
 
 		void addVertex(Vertex1 vertex) {
-<span class="pc bnc" id="L304" title="All 2 branches missed.">			assert size &lt; SUB_TREE_MAX_SIZE;</span>
+<span class="pc bpc" id="L304" title="1 of 2 branches missed.">			assert size &lt; SUB_TREE_MAX_SIZE;</span>
 <span class="fc" id="L305">			vertex.idWithinSubTree = size++;</span>
 <span class="fc bfc" id="L306" title="All 2 branches covered.">			if (vertex.idWithinSubTree &gt;= vertices.length)</span>
 <span class="fc" id="L307">				vertices = Arrays.copyOf(vertices, Math.max(vertices.length * 2, 2));</span>
@@ -318,7 +318,7 @@ import com.jgalgo.alg.LowestCommonAncestorDynamicGabowSimple.CharacteristicAnces
 	}
 
 	private static long ithBit(long b) {
-<span class="pc bnc" id="L321" title="All 4 branches missed.">		assert 0 &lt;= b &amp;&amp; b &lt; Long.SIZE;</span>
+<span class="pc bpc" id="L321" title="2 of 4 branches missed.">		assert 0 &lt;= b &amp;&amp; b &lt; Long.SIZE;</span>
 <span class="fc" id="L322">		return 1L &lt;&lt; b;</span>
 	}
 

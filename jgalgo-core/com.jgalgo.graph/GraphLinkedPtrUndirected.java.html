@@ -64,7 +64,7 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract implements GraphDe
 
 	GraphLinkedPtrUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L66">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L67" title="All 2 branches missed.">		assert !builder.isDirected();</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">		assert !builder.isDirected();</span>
 
 <span class="fc" id="L69">		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
 <span class="fc" id="L70">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
@@ -81,7 +81,7 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract implements GraphDe
 
 	@Override
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
-<span class="pc bnc" id="L84" title="All 2 branches missed.">		assert edgesNum[removedIdx] == 0;</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">		assert edgesNum[removedIdx] == 0;</span>
 
 <span class="fc bfc" id="L86" title="All 2 branches covered.">		for (Edge p = edges[swappedIdx], next; p != null; p = next) {</span>
 <span class="fc" id="L87">			next = next(p, swappedIdx);</span>
@@ -244,7 +244,7 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract implements GraphDe
 <span class="fc bfc" id="L244" title="All 2 branches covered.">		if (w == source) {</span>
 <span class="fc" id="L245">			return e.nextu;</span>
 		} else {
-<span class="pc bnc" id="L247" title="All 2 branches missed.">			assert w == target;</span>
+<span class="pc bpc" id="L247" title="1 of 2 branches missed.">			assert w == target;</span>
 <span class="fc" id="L248">			return e.nextv;</span>
 		}
 	}
@@ -254,7 +254,7 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract implements GraphDe
 <span class="fc bfc" id="L254" title="All 2 branches covered.">		if (w == source) {</span>
 <span class="fc" id="L255">			e.nextu = n;</span>
 		} else {
-<span class="pc bnc" id="L257" title="All 2 branches missed.">			assert w == target;</span>
+<span class="pc bpc" id="L257" title="1 of 2 branches missed.">			assert w == target;</span>
 <span class="fc" id="L258">			e.nextv = n;</span>
 		}
 <span class="fc" id="L260">		return n;</span>
@@ -265,7 +265,7 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract implements GraphDe
 <span class="fc bfc" id="L265" title="All 2 branches covered.">		if (w == source) {</span>
 <span class="fc" id="L266">			return e.prevu;</span>
 		} else {
-<span class="pc bnc" id="L268" title="All 2 branches missed.">			assert w == target;</span>
+<span class="pc bpc" id="L268" title="1 of 2 branches missed.">			assert w == target;</span>
 <span class="fc" id="L269">			return e.prevv;</span>
 		}
 	}
@@ -275,7 +275,7 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract implements GraphDe
 <span class="fc bfc" id="L275" title="All 2 branches covered.">		if (w == source) {</span>
 <span class="fc" id="L276">			e.prevu = n;</span>
 		} else {
-<span class="pc bnc" id="L278" title="All 2 branches missed.">			assert w == target;</span>
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">			assert w == target;</span>
 <span class="fc" id="L279">			e.prevv = n;</span>
 		}
 <span class="fc" id="L281">		return n;</span>

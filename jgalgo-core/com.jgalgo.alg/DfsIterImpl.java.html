@@ -80,7 +80,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L80">		edgePath</span>
 <span class="fc" id="L81">				.addElements(edgePath.size(), nextEdgePath.elements(), edgePathAndNextEdgePathCommonElmsNum,</span>
 <span class="fc" id="L82">						nextEdgePath.size() - edgePathAndNextEdgePathCommonElmsNum);</span>
-<span class="pc bnc" id="L83" title="All 2 branches missed.">		assert edgePath.equals(nextEdgePath);</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">		assert edgePath.equals(nextEdgePath);</span>
 <span class="fc" id="L84">		edgePathAndNextEdgePathCommonElmsNum = edgePath.size();</span>
 
 <span class="pc bpc" id="L86" title="1 of 2 branches missed.">		if (edgeIters.isEmpty()) {</span>
@@ -100,7 +100,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 				}
 <span class="fc" id="L101">				edgeIters.pop();</span>
 <span class="fc bfc" id="L102" title="All 2 branches covered.">				if (edgeIters.isEmpty()) {</span>
-<span class="pc bnc" id="L103" title="All 2 branches missed.">					assert nextEdgePath.isEmpty();</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">					assert nextEdgePath.isEmpty();</span>
 <span class="fc" id="L104">					nextV = -1;</span>
 <span class="fc" id="L105">					break advance;</span>
 				}

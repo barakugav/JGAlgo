@@ -34,34 +34,34 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 <span class="fc" id="L34">	}</span>
 
 	private void insertNode(int node) {
-<span class="fc bfc" id="L37" title="All 2 branches covered.">		if (minRoot &lt; 0) {</span>
-<span class="fc" id="L38">			minRoot = node;</span>
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">		assert !isInserted(node);</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">		if (minRoot &lt; 0) {</span>
+<span class="fc" id="L39">			minRoot = node;</span>
 		} else {
-<span class="fc" id="L40">			minRoot = meld(minRoot, node);</span>
+<span class="fc" id="L41">			minRoot = meld(minRoot, node);</span>
 		}
-<span class="fc" id="L42">	}</span>
+<span class="fc" id="L43">	}</span>
 
 	@Override
 	public int extractMin() {
-<span class="fc" id="L46">		int min = minRoot;</span>
-<span class="fc" id="L47">		removeRoot();</span>
-<span class="fc" id="L48">		return min;</span>
+<span class="fc" id="L47">		int min = minRoot;</span>
+<span class="fc" id="L48">		removeRoot();</span>
+<span class="fc" id="L49">		return min;</span>
 	}
 
 	@Override
 	public void remove(int node) {
-<span class="nc bnc" id="L53" title="All 2 branches missed.">		assert minRoot &gt;= 0;</span>
-<span class="nc bnc" id="L54" title="All 2 branches missed.">		if (node != minRoot) {</span>
-<span class="nc" id="L55">			cut(node);</span>
-<span class="nc" id="L56">			addChild(node, minRoot);</span>
-<span class="nc" id="L57">			minRoot = node;</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		assert isInserted(node);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		if (node != minRoot) {</span>
+<span class="fc" id="L56">			cut(node);</span>
+<span class="fc" id="L57">			addChild(node, minRoot);</span>
+<span class="fc" id="L58">			minRoot = node;</span>
 		}
-<span class="nc" id="L59">		removeRoot();</span>
-<span class="nc" id="L60">	}</span>
+<span class="fc" id="L60">		removeRoot();</span>
+<span class="fc" id="L61">	}</span>
 
 	private int meld(int n1, int n2) {
-<span class="pc bnc" id="L63" title="All 4 branches missed.">		assert prevOrParent(n1) &lt; 0 &amp;&amp; next(n1) &lt; 0;</span>
-<span class="pc bnc" id="L64" title="All 4 branches missed.">		assert prevOrParent(n2) &lt; 0 &amp;&amp; next(n2) &lt; 0;</span>
+<span class="pc bpc" id="L64" title="2 of 4 branches missed.">		assert isSubtreeRoot(n1) &amp;&amp; isSubtreeRoot(n2);</span>
 
 		/* assume n1 has smaller key than n2 */
 <span class="fc bfc" id="L67" title="All 2 branches covered.">		if (c.compare(n1, n2) &gt; 0) {</span>
@@ -132,13 +132,13 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 
 	@Override
 	public void increaseKey(int node) {
-<span class="nc" id="L135">		remove(node);</span>
-<span class="nc" id="L136">		insertNode(node);</span>
-<span class="nc" id="L137">	}</span>
+<span class="fc" id="L135">		remove(node);</span>
+<span class="fc" id="L136">		insertNode(node);</span>
+<span class="fc" id="L137">	}</span>
 
 	@Override
 	public IntComparator comparator() {
-<span class="nc" id="L141">		return c;</span>
+<span class="fc" id="L141">		return c;</span>
 	}
 
 }

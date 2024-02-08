@@ -434,7 +434,7 @@ class MinimumCostFlows {
 <span class="fc" id="L434">					.min()</span>
 <span class="fc" id="L435">					.orElse(0);</span>
 <span class="pc" id="L436">			assert range(sourcesSinksThreshold, g.edges().size())</span>
-<span class="nc bnc" id="L437" title="All 4 branches missed.">					.allMatch(e -&gt; Math.abs(flow0.getFlow(e) - capacity.weight(e)) &lt; eps);</span>
+<span class="pc bpc" id="L437" title="2 of 4 branches missed.">					.allMatch(e -&gt; Math.abs(flow0.getFlow(e) - capacity.weight(e)) &lt; eps);</span>
 
 <span class="fc" id="L439">			double[] flow = new double[gOrig.edges().size()];</span>
 <span class="fc bfc" id="L440" title="All 2 branches covered.">			for (int e : range(gOrig.edges().size()))</span>

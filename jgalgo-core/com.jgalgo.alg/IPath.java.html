@@ -157,8 +157,8 @@ public interface IPath extends Path&lt;Integer, Integer&gt; {
 	 */
 	static boolean isPath(IntGraph g, int source, int target, IntList edges) {
 		IndexGraph ig;
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L161">			ig = (IndexGraph) g;</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L161">			ig = (IndexGraph) g;</span>
 		} else {
 <span class="fc" id="L163">			ig = g.indexGraph();</span>
 <span class="fc" id="L164">			IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
@@ -257,7 +257,7 @@ public interface IPath extends Path&lt;Integer, Integer&gt; {
 <span class="fc bfc" id="L257" title="All 2 branches covered.">				if (eit.hasNext()) {</span>
 <span class="fc" id="L258">					int e = eit.nextInt();</span>
 <span class="fc bfc" id="L259" title="All 2 branches covered.">					if (directed) {</span>
-<span class="pc bnc" id="L260" title="All 2 branches missed.">						assert u == ig.edgeSource(e);</span>
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">						assert u == ig.edgeSource(e);</span>
 <span class="fc" id="L261">						v = ig.edgeTarget(e);</span>
 					} else {
 <span class="fc" id="L263">						v = ig.edgeEndpoint(e, u);</span>

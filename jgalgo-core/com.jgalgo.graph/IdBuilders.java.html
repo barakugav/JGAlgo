@@ -68,7 +68,7 @@ class IdBuilders {
 <span class="fc bfc" id="L68" title="All 4 branches covered.">			if (!isPublic &amp;&amp; !constructor.canAccess(null))</span>
 <span class="fc" id="L69">				constructor.setAccessible(true);</span>
 <span class="fc" id="L70">			Object testId = constructor.newInstance();</span>
-<span class="pc bnc" id="L71" title="All 2 branches missed.">			assert testId != null;</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">			assert testId != null;</span>
 
 <span class="fc" id="L73">			return () -&gt; existingIds -&gt; {</span>
 				K newId;

@@ -97,7 +97,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc" id="L97">		IterBase(IndexGraph g) {</span>
 <span class="fc" id="L98">			this.g = g;</span>
 <span class="fc" id="L99">			n = g.vertices().size();</span>
-<span class="pc bnc" id="L100" title="All 2 branches missed.">			assert n &gt;= 2;</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">			assert n &gt;= 2;</span>
 <span class="fc" id="L101">			final int m = g.edges().size();</span>
 
 <span class="fc" id="L103">			existingEdges = new Bitmap(m);</span>
@@ -220,7 +220,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
 		IterDirected(IndexGraph g) {
 <span class="fc" id="L222">			super(g);</span>
-<span class="pc bnc" id="L223" title="All 2 branches missed.">			assert g.isDirected();</span>
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">			assert g.isDirected();</span>
 <span class="fc" id="L224">			final int m = g.edges().size();</span>
 
 <span class="fc" id="L226">			existingEdges.setAll();</span>
@@ -270,7 +270,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc bfc" id="L270" title="All 2 branches covered.">				for (int e : g.outEdges(v))</span>
 <span class="fc" id="L271">					dfsEdges[nextDfsEdgeOffset++] = e;</span>
 <span class="fc" id="L272">			}</span>
-<span class="pc bnc" id="L273" title="All 2 branches missed.">			assert nextDfsEdgeOffset == dfsEdges.length;</span>
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">			assert nextDfsEdgeOffset == dfsEdges.length;</span>
 <span class="fc" id="L274">			dfsEdgesOffset[n] = nextDfsEdgeOffset;</span>
 
 <span class="fc" id="L276">			pathHead = originVertex;</span>
@@ -303,7 +303,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="pc" id="L303">					}</span>
 				} else {
 <span class="fc bfc" id="L305" title="All 2 branches covered.">					for (int e : pathHeadEdges()) {</span>
-<span class="pc bnc" id="L306" title="All 2 branches missed.">						assert existingEdges.get(e);</span>
+<span class="pc bpc" id="L306" title="1 of 2 branches missed.">						assert existingEdges.get(e);</span>
 <span class="fc" id="L307">						final int v = g.edgeTarget(e);</span>
 <span class="fc bfc" id="L308" title="All 2 branches covered.">						if (!onPath.get(v)) {</span>
 <span class="fc" id="L309">							requiredEdgesHistoryOffset[depth] =</span>
@@ -349,7 +349,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc bfc" id="L349" title="All 2 branches covered.">				if (!visited.add(start))</span>
 <span class="fc" id="L350">					continue;</span>
 <span class="fc bfc" id="L351" title="All 2 branches covered.">				for (int u = start; hasRequiredOutEdge.get(u);) {</span>
-<span class="pc bnc" id="L352" title="All 2 branches missed.">					assert existingOutDegree[u] == 1;</span>
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">					assert existingOutDegree[u] == 1;</span>
 <span class="fc" id="L353">					int requiredEdge = existingOutEdgeHead[u];</span>
 <span class="fc" id="L354">					int v = g.edgeTarget(requiredEdge);</span>
 <span class="fc bfc" id="L355" title="All 2 branches covered.">					if (!visited.add(v)) {</span>
@@ -467,7 +467,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 			// return false; /* F4, F5 */
 <span class="fc" id="L468">			boolean theOnlyRequiredEdge1 = hasRequiredOutEdge.set(u);</span>
 <span class="fc" id="L469">			boolean theOnlyRequiredEdge2 = hasRequiredInEdge.set(v);</span>
-<span class="pc bnc" id="L470" title="All 4 branches missed.">			assert theOnlyRequiredEdge1 &amp;&amp; theOnlyRequiredEdge2;</span>
+<span class="pc bpc" id="L470" title="2 of 4 branches missed.">			assert theOnlyRequiredEdge1 &amp;&amp; theOnlyRequiredEdge2;</span>
 
 			/*
 			 * D2. If a vertex has a required directed arc entering (leaving), then all undecided directed arcs entering
@@ -492,7 +492,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
 		private void deleteEdge(int e) {
 <span class="fc" id="L494">			boolean wasNonDeleted = existingEdges.clear(e);</span>
-<span class="pc bnc" id="L495" title="All 2 branches missed.">			assert wasNonDeleted;</span>
+<span class="pc bpc" id="L495" title="1 of 2 branches missed.">			assert wasNonDeleted;</span>
 
 <span class="fc" id="L497">			deletedEdgesHistory[deletedEdgesHistoryOffset[path.size()]++] = e;</span>
 <span class="fc" id="L498">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
@@ -530,7 +530,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc" id="L530">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc" id="L531">				boolean wasRequired1 = hasRequiredOutEdge.clear(u);</span>
 <span class="fc" id="L532">				boolean wasRequired2 = hasRequiredInEdge.clear(v);</span>
-<span class="pc bnc" id="L533" title="All 4 branches missed.">				assert wasRequired1 &amp;&amp; wasRequired2;</span>
+<span class="pc bpc" id="L533" title="2 of 4 branches missed.">				assert wasRequired1 &amp;&amp; wasRequired2;</span>
 			}
 
 <span class="fc" id="L536">			int delFrom = deletedEdgesHistoryOffset[path.size()];</span>
@@ -596,7 +596,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
 		IterUndirected(IndexGraph g) {
 <span class="fc" id="L598">			super(g);</span>
-<span class="pc bnc" id="L599" title="All 2 branches missed.">			assert !g.isDirected();</span>
+<span class="pc bpc" id="L599" title="1 of 2 branches missed.">			assert !g.isDirected();</span>
 <span class="fc" id="L600">			final int m = g.edges().size();</span>
 
 <span class="fc" id="L602">			requiredEdges = new Bitmap(m);</span>
@@ -619,7 +619,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc bfc" id="L619" title="All 2 branches covered.">				for (int e : g.outEdges(v))</span>
 <span class="fc" id="L620">					dfsEdges[nextDfsEdgeOffset++] = e;</span>
 <span class="fc" id="L621">			}</span>
-<span class="pc bnc" id="L622" title="All 2 branches missed.">			assert nextDfsEdgeOffset == dfsEdges.length;</span>
+<span class="pc bpc" id="L622" title="1 of 2 branches missed.">			assert nextDfsEdgeOffset == dfsEdges.length;</span>
 <span class="fc" id="L623">			dfsEdgesOffset[n] = nextDfsEdgeOffset;</span>
 
 <span class="fc" id="L625">			pathHead = originVertex;</span>
@@ -656,7 +656,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc" id="L656">					}</span>
 				} else {
 <span class="fc bfc" id="L658" title="All 2 branches covered.">					for (int e : pathHeadEdges()) {</span>
-<span class="pc bnc" id="L659" title="All 2 branches missed.">						assert existingEdges.get(e);</span>
+<span class="pc bpc" id="L659" title="1 of 2 branches missed.">						assert existingEdges.get(e);</span>
 <span class="fc" id="L660">						final int v = g.edgeEndpoint(e, u);</span>
 <span class="fc bfc" id="L661" title="All 2 branches covered.">						if (!onPath.get(v)) {</span>
 <span class="fc" id="L662">							requiredEdgesHistoryOffset[depth] =</span>
@@ -713,7 +713,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc" id="L713">					continue;</span>
 <span class="fc" id="L714">				int lastEdge = -1;</span>
 <span class="fc bfc" id="L715" title="All 2 branches covered.">				for (int u = start; hasRequiredEdge.get(u * 2 + 1);) {</span>
-<span class="pc bnc" id="L716" title="All 2 branches missed.">					assert existingOutDegree[u] == 2;</span>
+<span class="pc bpc" id="L716" title="1 of 2 branches missed.">					assert existingOutDegree[u] == 2;</span>
 <span class="fc" id="L717">					IntIterator requiredEdges = existingEdges(u).iterator();</span>
 <span class="fc" id="L718">					int requiredEdge = requiredEdges.nextInt();</span>
 <span class="fc bfc" id="L719" title="All 2 branches covered.">					if (requiredEdge == lastEdge)</span>
@@ -844,7 +844,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
 		private void deleteEdge(int e) {
 <span class="fc" id="L846">			boolean wasNonDeleted = existingEdges.clear(e);</span>
-<span class="pc bnc" id="L847" title="All 2 branches missed.">			assert wasNonDeleted;</span>
+<span class="pc bpc" id="L847" title="1 of 2 branches missed.">			assert wasNonDeleted;</span>
 
 <span class="fc" id="L849">			deletedEdgesHistory[deletedEdgesHistoryOffset[path.size()]++] = e;</span>
 <span class="fc" id="L850">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
@@ -883,11 +883,11 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc" id="L883">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc bfc" id="L884" title="All 2 branches covered.">				if (!hasRequiredEdge.clear(2 * u + 1)) {</span>
 <span class="fc" id="L885">					boolean wasRequired = hasRequiredEdge.clear(2 * u + 0);</span>
-<span class="pc bnc" id="L886" title="All 2 branches missed.">					assert wasRequired;</span>
+<span class="pc bpc" id="L886" title="1 of 2 branches missed.">					assert wasRequired;</span>
 				}
 <span class="fc bfc" id="L888" title="All 2 branches covered.">				if (!hasRequiredEdge.clear(2 * v + 1)) {</span>
 <span class="fc" id="L889">					boolean wasRequired = hasRequiredEdge.clear(2 * v + 0);</span>
-<span class="pc bnc" id="L890" title="All 2 branches missed.">					assert wasRequired;</span>
+<span class="pc bpc" id="L890" title="1 of 2 branches missed.">					assert wasRequired;</span>
 				}
 			}
 
@@ -923,7 +923,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc bfc" id="L923" title="All 2 branches covered.">			if (endpoint == g.edgeSource(e)) {</span>
 <span class="fc" id="L924">				existingOutEdgeNext[e] = next;</span>
 			} else {
-<span class="pc bnc" id="L926" title="All 2 branches missed.">				assert endpoint == g.edgeTarget(e);</span>
+<span class="pc bpc" id="L926" title="1 of 2 branches missed.">				assert endpoint == g.edgeTarget(e);</span>
 <span class="fc" id="L927">				existingInEdgeNext[e] = next;</span>
 			}
 <span class="fc" id="L929">		}</span>
@@ -932,7 +932,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc bfc" id="L932" title="All 2 branches covered.">			if (endpoint == g.edgeSource(e)) {</span>
 <span class="fc" id="L933">				existingOutEdgePrev[e] = prev;</span>
 			} else {
-<span class="pc bnc" id="L935" title="All 2 branches missed.">				assert endpoint == g.edgeTarget(e);</span>
+<span class="pc bpc" id="L935" title="1 of 2 branches missed.">				assert endpoint == g.edgeTarget(e);</span>
 <span class="fc" id="L936">				existingInEdgePrev[e] = prev;</span>
 			}
 <span class="fc" id="L938">		}</span>
@@ -953,7 +953,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc bfc" id="L953" title="All 2 branches covered.">					if (source == u) {</span>
 <span class="fc" id="L954">						e = existingOutEdgeNext[e];</span>
 					} else {
-<span class="pc bnc" id="L956" title="All 2 branches missed.">						assert source == v;</span>
+<span class="pc bpc" id="L956" title="1 of 2 branches missed.">						assert source == v;</span>
 <span class="fc" id="L957">						e = existingInEdgeNext[e];</span>
 					}
 <span class="fc" id="L959">					return ret;</span>

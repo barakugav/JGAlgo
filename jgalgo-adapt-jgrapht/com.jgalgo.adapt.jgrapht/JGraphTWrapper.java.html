@@ -606,7 +606,7 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 <span class="fc" id="L606">			int idx = idxToId.size();</span>
 <span class="fc" id="L607">			idxToId.add(id);</span>
 <span class="fc" id="L608">			int oldVal = idToIdx.put(id, idx);</span>
-<span class="pc bnc" id="L609" title="All 2 branches missed.">			assert oldVal &lt; 0;</span>
+<span class="pc bpc" id="L609" title="1 of 2 branches missed.">			assert oldVal &lt; 0;</span>
 <span class="fc" id="L610">		}</span>
 
 		void remove(K id) {
@@ -618,7 +618,7 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 <span class="fc" id="L618">				K lastId = idxToId.remove(lastIdx);</span>
 <span class="fc" id="L619">				idxToId.set(idx, lastId);</span>
 <span class="fc" id="L620">				int oldIdx = idToIdx.put(lastId, idx);</span>
-<span class="pc bnc" id="L621" title="All 2 branches missed.">				assert oldIdx == lastIdx;</span>
+<span class="pc bpc" id="L621" title="1 of 2 branches missed.">				assert oldIdx == lastIdx;</span>
 			}
 <span class="fc" id="L623">		}</span>
 

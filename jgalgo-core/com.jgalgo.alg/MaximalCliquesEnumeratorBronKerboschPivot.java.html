@@ -99,7 +99,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L99">				IntList excluded = excludedStack.top();</span>
 
 				recursionLoop: for (;;) {
-<span class="pc bnc" id="L102" title="All 4 branches missed.">					assert !potential.isEmpty() || !excluded.isEmpty();</span>
+<span class="pc bpc" id="L102" title="1 of 4 branches missed.">					assert !potential.isEmpty() || !excluded.isEmpty();</span>
 
 <span class="fc bfc" id="L104" title="All 2 branches covered.">					while (!potentialToIter.isEmpty()) { /* for each v in P \ N(pivot) */</span>
 <span class="fc" id="L105">						int v = potentialToIter.getInt(potentialToIter.size() - 1);</span>
@@ -153,8 +153,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L153">				int v = currentClique.removeInt(currentClique.size() - 1); /* R.remove(v); */</span>
 <span class="fc" id="L154">				int lastPotential1 = potential.removeInt(potential.size() - 1); /* P.remove(v); */</span>
 <span class="fc" id="L155">				int lastPotential2 = potentialToIter.removeInt(potentialToIter.size() - 1); /* P.remove(v); */</span>
-<span class="pc bnc" id="L156" title="All 2 branches missed.">				assert lastPotential1 == v;</span>
-<span class="pc bnc" id="L157" title="All 2 branches missed.">				assert lastPotential2 == v;</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">				assert lastPotential1 == v;</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">				assert lastPotential2 == v;</span>
 <span class="fc" id="L158">				excluded.add(v);</span>
 <span class="fc" id="L159">			}</span>
 
@@ -165,10 +165,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L165" title="All 2 branches covered.">					if (left &gt; right) {</span>
 <span class="fc" id="L166">						IntList potentialFiltered =</span>
 <span class="fc" id="L167">								new IntArrayList(potentialArr, right + 1, potential.size() - right - 1);</span>
-<span class="pc bnc" id="L168" title="All 4 branches missed.">						assert potentialFiltered.intStream().allMatch(u -&gt; !containsEdge(pivot, u));</span>
+<span class="pc bpc" id="L168" title="2 of 4 branches missed.">						assert potentialFiltered.intStream().allMatch(u -&gt; !containsEdge(pivot, u));</span>
 <span class="pc" id="L169">						assert new IntArrayList(potentialArr, 0, left)</span>
-<span class="nc" id="L170">								.intStream()</span>
-<span class="nc bnc" id="L171" title="All 2 branches missed.">								.allMatch(u -&gt; containsEdge(pivot, u));</span>
+<span class="fc" id="L170">								.intStream()</span>
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">								.allMatch(u -&gt; containsEdge(pivot, u));</span>
 <span class="fc" id="L172">						return potentialFiltered;</span>
 					}
 

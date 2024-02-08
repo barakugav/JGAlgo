@@ -198,8 +198,8 @@ public final class Range extends AbstractIntSortedSet {
 		int x;
 
 <span class="fc" id="L200">		Iter(int from, int to, int startIdx) {</span>
-<span class="pc bnc" id="L201" title="All 2 branches missed.">			assert from &lt;= to;</span>
-<span class="pc bnc" id="L202" title="All 4 branches missed.">			assert from &lt;= startIdx &amp;&amp; startIdx &lt;= to;</span>
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">			assert from &lt;= to;</span>
+<span class="pc bpc" id="L202" title="2 of 4 branches missed.">			assert from &lt;= startIdx &amp;&amp; startIdx &lt;= to;</span>
 <span class="fc" id="L203">			this.from = from;</span>
 <span class="fc" id="L204">			this.to = to;</span>
 <span class="fc" id="L205">			this.x = startIdx;</span>
@@ -252,7 +252,7 @@ public final class Range extends AbstractIntSortedSet {
 		private final int to;
 
 <span class="fc" id="L254">		SplitIter(int from, int to) {</span>
-<span class="pc bnc" id="L255" title="All 2 branches missed.">			assert from &lt;= to;</span>
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">			assert from &lt;= to;</span>
 <span class="fc" id="L256">			this.x = from;</span>
 <span class="fc" id="L257">			this.to = to;</span>
 <span class="fc" id="L258">		}</span>

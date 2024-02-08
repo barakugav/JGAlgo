@@ -23,135 +23,133 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 
 	private int[] key;
 
-	public IndexPairingHeapInt(int size, int[] key) {
-<span class="nc" id="L27">		super(size);</span>
-<span class="nc bnc" id="L28" title="All 2 branches missed.">		if (key.length != size)</span>
-<span class="nc" id="L29">			throw new IllegalArgumentException(&quot;key.length != size&quot;);</span>
-<span class="nc" id="L30">		this.key = key;</span>
-<span class="nc" id="L31">	}</span>
+	public IndexPairingHeapInt(int[] key) {
+<span class="fc" id="L27">		super(key.length);</span>
+<span class="fc" id="L28">		this.key = key;</span>
+<span class="fc" id="L29">	}</span>
 
 	public IndexPairingHeapInt(int size) {
-<span class="nc" id="L34">		this(size, new int[size]);</span>
-<span class="nc" id="L35">	}</span>
+<span class="fc" id="L32">		this(new int[size]);</span>
+<span class="fc" id="L33">	}</span>
 
 	@Override
 	public int key(int node) {
-<span class="nc" id="L39">		return key[node];</span>
+<span class="fc" id="L37">		return key[node];</span>
 	}
 
 	@Override
 	public void insert(int node, int key) {
-<span class="nc" id="L44">		this.key[node] = key;</span>
-<span class="nc" id="L45">		insertNode(node);</span>
-<span class="nc" id="L46">	}</span>
+<span class="fc" id="L42">		this.key[node] = key;</span>
+<span class="fc" id="L43">		insertNode(node);</span>
+<span class="fc" id="L44">	}</span>
 
 	private void insertNode(int node) {
-<span class="nc bnc" id="L49" title="All 2 branches missed.">		if (minRoot &lt; 0) {</span>
-<span class="nc" id="L50">			minRoot = node;</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		assert !isInserted(node);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (minRoot &lt; 0) {</span>
+<span class="fc" id="L49">			minRoot = node;</span>
 		} else {
-<span class="nc" id="L52">			minRoot = meld(minRoot, node);</span>
+<span class="fc" id="L51">			minRoot = meld(minRoot, node);</span>
 		}
-<span class="nc" id="L54">	}</span>
+<span class="fc" id="L53">	}</span>
 
 	@Override
 	public int extractMin() {
-<span class="nc" id="L58">		int min = minRoot;</span>
-<span class="nc" id="L59">		removeRoot();</span>
-<span class="nc" id="L60">		return min;</span>
+<span class="fc" id="L57">		int min = minRoot;</span>
+<span class="fc" id="L58">		removeRoot();</span>
+<span class="fc" id="L59">		return min;</span>
 	}
 
 	@Override
 	public void remove(int node) {
-<span class="nc bnc" id="L65" title="All 2 branches missed.">		assert minRoot &gt;= 0;</span>
-<span class="nc bnc" id="L66" title="All 2 branches missed.">		if (node != minRoot) {</span>
-<span class="nc" id="L67">			cut(node);</span>
-<span class="nc" id="L68">			addChild(node, minRoot);</span>
-<span class="nc" id="L69">			minRoot = node;</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		assert isInserted(node);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		if (node != minRoot) {</span>
+<span class="fc" id="L66">			cut(node);</span>
+<span class="fc" id="L67">			addChild(node, minRoot);</span>
+<span class="fc" id="L68">			minRoot = node;</span>
 		}
-<span class="nc" id="L71">		removeRoot();</span>
-<span class="nc" id="L72">	}</span>
+<span class="fc" id="L70">		removeRoot();</span>
+<span class="fc" id="L71">	}</span>
 
 	private int meld(int n1, int n2) {
-<span class="nc bnc" id="L75" title="All 4 branches missed.">		assert prevOrParent(n1) &lt; 0 &amp;&amp; next(n1) &lt; 0;</span>
-<span class="nc bnc" id="L76" title="All 4 branches missed.">		assert prevOrParent(n2) &lt; 0 &amp;&amp; next(n2) &lt; 0;</span>
+<span class="pc bpc" id="L74" title="2 of 4 branches missed.">		assert isSubtreeRoot(n1) &amp;&amp; isSubtreeRoot(n2);</span>
 
 		/* assume n1 has smaller key than n2 */
-<span class="nc bnc" id="L79" title="All 2 branches missed.">		if (key[n1] &gt; key[n2]) {</span>
-<span class="nc" id="L80">			int temp = n1;</span>
-<span class="nc" id="L81">			n1 = n2;</span>
-<span class="nc" id="L82">			n2 = temp;</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">		if (key[n1] &gt; key[n2]) {</span>
+<span class="fc" id="L78">			int temp = n1;</span>
+<span class="fc" id="L79">			n1 = n2;</span>
+<span class="fc" id="L80">			n2 = temp;</span>
 		}
 
-<span class="nc" id="L85">		addChild(n1, n2);</span>
-<span class="nc" id="L86">		return n1;</span>
+<span class="fc" id="L83">		addChild(n1, n2);</span>
+<span class="fc" id="L84">		return n1;</span>
 	}
 
 	private void removeRoot() {
-<span class="nc bnc" id="L90" title="All 2 branches missed.">		if (child(minRoot) &lt; 0) {</span>
-<span class="nc" id="L91">			minRoot = -1;</span>
-<span class="nc" id="L92">			return;</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		if (child(minRoot) &lt; 0) {</span>
+<span class="fc" id="L89">			minRoot = -1;</span>
+<span class="fc" id="L90">			return;</span>
 		}
 
 		/* meld pairs from left to right */
 		int tail;
-<span class="nc" id="L97">		for (int prev = minRoot, next = child(minRoot);;) {</span>
-<span class="nc" id="L98">			int n1 = next;</span>
-<span class="nc bnc" id="L99" title="All 2 branches missed.">			if (n1 &lt; 0) {</span>
-<span class="nc" id="L100">				tail = prev;</span>
-<span class="nc" id="L101">				break;</span>
+<span class="fc" id="L95">		for (int prev = minRoot, next = child(minRoot);;) {</span>
+<span class="fc" id="L96">			int n1 = next;</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">			if (n1 &lt; 0) {</span>
+<span class="fc" id="L98">				tail = prev;</span>
+<span class="fc" id="L99">				break;</span>
 			}
 
-<span class="nc" id="L104">			int n2 = next(n1);</span>
-<span class="nc bnc" id="L105" title="All 2 branches missed.">			if (n2 &lt; 0) {</span>
-<span class="nc" id="L106">				prevOrParent(n1, prev);</span>
-<span class="nc" id="L107">				tail = n1;</span>
-<span class="nc" id="L108">				break;</span>
+<span class="fc" id="L102">			int n2 = next(n1);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (n2 &lt; 0) {</span>
+<span class="fc" id="L104">				prevOrParent(n1, prev);</span>
+<span class="fc" id="L105">				tail = n1;</span>
+<span class="fc" id="L106">				break;</span>
 			}
-<span class="nc" id="L110">			next = next(n2);</span>
-<span class="nc" id="L111">			next(n1, -1);</span>
-<span class="nc" id="L112">			next(n2, -1);</span>
-<span class="nc" id="L113">			prevOrParent(n1, -1);</span>
-<span class="nc" id="L114">			prevOrParent(n2, -1);</span>
-<span class="nc" id="L115">			n1 = meld(n1, n2);</span>
+<span class="fc" id="L108">			next = next(n2);</span>
+<span class="fc" id="L109">			next(n1, -1);</span>
+<span class="fc" id="L110">			next(n2, -1);</span>
+<span class="fc" id="L111">			prevOrParent(n1, -1);</span>
+<span class="fc" id="L112">			prevOrParent(n2, -1);</span>
+<span class="fc" id="L113">			n1 = meld(n1, n2);</span>
 
-<span class="nc" id="L117">			prevOrParent(n1, prev);</span>
-<span class="nc" id="L118">			prev = n1;</span>
-<span class="nc" id="L119">		}</span>
-<span class="nc" id="L120">		child(minRoot, -1);</span>
+<span class="fc" id="L115">			prevOrParent(n1, prev);</span>
+<span class="fc" id="L116">			prev = n1;</span>
+<span class="fc" id="L117">		}</span>
+<span class="fc" id="L118">		child(minRoot, -1);</span>
 
 		/* meld all from right to left */
-<span class="nc" id="L123">		int root = tail, prev = prevOrParent(root);</span>
-<span class="nc" id="L124">		prevOrParent(root, -1);</span>
+<span class="fc" id="L121">		int root = tail, prev = prevOrParent(root);</span>
+<span class="fc" id="L122">		prevOrParent(root, -1);</span>
 		for (;;) {
-<span class="nc" id="L126">			int other = prev;</span>
-<span class="nc bnc" id="L127" title="All 2 branches missed.">			if (other == minRoot) {</span>
-<span class="nc" id="L128">				minRoot = root;</span>
-<span class="nc" id="L129">				break;</span>
+<span class="fc" id="L124">			int other = prev;</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">			if (other == minRoot) {</span>
+<span class="fc" id="L126">				minRoot = root;</span>
+<span class="fc" id="L127">				break;</span>
 			}
-<span class="nc" id="L131">			prev = prevOrParent(other);</span>
-<span class="nc" id="L132">			prevOrParent(other, -1);</span>
-<span class="nc" id="L133">			root = meld(root, other);</span>
-<span class="nc" id="L134">		}</span>
-<span class="nc" id="L135">	}</span>
+<span class="fc" id="L129">			prev = prevOrParent(other);</span>
+<span class="fc" id="L130">			prevOrParent(other, -1);</span>
+<span class="fc" id="L131">			root = meld(root, other);</span>
+<span class="fc" id="L132">		}</span>
+<span class="fc" id="L133">	}</span>
 
 	@Override
 	public void decreaseKey(int node, int newKey) {
-<span class="nc" id="L139">		Assertions.heapDecreaseKeyIsSmaller(key[node], newKey, (IntComparator) null);</span>
-<span class="nc" id="L140">		key[node] = newKey;</span>
+<span class="fc" id="L137">		Assertions.heapDecreaseKeyIsSmaller(key[node], newKey, (IntComparator) null);</span>
+<span class="fc" id="L138">		key[node] = newKey;</span>
 
-<span class="nc bnc" id="L142" title="All 2 branches missed.">		if (node != minRoot) {</span>
-<span class="nc" id="L143">			cut(node);</span>
-<span class="nc" id="L144">			minRoot = meld(minRoot, node);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">		if (node != minRoot) {</span>
+<span class="fc" id="L141">			cut(node);</span>
+<span class="fc" id="L142">			minRoot = meld(minRoot, node);</span>
 		}
-<span class="nc" id="L146">	}</span>
+<span class="fc" id="L144">	}</span>
 
 	@Override
 	public void increaseKey(int node, int newKey) {
-<span class="nc" id="L150">		Assertions.heapIncreaseKeyIsGreater(key[node], newKey, (IntComparator) null);</span>
-<span class="nc" id="L151">		remove(node);</span>
-<span class="nc" id="L152">		key[node] = newKey;</span>
-<span class="nc" id="L153">		insertNode(node);</span>
-<span class="nc" id="L154">	}</span>
+<span class="fc" id="L148">		Assertions.heapIncreaseKeyIsGreater(key[node], newKey, (IntComparator) null);</span>
+<span class="fc" id="L149">		remove(node);</span>
+<span class="fc" id="L150">		key[node] = newKey;</span>
+<span class="fc" id="L151">		insertNode(node);</span>
+<span class="fc" id="L152">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

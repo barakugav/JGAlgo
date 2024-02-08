@@ -221,7 +221,7 @@ public class IntIntBinomialHeap  implements IntIntReferenceableHeap  {
 	}
 
 	private void insertNode(Node  node) {
-<span class="pc bnc" id="L224" title="All 8 branches missed.">		assert node.parent == null &amp;&amp; node.child == null &amp;&amp; node.next == null &amp;&amp; node.prev == null;</span>
+<span class="pc bpc" id="L224" title="4 of 8 branches missed.">		assert node.parent == null &amp;&amp; node.child == null &amp;&amp; node.next == null &amp;&amp; node.prev == null;</span>
 <span class="fc" id="L225">		Node [] h2 = tempArray(1);</span>
 <span class="fc" id="L226">		h2[0] = node;</span>
 <span class="fc" id="L227">		meld(h2, 1);</span>
@@ -234,7 +234,7 @@ public class IntIntBinomialHeap  implements IntIntReferenceableHeap  {
 	}
 
 	private static  Node  mergeTreesDefaultCmp(Node  r1, Node  r2) {
-<span class="pc bnc" id="L237" title="All 2 branches missed.">		assert r1 != r2;</span>
+<span class="pc bpc" id="L237" title="1 of 2 branches missed.">		assert r1 != r2;</span>
 <span class="pc bpc" id="L238" title="1 of 2 branches missed.">		if (r1 == r2)</span>
 <span class="nc" id="L239">			throw new IllegalStateException();</span>
 <span class="fc bfc" id="L240" title="All 2 branches covered.">		if (r1.key &gt; r2.key) {</span>
@@ -253,7 +253,7 @@ public class IntIntBinomialHeap  implements IntIntReferenceableHeap  {
 	}
 
 	private Node  mergeTreesCustomCmp(Node  r1, Node  r2) {
-<span class="pc bnc" id="L256" title="All 2 branches missed.">		assert r1 != r2;</span>
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">		assert r1 != r2;</span>
 <span class="pc bpc" id="L257" title="1 of 2 branches missed.">		if (r1 == r2)</span>
 <span class="nc" id="L258">			throw new IllegalStateException();</span>
 <span class="fc bfc" id="L259" title="All 2 branches covered.">		if (c.compare(r1.key, r2.key) &gt; 0) {</span>

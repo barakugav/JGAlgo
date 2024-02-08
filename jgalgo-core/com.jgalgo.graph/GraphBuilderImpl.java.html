@@ -68,7 +68,7 @@ import java.util.Set;
 <span class="fc" id="L68">		int vIdx = ibuilder.vertices().size();</span>
 <span class="fc" id="L69">		viMap.addId(vertex, vIdx);</span>
 <span class="fc" id="L70">		int vIdx2 = ibuilder.addVertexInt();</span>
-<span class="pc bnc" id="L71" title="All 2 branches missed.">		assert vIdx == vIdx2;</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		assert vIdx == vIdx2;</span>
 <span class="fc" id="L72">	}</span>
 
 	@Override
@@ -102,7 +102,7 @@ import java.util.Set;
 <span class="fc" id="L102">		eiMap.addId(edge, eIdx);</span>
 
 <span class="fc" id="L104">		int eIdx2 = ibuilder.addEdge(uIdx, vIdx);</span>
-<span class="pc bnc" id="L105" title="All 2 branches missed.">		assert eIdx == eIdx2;</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">		assert eIdx == eIdx2;</span>
 <span class="fc" id="L106">	}</span>
 
 	@Override

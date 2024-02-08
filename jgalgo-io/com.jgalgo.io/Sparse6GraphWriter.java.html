@@ -186,29 +186,29 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 		/* assert sorted */
 <span class="fc bfc" id="L187" title="All 2 branches covered.">		if (m &gt; 0) {</span>
 <span class="fc" id="L188">			final int[] edges0 = edges;</span>
-<span class="pc bnc" id="L189" title="All 2 branches missed.">			assert range(m - 1).allMatch(i -&gt; {</span>
-<span class="nc" id="L190">				int e1 = edges0[i], e2 = edges0[i + 1];</span>
-<span class="nc" id="L191">				Integer e1Obj = Integer.valueOf(e1);</span>
-<span class="nc" id="L192">				Integer e2Obj = Integer.valueOf(e2);</span>
-<span class="nc" id="L193">				int u1 = graph.edgeSource(e1Obj).intValue();</span>
-<span class="nc" id="L194">				int v1 = graph.edgeTarget(e1Obj).intValue();</span>
-<span class="nc" id="L195">				int u2 = graph.edgeSource(e2Obj).intValue();</span>
-<span class="nc" id="L196">				int v2 = graph.edgeTarget(e2Obj).intValue();</span>
-<span class="nc bnc" id="L197" title="All 2 branches missed.">				if (u1 &lt; v1) {</span>
-<span class="nc" id="L198">					int temp = u1;</span>
-<span class="nc" id="L199">					u1 = v1;</span>
-<span class="nc" id="L200">					v1 = temp;</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">			assert range(m - 1).allMatch(i -&gt; {</span>
+<span class="fc" id="L190">				int e1 = edges0[i], e2 = edges0[i + 1];</span>
+<span class="fc" id="L191">				Integer e1Obj = Integer.valueOf(e1);</span>
+<span class="fc" id="L192">				Integer e2Obj = Integer.valueOf(e2);</span>
+<span class="fc" id="L193">				int u1 = graph.edgeSource(e1Obj).intValue();</span>
+<span class="fc" id="L194">				int v1 = graph.edgeTarget(e1Obj).intValue();</span>
+<span class="fc" id="L195">				int u2 = graph.edgeSource(e2Obj).intValue();</span>
+<span class="fc" id="L196">				int v2 = graph.edgeTarget(e2Obj).intValue();</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">				if (u1 &lt; v1) {</span>
+<span class="fc" id="L198">					int temp = u1;</span>
+<span class="fc" id="L199">					u1 = v1;</span>
+<span class="fc" id="L200">					v1 = temp;</span>
 				}
-<span class="nc bnc" id="L202" title="All 2 branches missed.">				if (u2 &lt; v2) {</span>
-<span class="nc" id="L203">					int temp = u2;</span>
-<span class="nc" id="L204">					u2 = v2;</span>
-<span class="nc" id="L205">					v2 = temp;</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">				if (u2 &lt; v2) {</span>
+<span class="fc" id="L203">					int temp = u2;</span>
+<span class="fc" id="L204">					u2 = v2;</span>
+<span class="fc" id="L205">					v2 = temp;</span>
 				}
-<span class="nc bnc" id="L207" title="All 2 branches missed.">				if (u1 != u2)</span>
-<span class="nc bnc" id="L208" title="All 2 branches missed.">					return u1 &lt; u2;</span>
-<span class="nc bnc" id="L209" title="All 2 branches missed.">				if (v1 != v2)</span>
-<span class="nc bnc" id="L210" title="All 2 branches missed.">					return v1 &lt; v2;</span>
-<span class="nc bnc" id="L211" title="All 4 branches missed.">				return !keepEdgesIds || e1 &lt; e2;</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">				if (u1 != u2)</span>
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">					return u1 &lt; u2;</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">				if (v1 != v2)</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">					return v1 &lt; v2;</span>
+<span class="pc bpc" id="L211" title="3 of 4 branches missed.">				return !keepEdgesIds || e1 &lt; e2;</span>
 			});
 		}
 
@@ -239,7 +239,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 <span class="fc" id="L239">				currentVertex = u;</span>
 
 			} else {
-<span class="pc bnc" id="L242" title="All 2 branches missed.">				assert u &gt; currentVertex + 1;</span>
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">				assert u &gt; currentVertex + 1;</span>
 <span class="fc" id="L243">				bitsWriter.write(false);</span>
 <span class="fc" id="L244">				bitsWriter.write(u, k);</span>
 <span class="fc" id="L245">				currentVertex = u;</span>

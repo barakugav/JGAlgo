@@ -75,7 +75,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
 			ShortestPathAllPairs.IResult indexResult) {
-<span class="pc bpc" id="L78" title="3 of 4 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L78" title="2 of 4 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L79" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L80">			return (ShortestPathAllPairs.Result&lt;V, E&gt;) new ShortestPathAllPairsUtils.IntResultFromIndexResult(</span>
 					(IntGraph) g, indexResult);

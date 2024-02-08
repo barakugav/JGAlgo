@@ -62,12 +62,90 @@ public interface KShortestPathsST {
 	 * Create a new K shortest paths algorithm object.
 	 *
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link KShortestPathsST} object.
+	 * This is the recommended way to instantiate a new {@link KShortestPathsST} object. The
+	 * {@link KShortestPathsST.Builder} might support different options to obtain different implementations.
 	 *
 	 * @return a default implementation of {@link KShortestPathsST}
 	 */
 	static KShortestPathsST newInstance() {
-<span class="nc" id="L70">		return new KShortestPathsSTYen();</span>
+<span class="nc" id="L71">		return builder().build();</span>
+	}
+
+	/**
+	 * Create a new minimum spanning tree algorithm builder.
+	 *
+	 * &lt;p&gt;
+	 * Use {@link #newInstance()} for a default implementation.
+	 *
+	 * @return a new builder that can build {@link MinimumSpanningTree} objects
+	 */
+	static KShortestPathsST.Builder builder() {
+<span class="nc" id="L83">		return new KShortestPathsST.Builder() {</span>
+			String impl;
+
+			@Override
+			public KShortestPathsST build() {
+<span class="nc bnc" id="L88" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L89" title="All 3 branches missed.">					switch (impl) {</span>
+						case &quot;yen&quot;:
+<span class="nc" id="L91">							return new KShortestPathsSTYen();</span>
+						case &quot;katoh-ibaraki-mine&quot;:
+<span class="nc" id="L93">							return new KShortestPathsSTKatohIbarakiMine();</span>
+						default:
+<span class="nc" id="L95">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+					}
+				}
+				/*-
+				 * Katoh-Ibaraki-Mine algorithm has a better complexity than Yen's algorithm, so theoretically we should
+				 * use it for undirected graphs by default, but benchmarks (for relatively small k) showed otherwise:
+				 * KShortestPathsSTKatohIbarakiMine    |V|=200 |E|=1500 k=5  avgt    3   1.716 ±  0.601  ms/op
+				 * KShortestPathsSTKatohIbarakiMine  |V|=800 |E|=10000 k=15  avgt    3  38.263 ±  1.930  ms/op
+				 * KShortestPathsSTKatohIbarakiMine  |V|=1500 |E|=3000 k=50  avgt    3  91.850 ± 11.972  ms/op
+				 * KShortestPathsSTYen                 |V|=200 |E|=1500 k=5  avgt    3   0.435 ±  0.012  ms/op
+				 * KShortestPathsSTYen               |V|=800 |E|=10000 k=15  avgt    3   8.372 ±  0.932  ms/op
+				 * KShortestPathsSTYen               |V|=1500 |E|=3000 k=50  avgt    3   8.783 ±  0.181  ms/op
+				 */
+				// return new KShortestPathsST() {
+				// private final KShortestPathsST directedAlgo = new KShortestPathsSTYen();
+				// private final KShortestPathsST undirectedAlgo = new KShortestPathsSTKatohIbarakiMine();
+				// @Override
+				// public &lt;V, E&gt; List&lt;Path&lt;V, E&gt;&gt; computeKShortestPaths(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source,
+				// V target, int k) {
+				// if (g.isDirected()) {
+				// return directedAlgo.computeKShortestPaths(g, w, source, target, k);
+				// } else {
+				// return undirectedAlgo.computeKShortestPaths(g, w, source, target, k);
+				// } } };
+<span class="nc" id="L119">				return new KShortestPathsSTYen();</span>
+			}
+
+			@Override
+			public void setOption(String key, Object value) {
+<span class="nc bnc" id="L124" title="All 2 branches missed.">				switch (key) {</span>
+					case &quot;impl&quot;:
+<span class="nc" id="L126">						impl = (String) value;</span>
+<span class="nc" id="L127">						break;</span>
+					default:
+<span class="nc" id="L129">						KShortestPathsST.Builder.super.setOption(key, value);</span>
+				}
+<span class="nc" id="L131">			}</span>
+		};
+	}
+
+	/**
+	 * A builder for {@link KShortestPathsST} objects.
+	 *
+	 * @see    KShortestPathsST#builder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends AlgorithmBuilderBase {
+
+		/**
+		 * Create a new algorithm object for k shortest paths computation.
+		 *
+		 * @return a new k shortest paths algorithm
+		 */
+		KShortestPathsST build();
 	}
 
 }

@@ -159,7 +159,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L159">		final int fakeEdgesThreshold = refgBuilder.edges().size();</span>
 <span class="fc bfc" id="L160" title="All 2 branches covered.">		for (int v : range(n)) {</span>
 <span class="fc" id="L161">			int e = refgBuilder.addEdge(fakeV, v);</span>
-<span class="pc bnc" id="L162" title="All 2 branches missed.">			assert e &gt;= fakeEdgesThreshold;</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">			assert e &gt;= fakeEdgesThreshold;</span>
 <span class="fc" id="L163">		}</span>
 <span class="fc" id="L164">		IndexGraph refG = refgBuilder.build();</span>
 

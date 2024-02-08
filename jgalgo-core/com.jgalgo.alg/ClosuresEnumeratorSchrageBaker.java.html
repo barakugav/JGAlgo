@@ -136,7 +136,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L136" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(topoIdxToV[j]).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L137">						eit.nextInt();</span>
 <span class="fc" id="L138">						int predecessor = eit.sourceInt();</span>
-<span class="pc bnc" id="L139" title="All 2 branches missed.">						assert j &lt; vToTopoIndex[predecessor];</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">						assert j &lt; vToTopoIndex[predecessor];</span>
 <span class="fc bfc" id="L140" title="All 2 branches covered.">						if (m.get(vToTopoIndex[predecessor]))</span>
 <span class="fc" id="L141">							continue cleanLoop;</span>
 <span class="fc" id="L142">					}</span>

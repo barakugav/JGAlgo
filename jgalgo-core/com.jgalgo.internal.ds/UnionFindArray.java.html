@@ -91,7 +91,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	@Override
 	public int find(int x) {
-<span class="pc bnc" id="L94" title="All 4 branches missed.">		assert 0 &lt;= x &amp;&amp; x &lt; size;</span>
+<span class="pc bpc" id="L94" title="2 of 4 branches missed.">		assert 0 &lt;= x &amp;&amp; x &lt; size;</span>
 <span class="fc" id="L95">		return find0(x);</span>
 	}
 
@@ -149,12 +149,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	int getRank(int idx) {
 <span class="fc" id="L151">		int rank = parent[idx];</span>
-<span class="pc bnc" id="L152" title="All 2 branches missed.">		assert rank &lt; 0;</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">		assert rank &lt; 0;</span>
 <span class="fc" id="L153">		return -rank;</span>
 	}
 
 	void setRank(int idx, int rank) {
-<span class="pc bnc" id="L157" title="All 2 branches missed.">		assert rank &gt; 0;</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">		assert rank &gt; 0;</span>
 <span class="fc" id="L158">		parent[idx] = -rank;</span>
 <span class="fc" id="L159">	}</span>
 

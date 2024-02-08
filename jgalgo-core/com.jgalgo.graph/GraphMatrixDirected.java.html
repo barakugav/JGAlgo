@@ -56,7 +56,7 @@ class GraphMatrixDirected extends GraphMatrixAbstract implements GraphDefaultsDi
 
 	GraphMatrixDirected(boolean selfEdges, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 <span class="fc" id="L58">		super(capabilities(selfEdges), g, copyVerticesWeights, copyEdgesWeights);</span>
-<span class="pc bnc" id="L59" title="All 2 branches missed.">		assert g.isDirected();</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">		assert g.isDirected();</span>
 <span class="fc bfc" id="L60" title="All 2 branches covered.">		if (g instanceof GraphMatrixDirected) {</span>
 <span class="fc" id="L61">			GraphMatrixDirected g0 = (GraphMatrixDirected) g;</span>
 <span class="fc" id="L62">			edgesOutNumContainer = copyVerticesContainer(g0.edgesOutNumContainer, newArr -&gt; edgesOutNum = newArr);</span>
@@ -74,7 +74,7 @@ class GraphMatrixDirected extends GraphMatrixAbstract implements GraphDefaultsDi
 
 	GraphMatrixDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L76">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L77" title="All 2 branches missed.">		assert builder.isDirected();</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">		assert builder.isDirected();</span>
 
 <span class="fc" id="L79">		edgesOutNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesOutNum = newArr);</span>
 <span class="fc" id="L80">		edgesInNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesInNum = newArr);</span>
@@ -87,7 +87,7 @@ class GraphMatrixDirected extends GraphMatrixAbstract implements GraphDefaultsDi
 
 	@Override
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
-<span class="pc bnc" id="L90" title="All 4 branches missed.">		assert outEdges(removedIdx).isEmpty() &amp;&amp; inEdges(removedIdx).isEmpty();</span>
+<span class="pc bpc" id="L90" title="2 of 4 branches missed.">		assert outEdges(removedIdx).isEmpty() &amp;&amp; inEdges(removedIdx).isEmpty();</span>
 <span class="fc bfc" id="L91" title="All 2 branches covered.">		for (int e : outEdges(swappedIdx))</span>
 <span class="fc" id="L92">			replaceEdgeSource(e, removedIdx);</span>
 <span class="fc bfc" id="L93" title="All 2 branches covered.">		for (int e : inEdges(swappedIdx))</span>

@@ -82,7 +82,7 @@ class ShortestPathSingleSourceUtils {
 <span class="fc" id="L82">				for (int v = target;;) {</span>
 <span class="fc" id="L83">					int e = backtrack[v];</span>
 <span class="fc bfc" id="L84" title="All 2 branches covered.">					if (e &lt; 0) {</span>
-<span class="pc bnc" id="L85" title="All 2 branches missed.">						assert v == source;</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">						assert v == source;</span>
 						break;
 					}
 <span class="fc" id="L88">					path.add(e);</span>
@@ -92,7 +92,7 @@ class ShortestPathSingleSourceUtils {
 <span class="fc" id="L92">				for (int v = target;;) {</span>
 <span class="fc" id="L93">					int e = backtrack[v];</span>
 <span class="fc bfc" id="L94" title="All 2 branches covered.">					if (e &lt; 0) {</span>
-<span class="pc bnc" id="L95" title="All 2 branches missed.">						assert v == source;</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">						assert v == source;</span>
 						break;
 					}
 <span class="fc" id="L98">					path.add(e);</span>

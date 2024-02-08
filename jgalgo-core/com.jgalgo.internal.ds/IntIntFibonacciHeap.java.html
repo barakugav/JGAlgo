@@ -102,7 +102,7 @@ public class IntIntFibonacciHeap  implements IntIntReferenceableHeap  {
 	}
 
 	private void insertNode(Node  n) {
-<span class="pc bnc" id="L105" title="All 12 branches missed.">		assert n.parent == null &amp;&amp; n.child == null &amp;&amp; n.prev == null &amp;&amp; n.next == null &amp;&amp; !n.marked &amp;&amp; n.degree == 0;</span>
+<span class="pc bpc" id="L105" title="6 of 12 branches missed.">		assert n.parent == null &amp;&amp; n.child == null &amp;&amp; n.prev == null &amp;&amp; n.next == null &amp;&amp; !n.marked &amp;&amp; n.degree == 0;</span>
 <span class="fc bfc" id="L106" title="All 2 branches covered.">		if (minRoot != null) {</span>
 <span class="fc" id="L107">			Node  last = end;</span>
 <span class="fc" id="L108">			last.next = n;</span>
@@ -161,13 +161,13 @@ public class IntIntFibonacciHeap  implements IntIntReferenceableHeap  {
 	}
 
 	private static  void cut(Node  p) {
-<span class="pc bnc" id="L164" title="All 2 branches missed.">		assert p.parent != null;</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">		assert p.parent != null;</span>
 <span class="fc" id="L165">		Node  prev = p.prev;</span>
 <span class="fc bfc" id="L166" title="All 2 branches covered.">		if (prev != null) {</span>
 <span class="fc" id="L167">			prev.next = p.next;</span>
 <span class="fc" id="L168">			p.prev = null;</span>
 		} else {
-<span class="pc bnc" id="L170" title="All 2 branches missed.">			assert p.parent.child == p;</span>
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">			assert p.parent.child == p;</span>
 <span class="fc" id="L171">			p.parent.child = p.next;</span>
 		}
 <span class="fc" id="L173">		p.parent.degree--;</span>
@@ -187,7 +187,7 @@ public class IntIntFibonacciHeap  implements IntIntReferenceableHeap  {
 <span class="fc" id="L187">	}</span>
 
 	private void compareToMinRoot(Node  p) {
-<span class="pc bnc" id="L190" title="All 2 branches missed.">		assert p.parent == null;</span>
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">		assert p.parent == null;</span>
 <span class="fc bfc" id="L191" title="All 2 branches covered.">		if (c == null) {</span>
 <span class="fc bfc" id="L192" title="All 2 branches covered.">			if (minRoot.key &gt; p.key)</span>
 <span class="fc" id="L193">				minRoot = p;</span>
@@ -375,7 +375,7 @@ public class IntIntFibonacciHeap  implements IntIntReferenceableHeap  {
 <span class="fc" id="L375">			u = v;</span>
 <span class="fc" id="L376">			v = temp;</span>
 		}
-<span class="pc bnc" id="L378" title="All 2 branches missed.">		assert u.key &lt;= v.key;</span>
+<span class="pc bpc" id="L378" title="1 of 2 branches missed.">		assert u.key &lt;= v.key;</span>
 <span class="fc" id="L379">		addChild(u, v);</span>
 <span class="fc" id="L380">		return u;</span>
 	}
@@ -386,7 +386,7 @@ public class IntIntFibonacciHeap  implements IntIntReferenceableHeap  {
 <span class="fc" id="L386">			u = v;</span>
 <span class="fc" id="L387">			v = temp;</span>
 		}
-<span class="pc bnc" id="L389" title="All 2 branches missed.">		assert c.compare(u.key, v.key) &lt;= 0;</span>
+<span class="pc bpc" id="L389" title="1 of 2 branches missed.">		assert c.compare(u.key, v.key) &lt;= 0;</span>
 <span class="fc" id="L390">		addChild(u, v);</span>
 <span class="fc" id="L391">		return u;</span>
 	}

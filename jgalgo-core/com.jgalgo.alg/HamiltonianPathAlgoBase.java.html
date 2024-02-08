@@ -119,7 +119,7 @@ interface HamiltonianPathAlgoBase extends HamiltonianPathAlgo {
 <span class="fc" id="L119">			return IterTools.map(cyclesIter, cycle -&gt; {</span>
 <span class="fc" id="L120">				IntList path = new IntArrayList(n - 1);</span>
 <span class="fc" id="L121">				int xIdx = cycle.vertices().indexOf(x);</span>
-<span class="pc bpc" id="L122" title="3 of 4 branches missed.">				assert xIdx &gt;= 0;</span>
+<span class="pc bpc" id="L122" title="2 of 4 branches missed.">				assert xIdx &gt;= 0;</span>
 <span class="fc" id="L123">				IntList cEdges = cycle.edges();</span>
 <span class="fc bfc" id="L124" title="All 2 branches covered.">				if (xIdx &lt; cEdges.size() - 1)</span>
 <span class="fc bfc" id="L125" title="All 2 branches covered.">					path.addAll(cEdges.subList(xIdx + 1, cEdges.size() - (xIdx == 0 ? 1 : 0)));</span>
@@ -148,7 +148,7 @@ interface HamiltonianPathAlgoBase extends HamiltonianPathAlgo {
 <span class="fc" id="L148">				return IterTools.map(cyclesIter, cycle -&gt; {</span>
 <span class="fc" id="L149">					IntList path = new IntArrayList(n);</span>
 <span class="fc" id="L150">					int srcIdx = cycle.vertices().indexOf(source);</span>
-<span class="pc bpc" id="L151" title="3 of 4 branches missed.">					assert srcIdx &gt;= 0;</span>
+<span class="pc bpc" id="L151" title="2 of 4 branches missed.">					assert srcIdx &gt;= 0;</span>
 <span class="fc" id="L152">					path.addAll(cycle.edges().subList(srcIdx, cycle.edges().size()));</span>
 <span class="fc" id="L153">					path.addAll(cycle.edges().subList(0, srcIdx));</span>
 <span class="fc" id="L154">					return IPath.valueOf(g, source, target, path);</span>
@@ -178,7 +178,7 @@ interface HamiltonianPathAlgoBase extends HamiltonianPathAlgo {
 <span class="fc" id="L178">			return IterTools.map(cyclesIter, cycle -&gt; {</span>
 <span class="fc" id="L179">				IntArrayList path = new IntArrayList(n - 1);</span>
 <span class="fc" id="L180">				int xIdx = cycle.vertices().indexOf(x);</span>
-<span class="pc bpc" id="L181" title="3 of 4 branches missed.">				assert xIdx &gt;= 0;</span>
+<span class="pc bpc" id="L181" title="2 of 4 branches missed.">				assert xIdx &gt;= 0;</span>
 
 <span class="fc" id="L183">				IntList cEdges = cycle.edges();</span>
 <span class="fc bfc" id="L184" title="All 2 branches covered.">				if (xIdx &lt; cEdges.size() - 1)</span>
@@ -187,19 +187,19 @@ interface HamiltonianPathAlgoBase extends HamiltonianPathAlgo {
 <span class="fc" id="L187">					path.addAll(cEdges.subList(0, xIdx - 1));</span>
 
 <span class="fc bfc" id="L189" title="All 2 branches covered.">				if (g.isDirected()) {</span>
-<span class="pc bpc" id="L190" title="3 of 4 branches missed.">					assert source == g0.edgeTarget(/* xToSourceEdge */ cEdges.getInt(xIdx));</span>
+<span class="pc bpc" id="L190" title="2 of 4 branches missed.">					assert source == g0.edgeTarget(/* xToSourceEdge */ cEdges.getInt(xIdx));</span>
 <span class="pc bpc" id="L191" title="1 of 2 branches missed.">					assert target == g0</span>
-<span class="nc bnc" id="L192" title="All 4 branches missed.">							.edgeSource(/* targetToXEdge */ cEdges.getInt(xIdx &gt; 0 ? xIdx - 1 : cEdges.size() - 1));</span>
+<span class="pc bpc" id="L192" title="1 of 4 branches missed.">							.edgeSource(/* targetToXEdge */ cEdges.getInt(xIdx &gt; 0 ? xIdx - 1 : cEdges.size() - 1));</span>
 				} else {
 <span class="fc" id="L194">					int edgeAfterX = cEdges.getInt(xIdx);</span>
 <span class="fc" id="L195">					int vertexAfterX = g0.edgeEndpoint(edgeAfterX, x);</span>
 
 <span class="fc bfc" id="L197" title="All 2 branches covered.">					if (source != vertexAfterX) {</span>
-<span class="pc bpc" id="L198" title="3 of 4 branches missed.">						assert target == vertexAfterX;</span>
+<span class="pc bpc" id="L198" title="2 of 4 branches missed.">						assert target == vertexAfterX;</span>
 <span class="fc" id="L199">						IntArrays.reverse(path.elements(), 0, path.size());</span>
 					}
-<span class="pc bpc" id="L201" title="3 of 4 branches missed.">					assert (source == vertexAfterX ? target : source) == g0</span>
-<span class="nc bnc" id="L202" title="All 4 branches missed.">							.edgeEndpoint(/* targetToXEdge */ cEdges.getInt(xIdx &gt; 0 ? xIdx - 1 : cEdges.size() - 1),</span>
+<span class="pc bpc" id="L201" title="1 of 4 branches missed.">					assert (source == vertexAfterX ? target : source) == g0</span>
+<span class="pc bpc" id="L202" title="1 of 4 branches missed.">							.edgeEndpoint(/* targetToXEdge */ cEdges.getInt(xIdx &gt; 0 ? xIdx - 1 : cEdges.size() - 1),</span>
 									x);
 				}
 

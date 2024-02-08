@@ -178,7 +178,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 		@Override
 		public IntGraph graph() {
-<span class="nc" id="L181">			return g;</span>
+<span class="fc" id="L181">			return g;</span>
 		}
 
 		@Override
@@ -262,7 +262,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; VertexBiPartition&lt;V, E&gt; partitionFromIndexPartition(Graph&lt;V, E&gt; g,
 			IVertexBiPartition indexPartition) {
-<span class="pc bnc" id="L265" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L266" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L267">			return (VertexBiPartition&lt;V, E&gt;) new IntBiPartitionFromIndexBiPartition((IntGraph) g, indexPartition);</span>
 		} else {

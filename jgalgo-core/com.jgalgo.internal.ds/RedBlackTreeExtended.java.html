@@ -125,7 +125,7 @@ class RedBlackTreeExtended&lt;K, V&gt; extends ObjObjRedBlackTree&lt;K, V&gt; {
 <span class="fc bfc" id="L125" title="All 2 branches covered.">			for (RedBlackTreeExtension&lt;K, V&gt; extension : extensions)</span>
 <span class="fc" id="L126">				extension.data.expand(newLen);</span>
 		}
-<span class="pc bnc" id="L128" title="All 2 branches missed.">		assert nodes[idx] == null;</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">		assert nodes[idx] == null;</span>
 <span class="fc" id="L129">		Node&lt;K, V&gt; n = nodes[idx] = new Node&lt;&gt;(key, idx);</span>
 <span class="fc bfc" id="L130" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;K, V&gt; extension : extensions)</span>
 <span class="fc" id="L131">			extension.initNode(n);</span>
@@ -138,11 +138,11 @@ class RedBlackTreeExtended&lt;K, V&gt; extends ObjObjRedBlackTree&lt;K, V&gt; {
 <span class="fc" id="L138">		super.removeNode(n0);</span>
 <span class="fc" id="L139">		Node&lt;K, V&gt; n = (Node&lt;K, V&gt;) n0;</span>
 <span class="fc" id="L140">		int nIdx = n.idx;</span>
-<span class="pc bnc" id="L141" title="All 2 branches missed.">		assert nodes[nIdx] == n;</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">		assert nodes[nIdx] == n;</span>
 
 <span class="fc" id="L143">		int lastIdx = size - 1;</span>
 <span class="fc" id="L144">		Node&lt;K, V&gt; last = nodes[lastIdx];</span>
-<span class="pc bnc" id="L145" title="All 2 branches missed.">		assert last.idx == lastIdx;</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">		assert last.idx == lastIdx;</span>
 <span class="fc" id="L146">		nodes[nIdx] = last;</span>
 
 <span class="fc" id="L148">		nodes[lastIdx] = null;</span>

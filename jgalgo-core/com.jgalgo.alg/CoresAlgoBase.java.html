@@ -38,7 +38,7 @@ import com.jgalgo.graph.IntGraph;
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;V, E&gt; CoresAlgo.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g, CoresAlgo.IResult indexResult) {
-<span class="pc bpc" id="L41" title="3 of 4 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L41" title="2 of 4 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L42" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L43">			return (CoresAlgo.Result&lt;V, E&gt;) new CoresAlgos.IntResultFromIndexResult((IntGraph) g, indexResult);</span>
 		} else {

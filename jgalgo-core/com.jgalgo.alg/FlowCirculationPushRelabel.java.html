@@ -147,7 +147,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc bfc" id="L147" title="All 2 branches covered.">			mainLoop: for (int act; (act = highestActive()) &gt;= 0;) {</span>
 <span class="fc" id="L148">				deactivate(act);</span>
 <span class="fc" id="L149">				double exc = excess[act];</span>
-<span class="pc bnc" id="L150" title="All 2 branches missed.">				assert exc &gt; eps;</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">				assert exc &gt; eps;</span>
 <span class="fc" id="L151">				int actLevel = maxLayerActive;</span>
 <span class="fc" id="L152">				int minLayer = n;</span>
 <span class="fc bfc" id="L153" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(act).iterator(); eit.hasNext();) {</span>
@@ -221,7 +221,7 @@ import com.jgalgo.internal.util.Assertions;
 				}
 <span class="fc" id="L222">			}</span>
 
-<span class="pc bnc" id="L224" title="All 4 branches missed.">			assert g.vertices().intStream().allMatch(v -&gt; excess[v] &lt;= eps);</span>
+<span class="pc bpc" id="L224" title="2 of 4 branches missed.">			assert g.vertices().intStream().allMatch(v -&gt; excess[v] &lt;= eps);</span>
 <span class="fc bfc" id="L225" title="All 2 branches covered.">			for (int e : range(g.edges().size()))</span>
 <span class="fc" id="L226">				flow[e] = Math.max(0, Math.min(flow[e], capacityOrig.weight(e)));</span>
 <span class="fc" id="L227">			return new Flows.FlowImpl(g, flow);</span>
@@ -286,7 +286,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc bfc" id="L286" title="All 2 branches covered.">			mainLoop: for (int act; (act = highestActive()) &gt;= 0;) {</span>
 <span class="fc" id="L287">				deactivate(act);</span>
 <span class="fc" id="L288">				int exc = excess[act];</span>
-<span class="pc bnc" id="L289" title="All 2 branches missed.">				assert exc &gt; 0;</span>
+<span class="pc bpc" id="L289" title="1 of 2 branches missed.">				assert exc &gt; 0;</span>
 <span class="fc" id="L290">				int actLevel = maxLayerActive;</span>
 <span class="fc" id="L291">				int minLayer = n;</span>
 <span class="fc bfc" id="L292" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(act).iterator(); eit.hasNext();) {</span>
@@ -361,7 +361,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L361">			}</span>
 
 <span class="fc" id="L363">			double[] flow0 = new double[flow.length];</span>
-<span class="pc bnc" id="L364" title="All 4 branches missed.">			assert g.vertices().intStream().allMatch(v -&gt; excess[v] == 0);</span>
+<span class="pc bpc" id="L364" title="2 of 4 branches missed.">			assert g.vertices().intStream().allMatch(v -&gt; excess[v] == 0);</span>
 <span class="fc bfc" id="L365" title="All 2 branches covered.">			for (int e : range(g.edges().size()))</span>
 <span class="fc" id="L366">				flow0[e] = flow[e];</span>
 <span class="fc" id="L367">			return new Flows.FlowImpl(g, flow0);</span>

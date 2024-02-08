@@ -100,7 +100,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L100" title="All 2 branches covered.">			if (g.isAllowSelfEdges()) {</span>
 <span class="fc" id="L101">				checkNoSelfEdges();</span>
 			} else {
-<span class="pc bnc" id="L103" title="All 2 branches missed.">				assert checkNoSelfEdges();</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">				assert checkNoSelfEdges();</span>
 			}
 		}
 <span class="fc" id="L106">	}</span>
@@ -162,7 +162,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	@Override
 	public int addVertexInt() {
 <span class="fc" id="L164">		int u = vertices0().add();</span>
-<span class="pc bnc" id="L165" title="All 2 branches missed.">		assert u &gt;= 0;</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">		assert u &gt;= 0;</span>
 <span class="fc" id="L166">		ensureVertexCapacity(u + 1);</span>
 <span class="fc" id="L167">		return u;</span>
 	}
@@ -309,7 +309,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L309">					vertexSwapAndRemove(removedVertex, lastVertex);</span>
 				}
 			}
-<span class="pc bnc" id="L312" title="All 2 branches missed.">			assert nonLastVertices.isEmpty();</span>
+<span class="pc bpc" id="L312" title="1 of 2 branches missed.">			assert nonLastVertices.isEmpty();</span>
 		}
 <span class="fc" id="L314">	}</span>
 
@@ -321,7 +321,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="fc" id="L322">		int e = edges0().add();</span>
 
-<span class="pc bnc" id="L324" title="All 2 branches missed.">		assert e &gt;= 0;</span>
+<span class="pc bpc" id="L324" title="1 of 2 branches missed.">		assert e &gt;= 0;</span>
 <span class="fc" id="L325">		ensureEdgeCapacity(e + 1);</span>
 
 <span class="fc" id="L327">		setEndpoints(e, source, target);</span>
@@ -349,7 +349,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 			try {
 <span class="fc bfc" id="L350" title="All 2 branches covered.">				for (EdgeIter&lt;Integer, Integer&gt; iter = edges0.iterator(); iter.hasNext();) {</span>
 <span class="fc" id="L351">					Integer e = iter.next();</span>
-<span class="pc bnc" id="L352" title="All 2 branches missed.">					assert e.intValue() == this.edges.size; /* isSortedRange() */</span>
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">					assert e.intValue() == this.edges.size; /* isSortedRange() */</span>
 <span class="fc" id="L353">					int source = iter.source().intValue();</span>
 <span class="fc" id="L354">					int target = iter.target().intValue();</span>
 <span class="fc" id="L355">					addEdge(source, target);</span>
@@ -535,7 +535,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L535">					edgeSwapAndRemove(removedEdge, lastEdge);</span>
 				}
 			}
-<span class="pc bnc" id="L538" title="All 2 branches missed.">			assert nonLastEdges.isEmpty();</span>
+<span class="pc bpc" id="L538" title="1 of 2 branches missed.">			assert nonLastEdges.isEmpty();</span>
 		}
 <span class="fc" id="L540">	}</span>
 

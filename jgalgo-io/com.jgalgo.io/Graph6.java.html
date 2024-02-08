@@ -66,7 +66,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 	}
 
 	static void writeNumberOfVertices(Writer2 out, int n) throws IOException {
-<span class="pc bnc" id="L69" title="All 2 branches missed.">		assert n &gt;= 0;</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">		assert n &gt;= 0;</span>
 <span class="fc bfc" id="L70" title="All 2 branches covered.">		if (n &lt;= 62) {</span>
 			/* n is a single byte number */
 <span class="fc" id="L72">			out.appendByte((byte) (n + 63));</span>
@@ -168,7 +168,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 <span class="fc" id="L168">		}</span>
 
 		void write(int x, int bitsNum) throws IOException {
-<span class="pc bnc" id="L171" title="All 2 branches missed.">			assert x &lt; (1 &lt;&lt; bitsNum);</span>
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">			assert x &lt; (1 &lt;&lt; bitsNum);</span>
 <span class="fc bfc" id="L172" title="All 2 branches covered.">			for (int i : range(bitsNum))</span>
 <span class="fc bfc" id="L173" title="All 2 branches covered.">				write((x &amp; (1 &lt;&lt; (bitsNum - 1 - i))) != 0); /* bigendian */</span>
 <span class="fc" id="L174">		}</span>

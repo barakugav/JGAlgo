@@ -96,7 +96,7 @@ class ShortestPathAllPairsUtils {
 <span class="fc" id="L96">			}</span>
 
 			private int index(int u, int v) {
-<span class="pc bnc" id="L99" title="All 2 branches missed.">				assert u != v;</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">				assert u != v;</span>
 <span class="fc bfc" id="L100" title="All 2 branches covered.">				if (u &gt; v) {</span>
 <span class="fc" id="L101">					int temp = u;</span>
 <span class="fc" id="L102">					u = v;</span>
@@ -125,7 +125,7 @@ class ShortestPathAllPairsUtils {
 <span class="fc" id="L125">				IntList path = new IntArrayList();</span>
 <span class="fc bfc" id="L126" title="All 2 branches covered.">				for (int v = source; v != target;) {</span>
 <span class="fc" id="L127">					int e = getEdgeTo(v, target);</span>
-<span class="pc bnc" id="L128" title="All 2 branches missed.">					assert e &gt;= 0;</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">					assert e &gt;= 0;</span>
 <span class="fc" id="L129">					path.add(e);</span>
 <span class="fc" id="L130">					v = g.edgeEndpoint(e, v);</span>
 <span class="fc" id="L131">				}</span>
@@ -166,8 +166,8 @@ class ShortestPathAllPairsUtils {
 <span class="fc" id="L166">				IntList path = new IntArrayList();</span>
 <span class="fc bfc" id="L167" title="All 2 branches covered.">				for (int v = source; v != target;) {</span>
 <span class="fc" id="L168">					int e = getEdgeTo(v, target);</span>
-<span class="pc bnc" id="L169" title="All 2 branches missed.">					assert e &gt;= 0;</span>
-<span class="pc bnc" id="L170" title="All 2 branches missed.">					assert v == g.edgeSource(e);</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">					assert e &gt;= 0;</span>
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">					assert v == g.edgeSource(e);</span>
 <span class="fc" id="L171">					path.add(e);</span>
 <span class="fc" id="L172">					v = g.edgeTarget(e);</span>
 <span class="fc" id="L173">				}</span>

@@ -86,7 +86,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L86">		int vIdx = indexGraph.vertices().size();</span>
 <span class="fc" id="L87">		viMap.addId(vertex, vIdx);</span>
 <span class="fc" id="L88">		int vIdx2 = indexGraph.addVertexInt();</span>
-<span class="pc bnc" id="L89" title="All 2 branches missed.">		assert vIdx == vIdx2;</span>
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">		assert vIdx == vIdx2;</span>
 <span class="fc" id="L90">	}</span>
 
 	@Override
@@ -172,7 +172,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 		try {
 <span class="fc" id="L174">			int eIdx2 = indexGraph.addEdge(uIdx, vIdx);</span>
-<span class="pc bnc" id="L175" title="All 2 branches missed.">			assert eIdx == eIdx2;</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">			assert eIdx == eIdx2;</span>
 <span class="fc" id="L176">		} catch (RuntimeException e) {</span>
 <span class="fc" id="L177">			eiMap.rollBackRemove(eIdx);</span>
 <span class="fc" id="L178">			throw e;</span>

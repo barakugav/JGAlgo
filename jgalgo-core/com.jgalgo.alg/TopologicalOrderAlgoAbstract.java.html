@@ -87,7 +87,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;V, E&gt; TopologicalOrderAlgo.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
 			TopologicalOrderAlgo.IResult indexResult) {
-<span class="pc bnc" id="L90" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L91" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L92">			return (TopologicalOrderAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
 		} else {

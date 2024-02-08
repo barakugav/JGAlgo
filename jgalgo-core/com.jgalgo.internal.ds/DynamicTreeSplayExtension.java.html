@@ -96,7 +96,7 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 <span class="fc bfc" id="L96" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
 <span class="fc bfc" id="L97" title="All 2 branches covered.">				parentNewSize = parentOldSize - nSize + (n.hasRightChild() ? getNodeData(n.right) : 0);</span>
 			} else {
-<span class="pc bnc" id="L99" title="All 2 branches missed.">				assert n.isRightChild();</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">				assert n.isRightChild();</span>
 <span class="fc bfc" id="L100" title="All 2 branches covered.">				parentNewSize = parentOldSize - nSize + (n.hasLeftChild() ? getNodeData(n.left) : 0);</span>
 			}
 <span class="fc" id="L102">			setNodeData(parent, parentNewSize);</span>

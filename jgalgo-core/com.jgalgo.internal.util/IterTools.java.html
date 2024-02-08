@@ -260,5 +260,15 @@ public class IterTools {
 <span class="fc" id="L260">		return stream(it.iterator());</span>
 	}
 
+	public static int get(IntIterator it, int index) {
+<span class="fc bfc" id="L264" title="All 2 branches covered.">		if (index &lt; 0)</span>
+<span class="fc" id="L265">			throw new IndexOutOfBoundsException(&quot;Index must be non-negative&quot;);</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">		if (index != 0)</span>
+<span class="fc" id="L267">			it.skip(index);</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">		if (!it.hasNext())</span>
+<span class="fc" id="L269">			throw new IndexOutOfBoundsException(&quot;Index out of bounds&quot;);</span>
+<span class="fc" id="L270">		return it.nextInt();</span>
+	}
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

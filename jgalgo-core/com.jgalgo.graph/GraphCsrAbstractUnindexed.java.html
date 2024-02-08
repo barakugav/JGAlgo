@@ -112,14 +112,14 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 <span class="fc bfc" id="L112" title="All 2 branches covered.">				for (int e : range(m)) {</span>
 <span class="fc" id="L113">					int u = source(e), v = target(e);</span>
 <span class="fc" id="L114">					int oldEdge = edgesLookupTable[u].put(v, e);</span>
-<span class="pc bnc" id="L115" title="All 2 branches missed.">					assert oldEdge &lt; 0;</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">					assert oldEdge &lt; 0;</span>
 <span class="fc" id="L116">				}</span>
 			} else {
 <span class="fc bfc" id="L118" title="All 2 branches covered.">				for (int e : range(m)) {</span>
 <span class="fc" id="L119">					int u = source(e), v = target(e);</span>
 <span class="fc" id="L120">					int oldEdge1 = edgesLookupTable[u].put(v, e);</span>
 <span class="fc" id="L121">					int oldEdge2 = edgesLookupTable[v].put(u, e);</span>
-<span class="pc bnc" id="L122" title="All 8 branches missed.">					assert oldEdge1 &lt; 0 &amp;&amp; (oldEdge2 &lt; 0 || (u == v &amp;&amp; oldEdge2 == e));</span>
+<span class="pc bpc" id="L122" title="6 of 8 branches missed.">					assert oldEdge1 &lt; 0 &amp;&amp; (oldEdge2 &lt; 0 || (u == v &amp;&amp; oldEdge2 == e));</span>
 <span class="fc" id="L123">				}</span>
 			}
 		} else {
@@ -138,7 +138,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 <span class="fc bfc" id="L138" title="All 2 branches covered.">					if (firstEdge &lt; 0) {</span>
 						/* e is the first edge between u and v, update v's map */
 <span class="fc" id="L140">						int oldVal = edgesLookupTable[v].put(u, e);</span>
-<span class="pc bnc" id="L141" title="All 6 branches missed.">						assert oldVal &lt; 0 || (u == v &amp;&amp; oldVal == e);</span>
+<span class="pc bpc" id="L141" title="5 of 6 branches missed.">						assert oldVal &lt; 0 || (u == v &amp;&amp; oldVal == e);</span>
 <span class="fc" id="L142">					} else {</span>
 						/* keep firstEdge as head, insert new edge after it */
 <span class="fc" id="L144">						edgesLookupNext[e] = edgesLookupNext[firstEdge];</span>

@@ -242,7 +242,7 @@ public class ObjObjBinomialHeap &lt;K, V&gt; implements ObjObjReferenceableHeap 
 	}
 
 	private void insertNode(Node &lt;K, V&gt; node) {
-<span class="pc bnc" id="L245" title="All 8 branches missed.">		assert node.parent == null &amp;&amp; node.child == null &amp;&amp; node.next == null &amp;&amp; node.prev == null;</span>
+<span class="pc bpc" id="L245" title="4 of 8 branches missed.">		assert node.parent == null &amp;&amp; node.child == null &amp;&amp; node.next == null &amp;&amp; node.prev == null;</span>
 <span class="fc" id="L246">		Node &lt;K, V&gt;[] h2 = tempArray(1);</span>
 <span class="fc" id="L247">		h2[0] = node;</span>
 <span class="fc" id="L248">		meld(h2, 1);</span>
@@ -255,7 +255,7 @@ public class ObjObjBinomialHeap &lt;K, V&gt; implements ObjObjReferenceableHeap 
 	}
 
 	private static &lt;K, V&gt; Node &lt;K, V&gt; mergeTreesDefaultCmp(Node &lt;K, V&gt; r1, Node &lt;K, V&gt; r2) {
-<span class="pc bnc" id="L258" title="All 2 branches missed.">		assert r1 != r2;</span>
+<span class="pc bpc" id="L258" title="1 of 2 branches missed.">		assert r1 != r2;</span>
 <span class="pc bpc" id="L259" title="1 of 2 branches missed.">		if (r1 == r2)</span>
 <span class="nc" id="L260">			throw new IllegalStateException();</span>
 <span class="fc bfc" id="L261" title="All 2 branches covered.">		if (JGAlgoUtils.cmpDefault(r1.key, r2.key) &gt; 0) {</span>
@@ -274,7 +274,7 @@ public class ObjObjBinomialHeap &lt;K, V&gt; implements ObjObjReferenceableHeap 
 	}
 
 	private Node &lt;K, V&gt; mergeTreesCustomCmp(Node &lt;K, V&gt; r1, Node &lt;K, V&gt; r2) {
-<span class="pc bnc" id="L277" title="All 2 branches missed.">		assert r1 != r2;</span>
+<span class="pc bpc" id="L277" title="1 of 2 branches missed.">		assert r1 != r2;</span>
 <span class="pc bpc" id="L278" title="1 of 2 branches missed.">		if (r1 == r2)</span>
 <span class="nc" id="L279">			throw new IllegalStateException();</span>
 <span class="fc bfc" id="L280" title="All 2 branches covered.">		if (c.compare(r1.key, r2.key) &gt; 0) {</span>

@@ -64,14 +64,14 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 <span class="fc" id="L64">				: Optional.empty();</span>
 
 <span class="fc bfc" id="L66" title="All 2 branches covered.">		if (inputCsrGraph.isPresent()) {</span>
-<span class="pc bnc" id="L67" title="All 2 branches missed.">			assert processEdges == null;</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">			assert processEdges == null;</span>
 <span class="fc" id="L68">			edgeEndpoints = inputCsrGraph.get().edgeEndpoints;</span>
 <span class="fc" id="L69">			edgesOutBegin = inputCsrGraph.get().edgesOutBegin;</span>
 		} else {
 <span class="fc" id="L71">			edgeEndpoints = new long[edgesNum(graphOrBuilder)];</span>
 <span class="fc" id="L72">			edgesOutBegin = processEdges.edgesOutBegin;</span>
 		}
-<span class="pc bnc" id="L74" title="All 2 branches missed.">		assert edgesOutBegin.length == n + 1;</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">		assert edgesOutBegin.length == n + 1;</span>
 
 <span class="fc bfc" id="L76" title="All 4 branches covered.">		if (copyVerticesWeights &amp;&amp; inputCsrGraph.isPresent()) {</span>
 <span class="fc" id="L77">			verticesUserWeights = inputCsrGraph.get().verticesUserWeights;</span>
@@ -93,7 +93,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 		}
 
 <span class="fc bfc" id="L95" title="All 4 branches covered.">		if (copyEdgesWeights &amp;&amp; inputCsrGraph.isPresent()) {</span>
-<span class="pc bnc" id="L96" title="All 2 branches missed.">			assert edgesReIndexing.isEmpty();</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">			assert edgesReIndexing.isEmpty();</span>
 <span class="fc" id="L97">			edgesUserWeights = inputCsrGraph.get().edgesUserWeights;</span>
 
 <span class="fc bfc" id="L99" title="All 2 branches covered.">		} else if (copyEdgesWeights) {</span>
@@ -506,7 +506,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 				}
 <span class="fc" id="L507">			}</span>
 			// }
-<span class="pc bnc" id="L509" title="All 2 branches missed.">			assert edgesOutBegin[n - 1] == outNumSum;</span>
+<span class="pc bpc" id="L509" title="1 of 2 branches missed.">			assert edgesOutBegin[n - 1] == outNumSum;</span>
 <span class="fc bfc" id="L510" title="All 2 branches covered.">			for (int v = n - 1; v &gt; 0; v--)</span>
 <span class="fc" id="L511">				edgesOutBegin[v] = edgesOutBegin[v - 1];</span>
 <span class="fc" id="L512">			edgesOutBegin[0] = 0;</span>
@@ -607,8 +607,8 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 <span class="fc" id="L607">					edgesOut[uOutIdx] = e;</span>
 				}
 			}
-<span class="pc bnc" id="L610" title="All 2 branches missed.">			assert edgesOutBegin[n - 1] == m;</span>
-<span class="pc bnc" id="L611" title="All 2 branches missed.">			assert edgesInBegin[n - 1] == m;</span>
+<span class="pc bpc" id="L610" title="1 of 2 branches missed.">			assert edgesOutBegin[n - 1] == m;</span>
+<span class="pc bpc" id="L611" title="1 of 2 branches missed.">			assert edgesInBegin[n - 1] == m;</span>
 <span class="fc bfc" id="L612" title="All 2 branches covered.">			for (int v = n - 1; v &gt; 0; v--) {</span>
 <span class="fc" id="L613">				edgesOutBegin[v] = edgesOutBegin[v - 1];</span>
 <span class="fc" id="L614">				edgesInBegin[v] = edgesInBegin[v - 1];</span>

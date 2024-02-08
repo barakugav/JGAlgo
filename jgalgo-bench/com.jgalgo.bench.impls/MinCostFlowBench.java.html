@@ -455,7 +455,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L455">					int e = edgeIter.es[edgeIter.idx];</span>
 <span class="fc bfc" id="L456" title="All 2 branches covered.">					if (caps.get(e) == 0)</span>
 <span class="fc" id="L457">						continue;</span>
-<span class="pc bnc" id="L458" title="All 2 branches missed.">					assert u == g.edgeSource(e);</span>
+<span class="pc bpc" id="L458" title="1 of 2 branches missed.">					assert u == g.edgeSource(e);</span>
 <span class="fc" id="L459">					int v = g.edgeTarget(e);</span>
 <span class="fc bfc" id="L460" title="All 2 branches covered.">					if (visited.contains(v))</span>
 <span class="fc" id="L461">						continue;</span>
@@ -481,13 +481,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 				/* Back up in the DFS path one vertex */
 <span class="fc" id="L483">				int lastEdge = path.popInt();</span>
-<span class="pc bnc" id="L484" title="All 2 branches missed.">				assert u == g.edgeTarget(lastEdge);</span>
+<span class="pc bpc" id="L484" title="1 of 2 branches missed.">				assert u == g.edgeTarget(lastEdge);</span>
 <span class="fc" id="L485">				u = g.edgeSource(lastEdge);</span>
 <span class="fc" id="L486">			}</span>
 
 			/* Found a residual path from source to sink */
 <span class="fc" id="L489">			int delta = path.intStream().map(caps::get).min().getAsInt();</span>
-<span class="pc bnc" id="L490" title="All 2 branches missed.">			assert delta &gt; 0;</span>
+<span class="pc bpc" id="L490" title="1 of 2 branches missed.">			assert delta &gt; 0;</span>
 <span class="fc bfc" id="L491" title="All 2 branches covered.">			for (int e : path)</span>
 <span class="fc" id="L492">				caps.put(e, caps.get(e) - delta);</span>
 
@@ -511,7 +511,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L511">		IntList demanders = new IntArrayList();</span>
 <span class="fc" id="L512">		int[] vertices = g.vertices().toIntArray();</span>
 <span class="fc" id="L513">		IntArrays.shuffle(vertices, rand);</span>
-<span class="pc bnc" id="L514" title="All 2 branches missed.">		assert vertices.length &gt;= 2;</span>
+<span class="pc bpc" id="L514" title="1 of 2 branches missed.">		assert vertices.length &gt;= 2;</span>
 <span class="fc" id="L515">		suppliers.add(vertices[0]);</span>
 <span class="fc" id="L516">		demanders.add(vertices[1]);</span>
 <span class="fc bfc" id="L517" title="All 2 branches covered.">		for (int i : range(2, vertices.length)) {</span>
@@ -537,7 +537,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L537">		IntSet visited = new IntOpenHashSet();</span>
 		suppliersLoop: for (;;) {
 <span class="fc bfc" id="L539" title="All 2 branches covered.">			if (suppliersList.isEmpty()) {</span>
-<span class="pc bnc" id="L540" title="All 2 branches missed.">				assert g.vertices().intStream().map(supply::weightInt).sum() == 0;</span>
+<span class="pc bpc" id="L540" title="1 of 2 branches missed.">				assert g.vertices().intStream().map(supply::weightInt).sum() == 0;</span>
 <span class="fc" id="L541">				return supply;</span>
 			}
 
@@ -555,7 +555,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L555" title="All 2 branches covered.">				for (int e : es) {</span>
 <span class="fc bfc" id="L556" title="All 2 branches covered.">					if (caps.get(e) == 0)</span>
 <span class="fc" id="L557">						continue;</span>
-<span class="pc bnc" id="L558" title="All 2 branches missed.">					assert u == g.edgeSource(e);</span>
+<span class="pc bpc" id="L558" title="1 of 2 branches missed.">					assert u == g.edgeSource(e);</span>
 <span class="fc" id="L559">					int v = g.edgeTarget(e);</span>
 <span class="fc bfc" id="L560" title="All 2 branches covered.">					if (visited.contains(v))</span>
 <span class="fc" id="L561">						continue;</span>
@@ -581,13 +581,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 				/* Back up in the DFS path one vertex */
 <span class="fc" id="L583">				int lastEdge = path.popInt();</span>
-<span class="pc bnc" id="L584" title="All 2 branches missed.">				assert u == g.edgeTarget(lastEdge);</span>
+<span class="pc bpc" id="L584" title="1 of 2 branches missed.">				assert u == g.edgeTarget(lastEdge);</span>
 <span class="fc" id="L585">				u = g.edgeSource(lastEdge);</span>
 <span class="fc" id="L586">			}</span>
 
 			/* Found a residual path from a supplier to a demander */
 <span class="fc" id="L589">			int delta = path.intStream().map(caps::get).min().getAsInt();</span>
-<span class="pc bnc" id="L590" title="All 2 branches missed.">			assert delta &gt; 0;</span>
+<span class="pc bpc" id="L590" title="1 of 2 branches missed.">			assert delta &gt; 0;</span>
 <span class="fc bfc" id="L591" title="All 2 branches covered.">			for (int e : path)</span>
 <span class="fc" id="L592">				caps.put(e, caps.get(e) - delta);</span>
 

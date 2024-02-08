@@ -175,7 +175,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlows.WithResidualGraph {
 <span class="fc" id="L175">						debug.println(&quot;Delete&quot;);</span>
 						do {
 <span class="fc" id="L177">							int e = edgeToParent[min.source().&lt;Integer&gt;getData().intValue()];</span>
-<span class="pc bnc" id="L178" title="All 2 branches missed.">							assert vToDt[L.edgeSource(e)] == min.source();</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">							assert vToDt[L.edgeSource(e)] == min.source();</span>
 <span class="fc" id="L179">							L.removeEdge(e);</span>
 
 <span class="fc" id="L181">							updateFlow.accept(e, 0);</span>
@@ -195,10 +195,10 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlows.WithResidualGraph {
 <span class="fc" id="L195">							int u = g.edgeSource(e);</span>
 <span class="fc bfc" id="L196" title="All 2 branches covered.">							if (edgeToParent[u] != e)</span>
 <span class="fc" id="L197">								continue; /* If the edge is not in the DT, ignore */</span>
-<span class="pc bnc" id="L198" title="All 2 branches missed.">							assert vToDt[u].getParent() == vToDt[v];</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">							assert vToDt[u].getParent() == vToDt[v];</span>
 
 <span class="fc" id="L200">							MinEdge m = dt.findMinEdge(vToDt[u]);</span>
-<span class="pc bnc" id="L201" title="All 2 branches missed.">							assert e == edgeToParent[m.source().&lt;Integer&gt;getData().intValue()];</span>
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">							assert e == edgeToParent[m.source().&lt;Integer&gt;getData().intValue()];</span>
 <span class="fc" id="L202">							edgeToParent[u] = -1;</span>
 <span class="fc" id="L203">							updateFlow.accept(e, m.weight());</span>
 
@@ -224,7 +224,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlows.WithResidualGraph {
 <span class="fc" id="L224">						cleanupStack.push(uDt);</span>
 <span class="fc bfc" id="L225" title="All 2 branches covered.">					while (!cleanupStack.isEmpty()) {</span>
 <span class="fc" id="L226">						DynamicTree.Vertex uDt = cleanupStack.pop();</span>
-<span class="pc bnc" id="L227" title="All 2 branches missed.">						assert uDt.getParent() == dt.findRoot(uDt);</span>
+<span class="pc bpc" id="L227" title="1 of 2 branches missed.">						assert uDt.getParent() == dt.findRoot(uDt);</span>
 <span class="fc" id="L228">						MinEdge m = dt.findMinEdge(uDt);</span>
 <span class="fc" id="L229">						int eSource = m.source().&lt;Integer&gt;getData().intValue();</span>
 <span class="fc" id="L230">						int e = edgeToParent[eSource];</span>

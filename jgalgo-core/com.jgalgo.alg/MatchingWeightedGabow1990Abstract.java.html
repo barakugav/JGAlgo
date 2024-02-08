@@ -595,7 +595,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L595">						break mainLoop;</span>
 
 <span class="fc" id="L597">					debug.print(&quot;delta &quot;, Double.valueOf(deltaNext), &quot; (+&quot;, Double.valueOf(deltaNext - delta), &quot;)&quot;);</span>
-<span class="pc bnc" id="L598" title="All 2 branches missed.">					assert deltaNext + 1e-5 &gt;= delta;</span>
+<span class="pc bpc" id="L598" title="1 of 2 branches missed.">					assert deltaNext + 1e-5 &gt;= delta;</span>
 <span class="fc" id="L599">					delta = deltaNext;</span>
 
 <span class="fc" id="L601">					debug.printExec(() -&gt; {</span>
@@ -628,10 +628,10 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L628">						growStep();</span>
 <span class="fc bfc" id="L629" title="All 2 branches covered.">					} else if (deltaNext == delta3) {</span>
 <span class="fc" id="L630">						EdgeEvent event = extractNextBlossomEvent();</span>
-<span class="pc bnc" id="L631" title="All 2 branches missed.">						assert Assertions.isEqual(delta, event.slack / 2);</span>
+<span class="pc bpc" id="L631" title="1 of 2 branches missed.">						assert Assertions.isEqual(delta, event.slack / 2);</span>
 <span class="fc" id="L632">						int e = event.e;</span>
 <span class="fc" id="L633">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="pc bnc" id="L634" title="All 4 branches missed.">						assert isEven(u) &amp;&amp; isEven(v);</span>
+<span class="pc bpc" id="L634" title="2 of 4 branches missed.">						assert isEven(u) &amp;&amp; isEven(v);</span>
 
 <span class="fc bfc" id="L636" title="All 2 branches covered.">						if (evens.findBlossom(u).root == evens.findBlossom(v).root)</span>
 <span class="fc" id="L637">							blossomStep(e);</span>
@@ -691,10 +691,10 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 		void expandStep() {
 <span class="fc" id="L692">			debug.println(&quot;expandStep&quot;);</span>
 
-<span class="pc bnc" id="L694" title="All 2 branches missed.">			assert Assertions.isEqual(delta, expandEvents.findMin().key());</span>
+<span class="pc bpc" id="L694" title="1 of 2 branches missed.">			assert Assertions.isEqual(delta, expandEvents.findMin().key());</span>
 <span class="fc" id="L695">			final Blossom B = expandEvents.extractMin().value();</span>
 
-<span class="pc bnc" id="L697" title="All 8 branches missed.">			assert B.root &gt;= 0 &amp;&amp; !B.isEven &amp;&amp; !B.isSingleton() &amp;&amp; dualVal(B) &lt;= 1e-5;</span>
+<span class="pc bpc" id="L697" title="4 of 8 branches missed.">			assert B.root &gt;= 0 &amp;&amp; !B.isEven &amp;&amp; !B.isSingleton() &amp;&amp; dualVal(B) &lt;= 1e-5;</span>
 
 <span class="fc" id="L699">			int baseV = B.base, topV = g.edgeSource(B.treeParentEdge);</span>
 <span class="fc" id="L700">			Blossom base = null;</span>
@@ -704,11 +704,11 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 			// parent in search tree ('top')
 <span class="fc bfc" id="L705" title="All 2 branches covered.">			for (Blossom b : B.children()) {</span>
 <span class="fc bfc" id="L706" title="All 2 branches covered.">				if (odds.isInBlossom(b, baseV)) {</span>
-<span class="pc bnc" id="L707" title="All 2 branches missed.">					assert base == null;</span>
+<span class="pc bpc" id="L707" title="1 of 2 branches missed.">					assert base == null;</span>
 <span class="fc" id="L708">					base = b;</span>
 				}
 <span class="fc bfc" id="L710" title="All 2 branches covered.">				if (odds.isInBlossom(b, topV)) {</span>
-<span class="pc bnc" id="L711" title="All 2 branches missed.">					assert top == null;</span>
+<span class="pc bpc" id="L711" title="1 of 2 branches missed.">					assert top == null;</span>
 <span class="fc" id="L712">					top = b;</span>
 				}
 <span class="fc" id="L714">				b.parent = null;</span>
@@ -730,7 +730,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L730">				b.isEven = false;</span>
 <span class="fc" id="L731">				b.delta1 = delta;</span>
 <span class="fc" id="L732">				odds.split(b);</span>
-<span class="pc bnc" id="L733" title="All 2 branches missed.">				assert b.expandRef == null;</span>
+<span class="pc bpc" id="L733" title="1 of 2 branches missed.">				assert b.expandRef == null;</span>
 <span class="fc bfc" id="L734" title="All 2 branches covered.">				if (!b.isSingleton())</span>
 <span class="fc" id="L735">					b.expandRef = expandEvents.insert(b.z0 / 2 + b.delta1, b);</span>
 <span class="fc bfc" id="L736" title="All 2 branches covered.">				if (b == base)</span>
@@ -755,7 +755,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L755">				b.isEven = false;</span>
 <span class="fc" id="L756">				odds.split(b);</span>
 <span class="fc" id="L757">				b.deltaOdd = B.deltaOdd;</span>
-<span class="pc bnc" id="L758" title="All 2 branches missed.">				assert b.growRef == null;</span>
+<span class="pc bpc" id="L758" title="1 of 2 branches missed.">				assert b.growRef == null;</span>
 <span class="fc" id="L759">				EdgeEvent inEdgeEvent = odds.findMin(b.base);</span>
 <span class="fc bfc" id="L760" title="All 2 branches covered.">				if (inEdgeEvent != null)</span>
 <span class="fc" id="L761">					b.growRef = growEvents.insert(inEdgeEvent);</span>
@@ -788,7 +788,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 
 <span class="fc" id="L789">				int e = -1;</span>
 <span class="fc bfc" id="L790" title="All 2 branches covered.">				for (int u = b == U ? bu : bv;;) {</span>
-<span class="pc bnc" id="L791" title="All 2 branches missed.">					assert b.isEven;</span>
+<span class="pc bpc" id="L791" title="1 of 2 branches missed.">					assert b.isEven;</span>
 <span class="fc" id="L792">					augmentPath(b, u);</span>
 <span class="fc bfc" id="L793" title="All 2 branches covered.">					if (e &gt;= 0) {</span>
 <span class="fc" id="L794">						int eu = g.edgeSource(e), ev = g.edgeTarget(e);</span>
@@ -796,14 +796,14 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L796">						matched[ev] = edgeVal.get(e).twin;</span>
 
 <span class="fc" id="L798">						debug.print(&quot; &quot;, Integer.valueOf(e));</span>
-<span class="pc bnc" id="L799" title="All 2 branches missed.">						assert matched[eu] &gt;= 0;</span>
-<span class="pc bnc" id="L800" title="All 2 branches missed.">						assert matched[ev] &gt;= 0;</span>
+<span class="pc bpc" id="L799" title="1 of 2 branches missed.">						assert matched[eu] &gt;= 0;</span>
+<span class="pc bpc" id="L800" title="1 of 2 branches missed.">						assert matched[ev] &gt;= 0;</span>
 					}
 <span class="fc bfc" id="L802" title="All 2 branches covered.">					if (b.treeParentEdge &lt; 0)</span>
 <span class="fc" id="L803">						break;</span>
 					// Odd
 <span class="fc" id="L805">					b = topBlossom(g.edgeTarget(b.treeParentEdge));</span>
-<span class="pc bnc" id="L806" title="All 2 branches missed.">					assert !b.isEven;</span>
+<span class="pc bpc" id="L806" title="1 of 2 branches missed.">					assert !b.isEven;</span>
 <span class="fc" id="L807">					u = g.edgeSource(b.treeParentEdge);</span>
 <span class="fc" id="L808">					augmentPath(b, u);</span>
 
@@ -835,15 +835,15 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L835">				b2 = b1.right;</span>
 <span class="fc" id="L836">				xy = b1.toRightEdge;</span>
 			} else {
-<span class="pc bnc" id="L838" title="All 2 branches missed.">				assert b0.left == b1;</span>
+<span class="pc bpc" id="L838" title="1 of 2 branches missed.">				assert b0.left == b1;</span>
 <span class="fc" id="L839">				b2 = b1.left;</span>
 <span class="fc" id="L840">				xy = b1.toLeftEdge;</span>
 			}
 
-<span class="pc bnc" id="L843" title="All 2 branches missed.">			assert b0 != b1;</span>
-<span class="pc bnc" id="L844" title="All 2 branches missed.">			assert b1 != b2;</span>
-<span class="pc bnc" id="L845" title="All 2 branches missed.">			assert b2 != b0;</span>
-<span class="pc bnc" id="L846" title="All 2 branches missed.">			assert b1.base == v;</span>
+<span class="pc bpc" id="L843" title="1 of 2 branches missed.">			assert b0 != b1;</span>
+<span class="pc bpc" id="L844" title="1 of 2 branches missed.">			assert b1 != b2;</span>
+<span class="pc bpc" id="L845" title="1 of 2 branches missed.">			assert b2 != b0;</span>
+<span class="pc bpc" id="L846" title="1 of 2 branches missed.">			assert b1.base == v;</span>
 
 <span class="fc" id="L848">			int xyU = g.edgeSource(xy), xyV = g.edgeTarget(xy);</span>
 <span class="fc" id="L849">			augmentPath(b1, xyU);</span>
@@ -851,13 +851,13 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L851">			matched[xyU] = xy;</span>
 <span class="fc" id="L852">			matched[xyV] = edgeVal.get(xy).twin;</span>
 
-<span class="pc bnc" id="L854" title="All 2 branches missed.">			assert g.edgeSource(matched[xyU]) == xyU;</span>
-<span class="pc bnc" id="L855" title="All 2 branches missed.">			assert g.edgeTarget(matched[xyU]) == xyV;</span>
-<span class="pc bnc" id="L856" title="All 2 branches missed.">			assert g.edgeSource(matched[xyV]) == xyV;</span>
-<span class="pc bnc" id="L857" title="All 2 branches missed.">			assert g.edgeSource(matched[xyV]) == xyV;</span>
+<span class="pc bpc" id="L854" title="1 of 2 branches missed.">			assert g.edgeSource(matched[xyU]) == xyU;</span>
+<span class="pc bpc" id="L855" title="1 of 2 branches missed.">			assert g.edgeTarget(matched[xyU]) == xyV;</span>
+<span class="pc bpc" id="L856" title="1 of 2 branches missed.">			assert g.edgeSource(matched[xyV]) == xyV;</span>
+<span class="pc bpc" id="L857" title="1 of 2 branches missed.">			assert g.edgeSource(matched[xyV]) == xyV;</span>
 
-<span class="pc bnc" id="L859" title="All 2 branches missed.">			assert isMatched(b1.base);</span>
-<span class="pc bnc" id="L860" title="All 2 branches missed.">			assert isMatched(b2.base);</span>
+<span class="pc bpc" id="L859" title="1 of 2 branches missed.">			assert isMatched(b1.base);</span>
+<span class="pc bpc" id="L860" title="1 of 2 branches missed.">			assert isMatched(b2.base);</span>
 
 <span class="fc" id="L862">			debug.print(&quot; &quot;, Integer.valueOf(xy));</span>
 <span class="fc" id="L863">			for (Blossom p = b0.parent;; p = p.parent) {</span>
@@ -888,7 +888,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 		}
 
 		Blossom topBlossom(Blossom v) {
-<span class="pc bnc" id="L891" title="All 2 branches missed.">			assert v.isSingleton();</span>
+<span class="pc bpc" id="L891" title="1 of 2 branches missed.">			assert v.isSingleton();</span>
 <span class="pc bpc" id="L892" title="1 of 2 branches missed.">			return v.isEven ? evens.findBlossom(v.base) : odds.findBlossom(v.base);</span>
 		}
 
@@ -984,7 +984,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 		}
 
 		double dualVal(Blossom b) {
-<span class="pc bnc" id="L987" title="All 2 branches missed.">			assert !b.isSingleton();</span>
+<span class="pc bpc" id="L987" title="1 of 2 branches missed.">			assert !b.isSingleton();</span>
 <span class="fc" id="L988">			double zb = b.z0;</span>
 <span class="fc bfc" id="L989" title="All 4 branches covered.">			if (b.parent == null &amp;&amp; b.root &gt;= 0)</span>
 <span class="fc bfc" id="L990" title="All 2 branches covered.">				zb += 2 * (b.isEven ? +(delta - b.delta0) : -(delta - b.delta1));</span>
@@ -993,7 +993,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 
 		double growEventsKey(EdgeEvent event) {
 <span class="fc" id="L995">			int v = g.edgeTarget(event.e);</span>
-<span class="pc bnc" id="L996" title="All 2 branches missed.">			assert !isEven(v);</span>
+<span class="pc bpc" id="L996" title="1 of 2 branches missed.">			assert !isEven(v);</span>
 <span class="fc" id="L997">			return odds.findBlossom(v).deltaOdd + event.slack;</span>
 		}
 
@@ -1009,7 +1009,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L1009">					EdgeEvent event = vToGrowEvent[v] = new EdgeEvent(e, slackBar);</span>
 <span class="fc bfc" id="L1010" title="All 2 branches covered.">					if (!odds.decreaseKey(v, event))</span>
 <span class="fc" id="L1011">						continue;</span>
-<span class="pc bnc" id="L1012" title="All 2 branches missed.">					assert odds.findMin(v) == event;</span>
+<span class="pc bpc" id="L1012" title="1 of 2 branches missed.">					assert odds.findMin(v) == event;</span>
 
 <span class="fc" id="L1014">					Blossom V = odds.findBlossom(v);</span>
 <span class="fc bfc" id="L1015" title="All 2 branches covered.">					if (!isInTree(V)) {</span>
@@ -1023,7 +1023,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L1023">		}</span>
 
 		void insertBlossomEventsFromVertex(int u) {
-<span class="pc bnc" id="L1026" title="All 2 branches missed.">			assert isEven(u);</span>
+<span class="pc bpc" id="L1026" title="1 of 2 branches missed.">			assert isEven(u);</span>
 <span class="fc" id="L1027">			Blossom U = evens.findBlossom(u);</span>
 <span class="fc" id="L1028">			double Yu = delta + dualVal(u);</span>
 <span class="fc bfc" id="L1029" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
@@ -1037,7 +1037,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L1037">				double Yv = delta + dualVal(v);</span>
 <span class="fc" id="L1038">				double slackBar = Yu + Yv - w.weight(e);</span>
 
-<span class="pc bnc" id="L1040" title="All 2 branches missed.">				assert slackBar &gt;= 0;</span>
+<span class="pc bpc" id="L1040" title="1 of 2 branches missed.">				assert slackBar &gt;= 0;</span>
 <span class="fc" id="L1041">				addBlossomEvent(e, slackBar);</span>
 <span class="fc" id="L1042">			}</span>
 <span class="fc" id="L1043">		}</span>

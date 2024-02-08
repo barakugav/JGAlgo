@@ -239,8 +239,8 @@ import com.jgalgo.graph.WeightsObj;
 <span class="fc" id="L239">				IEdgeSet outEs = ig.outEdges(uIdx);</span>
 <span class="fc" id="L240">				Object toArrRes1 = inEs.toArray(intEdges);</span>
 <span class="fc" id="L241">				Object toArrRes2 = outEs.toArray(outEdges);</span>
-<span class="pc bnc" id="L242" title="All 2 branches missed.">				assert toArrRes1 == intEdges;</span>
-<span class="pc bnc" id="L243" title="All 2 branches missed.">				assert toArrRes2 == outEdges;</span>
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">				assert toArrRes1 == intEdges;</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">				assert toArrRes2 == outEdges;</span>
 <span class="fc" id="L244">				final int inEsSize = inEs.size();</span>
 <span class="fc" id="L245">				final int outEsSize = outEs.size();</span>
 <span class="fc bfc" id="L246" title="All 2 branches covered.">				for (int i : range(inEsSize)) {</span>
@@ -269,7 +269,7 @@ import com.jgalgo.graph.WeightsObj;
 <span class="fc" id="L269">				Object u = viMap.indexToId(uIdx);</span>
 <span class="fc" id="L270">				IEdgeSet es = ig.outEdges(uIdx);</span>
 <span class="fc" id="L271">				Object toArrRes = es.toArray(edges);</span>
-<span class="pc bnc" id="L272" title="All 2 branches missed.">				assert toArrRes == edges;</span>
+<span class="pc bpc" id="L272" title="1 of 2 branches missed.">				assert toArrRes == edges;</span>
 <span class="fc" id="L273">				final int esSize = es.size();</span>
 <span class="fc bfc" id="L274" title="All 2 branches covered.">				for (int i : range(esSize)) {</span>
 <span class="fc" id="L275">					int e1Idx = edges[i];</span>

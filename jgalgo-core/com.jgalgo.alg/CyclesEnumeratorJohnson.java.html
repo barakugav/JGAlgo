@@ -120,7 +120,7 @@ class CyclesEnumeratorJohnson implements CyclesEnumeratorBase {
 							}
 <span class="fc" id="L121">						}</span>
 
-<span class="pc bnc" id="L123" title="All 2 branches missed.">						assert cycleFoundDepth &lt;= path.size();</span>
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">						assert cycleFoundDepth &lt;= path.size();</span>
 <span class="fc bfc" id="L124" title="All 2 branches covered.">						boolean cycleFound = cycleFoundDepth == path.size();</span>
 
 <span class="fc bfc" id="L126" title="All 2 branches covered.">						int u = path.isEmpty() ? startV : g.edgeTarget(path.popInt());</span>
@@ -155,10 +155,10 @@ class CyclesEnumeratorJohnson implements CyclesEnumeratorBase {
 
 			private void reset() {
 <span class="fc" id="L157">				isBlocked.clear();</span>
-<span class="pc bnc" id="L158" title="All 2 branches missed.">				assert unblockStack.isEmpty();</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">				assert unblockStack.isEmpty();</span>
 <span class="fc bfc" id="L159" title="All 2 branches covered.">				for (int u : range(n))</span>
 <span class="fc" id="L160">					blockingSet[u].clear();</span>
-<span class="pc bnc" id="L161" title="All 2 branches missed.">				assert path.isEmpty();</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">				assert path.isEmpty();</span>
 <span class="fc" id="L162">			}</span>
 
 			private void unblock(int v) {

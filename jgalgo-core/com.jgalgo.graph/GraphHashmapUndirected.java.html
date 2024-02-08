@@ -67,14 +67,14 @@ class GraphHashmapUndirected extends GraphHashmapAbstract implements GraphDefaul
 <span class="fc bfc" id="L67" title="All 2 branches covered.">				if (oldVal1 &gt;= 0)</span>
 <span class="fc" id="L68">					throw new IllegalArgumentException(&quot;Parallel edge (idx=&quot; + source + &quot;,idx=&quot; + target</span>
 							+ &quot;) already exists. Parallel edges are not allowed.&quot;);
-<span class="pc bnc" id="L70" title="All 6 branches missed.">				assert oldVal2 &lt; 0 || (source == target &amp;&amp; oldVal2 == e);</span>
+<span class="pc bpc" id="L70" title="2 of 6 branches missed.">				assert oldVal2 &lt; 0 || (source == target &amp;&amp; oldVal2 == e);</span>
 <span class="fc" id="L71">			}</span>
 		}
 <span class="fc" id="L73">	}</span>
 
 	GraphHashmapUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L76">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L77" title="All 2 branches missed.">		assert !builder.isDirected();</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">		assert !builder.isDirected();</span>
 
 <span class="fc" id="L79">		edgesContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -&gt; edges = newArr);</span>
 
@@ -85,13 +85,13 @@ class GraphHashmapUndirected extends GraphHashmapAbstract implements GraphDefaul
 <span class="fc bfc" id="L85" title="All 2 branches covered.">			if (oldVal1 &gt;= 0)</span>
 <span class="fc" id="L86">				throw new IllegalArgumentException(&quot;Parallel edge (idx=&quot; + source + &quot;,idx=&quot; + target</span>
 						+ &quot;) already exists. Parallel edges are not allowed.&quot;);
-<span class="pc bnc" id="L88" title="All 6 branches missed.">			assert oldVal2 &lt; 0 || (source == target &amp;&amp; oldVal2 == e);</span>
+<span class="pc bpc" id="L88" title="2 of 6 branches missed.">			assert oldVal2 &lt; 0 || (source == target &amp;&amp; oldVal2 == e);</span>
 <span class="fc" id="L89">		}</span>
 <span class="fc" id="L90">	}</span>
 
 	@Override
 	void removeVertexLast(int vertex) {
-<span class="pc bnc" id="L94" title="All 2 branches missed.">		assert edges[vertex].isEmpty();</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">		assert edges[vertex].isEmpty();</span>
 		// Reuse allocated edges array for v
 		// edges.clear(v);
 <span class="fc" id="L97">		super.removeVertexLast(vertex);</span>
@@ -99,7 +99,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract implements GraphDefaul
 
 	@Override
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
-<span class="pc bnc" id="L102" title="All 2 branches missed.">		assert edges[removedIdx].isEmpty();</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">		assert edges[removedIdx].isEmpty();</span>
 
 		/* we handle the self edge of the swapped vertex separately */
 <span class="fc bfc" id="L105" title="All 2 branches covered.">		int selfEdge = isAllowSelfEdges() ? edges[swappedIdx].remove(swappedIdx) : -1;</span>
@@ -110,14 +110,14 @@ class GraphHashmapUndirected extends GraphHashmapAbstract implements GraphDefaul
 <span class="fc" id="L110">			replaceEdgeEndpoint(e, swappedIdx, removedIdx);</span>
 <span class="fc" id="L111">			int oldVal1 = edges[target].remove(swappedIdx);</span>
 <span class="fc" id="L112">			int oldVal2 = edges[target].put(removedIdx, e);</span>
-<span class="pc bnc" id="L113" title="All 2 branches missed.">			assert oldVal1 == e;</span>
-<span class="pc bnc" id="L114" title="All 2 branches missed.">			assert oldVal2 &lt; 0;</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">			assert oldVal1 == e;</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">			assert oldVal2 &lt; 0;</span>
 <span class="fc" id="L115">		}</span>
 
 <span class="fc bfc" id="L117" title="All 2 branches covered.">		if (selfEdge &gt;= 0) {</span>
 <span class="fc" id="L118">			setEndpoints(selfEdge, removedIdx, removedIdx);</span>
 <span class="fc" id="L119">			int oldVal = edges[swappedIdx].put(removedIdx, selfEdge);</span>
-<span class="pc bnc" id="L120" title="All 2 branches missed.">			assert oldVal &lt; 0;</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">			assert oldVal &lt; 0;</span>
 		}
 
 <span class="fc" id="L123">		swapAndClear(edges, removedIdx, swappedIdx, EmptyEdgeMap);</span>
@@ -156,28 +156,28 @@ class GraphHashmapUndirected extends GraphHashmapAbstract implements GraphDefaul
 <span class="fc" id="L156">		int source = source(edge), target = target(edge);</span>
 <span class="fc" id="L157">		int oldVal1 = edges[source].remove(target);</span>
 <span class="fc" id="L158">		int oldVal2 = edges[target].remove(source);</span>
-<span class="pc bnc" id="L159" title="All 2 branches missed.">		assert edge == oldVal1;</span>
-<span class="pc bnc" id="L160" title="All 6 branches missed.">		assert edge == oldVal2 || (source == target &amp;&amp; oldVal2 &lt; 0);</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">		assert edge == oldVal1;</span>
+<span class="pc bpc" id="L160" title="2 of 6 branches missed.">		assert edge == oldVal2 || (source == target &amp;&amp; oldVal2 &lt; 0);</span>
 <span class="fc" id="L161">		super.removeEdgeLast(edge);</span>
 <span class="fc" id="L162">	}</span>
 
 	@Override
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
 <span class="fc" id="L166">		int ur = source(removedIdx), vr = target(removedIdx);</span>
-<span class="pc bnc" id="L167" title="All 2 branches missed.">		assert edges[ur] != EmptyEdgeMap;</span>
-<span class="pc bnc" id="L168" title="All 2 branches missed.">		assert edges[vr] != EmptyEdgeMap;</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">		assert edges[ur] != EmptyEdgeMap;</span>
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">		assert edges[vr] != EmptyEdgeMap;</span>
 <span class="fc" id="L169">		int oldVal1 = edges[ur].remove(vr);</span>
 <span class="fc" id="L170">		int oldVal2 = edges[vr].remove(ur);</span>
-<span class="pc bnc" id="L171" title="All 2 branches missed.">		assert oldVal1 == removedIdx;</span>
-<span class="pc bnc" id="L172" title="All 6 branches missed.">		assert oldVal2 == removedIdx || (ur == vr &amp;&amp; oldVal2 &lt; 0);</span>
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">		assert oldVal1 == removedIdx;</span>
+<span class="pc bpc" id="L172" title="2 of 6 branches missed.">		assert oldVal2 == removedIdx || (ur == vr &amp;&amp; oldVal2 &lt; 0);</span>
 
 <span class="fc" id="L174">		int us = source(swappedIdx), vs = target(swappedIdx);</span>
-<span class="pc bnc" id="L175" title="All 2 branches missed.">		assert edges[us] != EmptyEdgeMap;</span>
-<span class="pc bnc" id="L176" title="All 2 branches missed.">		assert edges[vs] != EmptyEdgeMap;</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">		assert edges[us] != EmptyEdgeMap;</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">		assert edges[vs] != EmptyEdgeMap;</span>
 <span class="fc" id="L177">		int oldVal3 = edges[us].put(vs, removedIdx);</span>
 <span class="fc" id="L178">		int oldVal4 = edges[vs].put(us, removedIdx);</span>
-<span class="pc bnc" id="L179" title="All 2 branches missed.">		assert oldVal3 == swappedIdx;</span>
-<span class="pc bnc" id="L180" title="All 6 branches missed.">		assert oldVal4 == swappedIdx || (us == vs &amp;&amp; oldVal4 == removedIdx);</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">		assert oldVal3 == swappedIdx;</span>
+<span class="pc bpc" id="L180" title="2 of 6 branches missed.">		assert oldVal4 == swappedIdx || (us == vs &amp;&amp; oldVal4 == removedIdx);</span>
 
 <span class="fc" id="L182">		super.edgeSwapAndRemove(removedIdx, swappedIdx);</span>
 <span class="fc" id="L183">	}</span>

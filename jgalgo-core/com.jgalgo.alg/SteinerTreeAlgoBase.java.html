@@ -55,7 +55,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;V, E&gt; SteinerTreeAlgo.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
 			SteinerTreeAlgo.IResult indexResult) {
-<span class="pc bpc" id="L58" title="3 of 4 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L58" title="2 of 4 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L59" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L60">			return (SteinerTreeAlgo.Result&lt;V, E&gt;) new SteinerTrees.IntResultFromIndexResult((IntGraph) g, indexResult);</span>
 		} else {

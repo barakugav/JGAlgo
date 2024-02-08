@@ -71,7 +71,7 @@ import com.jgalgo.graph.IntGraph;
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; VertexScoring&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g, IVertexScoring indexRes) {
-<span class="pc bnc" id="L74" title="All 2 branches missed.">		assert !(g instanceof IndexIdMap);</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">		assert !(g instanceof IndexIdMap);</span>
 <span class="fc bfc" id="L75" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L76">			return (VertexScoring&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexRes);</span>
 		} else {

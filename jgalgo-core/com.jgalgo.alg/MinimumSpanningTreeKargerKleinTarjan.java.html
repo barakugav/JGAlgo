@@ -177,8 +177,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L177" title="All 2 branches covered.">		for (int e : range(g.edges().size())) {</span>
 <span class="fc" id="L178">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc" id="L179">			int ut = vToTree.applyAsInt(u);</span>
-<span class="pc bpc" id="L180" title="1 of 2 branches missed.">			if (ut != vToTree.applyAsInt(v))</span>
-<span class="nc" id="L181">				continue;</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">			if (ut != vToTree.applyAsInt(v))</span>
+<span class="fc" id="L181">				continue;</span>
 <span class="fc" id="L182">			tpmQueries[ut].addQuery(vToVnew[u], vToVnew[v]);</span>
 <span class="fc" id="L183">		}</span>
 
@@ -197,7 +197,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L197" title="All 2 branches covered.">		for (int e : range(g.edges().size())) {</span>
 <span class="fc" id="L198">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc" id="L199">			int ut = vToTree.applyAsInt(u);</span>
-<span class="pc bpc" id="L200" title="1 of 2 branches missed.">			if (ut != vToTree.applyAsInt(v)</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">			if (ut != vToTree.applyAsInt(v)</span>
 <span class="fc bfc" id="L201" title="All 2 branches covered.">					|| gw.get(e) &lt;= treeData[ut].weight(tpmResults[ut].getHeaviestEdgeInt(tpmIdx[ut]++)))</span>
 <span class="fc" id="L202">				lightEdges.add(e);</span>
 <span class="fc" id="L203">		}</span>

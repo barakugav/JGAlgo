@@ -91,7 +91,7 @@ package com.jgalgo.internal.ds;
 <span class="nc" id="L91">					throw new IllegalArgumentException(&quot;weightLimit was too small&quot;);</span>
 <span class="fc" id="L92">				return new MinEdgeRes(p, w1);</span>
 			} else {
-<span class="pc bnc" id="L94" title="All 2 branches missed.">				assert p.hasLeftChild();</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">				assert p.hasLeftChild();</span>
 <span class="fc" id="L95">				p = p.left;</span>
 <span class="fc" id="L96">				w = w1;</span>
 			}
@@ -104,7 +104,7 @@ package com.jgalgo.internal.ds;
 <span class="fc bfc" id="L104" title="All 2 branches covered.">		if (!n.isLinked())</span>
 <span class="fc" id="L105">			return;</span>
 <span class="fc" id="L106">		splay(n);</span>
-<span class="pc bnc" id="L107" title="All 2 branches missed.">		assert n.isRoot();</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">		assert n.isRoot();</span>
 <span class="pc bpc" id="L108" title="1 of 2 branches missed.">		if (!n.hasRightChild())</span>
 <span class="nc" id="L109">			return;</span>
 
@@ -131,7 +131,7 @@ package com.jgalgo.internal.ds;
 <span class="fc" id="L131">		SplayNode t1 = splay((SplayNode) child);</span>
 <span class="fc" id="L132">		SplayNode t2 = splay((SplayNode) parent);</span>
 
-<span class="pc bnc" id="L134" title="All 4 branches missed.">		assert !t1.isLinked() &amp;&amp; !t1.hasRightChild();</span>
+<span class="pc bpc" id="L134" title="2 of 4 branches missed.">		assert !t1.isLinked() &amp;&amp; !t1.hasRightChild();</span>
 
 <span class="fc" id="L136">		double oldWeight = t1.getWeight();</span>
 <span class="fc" id="L137">		t1.weightDiff = w;</span>
@@ -176,20 +176,20 @@ package com.jgalgo.internal.ds;
 <span class="fc" id="L176">			p = splice(p);</span>
 
 <span class="fc" id="L178">		impl.splay(n);</span>
-<span class="pc bnc" id="L179" title="All 2 branches missed.">		assert n.isRoot();</span>
-<span class="pc bnc" id="L180" title="All 2 branches missed.">		assert n.tparent == null;</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">		assert n.isRoot();</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">		assert n.tparent == null;</span>
 <span class="fc" id="L181">		return n;</span>
 	}
 
 	SplayNode splice(SplayNode n) {
 <span class="fc" id="L185">		impl.splay(n);</span>
-<span class="pc bnc" id="L186" title="All 2 branches missed.">		assert n.isRoot();</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">		assert n.isRoot();</span>
 
 <span class="fc bfc" id="L188" title="All 2 branches covered.">		if (n.tparent == null)</span>
 <span class="fc" id="L189">			return null;</span>
 <span class="fc" id="L190">		SplayNode parent = n.tparent;</span>
 <span class="fc" id="L191">		impl.splay(parent);</span>
-<span class="pc bnc" id="L192" title="All 2 branches missed.">		assert parent.isRoot();</span>
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">		assert parent.isRoot();</span>
 
 <span class="fc" id="L194">		n.parent = parent;</span>
 <span class="fc" id="L195">		n.tparent = null;</span>
@@ -243,7 +243,7 @@ package com.jgalgo.internal.ds;
 <span class="fc bfc" id="L243" title="All 2 branches covered.">				if (n.hasLeftChild())</span>
 <span class="fc" id="L244">					minn = Math.max(minn, n.left.minWeightDiff - n.left.weightDiff);</span>
 			} else {
-<span class="pc bnc" id="L246" title="All 2 branches missed.">				assert n.isRightChild();</span>
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">				assert n.isRightChild();</span>
 <span class="fc bfc" id="L247" title="All 2 branches covered.">				if (n.hasLeftChild())</span>
 <span class="fc" id="L248">					n.left.weightDiff += origN;</span>
 
@@ -311,7 +311,7 @@ package com.jgalgo.internal.ds;
 <span class="fc" id="L311">		}</span>
 
 		double getWeight() {
-<span class="pc bnc" id="L314" title="All 2 branches missed.">			assert isRoot();</span>
+<span class="pc bpc" id="L314" title="1 of 2 branches missed.">			assert isRoot();</span>
 <span class="fc" id="L315">			return getWeight(0);</span>
 		}
 
@@ -320,7 +320,7 @@ package com.jgalgo.internal.ds;
 		}
 
 		double getMinWeight() {
-<span class="pc bnc" id="L323" title="All 2 branches missed.">			assert isRoot();</span>
+<span class="pc bpc" id="L323" title="1 of 2 branches missed.">			assert isRoot();</span>
 <span class="fc" id="L324">			return getMinWeight(0);</span>
 		}
 

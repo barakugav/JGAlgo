@@ -122,7 +122,7 @@ public class ObjObjFibonacciHeap &lt;K, V&gt; implements ObjObjReferenceableHeap
 	}
 
 	private void insertNode(Node &lt;K, V&gt; n) {
-<span class="pc bnc" id="L125" title="All 12 branches missed.">		assert n.parent == null &amp;&amp; n.child == null &amp;&amp; n.prev == null &amp;&amp; n.next == null &amp;&amp; !n.marked &amp;&amp; n.degree == 0;</span>
+<span class="pc bpc" id="L125" title="6 of 12 branches missed.">		assert n.parent == null &amp;&amp; n.child == null &amp;&amp; n.prev == null &amp;&amp; n.next == null &amp;&amp; !n.marked &amp;&amp; n.degree == 0;</span>
 <span class="fc bfc" id="L126" title="All 2 branches covered.">		if (minRoot != null) {</span>
 <span class="fc" id="L127">			Node &lt;K, V&gt; last = end;</span>
 <span class="fc" id="L128">			last.next = n;</span>
@@ -181,13 +181,13 @@ public class ObjObjFibonacciHeap &lt;K, V&gt; implements ObjObjReferenceableHeap
 	}
 
 	private static &lt;K, V&gt; void cut(Node &lt;K, V&gt; p) {
-<span class="pc bnc" id="L184" title="All 2 branches missed.">		assert p.parent != null;</span>
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">		assert p.parent != null;</span>
 <span class="fc" id="L185">		Node &lt;K, V&gt; prev = p.prev;</span>
 <span class="fc bfc" id="L186" title="All 2 branches covered.">		if (prev != null) {</span>
 <span class="fc" id="L187">			prev.next = p.next;</span>
 <span class="fc" id="L188">			p.prev = null;</span>
 		} else {
-<span class="pc bnc" id="L190" title="All 2 branches missed.">			assert p.parent.child == p;</span>
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">			assert p.parent.child == p;</span>
 <span class="fc" id="L191">			p.parent.child = p.next;</span>
 		}
 <span class="fc" id="L193">		p.parent.degree--;</span>
@@ -207,7 +207,7 @@ public class ObjObjFibonacciHeap &lt;K, V&gt; implements ObjObjReferenceableHeap
 <span class="fc" id="L207">	}</span>
 
 	private void compareToMinRoot(Node &lt;K, V&gt; p) {
-<span class="pc bnc" id="L210" title="All 2 branches missed.">		assert p.parent == null;</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">		assert p.parent == null;</span>
 <span class="fc bfc" id="L211" title="All 2 branches covered.">		if (c == null) {</span>
 <span class="fc bfc" id="L212" title="All 2 branches covered.">			if (JGAlgoUtils.cmpDefault(minRoot.key, p.key) &gt; 0)</span>
 <span class="fc" id="L213">				minRoot = p;</span>
@@ -396,7 +396,7 @@ public class ObjObjFibonacciHeap &lt;K, V&gt; implements ObjObjReferenceableHeap
 <span class="fc" id="L396">			u = v;</span>
 <span class="fc" id="L397">			v = temp;</span>
 		}
-<span class="pc bnc" id="L399" title="All 2 branches missed.">		assert JGAlgoUtils.cmpDefault(u.key, v.key) &lt;= 0;</span>
+<span class="pc bpc" id="L399" title="1 of 2 branches missed.">		assert JGAlgoUtils.cmpDefault(u.key, v.key) &lt;= 0;</span>
 <span class="fc" id="L400">		addChild(u, v);</span>
 <span class="fc" id="L401">		return u;</span>
 	}
@@ -407,7 +407,7 @@ public class ObjObjFibonacciHeap &lt;K, V&gt; implements ObjObjReferenceableHeap
 <span class="fc" id="L407">			u = v;</span>
 <span class="fc" id="L408">			v = temp;</span>
 		}
-<span class="pc bnc" id="L410" title="All 2 branches missed.">		assert c.compare(u.key, v.key) &lt;= 0;</span>
+<span class="pc bpc" id="L410" title="1 of 2 branches missed.">		assert c.compare(u.key, v.key) &lt;= 0;</span>
 <span class="fc" id="L411">		addChild(u, v);</span>
 <span class="fc" id="L412">		return u;</span>
 	}

@@ -64,7 +64,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc bfc" id="L64" title="All 2 branches covered.">			if (wccVertices.size() &lt;= 1)</span>
 <span class="fc" id="L65">				continue;</span>
 <span class="fc" id="L66">			Object newArray = wccVertices.toArray(vertices);</span>
-<span class="pc bnc" id="L67" title="All 2 branches missed.">			assert newArray == vertices;</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">			assert newArray == vertices;</span>
 
 <span class="fc" id="L69">			int from = 0, to = wccVertices.size();</span>
 <span class="fc" id="L70">			int source = vertices[rand.nextInt(to)];</span>
@@ -76,7 +76,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L76">				to = stack.popInt();</span>
 <span class="fc" id="L77">				from = stack.popInt();</span>
 <span class="fc" id="L78">				source = stack.popInt();</span>
-<span class="pc bnc" id="L79" title="All 2 branches missed.">				assert to - from &gt; 1;</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">				assert to - from &gt; 1;</span>
 
 				int sink;
 				do {
@@ -112,14 +112,14 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc bfc" id="L112" title="All 2 branches covered.">					while (minCut.isLeft(vertices[f])) {</span>
 <span class="fc bfc" id="L113" title="All 2 branches covered.">						if (++f == t) {</span>
 <span class="pc bpc" id="L114" title="1 of 2 branches missed.">							middle = f + (minCut.isLeft(vertices[f]) ? 1 : 0);</span>
-<span class="pc bnc" id="L115" title="All 6 branches missed.">							assert from &lt; middle &amp;&amp; middle &lt; to &amp;&amp; minCut.isRight(vertices[middle]);</span>
+<span class="pc bpc" id="L115" title="3 of 6 branches missed.">							assert from &lt; middle &amp;&amp; middle &lt; to &amp;&amp; minCut.isRight(vertices[middle]);</span>
 							break sortLoop;
 						}
 					}
 <span class="fc bfc" id="L119" title="All 2 branches covered.">					while (minCut.isRight(vertices[t])) {</span>
 <span class="fc bfc" id="L120" title="All 2 branches covered.">						if (f == --t) {</span>
 <span class="pc bpc" id="L121" title="1 of 2 branches missed.">							middle = f + (minCut.isLeft(vertices[f]) ? 1 : 0);</span>
-<span class="pc bnc" id="L122" title="All 6 branches missed.">							assert from &lt; middle &amp;&amp; middle &lt; to &amp;&amp; minCut.isRight(vertices[middle]);</span>
+<span class="pc bpc" id="L122" title="3 of 6 branches missed.">							assert from &lt; middle &amp;&amp; middle &lt; to &amp;&amp; minCut.isRight(vertices[middle]);</span>
 							break sortLoop;
 						}
 					}
@@ -135,16 +135,16 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L135">					stack.push(from1);</span>
 <span class="fc" id="L136">					stack.push(to1);</span>
 				} else {
-<span class="pc bnc" id="L138" title="All 2 branches missed.">					assert to1 - from1 == 1;</span>
-<span class="pc bnc" id="L139" title="All 2 branches missed.">					assert vertices[from1] == source;</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">					assert to1 - from1 == 1;</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">					assert vertices[from1] == source;</span>
 				}
 <span class="fc bfc" id="L141" title="All 2 branches covered.">				if (to2 - from2 &gt; 1) {</span>
 <span class="fc" id="L142">					stack.push(sink);</span>
 <span class="fc" id="L143">					stack.push(from2);</span>
 <span class="fc" id="L144">					stack.push(to2);</span>
 				} else {
-<span class="pc bnc" id="L146" title="All 2 branches missed.">					assert to2 - from2 == 1;</span>
-<span class="pc bnc" id="L147" title="All 2 branches missed.">					assert vertices[from2] == sink;</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">					assert to2 - from2 == 1;</span>
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">					assert vertices[from2] == sink;</span>
 				}
 <span class="fc" id="L149">			}</span>
 <span class="fc" id="L150">		}</span>
@@ -153,9 +153,9 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 	private static IVertexPartition computeKEdgeConnectedComponentsFromAuxGraph(IndexGraph origGraph,
 			IndexGraph auxGraph, int[] auxWeights, int k) {
-<span class="pc bnc" id="L156" title="All 2 branches missed.">		assert !auxGraph.isDirected();</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">		assert !auxGraph.isDirected();</span>
 <span class="fc" id="L157">		final int n = auxGraph.vertices().size();</span>
-<span class="pc bnc" id="L158" title="All 2 branches missed.">		assert n == origGraph.vertices().size();</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">		assert n == origGraph.vertices().size();</span>
 <span class="fc" id="L159">		int[] comp = new int[n];</span>
 <span class="fc" id="L160">		Arrays.fill(comp, -1);</span>
 <span class="fc" id="L161">		int compNum = 0;</span>
@@ -177,7 +177,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L177">						continue;</span>
 <span class="fc" id="L178">					int v = eit.targetInt();</span>
 <span class="fc bfc" id="L179" title="All 2 branches covered.">					if (comp[v] &gt;= 0) {</span>
-<span class="pc bnc" id="L180" title="All 2 branches missed.">						assert comp[v] == compIdx;</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">						assert comp[v] == compIdx;</span>
 						continue;
 					}
 <span class="fc" id="L183">					comp[v] = compIdx;</span>

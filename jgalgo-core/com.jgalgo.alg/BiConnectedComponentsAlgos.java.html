@@ -133,7 +133,7 @@ class BiConnectedComponentsAlgos {
 <span class="fc" id="L133">					Arrays.fill(edge2bicc, -1);</span>
 <span class="fc bfc" id="L134" title="All 2 branches covered.">					for (int b : range(biccsNum)) {</span>
 <span class="fc bfc" id="L135" title="All 2 branches covered.">						for (int e : biccsEdgesFromAlgo[b]) {</span>
-<span class="pc bnc" id="L136" title="All 2 branches missed.">							assert edge2bicc[e] &lt; 0;</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">							assert edge2bicc[e] &lt; 0;</span>
 <span class="fc" id="L137">							edge2bicc[e] = b;</span>
 						}
 <span class="fc" id="L139">					}</span>
@@ -164,7 +164,7 @@ class BiConnectedComponentsAlgos {
 <span class="fc bfc" id="L164" title="All 2 branches covered.">								if (b &lt; 0) {</span>
 <span class="fc" id="L165">									b = target2bicc[v];</span>
 <span class="fc" id="L166">									edge2bicc[e] = b;</span>
-<span class="pc bnc" id="L167" title="All 2 branches missed.">									assert extraEdgesBiccs[e] &lt; 0;</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">									assert extraEdgesBiccs[e] &lt; 0;</span>
 <span class="fc" id="L168">									extraEdgesBiccs[e] = b;</span>
 <span class="fc" id="L169">									biccExtraEdgesCount[b]++;</span>
 								}
@@ -178,7 +178,7 @@ class BiConnectedComponentsAlgos {
 
 					/* search for self edges, which are not added to any bicc */
 <span class="pc bpc" id="L180" title="1 of 2 branches missed.">					if (g.isAllowSelfEdges()) {</span>
-<span class="pc bnc" id="L181" title="All 4 branches missed.">						assert Graphs.selfEdges(g).intStream().allMatch(e -&gt; edge2bicc[e] &lt; 0);</span>
+<span class="pc bpc" id="L181" title="2 of 4 branches missed.">						assert Graphs.selfEdges(g).intStream().allMatch(e -&gt; edge2bicc[e] &lt; 0);</span>
 <span class="fc bfc" id="L182" title="All 2 branches covered.">						for (int u : range(n)) {</span>
 <span class="fc bfc" id="L183" title="All 2 branches covered.">							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L184">								eit.nextInt();</span>

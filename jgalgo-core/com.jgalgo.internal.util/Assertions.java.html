@@ -461,9 +461,9 @@ public class Assertions {
 <span class="fc" id="L461">	}</span>
 
 	public static boolean isEqual(double a, double b) {
-<span class="nc" id="L464">		double mag = Math.max(Math.abs(a), Math.abs(b));</span>
-<span class="nc" id="L465">		double eps = mag * 1E-6;</span>
-<span class="nc bnc" id="L466" title="All 2 branches missed.">		return Math.abs(a - b) &lt;= eps;</span>
+<span class="fc" id="L464">		double mag = Math.max(Math.abs(a), Math.abs(b));</span>
+<span class="fc" id="L465">		double eps = mag * 1E-6;</span>
+<span class="pc bpc" id="L466" title="1 of 2 branches missed.">		return Math.abs(a - b) &lt;= eps;</span>
 	}
 
 }

@@ -121,9 +121,9 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 		void setup(String args, Supplier&lt;IndexGraph&gt; graphImplementation, boolean directed, boolean allowParallelEdges,
 				boolean allowSelfEdges) {
 <span class="fc" id="L123">			setup(args, g -&gt; {</span>
-<span class="pc bnc" id="L124" title="All 2 branches missed.">				assert g.isDirected() == directed;</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">				assert g.isDirected() == directed;</span>
 <span class="fc" id="L125">				IndexGraph g1 = graphImplementation.get();</span>
-<span class="pc bnc" id="L126" title="All 2 branches missed.">				assert g1.isDirected() == directed;</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">				assert g1.isDirected() == directed;</span>
 <span class="fc" id="L127">				g1.addVertices(g.vertices());</span>
 <span class="fc" id="L128">				g1.addEdges(EdgeSet.allOf(g));</span>
 <span class="fc" id="L129">				return g1;</span>
@@ -1233,12 +1233,12 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 <span class="fc" id="L1233">				final boolean allowParallelEdges = true;</span>
 <span class="fc" id="L1234">				final boolean allowSelfEdges = true;</span>
 <span class="fc" id="L1235">				setup(args, g -&gt; {</span>
-<span class="pc bnc" id="L1236" title="All 2 branches missed.">					assert g.isDirected() == directed;</span>
+<span class="pc bpc" id="L1236" title="1 of 2 branches missed.">					assert g.isDirected() == directed;</span>
 <span class="fc" id="L1237">					IndexGraphBuilder g1 = IndexGraphBuilder.directed();</span>
 <span class="fc" id="L1238">					g1.addVertices(g.vertices());</span>
 <span class="fc" id="L1239">					g1.addEdges(EdgeSet.allOf(g));</span>
 <span class="fc" id="L1240">					IndexGraph g1Graph = g1.build();</span>
-<span class="pc bnc" id="L1241" title="All 2 branches missed.">					assert g1Graph.isDirected() == directed;</span>
+<span class="pc bpc" id="L1241" title="1 of 2 branches missed.">					assert g1Graph.isDirected() == directed;</span>
 <span class="fc" id="L1242">					return g1Graph;</span>
 				}, directed, allowParallelEdges, allowSelfEdges);
 <span class="fc" id="L1244">			}</span>
@@ -1326,12 +1326,12 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 <span class="fc" id="L1326">				final boolean allowParallelEdges = true;</span>
 <span class="fc" id="L1327">				final boolean allowSelfEdges = true;</span>
 <span class="fc" id="L1328">				setup(args, g -&gt; {</span>
-<span class="pc bnc" id="L1329" title="All 2 branches missed.">					assert g.isDirected() == directed;</span>
+<span class="pc bpc" id="L1329" title="1 of 2 branches missed.">					assert g.isDirected() == directed;</span>
 <span class="fc" id="L1330">					IndexGraphBuilder g1 = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L1331">					g1.addVertices(g.vertices());</span>
 <span class="fc" id="L1332">					g1.addEdges(EdgeSet.allOf(g));</span>
 <span class="fc" id="L1333">					IndexGraph g1Graph = g1.build();</span>
-<span class="pc bnc" id="L1334" title="All 2 branches missed.">					assert g1Graph.isDirected() == directed;</span>
+<span class="pc bpc" id="L1334" title="1 of 2 branches missed.">					assert g1Graph.isDirected() == directed;</span>
 <span class="fc" id="L1335">					return g1Graph;</span>
 				}, directed, allowParallelEdges, allowSelfEdges);
 <span class="fc" id="L1337">			}</span>
@@ -1419,12 +1419,12 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 <span class="fc" id="L1419">				final boolean allowParallelEdges = true;</span>
 <span class="fc" id="L1420">				final boolean allowSelfEdges = true;</span>
 <span class="fc" id="L1421">				setup(args, g -&gt; {</span>
-<span class="pc bnc" id="L1422" title="All 2 branches missed.">					assert g.isDirected() == directed;</span>
+<span class="pc bpc" id="L1422" title="1 of 2 branches missed.">					assert g.isDirected() == directed;</span>
 <span class="fc" id="L1423">					IndexGraphBuilder g1 = IndexGraphBuilder.directed();</span>
 <span class="fc" id="L1424">					g1.addVertices(g.vertices());</span>
 <span class="fc" id="L1425">					g1.addEdges(EdgeSet.allOf(g));</span>
 <span class="fc" id="L1426">					IndexGraph g1Graph = g1.reIndexAndBuild(true, true).graph();</span>
-<span class="pc bnc" id="L1427" title="All 2 branches missed.">					assert g1Graph.isDirected() == directed;</span>
+<span class="pc bpc" id="L1427" title="1 of 2 branches missed.">					assert g1Graph.isDirected() == directed;</span>
 <span class="fc" id="L1428">					return g1Graph;</span>
 				}, directed, allowParallelEdges, allowSelfEdges);
 <span class="fc" id="L1430">			}</span>
@@ -1542,9 +1542,9 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 		void setup(String args, Supplier&lt;IndexGraph&gt; graphImplementation, boolean directed, boolean allowParallelEdges,
 				boolean allowSelfEdges) {
 <span class="fc" id="L1544">			setup(args, g -&gt; {</span>
-<span class="pc bnc" id="L1545" title="All 2 branches missed.">				assert g.isDirected() == directed;</span>
+<span class="pc bpc" id="L1545" title="1 of 2 branches missed.">				assert g.isDirected() == directed;</span>
 <span class="fc" id="L1546">				IndexGraph g1 = graphImplementation.get();</span>
-<span class="pc bnc" id="L1547" title="All 2 branches missed.">				assert g1.isDirected() == directed;</span>
+<span class="pc bpc" id="L1547" title="1 of 2 branches missed.">				assert g1.isDirected() == directed;</span>
 <span class="fc" id="L1548">				g1.addVertices(g.vertices());</span>
 <span class="fc" id="L1549">				g1.addEdges(EdgeSet.allOf(g));</span>
 <span class="fc" id="L1550">				return g1;</span>
@@ -1577,7 +1577,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 					boolean allowParallelEdges, boolean allowSelfEdges) {
 <span class="fc" id="L1578">				super.setup(args, graphImplementation, directed, allowParallelEdges, allowSelfEdges);</span>
 
-<span class="pc bnc" id="L1580" title="All 2 branches missed.">				assert m &gt; OperationsPerInvocation;</span>
+<span class="pc bpc" id="L1580" title="1 of 2 branches missed.">				assert m &gt; OperationsPerInvocation;</span>
 <span class="fc" id="L1581">				int[] removeEdges = TestUtils.randArray(m * 16, 0, m - OperationsPerInvocation, rand.nextLong());</span>
 <span class="fc" id="L1582">				removeEIter = circularIterator(Fastutil.list(removeEdges));</span>
 <span class="fc" id="L1583">			}</span>
@@ -1962,7 +1962,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 					boolean allowParallelEdges, boolean allowSelfEdges) {
 <span class="fc" id="L1963">				super.setup(args, graphImplementation, directed, allowParallelEdges, allowSelfEdges);</span>
 
-<span class="pc bnc" id="L1965" title="All 2 branches missed.">				assert n &gt; OperationsPerInvocation;</span>
+<span class="pc bpc" id="L1965" title="1 of 2 branches missed.">				assert n &gt; OperationsPerInvocation;</span>
 <span class="fc" id="L1966">				int[] removeVertices = TestUtils.randArray(n * 16, 0, n - OperationsPerInvocation, rand.nextLong());</span>
 <span class="fc" id="L1967">				removeVIter = circularIterator(Fastutil.list(removeVertices));</span>
 <span class="fc" id="L1968">			}</span>

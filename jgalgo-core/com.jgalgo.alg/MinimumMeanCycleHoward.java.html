@@ -148,7 +148,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 						}
 					}
 <span class="fc" id="L150">				}</span>
-<span class="pc bnc" id="L151" title="All 2 branches missed.">				assert bestCycleVertex &gt;= 0;</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">				assert bestCycleVertex &gt;= 0;</span>
 <span class="fc bfc" id="L152" title="All 2 branches covered.">				if (overallBestCycleMeanWeight &gt; bestCycleMeanWeight) {</span>
 <span class="fc" id="L153">					overallBestCycleMeanWeight = bestCycleMeanWeight;</span>
 <span class="fc" id="L154">					overallBestCycleVertex = bestCycleVertex;</span>
@@ -157,7 +157,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 				/* run a reversed BFS from a vertex in the best cycle */
 <span class="fc" id="L158">				final int searchIdx = nextSearchIdx++;</span>
 <span class="fc" id="L159">				visitIdx[bestCycleVertex] = searchIdx;</span>
-<span class="pc bnc" id="L160" title="All 2 branches missed.">				assert queue.isEmpty();</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">				assert queue.isEmpty();</span>
 <span class="fc" id="L161">				queue.enqueue(bestCycleVertex);</span>
 <span class="fc bfc" id="L162" title="All 2 branches covered.">				while (!queue.isEmpty()) {</span>
 <span class="fc" id="L163">					int v = queue.dequeueInt();</span>

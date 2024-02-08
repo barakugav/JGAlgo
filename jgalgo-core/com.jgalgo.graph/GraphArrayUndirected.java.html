@@ -89,7 +89,7 @@ class GraphArrayUndirected extends GraphArrayAbstract implements GraphDefaultsUn
 
 	GraphArrayUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L91">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L92" title="All 2 branches missed.">		assert !builder.isDirected();</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">		assert !builder.isDirected();</span>
 
 <span class="fc" id="L94">		edgesContainer =</span>
 <span class="fc" id="L95">				newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -&gt; edges = newArr);</span>
@@ -107,7 +107,7 @@ class GraphArrayUndirected extends GraphArrayAbstract implements GraphDefaultsUn
 
 	@Override
 	void removeVertexLast(int vertex) {
-<span class="pc bnc" id="L110" title="All 2 branches missed.">		assert edgesNum[vertex] == 0;</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">		assert edgesNum[vertex] == 0;</span>
 		// Reuse allocated edges arrays for v
 		// edges.clear(v);
 <span class="fc" id="L113">		super.removeVertexLast(vertex);</span>
@@ -115,7 +115,7 @@ class GraphArrayUndirected extends GraphArrayAbstract implements GraphDefaultsUn
 
 	@Override
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
-<span class="pc bnc" id="L118" title="All 2 branches missed.">		assert edgesNum[removedIdx] == 0;</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">		assert edgesNum[removedIdx] == 0;</span>
 
 <span class="fc" id="L120">		int[] edges = this.edges[swappedIdx];</span>
 <span class="fc bfc" id="L121" title="All 2 branches covered.">		for (int i : range(edgesNum[swappedIdx]))</span>

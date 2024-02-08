@@ -222,7 +222,7 @@ class MinimumVertexCutUtils {
 
 		void edgeCutToVertexCut(int[] edgeCut) {
 <span class="fc bfc" id="L224" title="All 2 branches covered.">			for (int i : range(edgeCut.length)) {</span>
-<span class="pc bnc" id="L225" title="All 2 branches missed.">				assert edgeCut[i] &gt;= verticesEdgesThreshold;</span>
+<span class="pc bpc" id="L225" title="1 of 2 branches missed.">				assert edgeCut[i] &gt;= verticesEdgesThreshold;</span>
 <span class="fc" id="L226">				edgeCut[i] -= verticesEdgesThreshold;</span>
 <span class="fc" id="L227">			}</span>
 <span class="fc" id="L228">		}</span>

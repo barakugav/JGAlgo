@@ -1516,7 +1516,7 @@ public class Graphs {
 
 		UndirectedView(Graph&lt;V, E&gt; g) {
 <span class="fc" id="L1518">			super(g);</span>
-<span class="pc bnc" id="L1519" title="All 2 branches missed.">			assert g.isDirected();</span>
+<span class="pc bpc" id="L1519" title="1 of 2 branches missed.">			assert g.isDirected();</span>
 <span class="fc" id="L1520">		}</span>
 
 		@Override
@@ -1808,7 +1808,7 @@ public class Graphs {
 
 		UndirectedViewIntBase(IntGraph g) {
 <span class="fc" id="L1810">			super(g);</span>
-<span class="pc bnc" id="L1811" title="All 2 branches missed.">			assert g.isDirected();</span>
+<span class="pc bpc" id="L1811" title="1 of 2 branches missed.">			assert g.isDirected();</span>
 <span class="fc" id="L1812">		}</span>
 
 		@Override
@@ -2704,7 +2704,7 @@ public class Graphs {
 <span class="fc bfc" id="L2704" title="All 2 branches covered.">			for (K elm : elements)</span>
 <span class="fc" id="L2705">				dst0.set(elm, src0.get(elm));</span>
 <span class="fc" id="L2706">		} else {</span>
-<span class="pc bnc" id="L2707" title="All 2 branches missed.">			assert type == Object.class;</span>
+<span class="pc bpc" id="L2707" title="1 of 2 branches missed.">			assert type == Object.class;</span>
 <span class="fc" id="L2708">			WeightsObj&lt;K, Object&gt; src0 = (WeightsObj&lt;K, Object&gt;) src;</span>
 <span class="fc" id="L2709">			WeightsObj&lt;K, Object&gt; dst0 = (WeightsObj&lt;K, Object&gt;) dst;</span>
 <span class="fc bfc" id="L2710" title="All 2 branches covered.">			for (K elm : elements)</span>
@@ -2755,7 +2755,7 @@ public class Graphs {
 <span class="fc bfc" id="L2755" title="All 2 branches covered.">			for (int elm : elements)</span>
 <span class="fc" id="L2756">				dst0.set(elm, src0.get(elm));</span>
 <span class="fc" id="L2757">		} else {</span>
-<span class="pc bnc" id="L2758" title="All 2 branches missed.">			assert type == Object.class;</span>
+<span class="pc bpc" id="L2758" title="1 of 2 branches missed.">			assert type == Object.class;</span>
 <span class="fc" id="L2759">			IWeightsObj src0 = (IWeightsObj) src;</span>
 <span class="fc" id="L2760">			IWeightsObj dst0 = (IWeightsObj) dst;</span>
 <span class="fc bfc" id="L2761" title="All 2 branches covered.">			for (int elm : elements)</span>
@@ -2780,7 +2780,7 @@ public class Graphs {
 <span class="fc" id="L2780">			return boolean.class;</span>
 <span class="fc bfc" id="L2781" title="All 2 branches covered.">		if (w instanceof WeightsChar)</span>
 <span class="fc" id="L2782">			return char.class;</span>
-<span class="pc bnc" id="L2783" title="All 2 branches missed.">		assert w instanceof WeightsObj;</span>
+<span class="pc bpc" id="L2783" title="1 of 2 branches missed.">		assert w instanceof WeightsObj;</span>
 <span class="fc" id="L2784">		return Object.class;</span>
 	}
 

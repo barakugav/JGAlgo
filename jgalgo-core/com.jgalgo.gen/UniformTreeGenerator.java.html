@@ -299,7 +299,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		}
 
 		/* After the above loop, there should be two vertices with no parent. Connect them */
-<span class="pc bnc" id="L302" title="All 4 branches missed.">		assert Bitmap.fromPredicate(n, v -&gt; !hasParent.get(v)).cardinality() == 2;</span>
+<span class="pc bpc" id="L302" title="1 of 4 branches missed.">		assert Bitmap.fromPredicate(n, v -&gt; !hasParent.get(v)).cardinality() == 2;</span>
 <span class="fc" id="L303">		int root1Idx = hasParent.nextClearBit(0);</span>
 <span class="fc" id="L304">		int root2Idx = hasParent.nextClearBit(root1Idx + 1);</span>
 <span class="fc" id="L305">		V root1 = vertices.get(root1Idx);</span>

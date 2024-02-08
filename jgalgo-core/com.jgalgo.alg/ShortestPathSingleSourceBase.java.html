@@ -52,7 +52,7 @@ import com.jgalgo.graph.WeightFunctions;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;V, E&gt; ShortestPathSingleSource.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
 			ShortestPathSingleSource.IResult indexResult) {
-<span class="pc bpc" id="L55" title="3 of 4 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L55" title="2 of 4 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L56" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L57">			return (ShortestPathSingleSource.Result&lt;V, E&gt;) new ShortestPathSingleSourceUtils.IntResultFromIndexResult(</span>
 					(IntGraph) g, indexResult);

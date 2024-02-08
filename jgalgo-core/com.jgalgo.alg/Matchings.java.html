@@ -41,7 +41,7 @@ class Matchings {
 		private IntSet unmatchedVertices;
 
 <span class="fc" id="L43">		IndexMatching(IndexGraph g, int[] matched) {</span>
-<span class="pc bnc" id="L44" title="All 2 branches missed.">			assert matched.length == g.vertices().size();</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">			assert matched.length == g.vertices().size();</span>
 <span class="fc" id="L45">			this.g = Objects.requireNonNull(g);</span>
 <span class="fc" id="L46">			this.matched = Objects.requireNonNull(matched);</span>
 <span class="fc" id="L47">		}</span>
@@ -108,7 +108,7 @@ class Matchings {
 <span class="fc bfc" id="L108" title="All 2 branches covered.">			for (int v : range(g.vertices().size())) {</span>
 <span class="fc" id="L109">				int e = matched[v];</span>
 <span class="fc bfc" id="L110" title="All 4 branches covered.">				if (e &gt;= 0 &amp;&amp; v == g.edgeSource(e)) {</span>
-<span class="pc bnc" id="L111" title="All 2 branches missed.">					assert g.edgeSource(e) != g.edgeTarget(e);</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">					assert g.edgeSource(e) != g.edgeTarget(e);</span>
 <span class="fc" id="L112">					edgesCount++;</span>
 				}
 <span class="fc" id="L114">			}</span>
@@ -116,7 +116,7 @@ class Matchings {
 <span class="fc bfc" id="L116" title="All 2 branches covered.">			for (int i = 0, n = g.vertices().size(), v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L117">				int e = matched[v];</span>
 <span class="fc bfc" id="L118" title="All 4 branches covered.">				if (e &gt;= 0 &amp;&amp; v == g.edgeSource(e)) {</span>
-<span class="pc bnc" id="L119" title="All 2 branches missed.">					assert g.edgeSource(e) != g.edgeTarget(e);</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">					assert g.edgeSource(e) != g.edgeTarget(e);</span>
 <span class="fc" id="L120">					edges0[i++] = e;</span>
 				}
 			}

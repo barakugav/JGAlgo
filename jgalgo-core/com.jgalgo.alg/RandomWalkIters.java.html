@@ -86,7 +86,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc bfc" id="L86" title="All 2 branches covered.">				for (int e : g.outEdges(u))</span>
 <span class="fc" id="L87">					edges[offset++] = e;</span>
 <span class="fc" id="L88">			}</span>
-<span class="pc bnc" id="L89" title="All 2 branches missed.">			assert offset == edgesArrSize;</span>
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">			assert offset == edgesArrSize;</span>
 <span class="fc" id="L90">			edgesOffset[n] = offset;</span>
 <span class="fc" id="L91">		}</span>
 
@@ -137,7 +137,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L137">					offset++;</span>
 <span class="fc" id="L138">				}</span>
 <span class="fc" id="L139">			}</span>
-<span class="pc bnc" id="L140" title="All 2 branches missed.">			assert offset == outEdgesSize;</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">			assert offset == outEdgesSize;</span>
 <span class="fc" id="L141">			edgesOffset[n] = offset;</span>
 <span class="fc" id="L142">		}</span>
 
@@ -236,7 +236,7 @@ import com.jgalgo.internal.util.Assertions;
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; RandomWalkIter&lt;V, E&gt; fromIndexIter(RandomWalkIter.Int indexIter, Graph&lt;V, E&gt; graph) {
-<span class="pc bnc" id="L239" title="All 2 branches missed.">		assert !(graph instanceof IndexGraph);</span>
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">		assert !(graph instanceof IndexGraph);</span>
 <span class="fc bfc" id="L240" title="All 2 branches covered.">		if (graph instanceof IntGraph) {</span>
 <span class="fc" id="L241">			return (RandomWalkIter&lt;V, E&gt;) new IntIterFromIndexIter(indexIter, (IntGraph) graph);</span>
 		} else {

@@ -47,8 +47,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L47">	}</span>
 
 	void addChild(NodeT parent, NodeT newChild) {
-<span class="pc bnc" id="L50" title="All 2 branches missed.">		assert newChild.prevOrParent == null;</span>
-<span class="pc bnc" id="L51" title="All 2 branches missed.">		assert newChild.next == null;</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">		assert newChild.prevOrParent == null;</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		assert newChild.next == null;</span>
 <span class="fc" id="L52">		NodeT oldChild = parent.child;</span>
 <span class="fc bfc" id="L53" title="All 2 branches covered.">		if (oldChild != null) {</span>
 <span class="fc" id="L54">			oldChild.prevOrParent = newChild;</span>

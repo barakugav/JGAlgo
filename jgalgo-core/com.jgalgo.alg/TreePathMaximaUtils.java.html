@@ -222,7 +222,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	private static &lt;V, E&gt; TreePathMaxima.IQueries indexQueriesFromQueries(Graph&lt;V, E&gt; g,
 			TreePathMaxima.Queries&lt;V, E&gt; queries) {
-<span class="pc bnc" id="L225" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L225" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L226" title="All 4 branches covered.">		if (g instanceof IntGraph &amp;&amp; queries instanceof TreePathMaxima.IQueries) {</span>
 <span class="fc" id="L227">			return new IndexQueriesFromIntQueries((IntGraph) g, (TreePathMaxima.IQueries) queries);</span>
 		} else {
@@ -277,7 +277,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;V, E&gt; TreePathMaxima.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
 			TreePathMaxima.IResult indexResult) {
-<span class="pc bnc" id="L280" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L281" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L282">			return (TreePathMaxima.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
 		} else {

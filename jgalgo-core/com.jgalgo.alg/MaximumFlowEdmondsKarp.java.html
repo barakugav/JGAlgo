@@ -136,7 +136,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlows.WithoutResidualGraph {
 <span class="fc" id="L136">								continue;</span>
 <span class="fc" id="L137">							v = g.edgeTarget(e);</span>
 						} else {
-<span class="pc bnc" id="L139" title="All 2 branches missed.">							assert u == g.edgeTarget(e);</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">							assert u == g.edgeTarget(e);</span>
 <span class="fc bfc" id="L140" title="All 2 branches covered.">							if (!isTwinResidualUndirected(e))</span>
 <span class="fc" id="L141">								continue;</span>
 <span class="fc" id="L142">							v = g.edgeSource(e);</span>
@@ -207,15 +207,15 @@ class MaximumFlowEdmondsKarp extends MaximumFlows.WithoutResidualGraph {
 <span class="fc" id="L207">					ec = getResidualCapacity(e);</span>
 <span class="fc" id="L208">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L210" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">					assert g.edgeSource(e) == p;</span>
 <span class="fc" id="L211">					ec = flow(e);</span>
 <span class="fc" id="L212">					nextP = g.edgeTarget(e);</span>
 				}
-<span class="pc bnc" id="L214" title="All 2 branches missed.">				assert ec &gt;= eps;</span>
+<span class="pc bpc" id="L214" title="1 of 2 branches missed.">				assert ec &gt;= eps;</span>
 <span class="fc" id="L215">				f = Math.min(f, ec);</span>
 <span class="fc" id="L216">				p = nextP;</span>
 <span class="fc" id="L217">			}</span>
-<span class="pc bnc" id="L218" title="All 2 branches missed.">			assert f &gt;= eps;</span>
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">			assert f &gt;= eps;</span>
 
 			// update flow of all edges on path
 <span class="fc bfc" id="L221" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
@@ -225,7 +225,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlows.WithoutResidualGraph {
 <span class="fc" id="L225">					residualCapacity[e] -= f;</span>
 <span class="fc" id="L226">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L228" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">					assert g.edgeSource(e) == p;</span>
 <span class="fc" id="L229">					residualCapacity[e] += f;</span>
 <span class="fc" id="L230">					nextP = g.edgeTarget(e);</span>
 				}
@@ -245,15 +245,15 @@ class MaximumFlowEdmondsKarp extends MaximumFlows.WithoutResidualGraph {
 <span class="fc" id="L245">					ec = getResidualCapacity(e);</span>
 <span class="fc" id="L246">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L248" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">					assert g.edgeSource(e) == p;</span>
 <span class="fc" id="L249">					ec = getTwinResidualCapacity(e);</span>
 <span class="fc" id="L250">					nextP = g.edgeTarget(e);</span>
 				}
-<span class="pc bnc" id="L252" title="All 2 branches missed.">				assert ec &gt;= eps;</span>
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">				assert ec &gt;= eps;</span>
 <span class="fc" id="L253">				f = Math.min(f, ec);</span>
 <span class="fc" id="L254">				p = nextP;</span>
 <span class="fc" id="L255">			}</span>
-<span class="pc bnc" id="L256" title="All 2 branches missed.">			assert f &gt;= eps;</span>
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">			assert f &gt;= eps;</span>
 
 			// update flow of all edges on path
 <span class="fc bfc" id="L259" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
@@ -263,7 +263,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlows.WithoutResidualGraph {
 <span class="fc" id="L263">					residualCapacity[e] -= f;</span>
 <span class="fc" id="L264">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L266" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">					assert g.edgeSource(e) == p;</span>
 <span class="fc" id="L267">					residualCapacity[e] += f;</span>
 <span class="fc" id="L268">					nextP = g.edgeTarget(e);</span>
 				}
@@ -300,7 +300,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlows.WithoutResidualGraph {
 		}
 
 		double getTwinResidualCapacity(int e) {
-<span class="pc bnc" id="L303" title="All 2 branches missed.">			assert !directed;</span>
+<span class="pc bpc" id="L303" title="1 of 2 branches missed.">			assert !directed;</span>
 <span class="fc" id="L304">			return 2 * capacity[e] - residualCapacity[e];</span>
 		}
 	}
@@ -333,15 +333,15 @@ class MaximumFlowEdmondsKarp extends MaximumFlows.WithoutResidualGraph {
 <span class="fc" id="L333">					ec = getResidualCapacity(e);</span>
 <span class="fc" id="L334">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L336" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="pc bpc" id="L336" title="1 of 2 branches missed.">					assert g.edgeSource(e) == p;</span>
 <span class="fc" id="L337">					ec = flow(e);</span>
 <span class="fc" id="L338">					nextP = g.edgeTarget(e);</span>
 				}
-<span class="pc bnc" id="L340" title="All 2 branches missed.">				assert ec &gt; 0;</span>
+<span class="pc bpc" id="L340" title="1 of 2 branches missed.">				assert ec &gt; 0;</span>
 <span class="fc" id="L341">				f = Math.min(f, ec);</span>
 <span class="fc" id="L342">				p = nextP;</span>
 <span class="fc" id="L343">			}</span>
-<span class="pc bnc" id="L344" title="All 2 branches missed.">			assert f &gt; 0;</span>
+<span class="pc bpc" id="L344" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
 
 			// update flow of all edges on path
 <span class="fc bfc" id="L347" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
@@ -351,7 +351,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlows.WithoutResidualGraph {
 <span class="fc" id="L351">					residualCapacity[e] -= f;</span>
 <span class="fc" id="L352">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L354" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="pc bpc" id="L354" title="1 of 2 branches missed.">					assert g.edgeSource(e) == p;</span>
 <span class="fc" id="L355">					residualCapacity[e] += f;</span>
 <span class="fc" id="L356">					nextP = g.edgeTarget(e);</span>
 				}
@@ -370,15 +370,15 @@ class MaximumFlowEdmondsKarp extends MaximumFlows.WithoutResidualGraph {
 <span class="fc" id="L370">					ec = getResidualCapacity(e);</span>
 <span class="fc" id="L371">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L373" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="pc bpc" id="L373" title="1 of 2 branches missed.">					assert g.edgeSource(e) == p;</span>
 <span class="fc" id="L374">					ec = getTwinResidualCapacity(e);</span>
 <span class="fc" id="L375">					nextP = g.edgeTarget(e);</span>
 				}
-<span class="pc bnc" id="L377" title="All 2 branches missed.">				assert ec &gt; 0;</span>
+<span class="pc bpc" id="L377" title="1 of 2 branches missed.">				assert ec &gt; 0;</span>
 <span class="fc" id="L378">				f = Math.min(f, ec);</span>
 <span class="fc" id="L379">				p = nextP;</span>
 <span class="fc" id="L380">			}</span>
-<span class="pc bnc" id="L381" title="All 2 branches missed.">			assert f &gt; 0;</span>
+<span class="pc bpc" id="L381" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
 
 			// update flow of all edges on path
 <span class="fc bfc" id="L384" title="All 2 branches covered.">			for (int p = sink; p != source;) {</span>
@@ -388,7 +388,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlows.WithoutResidualGraph {
 <span class="fc" id="L388">					residualCapacity[e] -= f;</span>
 <span class="fc" id="L389">					nextP = g.edgeSource(e);</span>
 				} else {
-<span class="pc bnc" id="L391" title="All 2 branches missed.">					assert g.edgeSource(e) == p;</span>
+<span class="pc bpc" id="L391" title="1 of 2 branches missed.">					assert g.edgeSource(e) == p;</span>
 <span class="fc" id="L392">					residualCapacity[e] += f;</span>
 <span class="fc" id="L393">					nextP = g.edgeTarget(e);</span>
 				}
@@ -425,7 +425,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlows.WithoutResidualGraph {
 		}
 
 		int getTwinResidualCapacity(int e) {
-<span class="pc bnc" id="L428" title="All 2 branches missed.">			assert !directed;</span>
+<span class="pc bpc" id="L428" title="1 of 2 branches missed.">			assert !directed;</span>
 <span class="fc" id="L429">			return 2 * capacity[e] - residualCapacity[e];</span>
 		}
 	}

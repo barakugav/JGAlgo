@@ -74,7 +74,7 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract implements G
 
 	GraphHashmapMultiUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L76">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L77" title="All 2 branches missed.">		assert !builder.isDirected();</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">		assert !builder.isDirected();</span>
 
 <span class="fc" id="L79">		edgesContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -&gt; edgesMap = newArr);</span>
 <span class="fc" id="L80">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
@@ -87,7 +87,7 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract implements G
 
 	@Override
 	void removeVertexLast(int vertex) {
-<span class="pc bnc" id="L90" title="All 2 branches missed.">		assert edgesMap[vertex].isEmpty();</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">		assert edgesMap[vertex].isEmpty();</span>
 		// Reuse allocated edges array for v
 		// edges.clear(v);
 <span class="fc" id="L93">		super.removeVertexLast(vertex);</span>
@@ -95,7 +95,7 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract implements G
 
 	@Override
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
-<span class="pc bnc" id="L98" title="All 2 branches missed.">		assert edgesMap[removedIdx].isEmpty();</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">		assert edgesMap[removedIdx].isEmpty();</span>
 
 		/* we handle the self edges of the swapped vertex separately */
 <span class="fc" id="L101">		int firstSelfEdge = -1;</span>
@@ -109,15 +109,15 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract implements G
 <span class="fc" id="L109">				replaceEdgeEndpoint(e, swappedIdx, removedIdx);</span>
 <span class="fc" id="L110">			int oldVal1 = edgesMap[target].remove(swappedIdx);</span>
 <span class="fc" id="L111">			int oldVal2 = edgesMap[target].put(removedIdx, firstEdge);</span>
-<span class="pc bnc" id="L112" title="All 2 branches missed.">			assert oldVal1 == firstEdge;</span>
-<span class="pc bnc" id="L113" title="All 2 branches missed.">			assert oldVal2 &lt; 0;</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">			assert oldVal1 == firstEdge;</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">			assert oldVal2 &lt; 0;</span>
 <span class="fc" id="L114">		}</span>
 
 <span class="fc bfc" id="L116" title="All 2 branches covered.">		if (firstSelfEdge &gt;= 0) {</span>
 <span class="fc bfc" id="L117" title="All 2 branches covered.">			for (int e = firstSelfEdge; e &gt;= 0; e = edgeNext[e])</span>
 <span class="fc" id="L118">				setEndpoints(e, removedIdx, removedIdx);</span>
 <span class="fc" id="L119">			int oldVal = edgesMap[swappedIdx].put(removedIdx, firstSelfEdge);</span>
-<span class="pc bnc" id="L120" title="All 2 branches missed.">			assert oldVal &lt; 0;</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">			assert oldVal &lt; 0;</span>
 		}
 
 <span class="fc" id="L123">		swapAndClear(edgesMap, removedIdx, swappedIdx, EmptyEdgeMap);</span>

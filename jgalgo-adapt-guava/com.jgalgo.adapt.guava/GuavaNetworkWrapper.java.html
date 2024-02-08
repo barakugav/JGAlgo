@@ -512,7 +512,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc bfc" id="L512" title="All 2 branches covered.">					if (addVertices-- &lt;= 0)</span>
 <span class="fc" id="L513">						break;</span>
 <span class="fc" id="L514">					boolean removed = net.removeNode(it.next());</span>
-<span class="pc bnc" id="L515" title="All 2 branches missed.">					assert removed;</span>
+<span class="pc bpc" id="L515" title="1 of 2 branches missed.">					assert removed;</span>
 <span class="fc" id="L516">				}</span>
 <span class="fc" id="L517">				throw new IllegalArgumentException(&quot;duplicate vertex: &quot; + vertex);</span>
 			}
@@ -592,7 +592,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L592">						break;</span>
 <span class="fc" id="L593">					E e1 = it.next();</span>
 <span class="fc" id="L594">					boolean removed = net.removeEdge(e1);</span>
-<span class="pc bnc" id="L595" title="All 2 branches missed.">					assert removed;</span>
+<span class="pc bpc" id="L595" title="1 of 2 branches missed.">					assert removed;</span>
 <span class="fc" id="L596">					indexGraphEdgesMap.remove(e1);</span>
 <span class="fc" id="L597">				}</span>
 <span class="fc" id="L598">				throw ex;</span>
@@ -631,7 +631,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L631">		MutableNetwork&lt;V, E&gt; net = mutableNetwork(&quot;graph is immutable, can't remove edges&quot;);</span>
 <span class="fc bfc" id="L632" title="All 2 branches covered.">		for (E edge : edges) {</span>
 <span class="fc" id="L633">			boolean removed = net.removeEdge(edge);</span>
-<span class="pc bnc" id="L634" title="All 2 branches missed.">			assert removed;</span>
+<span class="pc bpc" id="L634" title="1 of 2 branches missed.">			assert removed;</span>
 <span class="fc" id="L635">			indexGraphEdgesMap.remove(edge);</span>
 <span class="fc" id="L636">		}</span>
 <span class="fc" id="L637">	}</span>
@@ -706,7 +706,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L706">			int idx = idxToId.size();</span>
 <span class="fc" id="L707">			idxToId.add(id);</span>
 <span class="fc" id="L708">			int oldVal = idToIdx.put(id, idx);</span>
-<span class="pc bnc" id="L709" title="All 2 branches missed.">			assert oldVal &lt; 0;</span>
+<span class="pc bpc" id="L709" title="1 of 2 branches missed.">			assert oldVal &lt; 0;</span>
 <span class="fc" id="L710">		}</span>
 
 		void remove(K id) {
@@ -718,7 +718,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L718">				K lastId = idxToId.remove(lastIdx);</span>
 <span class="fc" id="L719">				idxToId.set(idx, lastId);</span>
 <span class="fc" id="L720">				int oldIdx = idToIdx.put(lastId, idx);</span>
-<span class="pc bnc" id="L721" title="All 2 branches missed.">				assert oldIdx == lastIdx;</span>
+<span class="pc bpc" id="L721" title="1 of 2 branches missed.">				assert oldIdx == lastIdx;</span>
 			}
 <span class="fc" id="L723">		}</span>
 

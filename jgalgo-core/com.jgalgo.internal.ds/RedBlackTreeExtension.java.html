@@ -264,7 +264,7 @@ class RedBlackTreeExtension&lt;K, V&gt; {
 
 			RedBlackTreeExtended.Node&lt;K, V&gt; aData, bData;
 <span class="pc bpc" id="L266" title="1 of 2 branches missed.">			if (a.hasLeftChild()) {</span>
-<span class="pc bnc" id="L267" title="All 2 branches missed.">				assert getNodeData(a) == getNodeData(a.left());</span>
+<span class="pc bpc" id="L267" title="1 of 2 branches missed.">				assert getNodeData(a) == getNodeData(a.left());</span>
 <span class="fc" id="L268">				bData = getNodeData(a);</span>
 			} else {
 <span class="nc bnc" id="L270" title="All 2 branches missed.">				assert getNodeData(a) == a;</span>
@@ -279,7 +279,7 @@ class RedBlackTreeExtension&lt;K, V&gt; {
 <span class="nc bnc" id="L279" title="All 2 branches missed.">				assert getNodeData(b) == getNodeData(b.left());</span>
 <span class="nc" id="L280">				aData = getNodeData(b);</span>
 			} else {
-<span class="pc bnc" id="L282" title="All 2 branches missed.">				assert getNodeData(b) == b;</span>
+<span class="pc bpc" id="L282" title="1 of 2 branches missed.">				assert getNodeData(b) == b;</span>
 <span class="pc bpc" id="L283" title="1 of 4 branches missed.">				for (RedBlackTreeExtended.Node&lt;K, V&gt; p = b; p.parent() != null &amp;&amp; p == p.parent().left(); p =</span>
 <span class="fc" id="L284">						p.parent())</span>
 <span class="fc" id="L285">					setNodeData(p.parent(), a);</span>
@@ -387,18 +387,18 @@ class RedBlackTreeExtension&lt;K, V&gt; {
 <span class="nc" id="L387">				b = temp;</span>
 			}
 <span class="fc bfc" id="L389" title="All 2 branches covered.">			if (getNodeData(a) == b) {</span>
-<span class="pc bnc" id="L390" title="All 2 branches missed.">				assert getNodeData(b) == b;</span>
+<span class="pc bpc" id="L390" title="1 of 2 branches missed.">				assert getNodeData(b) == b;</span>
 <span class="fc bfc" id="L391" title="All 4 branches covered.">				for (RedBlackTreeExtended.Node&lt;K, V&gt; p = b; p.parent() != null &amp;&amp; p == p.parent().right(); p =</span>
 <span class="fc" id="L392">						p.parent())</span>
 <span class="fc" id="L393">					setNodeData(p.parent(), a);</span>
-<span class="pc bnc" id="L394" title="All 2 branches missed.">				assert getNodeData(a) == a : &quot;a should be ancestor of b&quot;;</span>
+<span class="pc bpc" id="L394" title="1 of 2 branches missed.">				assert getNodeData(a) == a : &quot;a should be ancestor of b&quot;;</span>
 <span class="fc" id="L395">				setNodeData(b, a);</span>
 <span class="fc" id="L396">				return;</span>
 			}
 
 			RedBlackTreeExtended.Node&lt;K, V&gt; aData, bData;
 <span class="pc bpc" id="L400" title="1 of 2 branches missed.">			if (a.hasRightChild()) {</span>
-<span class="pc bnc" id="L401" title="All 2 branches missed.">				assert getNodeData(a) == getNodeData(a.right());</span>
+<span class="pc bpc" id="L401" title="1 of 2 branches missed.">				assert getNodeData(a) == getNodeData(a.right());</span>
 <span class="fc" id="L402">				bData = getNodeData(a);</span>
 			} else {
 <span class="nc bnc" id="L404" title="All 2 branches missed.">				assert getNodeData(a) == a;</span>
@@ -410,10 +410,10 @@ class RedBlackTreeExtension&lt;K, V&gt; {
 <span class="nc" id="L410">				bData = b;</span>
 			}
 <span class="fc bfc" id="L412" title="All 2 branches covered.">			if (b.hasRightChild()) {</span>
-<span class="pc bnc" id="L413" title="All 2 branches missed.">				assert getNodeData(b) == getNodeData(b.right());</span>
+<span class="pc bpc" id="L413" title="1 of 2 branches missed.">				assert getNodeData(b) == getNodeData(b.right());</span>
 <span class="fc" id="L414">				aData = getNodeData(b);</span>
 			} else {
-<span class="pc bnc" id="L416" title="All 2 branches missed.">				assert getNodeData(b) == b;</span>
+<span class="pc bpc" id="L416" title="1 of 2 branches missed.">				assert getNodeData(b) == b;</span>
 <span class="pc bpc" id="L417" title="2 of 4 branches missed.">				for (RedBlackTreeExtended.Node&lt;K, V&gt; p = b; p.parent() != null &amp;&amp; p == p.parent().right(); p =</span>
 <span class="nc" id="L418">						p.parent())</span>
 <span class="nc" id="L419">					setNodeData(p.parent(), a);</span>

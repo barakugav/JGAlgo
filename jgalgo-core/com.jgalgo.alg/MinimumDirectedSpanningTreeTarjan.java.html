@@ -127,10 +127,10 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L127">		Arrays.fill(inEdge, -1);</span>
 
 <span class="fc" id="L129">		IntStack stack = new IntArrayList();</span>
-<span class="pc bnc" id="L130" title="All 2 branches missed.">		assert cg.child[root] &lt; 0;</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">		assert cg.child[root] &lt; 0;</span>
 <span class="fc bfc" id="L131" title="All 2 branches covered.">		for (int v = cg.parent[root], prevChild = root; v &gt;= 0; v = cg.parent[prevChild = v]) {</span>
 <span class="fc" id="L132">			for (int child = cg.child[v], c = child;;) {</span>
-<span class="pc bnc" id="L133" title="All 2 branches missed.">				assert c &gt;= 0;</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">				assert c &gt;= 0;</span>
 <span class="fc bfc" id="L134" title="All 2 branches covered.">				if (c != prevChild)</span>
 <span class="fc" id="L135">					stack.push(c);</span>
 <span class="fc" id="L136">				c = cg.brother[c];</span>
@@ -144,11 +144,11 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L144">			int u = g.edgeTarget(e);</span>
 <span class="fc" id="L145">			inEdge[u] = e;</span>
 
-<span class="pc bnc" id="L147" title="All 2 branches missed.">			assert cg.child[u] &lt; 0;</span>
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">			assert cg.child[u] &lt; 0;</span>
 <span class="fc bfc" id="L148" title="All 2 branches covered.">			for (int v = cg.parent[u], prevChild = u; v != cg.parent[r]; v = cg.parent[prevChild = v]) {</span>
 <span class="pc bpc" id="L149" title="1 of 2 branches missed.">				if (cg.child[v] &gt;= 0) {</span>
 <span class="fc" id="L150">					for (int child = cg.child[v], c = child;;) {</span>
-<span class="pc bnc" id="L151" title="All 2 branches missed.">						assert c &gt;= 0;</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">						assert c &gt;= 0;</span>
 <span class="fc bfc" id="L152" title="All 2 branches covered.">						if (c != prevChild)</span>
 <span class="fc" id="L153">							stack.push(c);</span>
 <span class="fc" id="L154">						c = cg.brother[c];</span>
@@ -195,12 +195,12 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="nc" id="L195">					continue blockLoop; /* V already connected to root, avoid parallel edges */</span>
 			}
 <span class="fc" id="L197">			int e = g.addEdge(blockToV[b], root);</span>
-<span class="pc bnc" id="L198" title="All 2 branches missed.">			assert e &gt;= artificialEdgesThreshold;</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">			assert e &gt;= artificialEdgesThreshold;</span>
 <span class="fc" id="L199">		}</span>
 <span class="fc" id="L200">	}</span>
 
 	private ContractedGraph contract(IndexGraph g, int[] edgeRef, IWeightFunction wOrig, int artificialEdgesThreshold) {
-<span class="pc bnc" id="L203" title="All 2 branches missed.">		assert sccAlg.isStronglyConnected(g);</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">		assert sccAlg.isStronglyConnected(g);</span>
 
 <span class="fc" id="L205">		int n = g.vertices().size();</span>
 <span class="fc" id="L206">		int VMaxNum = n * 2; // max super vertex number</span>

@@ -78,7 +78,7 @@ class CoresAlgos {
 <span class="fc" id="L78">			sortedVertices = new int[n];</span>
 <span class="fc bfc" id="L79" title="All 2 branches covered.">			for (int v : range(n))</span>
 <span class="fc" id="L80">				sortedVertices[coreOffset[this.core[v]]++] = v;</span>
-<span class="pc bnc" id="L81" title="All 2 branches missed.">			assert coreOffset[coreNum - 1] == n;</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">			assert coreOffset[coreNum - 1] == n;</span>
 <span class="fc bfc" id="L82" title="All 2 branches covered.">			for (int c = coreNum; c &gt; 0; c--)</span>
 <span class="fc" id="L83">				coreOffset[c] = coreOffset[c - 1];</span>
 <span class="fc" id="L84">			coreOffset[0] = 0;</span>

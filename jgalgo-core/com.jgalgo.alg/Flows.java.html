@@ -109,7 +109,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; Flow&lt;V, E&gt; flowFromIndexFlow(Graph&lt;V, E&gt; g, IFlow indexFlow) {
-<span class="pc bnc" id="L112" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L113" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L114">			return (Flow&lt;V, E&gt;) new IntFlowFromIndexFlow((IntGraph) g, indexFlow);</span>
 		} else {
@@ -216,10 +216,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L216">			}</span>
 
 			void addAllOriginalEdges() {
-<span class="pc bnc" id="L219" title="All 2 branches missed.">				assert gBuilder.vertices().isEmpty();</span>
+<span class="pc bpc" id="L219" title="1 of 2 branches missed.">				assert gBuilder.vertices().isEmpty();</span>
 <span class="fc" id="L220">				gBuilder.addVertices(range(gOrig.vertices().size()));</span>
 
-<span class="pc bnc" id="L222" title="All 2 branches missed.">				assert gBuilder.edges().isEmpty();</span>
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">				assert gBuilder.edges().isEmpty();</span>
 <span class="fc" id="L223">				gBuilder.ensureEdgeCapacity(gOrig.edges().size() * 2);</span>
 <span class="fc bfc" id="L224" title="All 2 branches covered.">				for (int e : range(gOrig.edges().size())) {</span>
 <span class="fc" id="L225">					int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);</span>
@@ -235,13 +235,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 			void addEdge(int u, int v, int e) {
 <span class="fc" id="L236">				int e1Builder = gBuilder.addEdge(u, v);</span>
 <span class="fc" id="L237">				int e2Builder = gBuilder.addEdge(v, u);</span>
-<span class="pc bnc" id="L238" title="All 2 branches missed.">				assert e1Builder == edgeRef.size();</span>
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">				assert e1Builder == edgeRef.size();</span>
 <span class="fc" id="L239">				edgeRef.add(e);</span>
-<span class="pc bnc" id="L240" title="All 2 branches missed.">				assert e2Builder == edgeRef.size();</span>
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">				assert e2Builder == edgeRef.size();</span>
 <span class="fc" id="L241">				edgeRef.add(e);</span>
-<span class="pc bnc" id="L242" title="All 2 branches missed.">				assert e1Builder == twin.size();</span>
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">				assert e1Builder == twin.size();</span>
 <span class="fc" id="L243">				twin.add(e2Builder);</span>
-<span class="pc bnc" id="L244" title="All 2 branches missed.">				assert e2Builder == twin.size();</span>
+<span class="pc bpc" id="L244" title="1 of 2 branches missed.">				assert e2Builder == twin.size();</span>
 <span class="fc" id="L245">				twin.add(e1Builder);</span>
 <span class="fc" id="L246">			}</span>
 

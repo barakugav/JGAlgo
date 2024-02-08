@@ -74,7 +74,7 @@ class GraphLinkedPtrDirected extends GraphLinkedPtrAbstract implements GraphDefa
 
 	GraphLinkedPtrDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L76">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L77" title="All 2 branches missed.">		assert builder.isDirected();</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">		assert builder.isDirected();</span>
 
 <span class="fc" id="L79">		edgesOutContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -&gt; edgesIn = newArr);</span>
 <span class="fc" id="L80">		edgesInContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -&gt; edgesOut = newArr);</span>
@@ -94,7 +94,7 @@ class GraphLinkedPtrDirected extends GraphLinkedPtrAbstract implements GraphDefa
 
 	@Override
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
-<span class="pc bnc" id="L97" title="All 4 branches missed.">		assert edgesOutNum[removedIdx] == 0 &amp;&amp; edgesInNum[removedIdx] == 0;</span>
+<span class="pc bpc" id="L97" title="2 of 4 branches missed.">		assert edgesOutNum[removedIdx] == 0 &amp;&amp; edgesInNum[removedIdx] == 0;</span>
 
 <span class="fc bfc" id="L99" title="All 2 branches covered.">		for (Edge p = edgesOut[swappedIdx]; p != null; p = p.nextOut)</span>
 <span class="fc" id="L100">			replaceEdgeSource(p.id, removedIdx);</span>

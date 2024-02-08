@@ -193,7 +193,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;V, E&gt; VoronoiAlgo.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
 			VoronoiAlgo.IResult indexResult) {
-<span class="pc bnc" id="L196" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L197" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L198">			return (VoronoiAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
 		} else {

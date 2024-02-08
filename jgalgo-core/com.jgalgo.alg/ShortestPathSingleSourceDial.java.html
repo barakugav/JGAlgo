@@ -164,7 +164,7 @@ class ShortestPathSingleSourceDial implements ShortestPathSingleSourceBase {
 
 		void decreaseKey(int v, int distance) {
 <span class="fc" id="L166">			int oldDistance = distances[v];</span>
-<span class="pc bnc" id="L167" title="All 2 branches missed.">			assert distance &lt; oldDistance;</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">			assert distance &lt; oldDistance;</span>
 <span class="fc bfc" id="L168" title="All 2 branches covered.">			if (v == heapBucketsHead[oldDistance])</span>
 <span class="fc" id="L169">				heapBucketsHead[oldDistance] = heapBucketsNodes.next(v);</span>
 <span class="fc" id="L170">			heapBucketsNodes.disconnect(v);</span>

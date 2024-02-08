@@ -57,7 +57,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 			/* all vertices have even degree, an Eulerian tour should exists (if the graph is connected) */
 <span class="nc" id="L58">			return (IPath) eulerianTourAlgo.computeEulerianTour(g);</span>
 <span class="fc" id="L59">		int[] oddVertices = oddVerticesList.toIntArray();</span>
-<span class="pc bnc" id="L60" title="All 2 branches missed.">		assert oddVertices.length % 2 == 0;</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">		assert oddVertices.length % 2 == 0;</span>
 
 		/* Create a complete graph of the odd vertices, with edges weighted by the shortest paths between each pair */
 <span class="fc" id="L63">		IndexGraphBuilder oddGraph0 = IndexGraphBuilder.undirected();</span>
@@ -92,7 +92,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		/* The new graph is Eulerian */
 <span class="fc" id="L93">		IndexGraph eulerianGraph = b.build();</span>
 <span class="fc bfc" id="L94" title="All 2 branches covered.">		for (int v : range(eulerianGraph.vertices().size()))</span>
-<span class="pc bnc" id="L95" title="All 2 branches missed.">			assert nonSelfEdgesDegree(eulerianGraph, v) % 2 == 0;</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">			assert nonSelfEdgesDegree(eulerianGraph, v) % 2 == 0;</span>
 
 		/* Compute an Eulerian tour in the new graph */
 <span class="fc" id="L98">		IPath eulerianTour = (IPath) eulerianTourAlgo.computeEulerianTour(eulerianGraph);</span>

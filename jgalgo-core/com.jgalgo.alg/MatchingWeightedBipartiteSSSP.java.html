@@ -101,19 +101,19 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="nc" id="L101">				u = v;</span>
 <span class="nc" id="L102">				v = temp;</span>
 			}
-<span class="pc bnc" id="L104" title="All 2 branches missed.">			assert partition.get(u);</span>
-<span class="pc bnc" id="L105" title="All 2 branches missed.">			assert !partition.get(v);</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">			assert partition.get(u);</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">			assert !partition.get(v);</span>
 
 <span class="fc" id="L107">			double weight = wOrig.weight(e);</span>
 <span class="fc bfc" id="L108" title="All 2 branches covered.">			if (weight &gt;= 0) {</span>
 <span class="fc" id="L109">				int e0 = g.addEdge(u, v);</span>
-<span class="pc bnc" id="L110" title="All 2 branches missed.">				assert e0 == e;</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">				assert e0 == e;</span>
 <span class="fc" id="L111">				w.set(e, weight);</span>
 <span class="fc" id="L112">			} else {</span>
 				/* no reason to match negative edges. we can ignore this edge */
 				/* to match the original graph edges ids, we add a dummy edge */
 <span class="fc" id="L115">				int e0 = g.addEdge(t, t);</span>
-<span class="pc bnc" id="L116" title="All 2 branches missed.">				assert e0 == e;</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">				assert e0 == e;</span>
 <span class="fc" id="L117">				w.set(e, 0);</span>
 			}
 <span class="fc" id="L119">		}</span>

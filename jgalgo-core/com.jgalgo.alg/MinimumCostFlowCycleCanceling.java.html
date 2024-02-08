@@ -104,7 +104,7 @@ import com.jgalgo.internal.util.Bitmap;
 <span class="nc" id="L104">			}</span>
 		}
 <span class="fc bfc" id="L106" title="All 2 branches covered.">		double eps = Arrays.stream(capacity).filter(c -&gt; c &gt; 0).min().orElse(0) * 1e-8;</span>
-<span class="pc bnc" id="L107" title="All 4 branches missed.">		assert g.edges().intStream().allMatch(e -&gt; flow[e] &lt;= capacity[e] + eps);</span>
+<span class="pc bpc" id="L107" title="2 of 4 branches missed.">		assert g.edges().intStream().allMatch(e -&gt; flow[e] &lt;= capacity[e] + eps);</span>
 <span class="fc" id="L108">		return eps;</span>
 	}
 
@@ -151,7 +151,7 @@ import com.jgalgo.internal.util.Bitmap;
 <span class="fc" id="L151">					.mapToDouble(e -&gt; capacity[e] - flow[e])</span>
 <span class="fc" id="L152">					.min()</span>
 <span class="fc" id="L153">					.orElse(Double.POSITIVE_INFINITY);</span>
-<span class="pc bnc" id="L154" title="All 2 branches missed.">			assert f &gt; 0;</span>
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
 
 			/* Push flow along the cycle, lowering the overall cost */
 <span class="fc bfc" id="L157" title="All 2 branches covered.">			for (int e : minCycle.edges()) {</span>
@@ -161,7 +161,7 @@ import com.jgalgo.internal.util.Bitmap;
 
 				/* Add/remove edges to the non saturated residual net */
 				/* We use high cost edge instead of actually removing an edge */
-<span class="pc bnc" id="L164" title="All 2 branches missed.">				assert !saturated.get(e);</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">				assert !saturated.get(e);</span>
 <span class="fc bfc" id="L165" title="All 2 branches covered.">				boolean isSaturated = capacity[e] - flow[e] &lt; eps;</span>
 <span class="fc bfc" id="L166" title="All 2 branches covered.">				if (isSaturated) {</span>
 <span class="fc" id="L167">					saturated.set(e);</span>

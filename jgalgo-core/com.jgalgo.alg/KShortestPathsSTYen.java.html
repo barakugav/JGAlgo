@@ -83,7 +83,7 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 <span class="fc" id="L83">		heap.insert(shortestPath.secondDouble(), ObjectIntPair.of(shortestPath.first(), 0));</span>
 <span class="fc" id="L84">		heapSize++;</span>
 
-<span class="pc bpc" id="L86" title="1 of 2 branches missed.">		List&lt;IntList&gt; paths = new ObjectArrayList&lt;&gt;(k &lt;= m ? k : 16);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		List&lt;IntList&gt; paths = new ObjectArrayList&lt;&gt;(k &lt;= m ? k : 16);</span>
 <span class="fc" id="L87">		List&lt;IntList&gt; relevantPaths = new ObjectArrayList&lt;&gt;();</span>
 <span class="fc bfc" id="L88" title="All 2 branches covered.">		while (heap.isNotEmpty()) {</span>
 <span class="fc" id="L89">			DoubleObjReferenceableHeap.Ref&lt;ObjectIntPair&lt;IntList&gt;&gt; min = heap.extractMin();</span>
@@ -95,8 +95,8 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 <span class="fc" id="L95">				break;</span>
 
 <span class="fc" id="L97">			IntList kthPathVertices = IPath.valueOf(g, source, target, kthPath).vertices();</span>
-<span class="pc bnc" id="L98" title="All 2 branches missed.">			assert kthPathVertices.getInt(kthPathVertices.size() - 1) == target;</span>
-<span class="pc bnc" id="L99" title="All 2 branches missed.">			assert relevantPaths.isEmpty();</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">			assert kthPathVertices.getInt(kthPathVertices.size() - 1) == target;</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">			assert relevantPaths.isEmpty();</span>
 <span class="fc bfc" id="L100" title="All 2 branches covered.">			if (kthPathDeviationIdx &lt; 1) {</span>
 <span class="fc" id="L101">				relevantPaths.addAll(paths);</span>
 			} else {
@@ -104,7 +104,7 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 				/* remove vertices that are part of the root path to enforce simple paths */
 <span class="fc bfc" id="L105" title="All 2 branches covered.">				for (int v : kthPathVertices.subList(0, kthPathDeviationIdx - 1)) {</span>
 <span class="fc" id="L106">					boolean modified = verticesMask.set(v);</span>
-<span class="pc bnc" id="L107" title="All 2 branches missed.">					assert modified;</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">					assert modified;</span>
 <span class="fc" id="L108">				}</span>
 
 				/* remove edges that are part of the previous shortest paths */
@@ -139,7 +139,7 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 <span class="fc bfc" id="L139" title="All 2 branches covered.">				if (deviationIdx &gt; 0) {</span>
 <span class="fc" id="L140">					int v = kthPathVertices.getInt(deviationIdx - 1);</span>
 <span class="fc" id="L141">					boolean modified = verticesMask.set(v);</span>
-<span class="pc bnc" id="L142" title="All 2 branches missed.">					assert modified;</span>
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">					assert modified;</span>
 				}
 
 <span class="fc" id="L145">				shortestPath = spFunc.computeShortestPath(spurNode);</span>
@@ -165,7 +165,7 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 <span class="fc" id="L165">		}</span>
 
 <span class="fc" id="L167">		List&lt;IPath&gt; res = paths.stream().map(p -&gt; IPath.valueOf(g, source, target, p)).collect(Collectors.toList());</span>
-<span class="pc bnc" id="L168" title="All 2 branches missed.">		assert res.stream().allMatch(IPath::isSimple);</span>
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">		assert res.stream().allMatch(IPath::isSimple);</span>
 <span class="fc" id="L169">		return res;</span>
 	}
 
@@ -240,16 +240,16 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 		}
 
 		private ObjectDoublePair&lt;IntList&gt; computeShortestPath0(int source) {
-<span class="pc bnc" id="L243" title="All 2 branches missed.">			assert source != target;</span>
-<span class="pc bnc" id="L244" title="All 2 branches missed.">			assert !verticesMask.get(source);</span>
-<span class="pc bnc" id="L245" title="All 2 branches missed.">			assert !verticesMask.get(target);</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">			assert source != target;</span>
+<span class="pc bpc" id="L244" title="1 of 2 branches missed.">			assert !verticesMask.get(source);</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">			assert !verticesMask.get(target);</span>
 
-<span class="pc bnc" id="L247" title="All 2 branches missed.">			assert visitedS.isEmpty();</span>
-<span class="pc bnc" id="L248" title="All 2 branches missed.">			assert visitedT.isEmpty();</span>
-<span class="pc bnc" id="L249" title="All 2 branches missed.">			assert toClearS.isEmpty();</span>
-<span class="pc bnc" id="L250" title="All 2 branches missed.">			assert toClearT.isEmpty();</span>
-<span class="pc bnc" id="L251" title="All 2 branches missed.">			assert Arrays.stream(heapPtrsS).allMatch(Objects::isNull);</span>
-<span class="pc bnc" id="L252" title="All 2 branches missed.">			assert Arrays.stream(heapPtrsT).allMatch(Objects::isNull);</span>
+<span class="pc bpc" id="L247" title="1 of 2 branches missed.">			assert visitedS.isEmpty();</span>
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">			assert visitedT.isEmpty();</span>
+<span class="pc bpc" id="L249" title="1 of 2 branches missed.">			assert toClearS.isEmpty();</span>
+<span class="pc bpc" id="L250" title="1 of 2 branches missed.">			assert toClearT.isEmpty();</span>
+<span class="pc bpc" id="L251" title="1 of 2 branches missed.">			assert Arrays.stream(heapPtrsS).allMatch(Objects::isNull);</span>
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">			assert Arrays.stream(heapPtrsT).allMatch(Objects::isNull);</span>
 
 <span class="fc" id="L254">			int middle = -1;</span>
 <span class="fc" id="L255">			double mu = Double.POSITIVE_INFINITY;</span>
@@ -296,9 +296,9 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 <span class="fc" id="L296">						toClearS.add(v);</span>
 <span class="fc" id="L297">						heapPtrsS[v] = heapS.insert(vDistance, v);</span>
 <span class="fc" id="L298">						backtrackS[v] = e;</span>
-<span class="pc bpc" id="L299" title="1 of 2 branches missed.">					} else if (vDistance &lt; vPtr.key()) {</span>
-<span class="nc" id="L300">						heapS.decreaseKey(vPtr, vDistance);</span>
-<span class="nc" id="L301">						backtrackS[v] = e;</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">					} else if (vDistance &lt; vPtr.key()) {</span>
+<span class="fc" id="L300">						heapS.decreaseKey(vPtr, vDistance);</span>
+<span class="fc" id="L301">						backtrackS[v] = e;</span>
 					}
 <span class="fc" id="L303">				}</span>
 
@@ -325,9 +325,9 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 <span class="fc" id="L325">						toClearT.add(v);</span>
 <span class="fc" id="L326">						heapPtrsT[v] = heapT.insert(vDistance, v);</span>
 <span class="fc" id="L327">						backtrackT[v] = e;</span>
-<span class="pc bpc" id="L328" title="1 of 2 branches missed.">					} else if (vDistance &lt; vPtr.key()) {</span>
-<span class="nc" id="L329">						heapT.decreaseKey(vPtr, vDistance);</span>
-<span class="nc" id="L330">						backtrackT[v] = e;</span>
+<span class="fc bfc" id="L328" title="All 2 branches covered.">					} else if (vDistance &lt; vPtr.key()) {</span>
+<span class="fc" id="L329">						heapT.decreaseKey(vPtr, vDistance);</span>
+<span class="fc" id="L330">						backtrackT[v] = e;</span>
 					}
 <span class="fc" id="L332">				}</span>
 

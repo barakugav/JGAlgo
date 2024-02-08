@@ -54,13 +54,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		/* Query the edges of some vertices */
 		/* The EdgeIter returned by outEdges is an int iterator that yield edges identifiers */
 <span class="fc" id="L56">		Set&lt;Integer&gt; v1Edges = g.outEdges(&quot;Smith&quot;);</span>
-<span class="pc bnc" id="L57" title="All 2 branches missed.">		assert v1Edges.equals(IntSet.of(1, 3, 5));</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">		assert v1Edges.equals(IntSet.of(1, 3, 5));</span>
 
 <span class="fc" id="L59">		Set&lt;Integer&gt; v2Edges = g.outEdges(&quot;Johnson&quot;);</span>
-<span class="pc bnc" id="L60" title="All 2 branches missed.">		assert v2Edges.equals(IntSet.of(1, 2));</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">		assert v2Edges.equals(IntSet.of(1, 2));</span>
 
 <span class="fc" id="L62">		Set&lt;Integer&gt; v3Edges = g.outEdges(&quot;Williams&quot;);</span>
-<span class="pc bnc" id="L63" title="All 2 branches missed.">		assert v3Edges.equals(IntSet.of(2, 3, 6));</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		assert v3Edges.equals(IntSet.of(2, 3, 6));</span>
 
 		/* Print the out-edges of Brown */
 <span class="fc" id="L66">		System.out.println(&quot;The edges of Brown:&quot;);</span>
@@ -72,8 +72,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 			/* If the iterator was created using g.outEdges(u).iterator(), EdgeIter.source() will always be u */
 			/* If the iterator was created using g.inEdges(v).iterator(), EdgeIter.target() will always be v */
-<span class="pc bnc" id="L75" title="All 2 branches missed.">			assert u.equals(&quot;Brown&quot;);</span>
-<span class="pc bnc" id="L76" title="All 2 branches missed.">			assert Set.of(4, 7).contains(e);</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">			assert u.equals(&quot;Brown&quot;);</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">			assert Set.of(4, 7).contains(e);</span>
 <span class="fc" id="L77">			System.out.println(&quot;\t&quot; + e + &quot;=(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);</span>
 <span class="fc" id="L78">		}</span>
 <span class="fc" id="L79">	}</span>

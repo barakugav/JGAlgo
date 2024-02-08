@@ -361,8 +361,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		}
 <span class="fc bfc" id="L362" title="All 4 branches covered.">		if (!directed &amp;&amp; b != c)</span>
 <span class="fc" id="L363">			throw new IllegalArgumentException(&quot;b and c must be equal for undirected graphs&quot;);</span>
-<span class="pc bnc" id="L364" title="All 8 branches missed.">		assert a &gt;= 0 &amp;&amp; b &gt;= 0 &amp;&amp; c &gt;= 0 &amp;&amp; d &gt;= 0;</span>
-<span class="pc bnc" id="L365" title="All 2 branches missed.">		assert Math.abs(a + b + c + d - 1) &lt;= 1e-6;</span>
+<span class="pc bpc" id="L364" title="4 of 8 branches missed.">		assert a &gt;= 0 &amp;&amp; b &gt;= 0 &amp;&amp; c &gt;= 0 &amp;&amp; d &gt;= 0;</span>
+<span class="pc bpc" id="L365" title="1 of 2 branches missed.">		assert Math.abs(a + b + c + d - 1) &lt;= 1e-6;</span>
 <span class="fc" id="L366">		final double p1 = a;</span>
 <span class="fc" id="L367">		final double p2 = a + b;</span>
 <span class="fc" id="L368">		final double p3 = a + b + c;</span>
@@ -383,7 +383,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L383" title="All 2 branches covered.">				} else if (p &lt; p3) {</span>
 <span class="fc" id="L384">					u += 1 &lt;&lt; (s - 1);</span>
 				} else {
-<span class="pc bnc" id="L386" title="All 2 branches missed.">					assert p &lt; p4;</span>
+<span class="pc bpc" id="L386" title="1 of 2 branches missed.">					assert p &lt; p4;</span>
 <span class="fc" id="L387">					u += 1 &lt;&lt; (s - 1);</span>
 <span class="fc" id="L388">					v += 1 &lt;&lt; (s - 1);</span>
 				}

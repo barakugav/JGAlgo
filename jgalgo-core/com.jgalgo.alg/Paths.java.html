@@ -73,7 +73,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L73">				return false;</span>
 <span class="fc" id="L74">			final Object s1 = source(), s2 = o.source(), t1 = target(), t2 = o.target();</span>
 <span class="fc bfc" id="L75" title="All 2 branches covered.">			if (size == 0) {</span>
-<span class="pc bnc" id="L76" title="All 4 branches missed.">				assert s1.equals(t1) &amp;&amp; s2.equals(t2);</span>
+<span class="pc bpc" id="L76" title="2 of 4 branches missed.">				assert s1.equals(t1) &amp;&amp; s2.equals(t2);</span>
 <span class="fc" id="L77">				return s1.equals(s2);</span>
 			}
 <span class="fc bfc" id="L79" title="All 2 branches covered.">			if (g.isDirected()) {</span>
@@ -115,7 +115,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		}
 
 		private static boolean reverseEquals(List&lt;?&gt; es1, List&lt;?&gt; es2) {
-<span class="pc bnc" id="L118" title="All 2 branches missed.">			assert es1.size() == es2.size();</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">			assert es1.size() == es2.size();</span>
 <span class="pc bpc" id="L119" title="1 of 4 branches missed.">			if (es1 instanceof IntList &amp;&amp; es2 instanceof IntList) {</span>
 <span class="fc" id="L120">				IntIterator it1 = ((IntList) es1).iterator();</span>
 <span class="fc" id="L121">				IntListIterator it2 = ((IntList) es2).listIterator(es2.size());</span>
@@ -164,7 +164,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private boolean isSimple, isSimpleValid;
 
 <span class="fc" id="L166">		private IndexPath(IndexGraph g, int source, int target, IntList edges) {</span>
-<span class="pc bnc" id="L167" title="All 2 branches missed.">			assert IPath.isPath(g, source, target, edges);</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">			assert IPath.isPath(g, source, target, edges);</span>
 <span class="fc" id="L168">			this.g = g;</span>
 <span class="fc" id="L169">			this.source = source;</span>
 <span class="fc" id="L170">			this.target = target;</span>
@@ -195,14 +195,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		public IntList vertices() {
 <span class="fc bfc" id="L196" title="All 2 branches covered.">			if (vertices == null) {</span>
 <span class="fc bfc" id="L197" title="All 2 branches covered.">				if (edges.isEmpty()) {</span>
-<span class="pc bnc" id="L198" title="All 2 branches missed.">					assert isCycle();</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">					assert isCycle();</span>
 <span class="fc" id="L199">					vertices = Fastutil.list(source);</span>
 				} else {
 <span class="fc" id="L201">					int[] res = new int[edges().size() + 1];</span>
 <span class="fc" id="L202">					IntIterator vit = IPath.verticesIter(g, source, edges);</span>
 <span class="fc bfc" id="L203" title="All 2 branches covered.">					for (int i = 0; i &lt; res.length; i++)</span>
 <span class="fc" id="L204">						res[i] = vit.nextInt();</span>
-<span class="pc bnc" id="L205" title="All 2 branches missed.">					assert !vit.hasNext();</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">					assert !vit.hasNext();</span>
 <span class="fc" id="L206">					vertices = Fastutil.list(res);</span>
 				}
 			}
@@ -339,7 +339,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 			public int nextInt() {
 <span class="fc" id="L340">				int eNext = it.nextInt();</span>
 <span class="fc bfc" id="L341" title="All 2 branches covered.">				if (e &gt;= 0)</span>
-<span class="pc bnc" id="L342" title="All 2 branches missed.">					assert g.edgeTarget(e) == g.edgeSource(eNext);</span>
+<span class="pc bpc" id="L342" title="1 of 2 branches missed.">					assert g.edgeTarget(e) == g.edgeSource(eNext);</span>
 <span class="fc" id="L343">				return e = eNext;</span>
 			}
 
@@ -367,7 +367,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	static &lt;V, E&gt; Path&lt;V, E&gt; pathFromIndexPath(Graph&lt;V, E&gt; g, IPath indexPath) {
 <span class="fc bfc" id="L368" title="All 2 branches covered.">		if (indexPath == null)</span>
 <span class="fc" id="L369">			return null;</span>
-<span class="pc bnc" id="L370" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L370" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L371" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L372">			return (Path&lt;V, E&gt;) new IntPathFromIndexPath((IntGraph) g, indexPath);</span>
 		} else {

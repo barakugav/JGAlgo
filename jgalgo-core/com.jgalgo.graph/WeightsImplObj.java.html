@@ -112,7 +112,7 @@ class WeightsImplObj {
 		@Override
 		public void expand(int newCapacity) {
 <span class="fc" id="L114">			int oldCapacity = capacity();</span>
-<span class="pc bnc" id="L115" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
 <span class="fc" id="L116">			weights = Arrays.copyOf(weights, newCapacity);</span>
 <span class="fc" id="L117">			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
 <span class="fc" id="L118">		}</span>

@@ -56,7 +56,7 @@ import com.jgalgo.internal.util.IterTools;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;V1, E1, V2, E2&gt; IsomorphismMapping&lt;V1, E1, V2, E2&gt; mappingFromIndexMapping(Graph&lt;V1, E1&gt; g1,
 			Graph&lt;V2, E2&gt; g2, IsomorphismIMapping indexMapping) {
-<span class="pc bpc" id="L59" title="5 of 6 branches missed.">		assert !(g1 instanceof IndexGraph &amp;&amp; g2 instanceof IndexGraph);</span>
+<span class="pc bpc" id="L59" title="2 of 6 branches missed.">		assert !(g1 instanceof IndexGraph &amp;&amp; g2 instanceof IndexGraph);</span>
 <span class="fc bfc" id="L60" title="All 4 branches covered.">		if (g1 instanceof IntGraph &amp;&amp; g2 instanceof IntGraph) {</span>
 <span class="fc" id="L61">			return (IsomorphismMapping&lt;V1, E1, V2, E2&gt;) new IsomorphismTesters.IntMappingFromIndexMapping(indexMapping,</span>
 					(IntGraph) g1, (IntGraph) g2);

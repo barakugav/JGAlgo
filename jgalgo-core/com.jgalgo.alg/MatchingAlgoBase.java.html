@@ -102,7 +102,7 @@ import com.jgalgo.internal.util.Assertions;
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;V, E&gt; Matching&lt;V, E&gt; matchingFromIndexMatching(Graph&lt;V, E&gt; g, IMatching indexResult) {
-<span class="pc bpc" id="L105" title="3 of 4 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L105" title="2 of 4 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L106" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L107">			return (Matching&lt;V, E&gt;) new Matchings.IntMatchingFromIndexMatching((IntGraph) g, indexResult);</span>
 		} else {

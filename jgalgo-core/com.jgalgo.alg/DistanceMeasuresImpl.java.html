@@ -192,7 +192,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; DistanceMeasures&lt;V, E&gt; measuresFromIndexMeasures(Graph&lt;V, E&gt; g, IDistanceMeasures indexMeasures) {
-<span class="pc bnc" id="L195" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L196" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L197">			return (DistanceMeasures&lt;V, E&gt;) new IntMeasuresFromIndexMeasures((IntGraph) g, indexMeasures);</span>
 		} else {

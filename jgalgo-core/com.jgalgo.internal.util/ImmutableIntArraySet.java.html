@@ -43,7 +43,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrays;
 <span class="fc" id="L43">		this.size = to - from;</span>
 <span class="fc" id="L44">		this.containsFunc = containsFunc;</span>
 
-<span class="pc bnc" id="L46" title="All 2 branches missed.">		assert new IntOpenHashSet(this).size() == size : &quot;Duplicate elements in array&quot;;</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">		assert new IntOpenHashSet(this).size() == size : &quot;Duplicate elements in array&quot;;</span>
 <span class="fc" id="L47">	}</span>
 
 	public static IntSet newInstance(int[] arr, IntPredicate containsFunc) {

@@ -43,7 +43,7 @@ import com.jgalgo.graph.Graph;
 <span class="fc bfc" id="L43" title="All 2 branches covered.">		for (String u : g.vertices()) {</span>
 
 			/* No vertex is allowed to have more than one matched edge */
-<span class="pc bnc" id="L46" title="All 2 branches missed.">			assert g.outEdges(u).stream().filter(matching::containsEdge).count() &lt;= 1;</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">			assert g.outEdges(u).stream().filter(matching::containsEdge).count() &lt;= 1;</span>
 <span class="fc" id="L47">		}</span>
 
 <span class="fc" id="L49">		System.out.println(&quot;The maximum matching in the graph has a size of &quot; + matching.edges().size());</span>

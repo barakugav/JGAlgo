@@ -59,7 +59,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc" id="L59">			return Collections.emptyIterator();</span>
 
 <span class="fc bfc" id="L61" title="All 2 branches covered.">		if (n1 == 0) {</span>
-<span class="pc bnc" id="L62" title="All 2 branches missed.">			assert m1 == 0;</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">			assert m1 == 0;</span>
 <span class="fc" id="L63">			return ObjectIterators</span>
 <span class="fc" id="L64">					.singleton(new IsomorphismTesters.IndexMapping(g1, g2, IntArrays.DEFAULT_EMPTY_ARRAY,</span>
 							IntArrays.DEFAULT_EMPTY_ARRAY));
@@ -107,7 +107,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc" id="L107">			this.vertexMatcher = vertexMatcher;</span>
 <span class="fc" id="L108">			this.edgeMatcher = edgeMatcher;</span>
 
-<span class="pc bnc" id="L110" title="All 2 branches missed.">			assert n1 &lt;= n2;</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">			assert n1 &lt;= n2;</span>
 <span class="fc bfc" id="L111" title="All 4 branches covered.">			subGraph = !induced || n1 &lt; n2;</span>
 <span class="fc" id="L112">			inducedSubGraph = induced;</span>
 
@@ -223,10 +223,10 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc" id="L223">			stateT1InSize[stateDepth] = t1InSize;</span>
 <span class="fc" id="L224">			stateT2InSize[stateDepth] = t2InSize;</span>
 
-<span class="pc bnc" id="L226" title="All 2 branches missed.">			assert t1OutSize &lt; n1;</span>
-<span class="pc bnc" id="L227" title="All 2 branches missed.">			assert t2OutSize &lt; n2;</span>
-<span class="pc bnc" id="L228" title="All 2 branches missed.">			assert t1InSize &lt; n1;</span>
-<span class="pc bnc" id="L229" title="All 2 branches missed.">			assert t2InSize &lt; n2;</span>
+<span class="pc bpc" id="L226" title="1 of 2 branches missed.">			assert t1OutSize &lt; n1;</span>
+<span class="pc bpc" id="L227" title="1 of 2 branches missed.">			assert t2OutSize &lt; n2;</span>
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">			assert t1InSize &lt; n1;</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">			assert t2InSize &lt; n2;</span>
 
 			int nextV1;
 			IntIterator nextV2Iter;
@@ -257,7 +257,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc bfc" id="L257" title="All 2 branches covered.">					nextV1 = IterTools.filter(range(n1).iterator(), u1 -&gt; core1[u1] &lt; 0).nextInt();</span>
 <span class="fc bfc" id="L258" title="All 2 branches covered.">					nextV2Iter = IterTools.filter(range(n2).iterator(), u2 -&gt; core2[u2] &lt; 0);</span>
 				}
-<span class="pc bnc" id="L260" title="All 2 branches missed.">				assert nextV2Iter.hasNext();</span>
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">				assert nextV2Iter.hasNext();</span>
 			}
 <span class="fc" id="L262">			stateNextV1[stateDepth] = nextV1;</span>
 <span class="fc" id="L263">			stateNextV2Iter[stateDepth] = nextV2Iter;</span>
@@ -529,8 +529,8 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc" id="L529">			stateT1OutSize[stateDepth] = t1OutSize;</span>
 <span class="fc" id="L530">			stateT2OutSize[stateDepth] = t2OutSize;</span>
 
-<span class="pc bnc" id="L532" title="All 2 branches missed.">			assert t1OutSize &lt; n1;</span>
-<span class="pc bnc" id="L533" title="All 2 branches missed.">			assert t2OutSize &lt; n2;</span>
+<span class="pc bpc" id="L532" title="1 of 2 branches missed.">			assert t1OutSize &lt; n1;</span>
+<span class="pc bpc" id="L533" title="1 of 2 branches missed.">			assert t2OutSize &lt; n2;</span>
 			int nextV1;
 			IntIterator nextV2Iter;
 			/*
@@ -555,7 +555,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc bfc" id="L555" title="All 2 branches covered.">					nextV1 = IterTools.filter(range(n1).iterator(), u1 -&gt; core1[u1] &lt; 0).nextInt();</span>
 <span class="fc bfc" id="L556" title="All 2 branches covered.">					nextV2Iter = IterTools.filter(range(n2).iterator(), u2 -&gt; core2[u2] &lt; 0);</span>
 				}
-<span class="pc bnc" id="L558" title="All 2 branches missed.">				assert nextV2Iter.hasNext();</span>
+<span class="pc bpc" id="L558" title="1 of 2 branches missed.">				assert nextV2Iter.hasNext();</span>
 			}
 <span class="fc" id="L560">			stateNextV1[stateDepth] = nextV1;</span>
 <span class="fc" id="L561">			stateNextV2Iter[stateDepth] = nextV2Iter;</span>

@@ -71,7 +71,7 @@ public interface ShortestPathST {
 	 * @return a default implementation of {@link ShortestPathST}
 	 */
 	static ShortestPathST newInstance() {
-<span class="nc" id="L74">		return builder().build();</span>
+<span class="fc" id="L74">		return builder().build();</span>
 	}
 
 	/**
@@ -83,17 +83,17 @@ public interface ShortestPathST {
 	 * @return a new builder that can build {@link ShortestPathST} objects
 	 */
 	static ShortestPathST.Builder builder() {
-<span class="nc" id="L86">		return () -&gt; {</span>
-<span class="nc" id="L87">			return new ShortestPathST() {</span>
-<span class="nc" id="L88">				ShortestPathST cardinalityStSp = new ShortestPathSTBidirectionalBfs();</span>
-<span class="nc" id="L89">				ShortestPathST weightedStSp = new ShortestPathSTBidirectionalDijkstra();</span>
+<span class="fc" id="L86">		return () -&gt; {</span>
+<span class="fc" id="L87">			return new ShortestPathST() {</span>
+<span class="fc" id="L88">				ShortestPathST cardinalityStSp = new ShortestPathSTBidirectionalBfs();</span>
+<span class="fc" id="L89">				ShortestPathST weightedStSp = new ShortestPathSTBidirectionalDijkstra();</span>
 
 				@Override
 				public &lt;V, E&gt; Path&lt;V, E&gt; computeShortestPath(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source, V target) {
-<span class="nc bnc" id="L93" title="All 2 branches missed.">					if (WeightFunction.isCardinality(w)) {</span>
-<span class="nc" id="L94">						return cardinalityStSp.computeShortestPath(g, null, source, target);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">					if (WeightFunction.isCardinality(w)) {</span>
+<span class="fc" id="L94">						return cardinalityStSp.computeShortestPath(g, null, source, target);</span>
 					} else {
-<span class="nc" id="L96">						return weightedStSp.computeShortestPath(g, w, source, target);</span>
+<span class="fc" id="L96">						return weightedStSp.computeShortestPath(g, w, source, target);</span>
 					}
 				}
 			};

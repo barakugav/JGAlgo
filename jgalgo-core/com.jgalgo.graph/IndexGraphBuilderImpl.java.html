@@ -165,7 +165,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L165">			ensureEdgeCapacity(this.edges.size);</span>
 <span class="fc bfc" id="L166" title="All 2 branches covered.">			for (EdgeIter&lt;Integer, Integer&gt; iter = edges0.iterator(); iter.hasNext();) {</span>
 <span class="fc" id="L167">				Integer e = iter.next();</span>
-<span class="pc bnc" id="L168" title="All 2 branches missed.">				assert e.intValue() == eIdx; /* isSortedRange() */</span>
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">				assert e.intValue() == eIdx; /* isSortedRange() */</span>
 <span class="fc" id="L169">				int source = iter.source().intValue();</span>
 <span class="fc" id="L170">				int target = iter.target().intValue();</span>
 <span class="fc" id="L171">				setEdgeEndpoints(eIdx++, source, target);</span>

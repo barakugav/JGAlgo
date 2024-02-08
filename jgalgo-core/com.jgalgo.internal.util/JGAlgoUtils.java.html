@@ -240,7 +240,7 @@ public class JGAlgoUtils {
 <span class="fc bfc" id="L240" title="All 2 branches covered.">		if (nonNullIndices.size() &lt; arr.length / 8) {</span>
 <span class="fc bfc" id="L241" title="All 2 branches covered.">			for (int v : nonNullIndices)</span>
 <span class="fc" id="L242">				arr[v] = null;</span>
-<span class="pc bnc" id="L243" title="All 2 branches missed.">			assert Arrays.stream(arr).allMatch(Objects::isNull);</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">			assert Arrays.stream(arr).allMatch(Objects::isNull);</span>
 		} else {
 <span class="fc" id="L245">			Arrays.fill(arr, null);</span>
 		}
@@ -252,7 +252,7 @@ public class JGAlgoUtils {
 <span class="fc bfc" id="L252" title="All 2 branches covered.">		if (perBitClear) {</span>
 <span class="fc bfc" id="L253" title="All 2 branches covered.">			for (int idx : setBits)</span>
 <span class="fc" id="L254">				bitmap.clear(idx);</span>
-<span class="pc bnc" id="L255" title="All 2 branches missed.">			assert bitmap.isEmpty();</span>
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">			assert bitmap.isEmpty();</span>
 		} else {
 <span class="fc" id="L257">			bitmap.clear();</span>
 		}

@@ -87,7 +87,7 @@ import java.util.Comparator;
 	@Override
 	public void remove(ObjReferenceableHeap.Ref &lt;K&gt; ref) {
 <span class="fc" id="L89">		Node &lt;K&gt; n = (Node &lt;K&gt;) ref;</span>
-<span class="pc bnc" id="L90" title="All 2 branches missed.">		assert minRoot != null;</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">		assert minRoot != null;</span>
 <span class="fc bfc" id="L91" title="All 2 branches covered.">		if (n != minRoot) {</span>
 <span class="fc" id="L92">			cut(n);</span>
 <span class="fc" id="L93">			addChild(n, minRoot);</span>
@@ -117,8 +117,8 @@ import java.util.Comparator;
 	}
 
 	Node &lt;K&gt; meldDefaultCmp(Node &lt;K&gt; n1, Node &lt;K&gt; n2) {
-<span class="pc bnc" id="L120" title="All 4 branches missed.">		assert n1.prevOrParent == null &amp;&amp; n1.next == null;</span>
-<span class="pc bnc" id="L121" title="All 4 branches missed.">		assert n2.prevOrParent == null &amp;&amp; n2.next == null;</span>
+<span class="pc bpc" id="L120" title="2 of 4 branches missed.">		assert n1.prevOrParent == null &amp;&amp; n1.next == null;</span>
+<span class="pc bpc" id="L121" title="2 of 4 branches missed.">		assert n2.prevOrParent == null &amp;&amp; n2.next == null;</span>
 
 		/* assume n1 has smaller key than n2 */
 <span class="fc bfc" id="L124" title="All 2 branches covered.">		if (JGAlgoUtils.cmpDefault(n1.key, n2.key) &gt; 0) {</span>
@@ -132,8 +132,8 @@ import java.util.Comparator;
 	}
 
 	Node &lt;K&gt; meldCustomCmp(Node &lt;K&gt; n1, Node &lt;K&gt; n2) {
-<span class="pc bnc" id="L135" title="All 4 branches missed.">		assert n1.prevOrParent == null &amp;&amp; n1.next == null;</span>
-<span class="pc bnc" id="L136" title="All 4 branches missed.">		assert n2.prevOrParent == null &amp;&amp; n2.next == null;</span>
+<span class="pc bpc" id="L135" title="2 of 4 branches missed.">		assert n1.prevOrParent == null &amp;&amp; n1.next == null;</span>
+<span class="pc bpc" id="L136" title="2 of 4 branches missed.">		assert n2.prevOrParent == null &amp;&amp; n2.next == null;</span>
 
 		/* assume n1 has smaller key than n2 */
 <span class="fc bfc" id="L139" title="All 2 branches covered.">		if (c.compare(n1.key, n2.key) &gt; 0) {</span>

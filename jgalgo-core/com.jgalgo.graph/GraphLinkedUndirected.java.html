@@ -85,7 +85,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements GraphDefaults
 
 	GraphLinkedUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L87">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L88" title="All 2 branches missed.">		assert !builder.isDirected();</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">		assert !builder.isDirected();</span>
 
 <span class="fc" id="L90">		edgesHeadContainer = newVerticesIntContainer(-1, newArr -&gt; edgesHead = newArr);</span>
 <span class="fc" id="L91">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
@@ -107,7 +107,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements GraphDefaults
 
 	@Override
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
-<span class="pc bnc" id="L110" title="All 2 branches missed.">		assert edgesNum[removedIdx] == 0;</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">		assert edgesNum[removedIdx] == 0;</span>
 
 <span class="fc bfc" id="L112" title="All 2 branches covered.">		for (int p = edgesHead[swappedIdx], next; p &gt;= 0; p = next) {</span>
 <span class="fc" id="L113">			next = next(p, swappedIdx);</span>
@@ -293,7 +293,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements GraphDefaults
 <span class="fc bfc" id="L293" title="All 2 branches covered.">		if (w == source) {</span>
 <span class="fc" id="L294">			return nextu[e];</span>
 		} else {
-<span class="pc bnc" id="L296" title="All 2 branches missed.">			assert w == target;</span>
+<span class="pc bpc" id="L296" title="1 of 2 branches missed.">			assert w == target;</span>
 <span class="fc" id="L297">			return nextv[e];</span>
 		}
 	}
@@ -303,7 +303,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements GraphDefaults
 <span class="fc bfc" id="L303" title="All 2 branches covered.">		if (w == source) {</span>
 <span class="fc" id="L304">			nextu[e] = n;</span>
 		} else {
-<span class="pc bnc" id="L306" title="All 2 branches missed.">			assert w == target;</span>
+<span class="pc bpc" id="L306" title="1 of 2 branches missed.">			assert w == target;</span>
 <span class="fc" id="L307">			nextv[e] = n;</span>
 		}
 <span class="fc" id="L309">		return n;</span>
@@ -314,7 +314,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements GraphDefaults
 <span class="fc bfc" id="L314" title="All 2 branches covered.">		if (w == source) {</span>
 <span class="fc" id="L315">			return prevu[e];</span>
 		} else {
-<span class="pc bnc" id="L317" title="All 2 branches missed.">			assert w == target;</span>
+<span class="pc bpc" id="L317" title="1 of 2 branches missed.">			assert w == target;</span>
 <span class="fc" id="L318">			return prevv[e];</span>
 		}
 	}
@@ -324,7 +324,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements GraphDefaults
 <span class="fc bfc" id="L324" title="All 2 branches covered.">		if (w == source) {</span>
 <span class="fc" id="L325">			prevu[e] = n;</span>
 		} else {
-<span class="pc bnc" id="L327" title="All 2 branches missed.">			assert w == target;</span>
+<span class="pc bpc" id="L327" title="1 of 2 branches missed.">			assert w == target;</span>
 <span class="fc" id="L328">			prevv[e] = n;</span>
 		}
 <span class="fc" id="L330">		return n;</span>

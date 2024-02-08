@@ -181,14 +181,14 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 <span class="fc" id="L181">					int[] sortedEdges = new int[crossNumTotal];</span>
 <span class="fc" id="L182">					int[][] crossEdgesOffset = crossEdgesNum;</span>
 <span class="fc bfc" id="L183" title="All 2 branches covered.">					if (g.isDirected()) {</span>
-<span class="pc bnc" id="L184" title="All 2 branches missed.">						assert crossNumTotal == m;</span>
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">						assert crossNumTotal == m;</span>
 <span class="fc bfc" id="L185" title="All 2 branches covered.">						for (int e : range(m)) {</span>
 <span class="fc" id="L186">							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
 <span class="fc" id="L187">							sortedEdges[crossEdgesOffset[b1][b2]++] = e;</span>
 <span class="fc" id="L188">						}</span>
 
 					} else {
-<span class="pc bnc" id="L191" title="All 4 branches missed.">						assert crossNumTotal &gt;= m &amp;&amp; crossNumTotal &lt;= 2 * m;</span>
+<span class="pc bpc" id="L191" title="2 of 4 branches missed.">						assert crossNumTotal &gt;= m &amp;&amp; crossNumTotal &lt;= 2 * m;</span>
 <span class="fc bfc" id="L192" title="All 2 branches covered.">						for (int e : range(m)) {</span>
 <span class="fc" id="L193">							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
 <span class="fc" id="L194">							sortedEdges[crossEdgesOffset[b1][b2]++] = e;</span>
@@ -270,7 +270,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 		@Override
 		public IntGraph graph() {
-<span class="nc" id="L273">			return g;</span>
+<span class="fc" id="L273">			return g;</span>
 		}
 
 		@Override
@@ -280,7 +280,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 	}
 
 	static IntGraph blocksGraph(IndexGraph g, IVertexPartition partition, boolean parallelEdges, boolean selfEdges) {
-<span class="pc bnc" id="L283" title="All 2 branches missed.">		assert g == partition.graph();</span>
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">		assert g == partition.graph();</span>
 <span class="fc" id="L284">		final int numberOfBlocks = partition.numberOfBlocks();</span>
 <span class="fc" id="L285">		final boolean directed = g.isDirected();</span>
 <span class="fc" id="L286">		IntGraphBuilder gb = IntGraphBuilder.newInstance(directed);</span>
@@ -328,7 +328,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 <span class="fc" id="L329">		IntPartitionFromIndexPartition(IntGraph g, IVertexPartition indexPartition) {</span>
 <span class="fc" id="L330">			this.g = Objects.requireNonNull(g);</span>
-<span class="pc bnc" id="L331" title="All 2 branches missed.">			assert g.indexGraph() == indexPartition.graph();</span>
+<span class="pc bpc" id="L331" title="1 of 2 branches missed.">			assert g.indexGraph() == indexPartition.graph();</span>
 <span class="fc" id="L332">			this.indexPartition = Objects.requireNonNull(indexPartition);</span>
 <span class="fc" id="L333">			this.viMap = g.indexGraphVerticesMap();</span>
 <span class="fc" id="L334">			this.eiMap = g.indexGraphEdgesMap();</span>
@@ -393,7 +393,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 <span class="fc" id="L394">		ObjPartitionFromIndexPartition(Graph&lt;V, E&gt; g, IVertexPartition indexPartition) {</span>
 <span class="fc" id="L395">			this.g = Objects.requireNonNull(g);</span>
-<span class="pc bnc" id="L396" title="All 2 branches missed.">			assert g.indexGraph() == indexPartition.graph();</span>
+<span class="pc bpc" id="L396" title="1 of 2 branches missed.">			assert g.indexGraph() == indexPartition.graph();</span>
 <span class="fc" id="L397">			this.indexPartition = Objects.requireNonNull(indexPartition);</span>
 <span class="fc" id="L398">			this.viMap = g.indexGraphVerticesMap();</span>
 <span class="fc" id="L399">			this.eiMap = g.indexGraphEdgesMap();</span>
@@ -451,7 +451,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; VertexPartition&lt;V, E&gt; partitionFromIndexPartition(Graph&lt;V, E&gt; g, IVertexPartition indexPartition) {
-<span class="pc bnc" id="L454" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L454" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L455" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L456">			return (VertexPartition&lt;V, E&gt;) new IntPartitionFromIndexPartition((IntGraph) g, indexPartition);</span>
 		} else {

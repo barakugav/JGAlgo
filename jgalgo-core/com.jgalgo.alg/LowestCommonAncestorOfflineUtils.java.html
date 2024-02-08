@@ -237,7 +237,7 @@ import it.unimi.dsi.fastutil.longs.LongList;
 
 	static &lt;V, E&gt; LowestCommonAncestorOffline.IQueries indexQueriesFromQueries(Graph&lt;V, E&gt; g,
 			LowestCommonAncestorOffline.Queries&lt;V, E&gt; queries) {
-<span class="pc bnc" id="L240" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L241" title="All 4 branches covered.">		if (g instanceof IntGraph &amp;&amp; queries instanceof LowestCommonAncestorOffline.IQueries) {</span>
 <span class="fc" id="L242">			return new IndexQueriesFromIntQueries((IntGraph) g, (LowestCommonAncestorOffline.IQueries) queries);</span>
 
@@ -319,7 +319,7 @@ import it.unimi.dsi.fastutil.longs.LongList;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;V, E&gt; LowestCommonAncestorOffline.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
 			LowestCommonAncestorOffline.IResult indexResult) {
-<span class="pc bnc" id="L322" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="pc bpc" id="L322" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
 <span class="fc bfc" id="L323" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L324">			return (LowestCommonAncestorOffline.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
 		} else {

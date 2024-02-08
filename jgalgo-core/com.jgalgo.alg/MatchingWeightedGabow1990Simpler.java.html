@@ -69,7 +69,7 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 <span class="fc" id="L69">				EdgeEvent blossomEvent = blossomEvents.findMin();</span>
 <span class="fc" id="L70">				int u = g.edgeSource(blossomEvent.e);</span>
 <span class="fc" id="L71">				int v = g.edgeTarget(blossomEvent.e);</span>
-<span class="pc bnc" id="L72" title="All 4 branches missed.">				assert isEven(u) &amp;&amp; isEven(v);</span>
+<span class="pc bpc" id="L72" title="2 of 4 branches missed.">				assert isEven(u) &amp;&amp; isEven(v);</span>
 <span class="fc" id="L73">				Blossom U = evens.findBlossom(u), V = evens.findBlossom(v);</span>
 <span class="fc bfc" id="L74" title="All 2 branches covered.">				if (U != V)</span>
 <span class="fc" id="L75">					return blossomEvent.slack / 2;</span>
@@ -97,19 +97,19 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 <span class="fc" id="L97">							Integer.valueOf(growEvents.findMin().key().e));</span>
 
 			// Grow step
-<span class="pc bnc" id="L100" title="All 2 branches missed.">			assert delta == growEventsKey(growEvents.findMin().key());</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">			assert delta == growEventsKey(growEvents.findMin().key());</span>
 <span class="fc" id="L101">			int e = growEvents.extractMin().key().e;</span>
 <span class="fc" id="L102">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 
 <span class="fc" id="L104">			Blossom U = evens.findBlossom(u), V = odds.findBlossom(v);</span>
-<span class="pc bnc" id="L105" title="All 4 branches missed.">			assert !V.isEven &amp;&amp; !isInTree(V);</span>
+<span class="pc bpc" id="L105" title="2 of 4 branches missed.">			assert !V.isEven &amp;&amp; !isInTree(V);</span>
 
 			// Add odd vertex
 <span class="fc" id="L108">			V.root = U.root;</span>
 <span class="fc" id="L109">			V.treeParentEdge = edgeVal.get(e).twin;</span>
 <span class="fc" id="L110">			V.isEven = false;</span>
 <span class="fc" id="L111">			V.delta1 = delta;</span>
-<span class="pc bnc" id="L112" title="All 2 branches missed.">			assert V.growRef.key().e == e;</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">			assert V.growRef.key().e == e;</span>
 <span class="fc" id="L113">			V.growRef = null;</span>
 <span class="fc bfc" id="L114" title="All 2 branches covered.">			if (!V.isSingleton())</span>
 <span class="fc" id="L115">				V.expandRef = expandEvents.insert(V.z0 / 2 + V.delta1, V);</span>
@@ -132,7 +132,7 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 		void blossomStep(int e) {
 <span class="fc" id="L133">			debug.println(&quot;blossomStep&quot;);</span>
 <span class="fc" id="L134">			int eu = g.edgeSource(e), ev = g.edgeTarget(e);</span>
-<span class="pc bnc" id="L135" title="All 4 branches missed.">			assert isEven(eu) &amp;&amp; isEven(ev);</span>
+<span class="pc bpc" id="L135" title="2 of 4 branches missed.">			assert isEven(eu) &amp;&amp; isEven(ev);</span>
 <span class="fc" id="L136">			Blossom U = evens.findBlossom(eu), V = evens.findBlossom(ev);</span>
 <span class="pc bpc" id="L137" title="1 of 2 branches missed.">			if (U == V)</span>
 <span class="nc" id="L138">				return; // Edge in same blossom, ignore</span>
@@ -157,7 +157,7 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 
 				for (;;) {
 					// handle even sub blossom
-<span class="pc bnc" id="L160" title="All 2 branches missed.">					assert b.isEven;</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">					assert b.isEven;</span>
 <span class="fc bfc" id="L161" title="All 2 branches covered.">					if (!b.isSingleton())</span>
 <span class="fc" id="L162">						b.z0 = dualVal(b);</span>
 <span class="fc" id="L163">					b.parent = newb;</span>
@@ -168,11 +168,11 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 <span class="fc" id="L168">						break;</span>
 <span class="fc" id="L169">					prev = b;</span>
 <span class="fc" id="L170">					toPrevEdge = edgeVal.get(matched[b.base]).twin;</span>
-<span class="pc bnc" id="L171" title="All 2 branches missed.">					assert matched[b.base] == b.treeParentEdge;</span>
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">					assert matched[b.base] == b.treeParentEdge;</span>
 <span class="fc" id="L172">					b = topBlossom(g.edgeSource(toPrevEdge));</span>
 
 					// handle odd vertex
-<span class="pc bnc" id="L175" title="All 2 branches missed.">					assert !b.isEven;</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">					assert !b.isEven;</span>
 <span class="fc" id="L176">					b.deltaOdd += delta - b.delta1;</span>
 <span class="fc bfc" id="L177" title="All 2 branches covered.">					if (!b.isSingleton())</span>
 <span class="fc" id="L178">						b.z0 = dualVal(b);</span>

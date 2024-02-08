@@ -85,7 +85,7 @@ import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 	@Override
 	public void remove(DoubleIntReferenceableHeap.Ref  ref) {
 <span class="fc" id="L87">		Node  n = (Node ) ref;</span>
-<span class="pc bnc" id="L88" title="All 2 branches missed.">		assert minRoot != null;</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">		assert minRoot != null;</span>
 <span class="fc bfc" id="L89" title="All 2 branches covered.">		if (n != minRoot) {</span>
 <span class="fc" id="L90">			cut(n);</span>
 <span class="fc" id="L91">			addChild(n, minRoot);</span>
@@ -115,8 +115,8 @@ import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 	}
 
 	Node  meldDefaultCmp(Node  n1, Node  n2) {
-<span class="pc bnc" id="L118" title="All 4 branches missed.">		assert n1.prevOrParent == null &amp;&amp; n1.next == null;</span>
-<span class="pc bnc" id="L119" title="All 4 branches missed.">		assert n2.prevOrParent == null &amp;&amp; n2.next == null;</span>
+<span class="pc bpc" id="L118" title="2 of 4 branches missed.">		assert n1.prevOrParent == null &amp;&amp; n1.next == null;</span>
+<span class="pc bpc" id="L119" title="2 of 4 branches missed.">		assert n2.prevOrParent == null &amp;&amp; n2.next == null;</span>
 
 		/* assume n1 has smaller key than n2 */
 <span class="fc bfc" id="L122" title="All 2 branches covered.">		if (n1.key &gt; n2.key) {</span>
@@ -130,8 +130,8 @@ import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 	}
 
 	Node  meldCustomCmp(Node  n1, Node  n2) {
-<span class="pc bnc" id="L133" title="All 4 branches missed.">		assert n1.prevOrParent == null &amp;&amp; n1.next == null;</span>
-<span class="pc bnc" id="L134" title="All 4 branches missed.">		assert n2.prevOrParent == null &amp;&amp; n2.next == null;</span>
+<span class="pc bpc" id="L133" title="2 of 4 branches missed.">		assert n1.prevOrParent == null &amp;&amp; n1.next == null;</span>
+<span class="pc bpc" id="L134" title="2 of 4 branches missed.">		assert n2.prevOrParent == null &amp;&amp; n2.next == null;</span>
 
 		/* assume n1 has smaller key than n2 */
 <span class="fc bfc" id="L137" title="All 2 branches covered.">		if (c.compare(n1.key, n2.key) &gt; 0) {</span>
