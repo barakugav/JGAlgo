@@ -24,6 +24,7 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.internal.util.IntAdapters;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
@@ -141,6 +142,11 @@ public class IndexIdMaps {
 		public void remove() {
 			indexIt.remove();
 		}
+
+		@Override
+		public int skip(int n) {
+			return indexIt.skip(n);
+		}
 	}
 
 	private static class IndexToIntIdIterator implements IntIterator {
@@ -175,6 +181,11 @@ public class IndexIdMaps {
 		public void remove() {
 			indexIt.remove();
 		}
+
+		@Override
+		public int skip(int n) {
+			return indexIt.skip(n);
+		}
 	}
 
 	private static class IdToIndexIterator<K> implements IntIterator {
@@ -201,6 +212,11 @@ public class IndexIdMaps {
 		public void remove() {
 			idIt.remove();
 		}
+
+		@Override
+		public int skip(int n) {
+			return JGAlgoUtils.objIterSkip(idIt, n);
+		}
 	}
 
 	private static class IntIdToIndexIterator implements IntIterator {
@@ -226,6 +242,11 @@ public class IndexIdMaps {
 		@Override
 		public void remove() {
 			idIt.remove();
+		}
+
+		@Override
+		public int skip(int n) {
+			return idIt.skip(n);
 		}
 	}
 
@@ -258,6 +279,11 @@ public class IndexIdMaps {
 		public int previousIndex() {
 			return idIt().previousIndex();
 		}
+
+		@Override
+		public int back(int n) {
+			return JGAlgoUtils.objIterBack(idIt(), n);
+		}
 	}
 
 	private static class IntIdToIndexListIterator extends IntIdToIndexIterator implements IntListIterator {
@@ -288,6 +314,11 @@ public class IndexIdMaps {
 		@Override
 		public int previousIndex() {
 			return idIt().previousIndex();
+		}
+
+		@Override
+		public int back(int n) {
+			return idIt().back(n);
 		}
 	}
 

@@ -16,6 +16,8 @@
 package com.jgalgo.graph;
 
 import static com.jgalgo.internal.util.Range.range;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,9 +30,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.function.IntFunction;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.gen.GnpGraphGenerator;
+import com.jgalgo.internal.util.IterTools;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -41,6 +45,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class IndexIdMapsTest extends TestBase {
 
@@ -53,10 +58,29 @@ public class IndexIdMapsTest extends TestBase {
 			IntSet indicesSet = (IntSet) randElementsSubSet(g.indexGraph(), edgesOrVertices);
 			IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
 
-			Set<Integer> iteratedIds = new HashSet<>();
+			List<Integer> iteratedIds = new ArrayList<>();
 			for (Iterator<Integer> it = IndexIdMaps.indexToIdIterator(indicesSet.iterator(), map); it.hasNext();)
 				iteratedIds.add(it.next());
-			assertEquals(indicesSet.intStream().mapToObj(map::indexToId).collect(Collectors.toSet()), iteratedIds);
+			assertEquals(
+					new ObjectArrayList<>(
+							IterTools.map(indicesSet.iterator(), (IntFunction<Integer>) (map::indexToId))),
+					iteratedIds);
+
+			for (Iterator<Integer> it1 = IndexIdMaps.indexToIdIterator(indicesSet.iterator(), map),
+					it2 = IterTools.map(indicesSet.iterator(), (IntFunction<Integer>) (map::indexToId));;) {
+				assertEqualsBool(it1.hasNext(), it2.hasNext());
+				if (!it1.hasNext())
+					break;
+				if (rand.nextBoolean()) {
+					assertEquals(it1.next(), it2.next());
+				} else {
+					int skip = rand.nextInt(5);
+					int skipped1 = it1 instanceof IntIterator ? ((IntIterator) it1).skip(skip)
+							: JGAlgoUtils.objIterSkip(it1, skip);
+					int skipped2 = JGAlgoUtils.objIterSkip(it2, skip);
+					assertEquals(skipped1, skipped2);
+				}
+			}
 
 			Set<Integer> removedIds = new HashSet<>();
 			Set<Integer> nonRemovedIds = new HashSet<>();
@@ -85,10 +109,26 @@ public class IndexIdMapsTest extends TestBase {
 			Set<Integer> idsSet = randElementsSubSet(g, edgesOrVertices);
 			IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
 
-			IntSet iteratedIndices = new IntOpenHashSet();
+			IntList iteratedIndices = new IntArrayList();
 			for (IntIterator it = IndexIdMaps.idToIndexIterator(idsSet.iterator(), map); it.hasNext();)
 				iteratedIndices.add(it.nextInt());
-			assertEquals(idsSet.stream().map(map::idToIndex).collect(Collectors.toSet()), iteratedIndices);
+			assertEquals(new IntArrayList(IterTools.map(idsSet.iterator(), map::idToIndex)), iteratedIndices);
+
+			for (Iterator<Integer> it1 = IndexIdMaps.idToIndexIterator(idsSet.iterator(), map),
+					it2 = IterTools.map(idsSet.iterator(), map::indexToId);;) {
+				assertEqualsBool(it1.hasNext(), it2.hasNext());
+				if (!it1.hasNext())
+					break;
+				if (rand.nextBoolean()) {
+					assertEquals(it1.next(), it2.next());
+				} else {
+					int skip = rand.nextInt(5);
+					int skipped1 = it1 instanceof IntIterator ? ((IntIterator) it1).skip(skip)
+							: JGAlgoUtils.objIterSkip(it1, skip);
+					int skipped2 = JGAlgoUtils.objIterSkip(it2, skip);
+					assertEquals(skipped1, skipped2);
+				}
+			}
 
 			IntSet removedIndices = new IntOpenHashSet();
 			IntSet nonRemovedIndices = new IntOpenHashSet();
@@ -176,8 +216,7 @@ public class IndexIdMapsTest extends TestBase {
 				iteratedEdgesIds.add(next);
 			}
 
-			assertEquals(indexEdgesSet.intStream().mapToObj(eiMap::indexToId).collect(Collectors.toSet()),
-					iteratedEdgesIds);
+			assertEquals(indexEdgesSet.intStream().mapToObj(eiMap::indexToId).collect(toSet()), iteratedEdgesIds);
 			assertEquals(g.outEdges(source), iteratedEdgesIds);
 
 			Set<Integer> removedIds = new HashSet<>();
@@ -234,7 +273,7 @@ public class IndexIdMapsTest extends TestBase {
 			List<Integer> idList = IndexIdMaps.indexToIdList(indexList, map);
 
 			/* indexOf() */
-			List<Integer> idList2 = indexList.intStream().mapToObj(map::indexToId).collect(Collectors.toList());
+			List<Integer> idList2 = indexList.intStream().mapToObj(map::indexToId).collect(toList());
 			for (int i : range(indexList.size())) {
 				int idx = indexList.getInt(i);
 				Integer id = map.indexToId(idx);
@@ -254,15 +293,14 @@ public class IndexIdMapsTest extends TestBase {
 
 			/* remove(index) */
 			int sizeBeforeRemove = indexList.size();
-			List<Integer> expected = indexList.intStream().mapToObj(map::indexToId).collect(Collectors.toList());
+			List<Integer> expected = indexList.intStream().mapToObj(map::indexToId).collect(toList());
 			int removeIdx = rand.nextInt(indexList.size());
 			Integer removedIdExpected = expected.remove(removeIdx);
 			Integer removedIdActual = idList.remove(removeIdx);
 			assertEquals(removedIdExpected, removedIdActual);
 			assertEquals(sizeBeforeRemove - 1, indexList.size());
 			assertEquals(sizeBeforeRemove - 1, idList.size());
-			assertEquals(indexList.intStream().mapToObj(map::indexToId).collect(Collectors.toList()),
-					new ArrayList<>(idList));
+			assertEquals(indexList.intStream().mapToObj(map::indexToId).collect(toList()), new ArrayList<>(idList));
 		});
 	}
 
@@ -298,14 +336,14 @@ public class IndexIdMapsTest extends TestBase {
 			Set<Integer> iteratedIds = new HashSet<>();
 			for (Iterator<Integer> it = idCollection.iterator(); it.hasNext();)
 				iteratedIds.add(it.next());
-			assertEquals(indicesSet.intStream().mapToObj(map::indexToId).collect(Collectors.toSet()), iteratedIds);
+			assertEquals(indicesSet.intStream().mapToObj(map::indexToId).collect(toSet()), iteratedIds);
 
 			/* remove() */
 			int sizeBeforeRemove = indexCollection.size();
 			idCollection.remove(idCollection.iterator().next());
 			assertEquals(sizeBeforeRemove - 1, indexCollection.size());
 			assertEquals(sizeBeforeRemove - 1, idCollection.size());
-			assertEquals(indexCollection.intStream().mapToObj(map::indexToId).collect(Collectors.toSet()),
+			assertEquals(indexCollection.intStream().mapToObj(map::indexToId).collect(toSet()),
 					new HashSet<>(idCollection));
 
 			/* clear() */
@@ -363,7 +401,7 @@ public class IndexIdMapsTest extends TestBase {
 			}
 
 			/* indexOf() */
-			List<Integer> indexList2 = idList.stream().map(map::idToIndex).collect(Collectors.toList());
+			List<Integer> indexList2 = idList.stream().map(map::idToIndex).collect(toList());
 			for (int i : range(idList.size())) {
 				Integer id = idList.get(i);
 				int idx = map.idToIndex(id);
@@ -383,14 +421,14 @@ public class IndexIdMapsTest extends TestBase {
 
 			/* remove(element) */
 			int sizeBeforeRemove = idList.size();
-			IntList expected = new IntArrayList(idList.stream().map(map::idToIndex).collect(Collectors.toList()));
+			IntList expected = new IntArrayList(idList.stream().map(map::idToIndex).collect(toList()));
 			int removeElement = expected.getInt(expected.indexOf(expected.getInt(rand.nextInt(idList.size()))));
 			boolean expectedModified = expected.rem(removeElement);
 			boolean actualModified = indexList.rem(removeElement);
 			assertEqualsBool(expectedModified, actualModified);
 			assertEquals(sizeBeforeRemove - 1, idList.size());
 			assertEquals(sizeBeforeRemove - 1, indexList.size());
-			assertEquals(idList.stream().map(map::idToIndex).collect(Collectors.toList()), new ArrayList<>(indexList));
+			assertEquals(idList.stream().map(map::idToIndex).collect(toList()), new ArrayList<>(indexList));
 			for (int i = 0; i < 10; i++)
 				assertFalse(indexList.rem(nonExistingInt(allIndices, rand)));
 			for (int i = 0; i < 10; i++) {
@@ -402,14 +440,14 @@ public class IndexIdMapsTest extends TestBase {
 
 			/* remove(index) */
 			sizeBeforeRemove = idList.size();
-			expected = new IntArrayList(idList.stream().map(map::idToIndex).collect(Collectors.toList()));
+			expected = new IntArrayList(idList.stream().map(map::idToIndex).collect(toList()));
 			int removeIdx = rand.nextInt(idList.size());
 			int removedIdxExpected = expected.removeInt(removeIdx);
 			int removedIdxActual = indexList.removeInt(removeIdx);
 			assertEquals(removedIdxExpected, removedIdxActual);
 			assertEquals(sizeBeforeRemove - 1, idList.size());
 			assertEquals(sizeBeforeRemove - 1, indexList.size());
-			assertEquals(idList.stream().map(map::indexToId).collect(Collectors.toList()), new ArrayList<>(indexList));
+			assertEquals(idList.stream().map(map::indexToId).collect(toList()), new ArrayList<>(indexList));
 
 			/* listIterator() */
 			IntListIterator it = indexList.listIterator();
@@ -424,6 +462,36 @@ public class IndexIdMapsTest extends TestBase {
 				assertEquals(i, it.previousIndex());
 				int element = it.previousInt();
 				assertEquals(indexList.getInt(i), element);
+			}
+			/* listIterator() skip() and back() */
+			int i = rand.nextInt(indexList.size() + 1);
+			it = indexList.listIterator(i);
+			for (int repeat = 0; repeat < 30; repeat++) {
+				assertEqualsBool(i < indexList.size(), it.hasNext());
+				assertEqualsBool(i > 0, it.hasPrevious());
+				if (rand.nextBoolean()) {
+					if (!it.hasNext())
+						continue;
+					if (rand.nextBoolean()) {
+						assertEquals(indexList.getInt(i++), it.nextInt());
+					} else {
+						int skip = rand.nextInt(5);
+						int skipped = it.skip(skip);
+						assertEquals(Math.min(skip, indexList.size() - i), skipped);
+						i += skipped;
+					}
+				} else {
+					if (!it.hasPrevious())
+						continue;
+					if (rand.nextBoolean()) {
+						assertEquals(indexList.getInt(--i), it.previousInt());
+					} else {
+						int skip = rand.nextInt(5);
+						int skipped = it.back(skip);
+						assertEquals(Math.min(skip, i), skipped);
+						i -= skipped;
+					}
+				}
 			}
 		});
 
@@ -468,15 +536,14 @@ public class IndexIdMapsTest extends TestBase {
 			IntSet iteratedIndices = new IntOpenHashSet();
 			for (IntIterator it = indexCollection.iterator(); it.hasNext();)
 				iteratedIndices.add(it.nextInt());
-			assertEquals(idSet.stream().map(map::idToIndex).collect(Collectors.toSet()), iteratedIndices);
+			assertEquals(idSet.stream().map(map::idToIndex).collect(toSet()), iteratedIndices);
 
 			/* remove() */
 			int sizeBeforeRemove = indexCollection.size();
 			indexCollection.rem(indexCollection.iterator().nextInt());
 			assertEquals(sizeBeforeRemove - 1, indexCollection.size());
 			assertEquals(sizeBeforeRemove - 1, idCollection.size());
-			assertEquals(idCollection.stream().map(map::idToIndex).collect(Collectors.toSet()),
-					new HashSet<>(indexCollection));
+			assertEquals(idCollection.stream().map(map::idToIndex).collect(toSet()), new HashSet<>(indexCollection));
 
 			/* clear() */
 			indexCollection.clear();
@@ -680,6 +747,7 @@ public class IndexIdMapsTest extends TestBase {
 			};
 		} else {
 			return new IndexIdMap<>() {
+
 				@Override
 				public K indexToId(int index) {
 					return map.indexToId(index);
