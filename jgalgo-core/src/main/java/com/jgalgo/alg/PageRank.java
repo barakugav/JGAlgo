@@ -100,6 +100,7 @@ class PageRank {
 
 				for (int v : range(n))
 					if (!g.outEdges(v).isEmpty())
+						// TODO what do we do when weightSum[v] is zero
 						transferredScores[v] = scores[v] / weightSum[v];
 
 				double maxChange = 0;
