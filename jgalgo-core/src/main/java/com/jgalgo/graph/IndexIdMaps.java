@@ -179,8 +179,8 @@ public class IndexIdMaps {
 
 	private static class IdToIndexIterator<K> implements IntIterator {
 
-		private final Iterator<K> idIt;
-		private final IndexIdMap<K> map;
+		final Iterator<K> idIt;
+		final IndexIdMap<K> map;
 
 		IdToIndexIterator(Iterator<K> idIt, IndexIdMap<K> map) {
 			this.idIt = Objects.requireNonNull(idIt);
@@ -205,8 +205,8 @@ public class IndexIdMaps {
 
 	private static class IntIdToIndexIterator implements IntIterator {
 
-		private final IntIterator idIt;
-		private final IndexIntIdMap map;
+		final IntIterator idIt;
+		final IndexIntIdMap map;
 
 		IntIdToIndexIterator(IntIterator idIt, IndexIntIdMap map) {
 			this.idIt = Objects.requireNonNull(idIt);
@@ -229,85 +229,65 @@ public class IndexIdMaps {
 		}
 	}
 
-	private static class IdToIndexListIterator<K> implements IntListIterator {
-
-		private final ListIterator<K> idIt;
-		private final IndexIdMap<K> map;
+	private static class IdToIndexListIterator<K> extends IdToIndexIterator<K> implements IntListIterator {
 
 		IdToIndexListIterator(ListIterator<K> idIt, IndexIdMap<K> map) {
-			this.idIt = Objects.requireNonNull(idIt);
-			this.map = Objects.requireNonNull(map);
+			super(idIt, map);
 		}
 
-		@Override
-		public boolean hasNext() {
-			return idIt.hasNext();
-		}
-
-		@Override
-		public int nextInt() {
-			return map.idToIndex(idIt.next());
+		ListIterator<K> idIt() {
+			return (ListIterator<K>) idIt;
 		}
 
 		@Override
 		public boolean hasPrevious() {
-			return idIt.hasPrevious();
+			return idIt().hasPrevious();
 		}
 
 		@Override
 		public int previousInt() {
-			return map.idToIndex(idIt.previous());
+			return map.idToIndex(idIt().previous());
 		}
 
 		@Override
 		public int nextIndex() {
-			return idIt.nextIndex();
+			return idIt().nextIndex();
 		}
 
 		@Override
 		public int previousIndex() {
-			return idIt.previousIndex();
+			return idIt().previousIndex();
 		}
 	}
 
-	private static class IntIdToIndexListIterator implements IntListIterator {
-
-		private final IntListIterator idIt;
-		private final IndexIntIdMap map;
+	private static class IntIdToIndexListIterator extends IntIdToIndexIterator implements IntListIterator {
 
 		IntIdToIndexListIterator(IntListIterator idIt, IndexIntIdMap map) {
-			this.idIt = Objects.requireNonNull(idIt);
-			this.map = Objects.requireNonNull(map);
+			super(idIt, map);
 		}
 
-		@Override
-		public boolean hasNext() {
-			return idIt.hasNext();
-		}
-
-		@Override
-		public int nextInt() {
-			return map.idToIndex(idIt.nextInt());
+		IntListIterator idIt() {
+			return (IntListIterator) idIt;
 		}
 
 		@Override
 		public boolean hasPrevious() {
-			return idIt.hasPrevious();
+			return idIt().hasPrevious();
 		}
 
 		@Override
 		public int previousInt() {
-			return map.idToIndex(idIt.previousInt());
+			return map.idToIndex(idIt().previousInt());
 		}
 
 		@Override
 		public int nextIndex() {
-			return idIt.nextIndex();
+			return idIt().nextIndex();
 		}
 
 		@Override
 		public int previousIndex() {
-			return idIt.previousIndex();
+			return idIt().previousIndex();
 		}
 	}
 
