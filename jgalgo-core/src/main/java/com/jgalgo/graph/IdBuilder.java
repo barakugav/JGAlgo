@@ -33,7 +33,8 @@ import java.util.function.Supplier;
  * This interface is shared for both vertices and edges, but an instance of this interface is used only for one of them
  * at a time.
  *
- * @author Barak Ugav
+ * @param  <K> the type of identifiers (vertices/edges)
+ * @author     Barak Ugav
  */
 @FunctionalInterface
 public interface IdBuilder<K> {
