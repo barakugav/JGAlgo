@@ -92,7 +92,7 @@ def format_source_files(filenames):
 
 
 def generate_sourcefile(input_filename, output_filename, constants, functions):
-    logging.info("Generating %s from %s", output_filename, input_filename)
+    logging.info("Generating %s", os.path.relpath(output_filename, TOP_DIR))
 
     def apply_function(text, func_name, func):
         begin = 0
