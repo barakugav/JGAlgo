@@ -27,6 +27,11 @@ package com.jgalgo.graph;
  */
 public abstract class AbstractGraph<V, E> implements Graph<V, E> {
 
+	/**
+	 * Create a new abstract graph.
+	 */
+	public AbstractGraph() {}
+
 	@Override
 	public boolean equals(Object other) {
 		return other instanceof Graph && Graphs.isEquals(this, (Graph<?, ?>) other);
