@@ -110,8 +110,10 @@ import it.unimi.dsi.fastutil.shorts.ShortUnaryOperator;
  * The GEXF format support both self edges and parallel edges. The format documentation can be found
  * <a href= "https://gexf.net/">here</a>.
  *
- * @see    GexfGraphWriter
- * @author Barak Ugav
+ * @see        GexfGraphWriter
+ * @param  <V> the vertices type
+ * @param  <E> the edges type
+ * @author     Barak Ugav
  */
 public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E> {
 

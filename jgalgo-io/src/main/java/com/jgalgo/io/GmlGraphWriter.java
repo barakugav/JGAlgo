@@ -110,7 +110,9 @@ import it.unimi.dsi.fastutil.Pair;
  * <p>
  * The format was presented in a paper 'GML: A portable Graph File Format' by Michael Himsolt.
  *
- * @author Barak Ugav
+ * @param  <V> the vertices type
+ * @param  <E> the edges type
+ * @author     Barak Ugav
  */
 public class GmlGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V, E> {
 

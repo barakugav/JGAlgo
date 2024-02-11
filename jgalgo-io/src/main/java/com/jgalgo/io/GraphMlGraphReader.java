@@ -63,8 +63,10 @@ import com.jgalgo.graph.WeightsObj;
  * <p>
  * The GraphML format support both self edges and parallel edges.
  *
- * @see    GraphMlGraphWriter
- * @author Barak Ugav
+ * @see        GraphMlGraphWriter
+ * @param  <V> the vertices type
+ * @param  <E> the edges type
+ * @author     Barak Ugav
  */
 public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E> {
 
