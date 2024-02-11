@@ -71,9 +71,11 @@ import com.jgalgo.graph.WeightFunctionInt;
  * }
  * }</pre>
  *
- * @see    MaximumFlow
- * @see    MinimumCostFlow
- * @author Barak Ugav
+ * @see        MaximumFlow
+ * @see        MinimumCostFlow
+ * @param  <V> the vertices type
+ * @param  <E> the edges type
+ * @author     Barak Ugav
  */
 public interface Flow<V, E> {
 
