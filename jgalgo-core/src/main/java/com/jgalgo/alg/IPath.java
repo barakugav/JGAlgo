@@ -267,6 +267,23 @@ public interface IPath extends Path<Integer, Integer> {
 				}
 				return u;
 			}
+
+			@Override
+			public int skip(final int n) {
+				if (n < 1 || !directed)
+					return IntIterator.super.skip(n);
+
+				int skipped = eit.skip(n - 1);
+				if (!eit.hasNext()) {
+					if (v >= 0) {
+						skipped++;
+						v = -1;
+					}
+					return skipped;
+				}
+				v = ig.edgeTarget(eit.nextInt());
+				return n;
+			}
 		};
 
 		if (g instanceof IndexGraph) {

@@ -360,6 +360,12 @@ class Paths {
 				return g.edgeTarget(e);
 			}
 
+			@Override
+			public int skip(final int n) {
+				int skipped = it.skip(n);
+				e = -1;
+				return skipped;
+			}
 		}
 	}
 

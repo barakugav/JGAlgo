@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,15 +38,18 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IdBuilderInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
+import com.jgalgo.internal.util.Fastutil;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import com.jgalgo.internal.util.Fastutil;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -55,9 +59,9 @@ public class PathTest extends TestBase {
 	@SuppressWarnings("boxing")
 	@Test
 	public void vertices() {
-		foreachBoolConfig(intGraph -> {
+		foreachBoolConfig((intGraph, directed) -> {
 			GraphFactory<Integer, Integer> factory =
-					intGraph ? IntGraphFactory.undirected() : GraphFactory.undirected();
+					intGraph ? IntGraphFactory.newInstance(directed) : GraphFactory.newInstance(directed);
 			Graph<Integer, Integer> g = factory
 					.setVertexBuilder(IdBuilderInt.defaultBuilder())
 					.setEdgeBuilder(IdBuilderInt.defaultBuilder())
@@ -74,19 +78,50 @@ public class PathTest extends TestBase {
 
 			assertEquals(IntList.of(v1, v2, v3, v4, v1),
 					Path.valueOf(g, v1, v1, IntList.of(e1, e2, e3, e4)).vertices());
-			assertEquals(IntList.of(v1, v2, v4, v3, v2),
-					Path.valueOf(g, v1, v2, IntList.of(e1, e5, e3, e2)).vertices());
-			assertEquals(IntList.of(v1, v2, v4, v2), Path.valueOf(g, v1, v2, IntList.of(e1, e5, e5)).vertices());
-			assertEquals(IntList.of(v1, v2, v4, v3), Path.valueOf(g, v1, v3, IntList.of(e1, e5, e3)).vertices());
+			assertEquals(IntList.of(v1, v2, v4, v1, v2),
+					Path.valueOf(g, v1, v2, IntList.of(e1, e5, e4, e1)).vertices());
+			if (!directed) {
+				assertEquals(IntList.of(v1, v2, v4, v2), Path.valueOf(g, v1, v2, IntList.of(e1, e5, e5)).vertices());
+				assertEquals(IntList.of(v1, v2, v4, v3), Path.valueOf(g, v1, v3, IntList.of(e1, e5, e3)).vertices());
+			}
 
 			assertEquals(IntList.of(v1, v2, v3, v4, v1),
 					new ObjectArrayList<>(Path.verticesIter(g, v1, IntList.of(e1, e2, e3, e4))));
-			assertEquals(IntList.of(v1, v2, v4, v3, v2),
-					new ObjectArrayList<>(Path.verticesIter(g, v1, IntList.of(e1, e5, e3, e2))));
-			assertEquals(IntList.of(v1, v2, v4, v2),
-					new ObjectArrayList<>(Path.verticesIter(g, v1, IntList.of(e1, e5, e5))));
-			assertEquals(IntList.of(v1, v2, v4, v3),
-					new ObjectArrayList<>(Path.verticesIter(g, v1, IntList.of(e1, e5, e3))));
+			assertEquals(IntList.of(v1, v2, v4, v1, v2),
+					new ObjectArrayList<>(Path.verticesIter(g, v1, IntList.of(e1, e5, e4, e1))));
+			if (!directed) {
+				assertEquals(IntList.of(v1, v2, v4, v2),
+						new ObjectArrayList<>(Path.verticesIter(g, v1, IntList.of(e1, e5, e5))));
+				assertEquals(IntList.of(v1, v2, v4, v3),
+						new ObjectArrayList<>(Path.verticesIter(g, v1, IntList.of(e1, e5, e3))));
+			}
+
+			Iterator<Integer> vIter1 = Path.verticesIter(g, v1, IntList.of(e1, e2, e3, e4));
+			assertEquals(0, vIter1 instanceof IntIterator ? ((IntIterator) vIter1).skip(0)
+					: JGAlgoUtils.objIterSkip(vIter1, 0));
+			assertTrue(vIter1.hasNext());
+			assertEquals(v1, vIter1.next());
+			assertEquals(2, vIter1 instanceof IntIterator ? ((IntIterator) vIter1).skip(2)
+					: JGAlgoUtils.objIterSkip(vIter1, 2));
+			assertEquals(IntList.of(v4, v1), new ObjectArrayList<>(vIter1));
+
+			Iterator<Integer> vIter2 = Path.verticesIter(g, v1, IntList.of(e1, e2, e3, e4));
+			assertEquals(4, vIter2 instanceof IntIterator ? ((IntIterator) vIter2).skip(4)
+					: JGAlgoUtils.objIterSkip(vIter2, 4));
+			assertTrue(vIter2.hasNext());
+			assertEquals(v1, vIter2.next());
+
+			Iterator<Integer> vIter3 = Path.verticesIter(g, v1, IntList.of(e1, e2, e3, e4));
+			assertEquals(5, vIter3 instanceof IntIterator ? ((IntIterator) vIter3).skip(5)
+					: JGAlgoUtils.objIterSkip(vIter3, 5));
+			assertFalse(vIter3.hasNext());
+
+			Iterator<Integer> vIter4 = Path.verticesIter(g, v1, IntList.of(e1, e2, e3, e4));
+			assertEquals(5, vIter3 instanceof IntIterator ? ((IntIterator) vIter4).skip(26)
+					: JGAlgoUtils.objIterSkip(vIter4, 26));
+			assertFalse(vIter4.hasNext());
+			assertEquals(0, vIter3 instanceof IntIterator ? ((IntIterator) vIter4).skip(26)
+					: JGAlgoUtils.objIterSkip(vIter4, 26));
 		});
 	}
 
@@ -154,13 +189,35 @@ public class PathTest extends TestBase {
 					int e = it.next();
 					int u = it.source();
 					int v = it.target();
-					int expectedE = edges.getInt(idx);
-					int expectedU = verticesFull.getInt(idx);
-					int expectedV = verticesFull.getInt(idx + 1);
-					assertEquals(expectedE, e);
-					assertEquals(expectedU, u);
-					assertEquals(expectedV, v);
+					assertEquals(edges.getInt(idx), e);
+					assertEquals(verticesFull.getInt(idx), u);
+					assertEquals(verticesFull.getInt(idx + 1), v);
 					assertEquals(peek, e);
+				}
+
+				/* test skip() */
+				idx = 0;
+				for (EdgeIter<Integer, Integer> it = path.edgeIter();;) {
+					assertEqualsBool(idx < edges.size(), it.hasNext());
+					if (!it.hasNext())
+						break;
+					if (rand.nextBoolean()) {
+						int e = it.next();
+						int u = it.source();
+						int v = it.target();
+						assertEquals(edges.getInt(idx), e);
+						assertEquals(verticesFull.getInt(idx), u);
+						assertEquals(verticesFull.getInt(idx + 1), v);
+						idx++;
+
+					} else {
+						int skip = rand.nextInt(5);
+						int expectedSkipped = Math.min(skip, edges.size() - idx);
+						int skipped = it instanceof IEdgeIter ? ((IEdgeIter) it).skip(skip)
+								: JGAlgoUtils.objIterSkip(it, skip);
+						assertEquals(expectedSkipped, skipped);
+						idx += skipped;
+					}
 				}
 			}
 		});
