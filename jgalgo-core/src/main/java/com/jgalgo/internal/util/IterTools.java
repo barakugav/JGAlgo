@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 
 public class IterTools {
 
@@ -141,7 +142,7 @@ public class IterTools {
 
 	}
 
-	private static class IterMapObjObj<A, B> implements Iterator<B> {
+	private static class IterMapObjObj<A, B> implements ObjectIterator<B> {
 		private final Iterator<A> it;
 		private final Function<A, B> map;
 
@@ -159,13 +160,18 @@ public class IterTools {
 		public B next() {
 			return map.apply(it.next());
 		}
+
+		@Override
+		public int skip(final int n) {
+			return JGAlgoUtils.objIterSkip(it, n);
+		}
 	}
 
 	public static <A, B> Iterator<B> map(Iterator<A> it, Function<A, B> map) {
 		return new IterMapObjObj<>(it, map);
 	}
 
-	private static class IterMapIntObj<B> implements Iterator<B> {
+	private static class IterMapIntObj<B> implements ObjectIterator<B> {
 		private final IntIterator it;
 		private final IntFunction<B> map;
 
@@ -182,6 +188,11 @@ public class IterTools {
 		@Override
 		public B next() {
 			return map.apply(it.nextInt());
+		}
+
+		@Override
+		public int skip(final int n) {
+			return it.skip(n);
 		}
 	}
 
@@ -206,6 +217,11 @@ public class IterTools {
 		@Override
 		public int nextInt() {
 			return map.applyAsInt(it.nextInt());
+		}
+
+		@Override
+		public int skip(final int n) {
+			return it.skip(n);
 		}
 	}
 
