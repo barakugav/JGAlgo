@@ -441,40 +441,56 @@ import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 <span class="fc bfc" id="L441" title="All 2 branches covered.">			if (bestWeight == Double.POSITIVE_INFINITY)</span>
 <span class="fc" id="L442">				return null;</span>
 <span class="pc bpc" id="L443" title="1 of 2 branches missed.">			assert bestVertex &gt;= 0;</span>
-<span class="fc bfc" id="L444" title="All 2 branches covered.">			if (bestEdge &lt; 0)</span>
-<span class="fc bfc" id="L445" title="All 2 branches covered.">				while (sBacktrack[bestVertex] == tBacktrack[bestVertex])</span>
-<span class="fc" id="L446">					bestVertex = g.edgeEndpoint(sBacktrack[bestVertex], bestVertex);</span>
-<span class="fc" id="L447">			IntArrayList path = new IntArrayList();</span>
+
+			/*
+			 * imagine we have the following graph: (s,t),(s,u),(u,t),(u,v), namely a triangle of s,t,u with additional
+			 * vertex v connected to u. If the edge (u,v) has a weight of 0, we can choose either of u or v as the
+			 * bestVertex when searching for a replacement path for (s,t). However, [s,u,v,u,t] is not a simple path.
+			 * The paper avoid these kind of paths by scanning the vertices in a DFS order, and the first vertex with
+			 * the best weight will always yield a simple path (the u vertex in the example graph). DFS is a bit
+			 * overkill, instead we use an arbitrary order, but if the backtracking edge of the vertex in both shortest
+			 * path tree is the same, we choose the other endpoint of the backtracking edge, which have a weight of
+			 * zero, and it removes the two duplications of the edge from the path. We perform this operation
+			 * repeatedly.
+			 */
+<span class="fc bfc" id="L456" title="All 2 branches covered.">			if (bestEdge &lt; 0) {</span>
+<span class="fc bfc" id="L457" title="All 2 branches covered.">				while (sBacktrack[bestVertex] == tBacktrack[bestVertex]) {</span>
+<span class="pc bpc" id="L458" title="1 of 2 branches missed.">					assert w.weight(sBacktrack[bestVertex]) == 0;</span>
+<span class="fc" id="L459">					bestVertex = g.edgeEndpoint(sBacktrack[bestVertex], bestVertex);</span>
+				}
+			}
+
+<span class="fc" id="L463">			IntArrayList path = new IntArrayList();</span>
 
 			/* Add edges from source to bestVertex */
-<span class="fc" id="L450">			for (int v = bestVertex;;) {</span>
-<span class="fc" id="L451">				int e = sBacktrack[v];</span>
-<span class="fc bfc" id="L452" title="All 2 branches covered.">				if (e &lt; 0)</span>
-<span class="fc" id="L453">					break;</span>
-<span class="fc" id="L454">				path.add(e);</span>
-<span class="fc" id="L455">				v = g.edgeEndpoint(e, v);</span>
-<span class="fc" id="L456">			}</span>
-<span class="fc" id="L457">			IntArrays.reverse(path.elements(), 0, path.size());</span>
+<span class="fc" id="L466">			for (int v = bestVertex;;) {</span>
+<span class="fc" id="L467">				int e = sBacktrack[v];</span>
+<span class="fc bfc" id="L468" title="All 2 branches covered.">				if (e &lt; 0)</span>
+<span class="fc" id="L469">					break;</span>
+<span class="fc" id="L470">				path.add(e);</span>
+<span class="fc" id="L471">				v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L472">			}</span>
+<span class="fc" id="L473">			IntArrays.reverse(path.elements(), 0, path.size());</span>
 
 			/* Add the connecting edge that is not included in both shortest path trees */
-<span class="fc" id="L460">			int v = bestVertex;</span>
-<span class="fc bfc" id="L461" title="All 2 branches covered.">			if (bestEdge &gt;= 0) {</span>
-<span class="fc" id="L462">				path.add(bestEdge);</span>
-<span class="fc" id="L463">				v = g.edgeEndpoint(bestEdge, v);</span>
+<span class="fc" id="L476">			int v = bestVertex;</span>
+<span class="fc bfc" id="L477" title="All 2 branches covered.">			if (bestEdge &gt;= 0) {</span>
+<span class="fc" id="L478">				path.add(bestEdge);</span>
+<span class="fc" id="L479">				v = g.edgeEndpoint(bestEdge, v);</span>
 			}
 
 			/* Add edges from bestVertex to target */
 			for (;;) {
-<span class="fc" id="L468">				int e = tBacktrack[v];</span>
-<span class="fc bfc" id="L469" title="All 2 branches covered.">				if (e &lt; 0)</span>
-<span class="fc" id="L470">					break;</span>
-<span class="fc" id="L471">				path.add(e);</span>
-<span class="fc" id="L472">				v = g.edgeEndpoint(e, v);</span>
-<span class="fc" id="L473">			}</span>
+<span class="fc" id="L484">				int e = tBacktrack[v];</span>
+<span class="fc bfc" id="L485" title="All 2 branches covered.">				if (e &lt; 0)</span>
+<span class="fc" id="L486">					break;</span>
+<span class="fc" id="L487">				path.add(e);</span>
+<span class="fc" id="L488">				v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L489">			}</span>
 
-<span class="pc bpc" id="L475" title="1 of 2 branches missed.">			assert new IntOpenHashSet(IPath.verticesIter(g, source, path)).size() == path.size()</span>
+<span class="pc bpc" id="L491" title="1 of 2 branches missed.">			assert new IntOpenHashSet(IPath.verticesIter(g, source, path)).size() == path.size()</span>
 					+ 1 : &quot;path is not simple&quot;;
-<span class="fc" id="L477">			return ObjectDoublePair.of(path, bestWeight);</span>
+<span class="fc" id="L493">			return ObjectDoublePair.of(path, bestWeight);</span>
 		}
 	}
 }

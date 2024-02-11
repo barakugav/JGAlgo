@@ -24,6 +24,7 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.internal.util.IntAdapters;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
@@ -55,14 +56,14 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K&gt; Iterator&lt;K&gt; indexToIdIterator(IntIterator indexIter, IndexIdMap&lt;K&gt; map) {
-<span class="fc bfc" id="L58" title="All 2 branches covered.">		if (map instanceof IndexIntIdMap)</span>
-<span class="fc" id="L59">			return (Iterator&lt;K&gt;) indexToIdIterator(indexIter, (IndexIntIdMap) map);</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">		if (indexIter instanceof IdToIndexIterator) {</span>
-<span class="fc" id="L61">			IdToIndexIterator&lt;K&gt; indexIter0 = (IdToIndexIterator&lt;K&gt;) indexIter;</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">			if (indexIter0.map == map)</span>
-<span class="fc" id="L63">				return indexIter0.idIt;</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		if (map instanceof IndexIntIdMap)</span>
+<span class="fc" id="L60">			return (Iterator&lt;K&gt;) indexToIdIterator(indexIter, (IndexIntIdMap) map);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		if (indexIter instanceof IdToIndexIterator) {</span>
+<span class="fc" id="L62">			IdToIndexIterator&lt;K&gt; indexIter0 = (IdToIndexIterator&lt;K&gt;) indexIter;</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">			if (indexIter0.map == map)</span>
+<span class="fc" id="L64">				return indexIter0.idIt;</span>
 		}
-<span class="fc" id="L65">		return new IndexToIdIterator&lt;&gt;(indexIter, map);</span>
+<span class="fc" id="L66">		return new IndexToIdIterator&lt;&gt;(indexIter, map);</span>
 	}
 
 	/**
@@ -74,12 +75,12 @@ public class IndexIdMaps {
 	 *                   index-iterator
 	 */
 	public static IntIterator indexToIdIterator(IntIterator indexIter, IndexIntIdMap map) {
-<span class="fc bfc" id="L77" title="All 2 branches covered.">		if (indexIter instanceof IntIdToIndexIterator) {</span>
-<span class="fc" id="L78">			IntIdToIndexIterator indexIter0 = (IntIdToIndexIterator) indexIter;</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">			if (indexIter0.map == map)</span>
-<span class="fc" id="L80">				return indexIter0.idIt;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		if (indexIter instanceof IntIdToIndexIterator) {</span>
+<span class="fc" id="L79">			IntIdToIndexIterator indexIter0 = (IntIdToIndexIterator) indexIter;</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			if (indexIter0.map == map)</span>
+<span class="fc" id="L81">				return indexIter0.idIt;</span>
 		}
-<span class="fc" id="L82">		return new IndexToIntIdIterator(indexIter, map);</span>
+<span class="fc" id="L83">		return new IndexToIntIdIterator(indexIter, map);</span>
 	}
 
 	/**
@@ -92,20 +93,20 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K&gt; IntIterator idToIndexIterator(Iterator&lt;K&gt; idIter, IndexIdMap&lt;K&gt; map) {
-<span class="fc bfc" id="L95" title="All 2 branches covered.">		if (map instanceof IndexIntIdMap) {</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">			if (idIter instanceof IndexToIntIdIterator) {</span>
-<span class="fc" id="L97">				IndexToIntIdIterator idIter0 = (IndexToIntIdIterator) idIter;</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">				if (idIter0.map == map)</span>
-<span class="fc" id="L99">					return idIter0.indexIt;</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (map instanceof IndexIntIdMap) {</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">			if (idIter instanceof IndexToIntIdIterator) {</span>
+<span class="fc" id="L98">				IndexToIntIdIterator idIter0 = (IndexToIntIdIterator) idIter;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">				if (idIter0.map == map)</span>
+<span class="fc" id="L100">					return idIter0.indexIt;</span>
 			}
-<span class="fc" id="L101">			return new IntIdToIndexIterator(IntAdapters.asIntIterator((Iterator&lt;Integer&gt;) idIter), (IndexIntIdMap) map);</span>
+<span class="fc" id="L102">			return new IntIdToIndexIterator(IntAdapters.asIntIterator((Iterator&lt;Integer&gt;) idIter), (IndexIntIdMap) map);</span>
 		} else {
-<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (idIter instanceof IndexToIdIterator) {</span>
-<span class="fc" id="L104">				IndexToIdIterator&lt;K&gt; idIter0 = (IndexToIdIterator&lt;K&gt;) idIter;</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">				if (idIter0.map == map)</span>
-<span class="fc" id="L106">					return idIter0.indexIt;</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (idIter instanceof IndexToIdIterator) {</span>
+<span class="fc" id="L105">				IndexToIdIterator&lt;K&gt; idIter0 = (IndexToIdIterator&lt;K&gt;) idIter;</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">				if (idIter0.map == map)</span>
+<span class="fc" id="L107">					return idIter0.indexIt;</span>
 			}
-<span class="fc" id="L108">			return new IdToIndexIterator&lt;&gt;(idIter, map);</span>
+<span class="fc" id="L109">			return new IdToIndexIterator&lt;&gt;(idIter, map);</span>
 		}
 	}
 
@@ -114,33 +115,38 @@ public class IndexIdMaps {
 		private final IntIterator indexIt;
 		private final IndexIdMap&lt;K&gt; map;
 
-<span class="fc" id="L117">		IndexToIdIterator(IntIterator idxIt, IndexIdMap&lt;K&gt; map) {</span>
-<span class="fc" id="L118">			this.indexIt = Objects.requireNonNull(idxIt);</span>
-<span class="fc" id="L119">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L120">		}</span>
+<span class="fc" id="L118">		IndexToIdIterator(IntIterator idxIt, IndexIdMap&lt;K&gt; map) {</span>
+<span class="fc" id="L119">			this.indexIt = Objects.requireNonNull(idxIt);</span>
+<span class="fc" id="L120">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L121">		}</span>
 
 		IntIterator indexIt() {
-<span class="fc" id="L123">			return indexIt;</span>
+<span class="fc" id="L124">			return indexIt;</span>
 		}
 
 		IndexIdMap&lt;K&gt; map() {
-<span class="fc" id="L127">			return map;</span>
+<span class="fc" id="L128">			return map;</span>
 		}
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L132">			return indexIt.hasNext();</span>
+<span class="fc" id="L133">			return indexIt.hasNext();</span>
 		}
 
 		@Override
 		public K next() {
-<span class="fc" id="L137">			return map.indexToId(indexIt.nextInt());</span>
+<span class="fc" id="L138">			return map.indexToId(indexIt.nextInt());</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="fc" id="L142">			indexIt.remove();</span>
-<span class="fc" id="L143">		}</span>
+<span class="fc" id="L143">			indexIt.remove();</span>
+<span class="fc" id="L144">		}</span>
+
+		@Override
+		public int skip(int n) {
+<span class="fc" id="L148">			return indexIt.skip(n);</span>
+		}
 	}
 
 	private static class IndexToIntIdIterator implements IntIterator {
@@ -148,166 +154,171 @@ public class IndexIdMaps {
 		private final IntIterator indexIt;
 		private final IndexIntIdMap map;
 
-<span class="fc" id="L151">		IndexToIntIdIterator(IntIterator idxIt, IndexIntIdMap map) {</span>
-<span class="fc" id="L152">			this.indexIt = Objects.requireNonNull(idxIt);</span>
-<span class="fc" id="L153">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L154">		}</span>
+<span class="fc" id="L157">		IndexToIntIdIterator(IntIterator idxIt, IndexIntIdMap map) {</span>
+<span class="fc" id="L158">			this.indexIt = Objects.requireNonNull(idxIt);</span>
+<span class="fc" id="L159">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L160">		}</span>
 
 		IntIterator indexIt() {
-<span class="fc" id="L157">			return indexIt;</span>
+<span class="fc" id="L163">			return indexIt;</span>
 		}
 
 		IndexIntIdMap map() {
-<span class="fc" id="L161">			return map;</span>
+<span class="fc" id="L167">			return map;</span>
 		}
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L166">			return indexIt.hasNext();</span>
+<span class="fc" id="L172">			return indexIt.hasNext();</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L171">			return map.indexToIdInt(indexIt.nextInt());</span>
+<span class="fc" id="L177">			return map.indexToIdInt(indexIt.nextInt());</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="fc" id="L176">			indexIt.remove();</span>
-<span class="fc" id="L177">		}</span>
+<span class="fc" id="L182">			indexIt.remove();</span>
+<span class="fc" id="L183">		}</span>
+
+		@Override
+		public int skip(int n) {
+<span class="fc" id="L187">			return indexIt.skip(n);</span>
+		}
 	}
 
 	private static class IdToIndexIterator&lt;K&gt; implements IntIterator {
 
-		private final Iterator&lt;K&gt; idIt;
-		private final IndexIdMap&lt;K&gt; map;
+		final Iterator&lt;K&gt; idIt;
+		final IndexIdMap&lt;K&gt; map;
 
-<span class="fc" id="L185">		IdToIndexIterator(Iterator&lt;K&gt; idIt, IndexIdMap&lt;K&gt; map) {</span>
-<span class="fc" id="L186">			this.idIt = Objects.requireNonNull(idIt);</span>
-<span class="fc" id="L187">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L188">		}</span>
+<span class="fc" id="L196">		IdToIndexIterator(Iterator&lt;K&gt; idIt, IndexIdMap&lt;K&gt; map) {</span>
+<span class="fc" id="L197">			this.idIt = Objects.requireNonNull(idIt);</span>
+<span class="fc" id="L198">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L199">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L192">			return idIt.hasNext();</span>
+<span class="fc" id="L203">			return idIt.hasNext();</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L197">			return map.idToIndex(idIt.next());</span>
+<span class="fc" id="L208">			return map.idToIndex(idIt.next());</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="fc" id="L202">			idIt.remove();</span>
-<span class="fc" id="L203">		}</span>
+<span class="fc" id="L213">			idIt.remove();</span>
+<span class="fc" id="L214">		}</span>
+
+		@Override
+		public int skip(int n) {
+<span class="fc" id="L218">			return JGAlgoUtils.objIterSkip(idIt, n);</span>
+		}
 	}
 
 	private static class IntIdToIndexIterator implements IntIterator {
 
-		private final IntIterator idIt;
-		private final IndexIntIdMap map;
+		final IntIterator idIt;
+		final IndexIntIdMap map;
 
-<span class="fc" id="L211">		IntIdToIndexIterator(IntIterator idIt, IndexIntIdMap map) {</span>
-<span class="fc" id="L212">			this.idIt = Objects.requireNonNull(idIt);</span>
-<span class="fc" id="L213">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L214">		}</span>
+<span class="fc" id="L227">		IntIdToIndexIterator(IntIterator idIt, IndexIntIdMap map) {</span>
+<span class="fc" id="L228">			this.idIt = Objects.requireNonNull(idIt);</span>
+<span class="fc" id="L229">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L230">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L218">			return idIt.hasNext();</span>
+<span class="fc" id="L234">			return idIt.hasNext();</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L223">			return map.idToIndex(idIt.nextInt());</span>
+<span class="fc" id="L239">			return map.idToIndex(idIt.nextInt());</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="fc" id="L228">			idIt.remove();</span>
-<span class="fc" id="L229">		}</span>
+<span class="fc" id="L244">			idIt.remove();</span>
+<span class="fc" id="L245">		}</span>
+
+		@Override
+		public int skip(int n) {
+<span class="fc" id="L249">			return idIt.skip(n);</span>
+		}
 	}
 
-	private static class IdToIndexListIterator&lt;K&gt; implements IntListIterator {
+	private static class IdToIndexListIterator&lt;K&gt; extends IdToIndexIterator&lt;K&gt; implements IntListIterator {
 
-		private final ListIterator&lt;K&gt; idIt;
-		private final IndexIdMap&lt;K&gt; map;
+		IdToIndexListIterator(ListIterator&lt;K&gt; idIt, IndexIdMap&lt;K&gt; map) {
+<span class="fc" id="L256">			super(idIt, map);</span>
+<span class="fc" id="L257">		}</span>
 
-<span class="fc" id="L237">		IdToIndexListIterator(ListIterator&lt;K&gt; idIt, IndexIdMap&lt;K&gt; map) {</span>
-<span class="fc" id="L238">			this.idIt = Objects.requireNonNull(idIt);</span>
-<span class="fc" id="L239">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L240">		}</span>
-
-		@Override
-		public boolean hasNext() {
-<span class="fc" id="L244">			return idIt.hasNext();</span>
-		}
-
-		@Override
-		public int nextInt() {
-<span class="fc" id="L249">			return map.idToIndex(idIt.next());</span>
+		ListIterator&lt;K&gt; idIt() {
+<span class="fc" id="L260">			return (ListIterator&lt;K&gt;) idIt;</span>
 		}
 
 		@Override
 		public boolean hasPrevious() {
-<span class="fc" id="L254">			return idIt.hasPrevious();</span>
+<span class="fc" id="L265">			return idIt().hasPrevious();</span>
 		}
 
 		@Override
 		public int previousInt() {
-<span class="fc" id="L259">			return map.idToIndex(idIt.previous());</span>
+<span class="fc" id="L270">			return map.idToIndex(idIt().previous());</span>
 		}
 
 		@Override
 		public int nextIndex() {
-<span class="fc" id="L264">			return idIt.nextIndex();</span>
+<span class="fc" id="L275">			return idIt().nextIndex();</span>
 		}
 
 		@Override
 		public int previousIndex() {
-<span class="fc" id="L269">			return idIt.previousIndex();</span>
+<span class="fc" id="L280">			return idIt().previousIndex();</span>
+		}
+
+		@Override
+		public int back(int n) {
+<span class="fc" id="L285">			return JGAlgoUtils.objIterBack(idIt(), n);</span>
 		}
 	}
 
-	private static class IntIdToIndexListIterator implements IntListIterator {
+	private static class IntIdToIndexListIterator extends IntIdToIndexIterator implements IntListIterator {
 
-		private final IntListIterator idIt;
-		private final IndexIntIdMap map;
+		IntIdToIndexListIterator(IntListIterator idIt, IndexIntIdMap map) {
+<span class="fc" id="L292">			super(idIt, map);</span>
+<span class="fc" id="L293">		}</span>
 
-<span class="fc" id="L278">		IntIdToIndexListIterator(IntListIterator idIt, IndexIntIdMap map) {</span>
-<span class="fc" id="L279">			this.idIt = Objects.requireNonNull(idIt);</span>
-<span class="fc" id="L280">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L281">		}</span>
-
-		@Override
-		public boolean hasNext() {
-<span class="fc" id="L285">			return idIt.hasNext();</span>
-		}
-
-		@Override
-		public int nextInt() {
-<span class="fc" id="L290">			return map.idToIndex(idIt.nextInt());</span>
+		IntListIterator idIt() {
+<span class="fc" id="L296">			return (IntListIterator) idIt;</span>
 		}
 
 		@Override
 		public boolean hasPrevious() {
-<span class="fc" id="L295">			return idIt.hasPrevious();</span>
+<span class="fc" id="L301">			return idIt().hasPrevious();</span>
 		}
 
 		@Override
 		public int previousInt() {
-<span class="fc" id="L300">			return map.idToIndex(idIt.previousInt());</span>
+<span class="fc" id="L306">			return map.idToIndex(idIt().previousInt());</span>
 		}
 
 		@Override
 		public int nextIndex() {
-<span class="fc" id="L305">			return idIt.nextIndex();</span>
+<span class="fc" id="L311">			return idIt().nextIndex();</span>
 		}
 
 		@Override
 		public int previousIndex() {
-<span class="fc" id="L310">			return idIt.previousIndex();</span>
+<span class="fc" id="L316">			return idIt().previousIndex();</span>
+		}
+
+		@Override
+		public int back(int n) {
+<span class="fc" id="L321">			return idIt().back(n);</span>
 		}
 	}
 
@@ -324,10 +335,10 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;V, E&gt; EdgeIter&lt;V, E&gt; indexToIdEdgeIter(Graph&lt;V, E&gt; g, IEdgeIter indexIter) {
-<span class="fc bfc" id="L327" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L328">			return (EdgeIter&lt;V, E&gt;) indexToIdEdgeIter((IntGraph) g, indexIter);</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L339">			return (EdgeIter&lt;V, E&gt;) indexToIdEdgeIter((IntGraph) g, indexIter);</span>
 		} else {
-<span class="fc" id="L330">			return new IndexToIdEdgeIter&lt;&gt;(g, indexIter);</span>
+<span class="fc" id="L341">			return new IndexToIdEdgeIter&lt;&gt;(g, indexIter);</span>
 		}
 	}
 
@@ -341,39 +352,39 @@ public class IndexIdMaps {
 	 *                   edges returned by the original index-iterator
 	 */
 	public static IEdgeIter indexToIdEdgeIter(IntGraph g, IEdgeIter indexIter) {
-<span class="fc" id="L344">		return new IndexToIntIdEdgeIter(g, indexIter);</span>
+<span class="fc" id="L355">		return new IndexToIntIdEdgeIter(g, indexIter);</span>
 	}
 
 	private static class IndexToIdEdgeIter&lt;V, E&gt; extends IndexToIdIterator&lt;E&gt; implements EdgeIter&lt;V, E&gt; {
 		private final IndexIdMap&lt;V&gt; viMap;
 
 		IndexToIdEdgeIter(Graph&lt;V, E&gt; g, IEdgeIter indexIt) {
-<span class="fc" id="L351">			super(indexIt, g.indexGraphEdgesMap());</span>
-<span class="fc" id="L352">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L353">		}</span>
+<span class="fc" id="L362">			super(indexIt, g.indexGraphEdgesMap());</span>
+<span class="fc" id="L363">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L364">		}</span>
 
 		@Override
 		IEdgeIter indexIt() {
-<span class="fc" id="L357">			return (IEdgeIter) super.indexIt();</span>
+<span class="fc" id="L368">			return (IEdgeIter) super.indexIt();</span>
 		}
 
 		IndexIdMap&lt;E&gt; eiMap() {
-<span class="fc" id="L361">			return super.map();</span>
+<span class="fc" id="L372">			return super.map();</span>
 		}
 
 		@Override
 		public E peekNext() {
-<span class="fc" id="L366">			return eiMap().indexToId(indexIt().peekNextInt());</span>
+<span class="fc" id="L377">			return eiMap().indexToId(indexIt().peekNextInt());</span>
 		}
 
 		@Override
 		public V source() {
-<span class="fc" id="L371">			return viMap.indexToId(indexIt().sourceInt());</span>
+<span class="fc" id="L382">			return viMap.indexToId(indexIt().sourceInt());</span>
 		}
 
 		@Override
 		public V target() {
-<span class="fc" id="L376">			return viMap.indexToId(indexIt().targetInt());</span>
+<span class="fc" id="L387">			return viMap.indexToId(indexIt().targetInt());</span>
 		}
 	}
 
@@ -381,32 +392,32 @@ public class IndexIdMaps {
 		private final IndexIntIdMap viMap;
 
 		IndexToIntIdEdgeIter(IntGraph g, IEdgeIter indexIt) {
-<span class="fc" id="L384">			super(indexIt, g.indexGraphEdgesMap());</span>
-<span class="fc" id="L385">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L386">		}</span>
+<span class="fc" id="L395">			super(indexIt, g.indexGraphEdgesMap());</span>
+<span class="fc" id="L396">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L397">		}</span>
 
 		@Override
 		IEdgeIter indexIt() {
-<span class="fc" id="L390">			return (IEdgeIter) super.indexIt();</span>
+<span class="fc" id="L401">			return (IEdgeIter) super.indexIt();</span>
 		}
 
 		IndexIntIdMap eiMap() {
-<span class="fc" id="L394">			return super.map();</span>
+<span class="fc" id="L405">			return super.map();</span>
 		}
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L399">			return eiMap().indexToIdInt(indexIt().peekNextInt());</span>
+<span class="fc" id="L410">			return eiMap().indexToIdInt(indexIt().peekNextInt());</span>
 		}
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L404">			return viMap.indexToIdInt(indexIt().sourceInt());</span>
+<span class="fc" id="L415">			return viMap.indexToIdInt(indexIt().sourceInt());</span>
 		}
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L409">			return viMap.indexToIdInt(indexIt().targetInt());</span>
+<span class="fc" id="L420">			return viMap.indexToIdInt(indexIt().targetInt());</span>
 		}
 	}
 
@@ -415,13 +426,13 @@ public class IndexIdMaps {
 		private final Graph&lt;V, E&gt; g;
 
 		IndexToIdEdgeSet(IEdgeSet indexSet, Graph&lt;V, E&gt; g) {
-<span class="fc" id="L418">			super(indexSet, g.indexGraphEdgesMap());</span>
-<span class="fc" id="L419">			this.g = g;</span>
-<span class="fc" id="L420">		}</span>
+<span class="fc" id="L429">			super(indexSet, g.indexGraphEdgesMap());</span>
+<span class="fc" id="L430">			this.g = g;</span>
+<span class="fc" id="L431">		}</span>
 
 		@Override
 		public IndexToIdEdgeIter&lt;V, E&gt; iterator() {
-<span class="fc" id="L424">			return new IndexToIdEdgeIter&lt;&gt;(g, ((IEdgeSet) idxSet).iterator());</span>
+<span class="fc" id="L435">			return new IndexToIdEdgeIter&lt;&gt;(g, ((IEdgeSet) idxSet).iterator());</span>
 		}
 	}
 
@@ -431,40 +442,40 @@ public class IndexIdMaps {
 		private final IntGraph g;
 		private final IndexIntIdMap eiMap;
 
-<span class="fc" id="L434">		IndexToIntIdEdgeSet(IEdgeSet indexSet, IntGraph g) {</span>
-<span class="fc" id="L435">			this.indexSet = Objects.requireNonNull(indexSet);</span>
-<span class="fc" id="L436">			this.g = g;</span>
-<span class="fc" id="L437">			this.eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L438">		}</span>
+<span class="fc" id="L445">		IndexToIntIdEdgeSet(IEdgeSet indexSet, IntGraph g) {</span>
+<span class="fc" id="L446">			this.indexSet = Objects.requireNonNull(indexSet);</span>
+<span class="fc" id="L447">			this.g = g;</span>
+<span class="fc" id="L448">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L449">		}</span>
 
 		@Override
 		public boolean remove(int edge) {
-<span class="fc" id="L442">			return indexSet.remove(eiMap.idToIndexIfExist(edge));</span>
+<span class="fc" id="L453">			return indexSet.remove(eiMap.idToIndexIfExist(edge));</span>
 		}
 
 		@Override
 		public boolean contains(int edge) {
-<span class="fc" id="L447">			return indexSet.contains(eiMap.idToIndexIfExist(edge));</span>
+<span class="fc" id="L458">			return indexSet.contains(eiMap.idToIndexIfExist(edge));</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L452">			return indexSet.size();</span>
+<span class="fc" id="L463">			return indexSet.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L457">			return indexSet.isEmpty();</span>
+<span class="fc" id="L468">			return indexSet.isEmpty();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L462">			indexSet.clear();</span>
-<span class="fc" id="L463">		}</span>
+<span class="fc" id="L473">			indexSet.clear();</span>
+<span class="fc" id="L474">		}</span>
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L467">			return indexToIdEdgeIter(g, indexSet.iterator());</span>
+<span class="fc" id="L478">			return indexToIdEdgeIter(g, indexSet.iterator());</span>
 		}
 	}
 
@@ -479,10 +490,10 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;V, E&gt; EdgeSet&lt;V, E&gt; indexToIdEdgeSet(IEdgeSet indexSet, Graph&lt;V, E&gt; g) {
-<span class="fc bfc" id="L482" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L483">			return (EdgeSet&lt;V, E&gt;) indexToIdEdgeSet(indexSet, (IntGraph) g);</span>
+<span class="fc bfc" id="L493" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L494">			return (EdgeSet&lt;V, E&gt;) indexToIdEdgeSet(indexSet, (IntGraph) g);</span>
 		} else {
-<span class="fc" id="L485">			return new IndexToIdEdgeSet&lt;&gt;(indexSet, g);</span>
+<span class="fc" id="L496">			return new IndexToIdEdgeSet&lt;&gt;(indexSet, g);</span>
 		}
 	}
 
@@ -494,7 +505,7 @@ public class IndexIdMaps {
 	 * @return          an edge set of IDs matching the indices contained in the original index-set
 	 */
 	public static IEdgeSet indexToIdEdgeSet(IEdgeSet indexSet, IntGraph g) {
-<span class="fc" id="L497">		return new IndexToIntIdEdgeSet(indexSet, g);</span>
+<span class="fc" id="L508">		return new IndexToIntIdEdgeSet(indexSet, g);</span>
 	}
 
 	/**
@@ -508,24 +519,24 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K&gt; Collection&lt;K&gt; indexToIdCollection(IntCollection indexCollection, IndexIdMap&lt;K&gt; map) {
-<span class="fc bfc" id="L511" title="All 2 branches covered.">		if (indexCollection instanceof IntSet) {</span>
-<span class="fc" id="L512">			return indexToIdSet((IntSet) indexCollection, map);</span>
-<span class="fc bfc" id="L513" title="All 2 branches covered.">		} else if (indexCollection instanceof IntList) {</span>
-<span class="fc" id="L514">			return indexToIdList((IntList) indexCollection, map);</span>
-<span class="fc bfc" id="L515" title="All 2 branches covered.">		} else if (map instanceof IndexIntIdMap) {</span>
-<span class="fc bfc" id="L516" title="All 2 branches covered.">			if (indexCollection instanceof IntIdToIndexCollection) {</span>
-<span class="fc" id="L517">				IntIdToIndexCollection indexCollection0 = (IntIdToIndexCollection) indexCollection;</span>
-<span class="fc bfc" id="L518" title="All 2 branches covered.">				if (indexCollection0.map == map)</span>
-<span class="fc" id="L519">					return (Collection&lt;K&gt;) indexCollection0.idC;</span>
+<span class="fc bfc" id="L522" title="All 2 branches covered.">		if (indexCollection instanceof IntSet) {</span>
+<span class="fc" id="L523">			return indexToIdSet((IntSet) indexCollection, map);</span>
+<span class="fc bfc" id="L524" title="All 2 branches covered.">		} else if (indexCollection instanceof IntList) {</span>
+<span class="fc" id="L525">			return indexToIdList((IntList) indexCollection, map);</span>
+<span class="fc bfc" id="L526" title="All 2 branches covered.">		} else if (map instanceof IndexIntIdMap) {</span>
+<span class="fc bfc" id="L527" title="All 2 branches covered.">			if (indexCollection instanceof IntIdToIndexCollection) {</span>
+<span class="fc" id="L528">				IntIdToIndexCollection indexCollection0 = (IntIdToIndexCollection) indexCollection;</span>
+<span class="fc bfc" id="L529" title="All 2 branches covered.">				if (indexCollection0.map == map)</span>
+<span class="fc" id="L530">					return (Collection&lt;K&gt;) indexCollection0.idC;</span>
 			}
-<span class="fc" id="L521">			return (Collection&lt;K&gt;) new IndexToIntIdCollection(indexCollection, (IndexIntIdMap) map);</span>
+<span class="fc" id="L532">			return (Collection&lt;K&gt;) new IndexToIntIdCollection(indexCollection, (IndexIntIdMap) map);</span>
 		} else {
-<span class="fc bfc" id="L523" title="All 2 branches covered.">			if (indexCollection instanceof IdToIndexCollection) {</span>
-<span class="fc" id="L524">				IdToIndexCollection&lt;K&gt; indexCollection0 = (IdToIndexCollection&lt;K&gt;) indexCollection;</span>
-<span class="fc bfc" id="L525" title="All 2 branches covered.">				if (indexCollection0.map == map)</span>
-<span class="fc" id="L526">					return indexCollection0.idC;</span>
+<span class="fc bfc" id="L534" title="All 2 branches covered.">			if (indexCollection instanceof IdToIndexCollection) {</span>
+<span class="fc" id="L535">				IdToIndexCollection&lt;K&gt; indexCollection0 = (IdToIndexCollection&lt;K&gt;) indexCollection;</span>
+<span class="fc bfc" id="L536" title="All 2 branches covered.">				if (indexCollection0.map == map)</span>
+<span class="fc" id="L537">					return indexCollection0.idC;</span>
 			}
-<span class="fc" id="L528">			return new IndexToIdCollection&lt;&gt;(indexCollection, map);</span>
+<span class="fc" id="L539">			return new IndexToIdCollection&lt;&gt;(indexCollection, map);</span>
 		}
 	}
 
@@ -538,7 +549,7 @@ public class IndexIdMaps {
 	 *                         index-collection
 	 */
 	public static IntCollection indexToIdCollection(IntCollection indexCollection, IndexIntIdMap map) {
-<span class="fc" id="L541">		return (IntCollection) indexToIdCollection(indexCollection, (IndexIdMap&lt;Integer&gt;) map);</span>
+<span class="fc" id="L552">		return (IntCollection) indexToIdCollection(indexCollection, (IndexIdMap&lt;Integer&gt;) map);</span>
 	}
 
 	private static class IndexToIdCollection&lt;K&gt; extends AbstractCollection&lt;K&gt; {
@@ -546,41 +557,41 @@ public class IndexIdMaps {
 		final IntCollection indexC;
 		final IndexIdMap&lt;K&gt; map;
 
-<span class="fc" id="L549">		IndexToIdCollection(IntCollection indexC, IndexIdMap&lt;K&gt; map) {</span>
-<span class="fc" id="L550">			this.indexC = Objects.requireNonNull(indexC);</span>
-<span class="fc" id="L551">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L552">		}</span>
+<span class="fc" id="L560">		IndexToIdCollection(IntCollection indexC, IndexIdMap&lt;K&gt; map) {</span>
+<span class="fc" id="L561">			this.indexC = Objects.requireNonNull(indexC);</span>
+<span class="fc" id="L562">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L563">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L556">			return indexC.size();</span>
+<span class="fc" id="L567">			return indexC.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L561">			return indexC.isEmpty();</span>
+<span class="fc" id="L572">			return indexC.isEmpty();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L566">			indexC.clear();</span>
-<span class="fc" id="L567">		}</span>
+<span class="fc" id="L577">			indexC.clear();</span>
+<span class="fc" id="L578">		}</span>
 
 		@Override
 		public Iterator&lt;K&gt; iterator() {
-<span class="fc" id="L571">			return new IndexToIdIterator&lt;&gt;(indexC.iterator(), map);</span>
+<span class="fc" id="L582">			return new IndexToIdIterator&lt;&gt;(indexC.iterator(), map);</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public boolean contains(Object key) {
-<span class="fc" id="L577">			return indexC.contains(map.idToIndexIfExist((K) key));</span>
+<span class="fc" id="L588">			return indexC.contains(map.idToIndexIfExist((K) key));</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public boolean remove(Object key) {
-<span class="fc" id="L583">			return indexC.rem(map.idToIndexIfExist((K) key));</span>
+<span class="fc" id="L594">			return indexC.rem(map.idToIndexIfExist((K) key));</span>
 		}
 	}
 
@@ -589,39 +600,39 @@ public class IndexIdMaps {
 		final IntCollection indexC;
 		final IndexIntIdMap map;
 
-<span class="fc" id="L592">		IndexToIntIdCollection(IntCollection indexC, IndexIntIdMap map) {</span>
-<span class="fc" id="L593">			this.indexC = Objects.requireNonNull(indexC);</span>
-<span class="fc" id="L594">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L595">		}</span>
+<span class="fc" id="L603">		IndexToIntIdCollection(IntCollection indexC, IndexIntIdMap map) {</span>
+<span class="fc" id="L604">			this.indexC = Objects.requireNonNull(indexC);</span>
+<span class="fc" id="L605">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L606">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L599">			return indexC.size();</span>
+<span class="fc" id="L610">			return indexC.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L604">			return indexC.isEmpty();</span>
+<span class="fc" id="L615">			return indexC.isEmpty();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L609">			indexC.clear();</span>
-<span class="fc" id="L610">		}</span>
+<span class="fc" id="L620">			indexC.clear();</span>
+<span class="fc" id="L621">		}</span>
 
 		@Override
 		public IntIterator iterator() {
-<span class="fc" id="L614">			return new IndexToIntIdIterator(indexC.iterator(), map);</span>
+<span class="fc" id="L625">			return new IndexToIntIdIterator(indexC.iterator(), map);</span>
 		}
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc" id="L619">			return indexC.contains(map.idToIndexIfExist(key));</span>
+<span class="fc" id="L630">			return indexC.contains(map.idToIndexIfExist(key));</span>
 		}
 
 		@Override
 		public boolean rem(int key) {
-<span class="fc" id="L624">			return indexC.rem(map.idToIndexIfExist(key));</span>
+<span class="fc" id="L635">			return indexC.rem(map.idToIndexIfExist(key));</span>
 		}
 	}
 
@@ -635,14 +646,14 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K&gt; Set&lt;K&gt; indexToIdSet(IntSet indexSet, IndexIdMap&lt;K&gt; map) {
-<span class="fc bfc" id="L638" title="All 2 branches covered.">		if (map instanceof IndexIntIdMap)</span>
-<span class="fc" id="L639">			return (Set&lt;K&gt;) indexToIdSet(indexSet, (IndexIntIdMap) map);</span>
-<span class="fc bfc" id="L640" title="All 2 branches covered.">		if (indexSet instanceof IdToIndexSet) {</span>
-<span class="fc" id="L641">			IdToIndexSet&lt;K&gt; indexSet0 = (IdToIndexSet&lt;K&gt;) indexSet;</span>
-<span class="fc bfc" id="L642" title="All 2 branches covered.">			if (indexSet0.map == map)</span>
-<span class="fc" id="L643">				return indexSet0.idC;</span>
+<span class="fc bfc" id="L649" title="All 2 branches covered.">		if (map instanceof IndexIntIdMap)</span>
+<span class="fc" id="L650">			return (Set&lt;K&gt;) indexToIdSet(indexSet, (IndexIntIdMap) map);</span>
+<span class="fc bfc" id="L651" title="All 2 branches covered.">		if (indexSet instanceof IdToIndexSet) {</span>
+<span class="fc" id="L652">			IdToIndexSet&lt;K&gt; indexSet0 = (IdToIndexSet&lt;K&gt;) indexSet;</span>
+<span class="fc bfc" id="L653" title="All 2 branches covered.">			if (indexSet0.map == map)</span>
+<span class="fc" id="L654">				return indexSet0.idC;</span>
 		}
-<span class="fc" id="L645">		return new IndexToIdSet&lt;&gt;(indexSet, map);</span>
+<span class="fc" id="L656">		return new IndexToIdSet&lt;&gt;(indexSet, map);</span>
 	}
 
 	/**
@@ -653,12 +664,12 @@ public class IndexIdMaps {
 	 * @return          a set that contain IDs matching the indices contained in the original index-set
 	 */
 	public static IntSet indexToIdSet(IntSet indexSet, IndexIntIdMap map) {
-<span class="fc bfc" id="L656" title="All 2 branches covered.">		if (indexSet instanceof IntIdToIndexSet) {</span>
-<span class="fc" id="L657">			IntIdToIndexSet indexSet0 = (IntIdToIndexSet) indexSet;</span>
-<span class="fc bfc" id="L658" title="All 2 branches covered.">			if (indexSet0.map == map)</span>
-<span class="fc" id="L659">				return indexSet0.idC;</span>
+<span class="fc bfc" id="L667" title="All 2 branches covered.">		if (indexSet instanceof IntIdToIndexSet) {</span>
+<span class="fc" id="L668">			IntIdToIndexSet indexSet0 = (IntIdToIndexSet) indexSet;</span>
+<span class="fc bfc" id="L669" title="All 2 branches covered.">			if (indexSet0.map == map)</span>
+<span class="fc" id="L670">				return indexSet0.idC;</span>
 		}
-<span class="fc" id="L661">		return new IndexToIntIdSet(indexSet, map);</span>
+<span class="fc" id="L672">		return new IndexToIntIdSet(indexSet, map);</span>
 	}
 
 	private static class IndexToIdSet&lt;K&gt; extends AbstractObjectSet&lt;K&gt; {
@@ -666,41 +677,41 @@ public class IndexIdMaps {
 		final IntSet idxSet;
 		final IndexIdMap&lt;K&gt; map;
 
-<span class="fc" id="L669">		IndexToIdSet(IntSet idxSet, IndexIdMap&lt;K&gt; map) {</span>
-<span class="fc" id="L670">			this.idxSet = Objects.requireNonNull(idxSet);</span>
-<span class="fc" id="L671">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L672">		}</span>
+<span class="fc" id="L680">		IndexToIdSet(IntSet idxSet, IndexIdMap&lt;K&gt; map) {</span>
+<span class="fc" id="L681">			this.idxSet = Objects.requireNonNull(idxSet);</span>
+<span class="fc" id="L682">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L683">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L676">			return idxSet.size();</span>
+<span class="fc" id="L687">			return idxSet.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L681">			return idxSet.isEmpty();</span>
+<span class="fc" id="L692">			return idxSet.isEmpty();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L686">			idxSet.clear();</span>
-<span class="fc" id="L687">		}</span>
+<span class="fc" id="L697">			idxSet.clear();</span>
+<span class="fc" id="L698">		}</span>
 
 		@Override
 		public ObjectIterator&lt;K&gt; iterator() {
-<span class="fc" id="L691">			return new IndexToIdIterator&lt;&gt;(idxSet.iterator(), map);</span>
+<span class="fc" id="L702">			return new IndexToIdIterator&lt;&gt;(idxSet.iterator(), map);</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public boolean contains(Object key) {
-<span class="fc" id="L697">			return idxSet.contains(map.idToIndexIfExist((K) key));</span>
+<span class="fc" id="L708">			return idxSet.contains(map.idToIndexIfExist((K) key));</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public boolean remove(Object key) {
-<span class="fc" id="L703">			return idxSet.remove(map.idToIndexIfExist((K) key));</span>
+<span class="fc" id="L714">			return idxSet.remove(map.idToIndexIfExist((K) key));</span>
 		}
 	}
 
@@ -709,34 +720,34 @@ public class IndexIdMaps {
 		final IntSet idxSet;
 		final IndexIntIdMap map;
 
-<span class="fc" id="L712">		IndexToIntIdSet(IntSet idxSet, IndexIntIdMap map) {</span>
-<span class="fc" id="L713">			this.idxSet = Objects.requireNonNull(idxSet);</span>
-<span class="fc" id="L714">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L715">		}</span>
+<span class="fc" id="L723">		IndexToIntIdSet(IntSet idxSet, IndexIntIdMap map) {</span>
+<span class="fc" id="L724">			this.idxSet = Objects.requireNonNull(idxSet);</span>
+<span class="fc" id="L725">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L726">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L719">			return idxSet.size();</span>
+<span class="fc" id="L730">			return idxSet.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L724">			return idxSet.isEmpty();</span>
+<span class="fc" id="L735">			return idxSet.isEmpty();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L729">			idxSet.clear();</span>
-<span class="fc" id="L730">		}</span>
+<span class="fc" id="L740">			idxSet.clear();</span>
+<span class="fc" id="L741">		}</span>
 
 		@Override
 		public IntIterator iterator() {
-<span class="fc" id="L734">			return new IndexToIntIdIterator(idxSet.iterator(), map);</span>
+<span class="fc" id="L745">			return new IndexToIntIdIterator(idxSet.iterator(), map);</span>
 		}
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc" id="L739">			return idxSet.contains(map.idToIndexIfExist(key));</span>
+<span class="fc" id="L750">			return idxSet.contains(map.idToIndexIfExist(key));</span>
 		}
 	}
 
@@ -750,27 +761,27 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K&gt; IntCollection idToIndexCollection(Collection&lt;K&gt; idCollection, IndexIdMap&lt;K&gt; map) {
-<span class="fc bfc" id="L753" title="All 2 branches covered.">		if (idCollection instanceof Set)</span>
-<span class="fc" id="L754">			return idToIndexSet((Set&lt;K&gt;) idCollection, map);</span>
+<span class="fc bfc" id="L764" title="All 2 branches covered.">		if (idCollection instanceof Set)</span>
+<span class="fc" id="L765">			return idToIndexSet((Set&lt;K&gt;) idCollection, map);</span>
 
-<span class="fc bfc" id="L756" title="All 2 branches covered.">		if (idCollection instanceof List)</span>
-<span class="fc" id="L757">			return idToIndexList((List&lt;K&gt;) idCollection, map);</span>
+<span class="fc bfc" id="L767" title="All 2 branches covered.">		if (idCollection instanceof List)</span>
+<span class="fc" id="L768">			return idToIndexList((List&lt;K&gt;) idCollection, map);</span>
 
-<span class="fc bfc" id="L759" title="All 2 branches covered.">		if (map instanceof IndexIntIdMap) {</span>
-<span class="fc bfc" id="L760" title="All 2 branches covered.">			if (idCollection instanceof IndexToIntIdCollection) {</span>
-<span class="fc" id="L761">				IndexToIntIdCollection idCollection0 = (IndexToIntIdCollection) idCollection;</span>
-<span class="fc bfc" id="L762" title="All 2 branches covered.">				if (idCollection0.map == map)</span>
-<span class="fc" id="L763">					return idCollection0.indexC;</span>
+<span class="fc bfc" id="L770" title="All 2 branches covered.">		if (map instanceof IndexIntIdMap) {</span>
+<span class="fc bfc" id="L771" title="All 2 branches covered.">			if (idCollection instanceof IndexToIntIdCollection) {</span>
+<span class="fc" id="L772">				IndexToIntIdCollection idCollection0 = (IndexToIntIdCollection) idCollection;</span>
+<span class="fc bfc" id="L773" title="All 2 branches covered.">				if (idCollection0.map == map)</span>
+<span class="fc" id="L774">					return idCollection0.indexC;</span>
 			}
-<span class="fc" id="L765">			return new IntIdToIndexCollection(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) idCollection),</span>
+<span class="fc" id="L776">			return new IntIdToIndexCollection(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) idCollection),</span>
 					(IndexIntIdMap) map);
 		} else {
-<span class="fc bfc" id="L768" title="All 2 branches covered.">			if (idCollection instanceof IndexToIdCollection) {</span>
-<span class="fc" id="L769">				IndexToIdCollection&lt;K&gt; idCollection0 = (IndexToIdCollection&lt;K&gt;) idCollection;</span>
-<span class="fc bfc" id="L770" title="All 2 branches covered.">				if (idCollection0.map == map)</span>
-<span class="fc" id="L771">					return idCollection0.indexC;</span>
+<span class="fc bfc" id="L779" title="All 2 branches covered.">			if (idCollection instanceof IndexToIdCollection) {</span>
+<span class="fc" id="L780">				IndexToIdCollection&lt;K&gt; idCollection0 = (IndexToIdCollection&lt;K&gt;) idCollection;</span>
+<span class="fc bfc" id="L781" title="All 2 branches covered.">				if (idCollection0.map == map)</span>
+<span class="fc" id="L782">					return idCollection0.indexC;</span>
 			}
-<span class="fc" id="L773">			return new IdToIndexCollection&lt;&gt;(idCollection, map);</span>
+<span class="fc" id="L784">			return new IdToIndexCollection&lt;&gt;(idCollection, map);</span>
 		}
 	}
 
@@ -784,20 +795,20 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K&gt; IntSet idToIndexSet(Set&lt;K&gt; idSet, IndexIdMap&lt;K&gt; map) {
-<span class="fc bfc" id="L787" title="All 2 branches covered.">		if (map instanceof IndexIntIdMap) {</span>
-<span class="fc bfc" id="L788" title="All 2 branches covered.">			if (idSet instanceof IndexToIntIdSet) {</span>
-<span class="fc" id="L789">				IndexToIntIdSet idSet0 = (IndexToIntIdSet) idSet;</span>
-<span class="fc bfc" id="L790" title="All 2 branches covered.">				if (idSet0.map == map)</span>
-<span class="fc" id="L791">					return idSet0.idxSet;</span>
+<span class="fc bfc" id="L798" title="All 2 branches covered.">		if (map instanceof IndexIntIdMap) {</span>
+<span class="fc bfc" id="L799" title="All 2 branches covered.">			if (idSet instanceof IndexToIntIdSet) {</span>
+<span class="fc" id="L800">				IndexToIntIdSet idSet0 = (IndexToIntIdSet) idSet;</span>
+<span class="fc bfc" id="L801" title="All 2 branches covered.">				if (idSet0.map == map)</span>
+<span class="fc" id="L802">					return idSet0.idxSet;</span>
 			}
-<span class="fc" id="L793">			return new IntIdToIndexSet(IntAdapters.asIntSet((Set&lt;Integer&gt;) idSet), (IndexIntIdMap) map);</span>
+<span class="fc" id="L804">			return new IntIdToIndexSet(IntAdapters.asIntSet((Set&lt;Integer&gt;) idSet), (IndexIntIdMap) map);</span>
 		} else {
-<span class="fc bfc" id="L795" title="All 2 branches covered.">			if (idSet instanceof IndexToIdSet) {</span>
-<span class="fc" id="L796">				IndexToIdSet&lt;K&gt; idSet0 = (IndexToIdSet&lt;K&gt;) idSet;</span>
-<span class="fc bfc" id="L797" title="All 2 branches covered.">				if (idSet0.map == map)</span>
-<span class="fc" id="L798">					return idSet0.idxSet;</span>
+<span class="fc bfc" id="L806" title="All 2 branches covered.">			if (idSet instanceof IndexToIdSet) {</span>
+<span class="fc" id="L807">				IndexToIdSet&lt;K&gt; idSet0 = (IndexToIdSet&lt;K&gt;) idSet;</span>
+<span class="fc bfc" id="L808" title="All 2 branches covered.">				if (idSet0.map == map)</span>
+<span class="fc" id="L809">					return idSet0.idxSet;</span>
 			}
-<span class="fc" id="L800">			return new IdToIndexSet&lt;&gt;(idSet, map);</span>
+<span class="fc" id="L811">			return new IdToIndexSet&lt;&gt;(idSet, map);</span>
 		}
 	}
 
@@ -811,20 +822,20 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K&gt; IntList idToIndexList(List&lt;K&gt; idList, IndexIdMap&lt;K&gt; map) {
-<span class="fc bfc" id="L814" title="All 2 branches covered.">		if (map instanceof IndexIntIdMap) {</span>
-<span class="fc bfc" id="L815" title="All 2 branches covered.">			if (idList instanceof IndexToIntIdList) {</span>
-<span class="fc" id="L816">				IndexToIntIdList idList0 = (IndexToIntIdList) idList;</span>
-<span class="fc bfc" id="L817" title="All 2 branches covered.">				if (idList0.map == map)</span>
-<span class="fc" id="L818">					return idList0.indexList;</span>
+<span class="fc bfc" id="L825" title="All 2 branches covered.">		if (map instanceof IndexIntIdMap) {</span>
+<span class="fc bfc" id="L826" title="All 2 branches covered.">			if (idList instanceof IndexToIntIdList) {</span>
+<span class="fc" id="L827">				IndexToIntIdList idList0 = (IndexToIntIdList) idList;</span>
+<span class="fc bfc" id="L828" title="All 2 branches covered.">				if (idList0.map == map)</span>
+<span class="fc" id="L829">					return idList0.indexList;</span>
 			}
-<span class="fc" id="L820">			return new IntIdToIndexList(IntAdapters.asIntList((List&lt;Integer&gt;) idList), (IndexIntIdMap) map);</span>
+<span class="fc" id="L831">			return new IntIdToIndexList(IntAdapters.asIntList((List&lt;Integer&gt;) idList), (IndexIntIdMap) map);</span>
 		} else {
-<span class="fc bfc" id="L822" title="All 2 branches covered.">			if (idList instanceof IndexToIdList) {</span>
-<span class="fc" id="L823">				IndexToIdList&lt;K&gt; idList0 = (IndexToIdList&lt;K&gt;) idList;</span>
-<span class="fc bfc" id="L824" title="All 2 branches covered.">				if (idList0.map == map)</span>
-<span class="fc" id="L825">					return idList0.indexList;</span>
+<span class="fc bfc" id="L833" title="All 2 branches covered.">			if (idList instanceof IndexToIdList) {</span>
+<span class="fc" id="L834">				IndexToIdList&lt;K&gt; idList0 = (IndexToIdList&lt;K&gt;) idList;</span>
+<span class="fc bfc" id="L835" title="All 2 branches covered.">				if (idList0.map == map)</span>
+<span class="fc" id="L836">					return idList0.indexList;</span>
 			}
-<span class="fc" id="L827">			return new IdToIndexList&lt;&gt;(idList, map);</span>
+<span class="fc" id="L838">			return new IdToIndexList&lt;&gt;(idList, map);</span>
 		}
 	}
 
@@ -833,39 +844,39 @@ public class IndexIdMaps {
 		private final Collection&lt;K&gt; idC;
 		private final IndexIdMap&lt;K&gt; map;
 
-<span class="fc" id="L836">		IdToIndexCollection(Collection&lt;K&gt; idC, IndexIdMap&lt;K&gt; map) {</span>
-<span class="fc" id="L837">			this.idC = Objects.requireNonNull(idC);</span>
-<span class="fc" id="L838">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L839">		}</span>
+<span class="fc" id="L847">		IdToIndexCollection(Collection&lt;K&gt; idC, IndexIdMap&lt;K&gt; map) {</span>
+<span class="fc" id="L848">			this.idC = Objects.requireNonNull(idC);</span>
+<span class="fc" id="L849">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L850">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L843">			return idC.size();</span>
+<span class="fc" id="L854">			return idC.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L848">			return idC.isEmpty();</span>
+<span class="fc" id="L859">			return idC.isEmpty();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L853">			idC.clear();</span>
-<span class="fc" id="L854">		}</span>
+<span class="fc" id="L864">			idC.clear();</span>
+<span class="fc" id="L865">		}</span>
 
 		@Override
 		public IntIterator iterator() {
-<span class="fc" id="L858">			return new IdToIndexIterator&lt;&gt;(idC.iterator(), map);</span>
+<span class="fc" id="L869">			return new IdToIndexIterator&lt;&gt;(idC.iterator(), map);</span>
 		}
 
 		@Override
 		public boolean contains(int idx) {
-<span class="fc" id="L863">			return idC.contains(map.indexToIdIfExist(idx));</span>
+<span class="fc" id="L874">			return idC.contains(map.indexToIdIfExist(idx));</span>
 		}
 
 		@Override
 		public boolean rem(int idx) {
-<span class="fc" id="L868">			return idC.remove(map.indexToIdIfExist(idx));</span>
+<span class="fc" id="L879">			return idC.remove(map.indexToIdIfExist(idx));</span>
 		}
 	}
 
@@ -874,39 +885,39 @@ public class IndexIdMaps {
 		private final IntCollection idC;
 		private final IndexIntIdMap map;
 
-<span class="fc" id="L877">		IntIdToIndexCollection(IntCollection idC, IndexIntIdMap map) {</span>
-<span class="fc" id="L878">			this.idC = Objects.requireNonNull(idC);</span>
-<span class="fc" id="L879">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L880">		}</span>
+<span class="fc" id="L888">		IntIdToIndexCollection(IntCollection idC, IndexIntIdMap map) {</span>
+<span class="fc" id="L889">			this.idC = Objects.requireNonNull(idC);</span>
+<span class="fc" id="L890">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L891">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L884">			return idC.size();</span>
+<span class="fc" id="L895">			return idC.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L889">			return idC.isEmpty();</span>
+<span class="fc" id="L900">			return idC.isEmpty();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L894">			idC.clear();</span>
-<span class="fc" id="L895">		}</span>
+<span class="fc" id="L905">			idC.clear();</span>
+<span class="fc" id="L906">		}</span>
 
 		@Override
 		public IntIterator iterator() {
-<span class="fc" id="L899">			return new IntIdToIndexIterator(idC.iterator(), map);</span>
+<span class="fc" id="L910">			return new IntIdToIndexIterator(idC.iterator(), map);</span>
 		}
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc" id="L904">			return idC.contains(map.indexToIdIfExistInt(key));</span>
+<span class="fc" id="L915">			return idC.contains(map.indexToIdIfExistInt(key));</span>
 		}
 
 		@Override
 		public boolean rem(int key) {
-<span class="fc" id="L909">			return idC.rem(map.indexToIdIfExistInt(key));</span>
+<span class="fc" id="L920">			return idC.rem(map.indexToIdIfExistInt(key));</span>
 		}
 	}
 
@@ -915,39 +926,39 @@ public class IndexIdMaps {
 		private final Set&lt;K&gt; idC;
 		private final IndexIdMap&lt;K&gt; map;
 
-<span class="fc" id="L918">		IdToIndexSet(Set&lt;K&gt; idC, IndexIdMap&lt;K&gt; map) {</span>
-<span class="fc" id="L919">			this.idC = Objects.requireNonNull(idC);</span>
-<span class="fc" id="L920">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L921">		}</span>
+<span class="fc" id="L929">		IdToIndexSet(Set&lt;K&gt; idC, IndexIdMap&lt;K&gt; map) {</span>
+<span class="fc" id="L930">			this.idC = Objects.requireNonNull(idC);</span>
+<span class="fc" id="L931">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L932">		}</span>
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc" id="L925">			return idC.contains(map.indexToIdIfExist(key));</span>
+<span class="fc" id="L936">			return idC.contains(map.indexToIdIfExist(key));</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L930">			return idC.size();</span>
+<span class="fc" id="L941">			return idC.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L935">			return idC.isEmpty();</span>
+<span class="fc" id="L946">			return idC.isEmpty();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L940">			idC.clear();</span>
-<span class="fc" id="L941">		}</span>
+<span class="fc" id="L951">			idC.clear();</span>
+<span class="fc" id="L952">		}</span>
 
 		@Override
 		public IntIterator iterator() {
-<span class="fc" id="L945">			return new IdToIndexIterator&lt;&gt;(idC.iterator(), map);</span>
+<span class="fc" id="L956">			return new IdToIndexIterator&lt;&gt;(idC.iterator(), map);</span>
 		}
 
 		@Override
 		public boolean remove(int key) {
-<span class="fc" id="L950">			return idC.remove(map.indexToIdIfExist(key));</span>
+<span class="fc" id="L961">			return idC.remove(map.indexToIdIfExist(key));</span>
 		}
 	}
 
@@ -956,39 +967,39 @@ public class IndexIdMaps {
 		private final IntSet idC;
 		private final IndexIntIdMap map;
 
-<span class="fc" id="L959">		IntIdToIndexSet(IntSet idC, IndexIntIdMap map) {</span>
-<span class="fc" id="L960">			this.idC = Objects.requireNonNull(idC);</span>
-<span class="fc" id="L961">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L962">		}</span>
+<span class="fc" id="L970">		IntIdToIndexSet(IntSet idC, IndexIntIdMap map) {</span>
+<span class="fc" id="L971">			this.idC = Objects.requireNonNull(idC);</span>
+<span class="fc" id="L972">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L973">		}</span>
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc" id="L966">			return idC.contains(map.indexToIdIfExistInt(key));</span>
+<span class="fc" id="L977">			return idC.contains(map.indexToIdIfExistInt(key));</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L971">			return idC.size();</span>
+<span class="fc" id="L982">			return idC.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L976">			return idC.isEmpty();</span>
+<span class="fc" id="L987">			return idC.isEmpty();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L981">			idC.clear();</span>
-<span class="fc" id="L982">		}</span>
+<span class="fc" id="L992">			idC.clear();</span>
+<span class="fc" id="L993">		}</span>
 
 		@Override
 		public IntIterator iterator() {
-<span class="fc" id="L986">			return new IdToIndexIterator&lt;&gt;(idC.iterator(), map);</span>
+<span class="fc" id="L997">			return new IdToIndexIterator&lt;&gt;(idC.iterator(), map);</span>
 		}
 
 		@Override
 		public boolean remove(int key) {
-<span class="fc" id="L991">			return idC.remove(map.indexToIdIfExistInt(key));</span>
+<span class="fc" id="L1002">			return idC.remove(map.indexToIdIfExistInt(key));</span>
 		}
 	}
 
@@ -997,57 +1008,57 @@ public class IndexIdMaps {
 		private final List&lt;K&gt; idList;
 		private final IndexIdMap&lt;K&gt; map;
 
-<span class="fc" id="L1000">		IdToIndexList(List&lt;K&gt; idC, IndexIdMap&lt;K&gt; map) {</span>
-<span class="fc" id="L1001">			this.idList = Objects.requireNonNull(idC);</span>
-<span class="fc" id="L1002">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L1003">		}</span>
+<span class="fc" id="L1011">		IdToIndexList(List&lt;K&gt; idC, IndexIdMap&lt;K&gt; map) {</span>
+<span class="fc" id="L1012">			this.idList = Objects.requireNonNull(idC);</span>
+<span class="fc" id="L1013">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L1014">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L1007">			return idList.size();</span>
+<span class="fc" id="L1018">			return idList.size();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L1012">			idList.clear();</span>
-<span class="fc" id="L1013">		}</span>
+<span class="fc" id="L1023">			idList.clear();</span>
+<span class="fc" id="L1024">		}</span>
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc" id="L1017">			return idList.contains(map.indexToIdIfExist(key));</span>
+<span class="fc" id="L1028">			return idList.contains(map.indexToIdIfExist(key));</span>
 		}
 
 		@Override
 		public boolean rem(int key) {
-<span class="fc" id="L1022">			K id = map.indexToIdIfExist(key);</span>
-<span class="fc bfc" id="L1023" title="All 4 branches covered.">			return id != null &amp;&amp; idList.remove(id);</span>
+<span class="fc" id="L1033">			K id = map.indexToIdIfExist(key);</span>
+<span class="fc bfc" id="L1034" title="All 4 branches covered.">			return id != null &amp;&amp; idList.remove(id);</span>
 		}
 
 		@Override
 		public IntListIterator listIterator(int index) {
-<span class="fc" id="L1028">			return new IdToIndexListIterator&lt;&gt;(idList.listIterator(index), map);</span>
+<span class="fc" id="L1039">			return new IdToIndexListIterator&lt;&gt;(idList.listIterator(index), map);</span>
 		}
 
 		@Override
 		public int getInt(int index) {
-<span class="fc" id="L1033">			return map.idToIndex(idList.get(index));</span>
+<span class="fc" id="L1044">			return map.idToIndex(idList.get(index));</span>
 		}
 
 		@Override
 		public int indexOf(int k) {
-<span class="fc" id="L1038">			K id = map.indexToIdIfExist(k);</span>
-<span class="fc bfc" id="L1039" title="All 2 branches covered.">			return id == null ? -1 : idList.indexOf(id);</span>
+<span class="fc" id="L1049">			K id = map.indexToIdIfExist(k);</span>
+<span class="fc bfc" id="L1050" title="All 2 branches covered.">			return id == null ? -1 : idList.indexOf(id);</span>
 		}
 
 		@Override
 		public int lastIndexOf(int k) {
-<span class="fc" id="L1044">			K id = map.indexToIdIfExist(k);</span>
-<span class="fc bfc" id="L1045" title="All 2 branches covered.">			return id == null ? -1 : idList.lastIndexOf(id);</span>
+<span class="fc" id="L1055">			K id = map.indexToIdIfExist(k);</span>
+<span class="fc bfc" id="L1056" title="All 2 branches covered.">			return id == null ? -1 : idList.lastIndexOf(id);</span>
 		}
 
 		@Override
 		public int removeInt(int index) {
-<span class="fc" id="L1050">			return map.idToIndex(idList.remove(index));</span>
+<span class="fc" id="L1061">			return map.idToIndex(idList.remove(index));</span>
 		}
 	}
 
@@ -1056,57 +1067,57 @@ public class IndexIdMaps {
 		private final IntList idList;
 		private final IndexIntIdMap map;
 
-<span class="fc" id="L1059">		IntIdToIndexList(IntList idC, IndexIntIdMap map) {</span>
-<span class="fc" id="L1060">			this.idList = Objects.requireNonNull(idC);</span>
-<span class="fc" id="L1061">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L1062">		}</span>
+<span class="fc" id="L1070">		IntIdToIndexList(IntList idC, IndexIntIdMap map) {</span>
+<span class="fc" id="L1071">			this.idList = Objects.requireNonNull(idC);</span>
+<span class="fc" id="L1072">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L1073">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L1066">			return idList.size();</span>
+<span class="fc" id="L1077">			return idList.size();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L1071">			idList.clear();</span>
-<span class="fc" id="L1072">		}</span>
+<span class="fc" id="L1082">			idList.clear();</span>
+<span class="fc" id="L1083">		}</span>
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc" id="L1076">			return idList.contains(map.indexToIdIfExistInt(key));</span>
+<span class="fc" id="L1087">			return idList.contains(map.indexToIdIfExistInt(key));</span>
 		}
 
 		@Override
 		public boolean rem(int key) {
-<span class="fc" id="L1081">			int id = map.indexToIdIfExistInt(key);</span>
-<span class="fc bfc" id="L1082" title="All 4 branches covered.">			return id &gt;= 0 &amp;&amp; idList.rem(id);</span>
+<span class="fc" id="L1092">			int id = map.indexToIdIfExistInt(key);</span>
+<span class="fc bfc" id="L1093" title="All 4 branches covered.">			return id &gt;= 0 &amp;&amp; idList.rem(id);</span>
 		}
 
 		@Override
 		public IntListIterator listIterator(int index) {
-<span class="fc" id="L1087">			return new IntIdToIndexListIterator(idList.listIterator(index), map);</span>
+<span class="fc" id="L1098">			return new IntIdToIndexListIterator(idList.listIterator(index), map);</span>
 		}
 
 		@Override
 		public int getInt(int index) {
-<span class="fc" id="L1092">			return map.idToIndex(idList.getInt(index));</span>
+<span class="fc" id="L1103">			return map.idToIndex(idList.getInt(index));</span>
 		}
 
 		@Override
 		public int indexOf(int k) {
-<span class="fc" id="L1097">			int id = map.indexToIdIfExistInt(k);</span>
-<span class="fc bfc" id="L1098" title="All 2 branches covered.">			return id &lt; 0 ? -1 : idList.indexOf(id);</span>
+<span class="fc" id="L1108">			int id = map.indexToIdIfExistInt(k);</span>
+<span class="fc bfc" id="L1109" title="All 2 branches covered.">			return id &lt; 0 ? -1 : idList.indexOf(id);</span>
 		}
 
 		@Override
 		public int lastIndexOf(int k) {
-<span class="fc" id="L1103">			int id = map.indexToIdIfExistInt(k);</span>
-<span class="fc bfc" id="L1104" title="All 2 branches covered.">			return id &lt; 0 ? -1 : idList.lastIndexOf(id);</span>
+<span class="fc" id="L1114">			int id = map.indexToIdIfExistInt(k);</span>
+<span class="fc bfc" id="L1115" title="All 2 branches covered.">			return id &lt; 0 ? -1 : idList.lastIndexOf(id);</span>
 		}
 
 		@Override
 		public int removeInt(int index) {
-<span class="fc" id="L1109">			return map.idToIndex(idList.removeInt(index));</span>
+<span class="fc" id="L1120">			return map.idToIndex(idList.removeInt(index));</span>
 		}
 	}
 
@@ -1120,14 +1131,14 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K&gt; List&lt;K&gt; indexToIdList(IntList indexList, IndexIdMap&lt;K&gt; map) {
-<span class="fc bfc" id="L1123" title="All 2 branches covered.">		if (map instanceof IndexIntIdMap)</span>
-<span class="fc" id="L1124">			return (List&lt;K&gt;) indexToIdList(indexList, (IndexIntIdMap) map);</span>
-<span class="fc bfc" id="L1125" title="All 2 branches covered.">		if (indexList instanceof IdToIndexList) {</span>
-<span class="fc" id="L1126">			IdToIndexList&lt;K&gt; indexList0 = (IdToIndexList&lt;K&gt;) indexList;</span>
-<span class="fc bfc" id="L1127" title="All 2 branches covered.">			if (indexList0.map == map)</span>
-<span class="fc" id="L1128">				return indexList0.idList;</span>
+<span class="fc bfc" id="L1134" title="All 2 branches covered.">		if (map instanceof IndexIntIdMap)</span>
+<span class="fc" id="L1135">			return (List&lt;K&gt;) indexToIdList(indexList, (IndexIntIdMap) map);</span>
+<span class="fc bfc" id="L1136" title="All 2 branches covered.">		if (indexList instanceof IdToIndexList) {</span>
+<span class="fc" id="L1137">			IdToIndexList&lt;K&gt; indexList0 = (IdToIndexList&lt;K&gt;) indexList;</span>
+<span class="fc bfc" id="L1138" title="All 2 branches covered.">			if (indexList0.map == map)</span>
+<span class="fc" id="L1139">				return indexList0.idList;</span>
 		}
-<span class="fc" id="L1130">		return new IndexToIdList&lt;&gt;(indexList, map);</span>
+<span class="fc" id="L1141">		return new IndexToIdList&lt;&gt;(indexList, map);</span>
 	}
 
 	/**
@@ -1138,12 +1149,12 @@ public class IndexIdMaps {
 	 * @return           a list that contain IDs matching the indices contained in the original index-list
 	 */
 	public static IntList indexToIdList(IntList indexList, IndexIntIdMap map) {
-<span class="fc bfc" id="L1141" title="All 2 branches covered.">		if (indexList instanceof IntIdToIndexList) {</span>
-<span class="fc" id="L1142">			IntIdToIndexList indexList0 = (IntIdToIndexList) indexList;</span>
-<span class="fc bfc" id="L1143" title="All 2 branches covered.">			if (indexList0.map == map)</span>
-<span class="fc" id="L1144">				return indexList0.idList;</span>
+<span class="fc bfc" id="L1152" title="All 2 branches covered.">		if (indexList instanceof IntIdToIndexList) {</span>
+<span class="fc" id="L1153">			IntIdToIndexList indexList0 = (IntIdToIndexList) indexList;</span>
+<span class="fc bfc" id="L1154" title="All 2 branches covered.">			if (indexList0.map == map)</span>
+<span class="fc" id="L1155">				return indexList0.idList;</span>
 		}
-<span class="fc" id="L1146">		return new IndexToIntIdList(indexList, map);</span>
+<span class="fc" id="L1157">		return new IndexToIntIdList(indexList, map);</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
@@ -1152,56 +1163,56 @@ public class IndexIdMaps {
 		private final IntList indexList;
 		private final IndexIdMap&lt;K&gt; map;
 
-<span class="fc" id="L1155">		IndexToIdList(IntList indexList, IndexIdMap&lt;K&gt; map) {</span>
-<span class="fc" id="L1156">			this.indexList = Objects.requireNonNull(indexList);</span>
-<span class="fc" id="L1157">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L1158">		}</span>
+<span class="fc" id="L1166">		IndexToIdList(IntList indexList, IndexIdMap&lt;K&gt; map) {</span>
+<span class="fc" id="L1167">			this.indexList = Objects.requireNonNull(indexList);</span>
+<span class="fc" id="L1168">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L1169">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L1162">			return indexList.size();</span>
+<span class="fc" id="L1173">			return indexList.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L1167">			return indexList.isEmpty();</span>
+<span class="fc" id="L1178">			return indexList.isEmpty();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L1172">			indexList.clear();</span>
-<span class="fc" id="L1173">		}</span>
+<span class="fc" id="L1183">			indexList.clear();</span>
+<span class="fc" id="L1184">		}</span>
 
 		@Override
 		public boolean contains(Object key) {
-<span class="fc" id="L1177">			return indexList.contains(map.idToIndexIfExist((K) key));</span>
+<span class="fc" id="L1188">			return indexList.contains(map.idToIndexIfExist((K) key));</span>
 		}
 
 		@Override
 		public boolean remove(Object key) {
-<span class="fc" id="L1182">			return indexList.rem(map.idToIndexIfExist((K) key));</span>
+<span class="fc" id="L1193">			return indexList.rem(map.idToIndexIfExist((K) key));</span>
 		}
 
 		@Override
 		public K get(int index) {
-<span class="fc" id="L1187">			return map.indexToId(indexList.getInt(index));</span>
+<span class="fc" id="L1198">			return map.indexToId(indexList.getInt(index));</span>
 		}
 
 		@Override
 		public int indexOf(Object k) {
-<span class="fc" id="L1192">			int idx = map.idToIndexIfExist((K) k);</span>
-<span class="fc bfc" id="L1193" title="All 2 branches covered.">			return idx &lt; 0 ? -1 : indexList.indexOf(idx);</span>
+<span class="fc" id="L1203">			int idx = map.idToIndexIfExist((K) k);</span>
+<span class="fc bfc" id="L1204" title="All 2 branches covered.">			return idx &lt; 0 ? -1 : indexList.indexOf(idx);</span>
 		}
 
 		@Override
 		public int lastIndexOf(Object k) {
-<span class="fc" id="L1198">			int idx = map.idToIndexIfExist((K) k);</span>
-<span class="fc bfc" id="L1199" title="All 2 branches covered.">			return idx &lt; 0 ? -1 : indexList.lastIndexOf(idx);</span>
+<span class="fc" id="L1209">			int idx = map.idToIndexIfExist((K) k);</span>
+<span class="fc bfc" id="L1210" title="All 2 branches covered.">			return idx &lt; 0 ? -1 : indexList.lastIndexOf(idx);</span>
 		}
 
 		@Override
 		public K remove(int index) {
-<span class="fc" id="L1204">			return map.indexToId(indexList.removeInt(index));</span>
+<span class="fc" id="L1215">			return map.indexToId(indexList.removeInt(index));</span>
 		}
 	}
 
@@ -1210,56 +1221,56 @@ public class IndexIdMaps {
 		private final IntList indexList;
 		private final IndexIntIdMap map;
 
-<span class="fc" id="L1213">		IndexToIntIdList(IntList indexList, IndexIntIdMap map) {</span>
-<span class="fc" id="L1214">			this.indexList = Objects.requireNonNull(indexList);</span>
-<span class="fc" id="L1215">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L1216">		}</span>
+<span class="fc" id="L1224">		IndexToIntIdList(IntList indexList, IndexIntIdMap map) {</span>
+<span class="fc" id="L1225">			this.indexList = Objects.requireNonNull(indexList);</span>
+<span class="fc" id="L1226">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L1227">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L1220">			return indexList.size();</span>
+<span class="fc" id="L1231">			return indexList.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L1225">			return indexList.isEmpty();</span>
+<span class="fc" id="L1236">			return indexList.isEmpty();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L1230">			indexList.clear();</span>
-<span class="fc" id="L1231">		}</span>
+<span class="fc" id="L1241">			indexList.clear();</span>
+<span class="fc" id="L1242">		}</span>
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc" id="L1235">			return indexList.contains(map.idToIndexIfExist(key));</span>
+<span class="fc" id="L1246">			return indexList.contains(map.idToIndexIfExist(key));</span>
 		}
 
 		@Override
 		public boolean rem(int key) {
-<span class="fc" id="L1240">			return indexList.rem(map.idToIndexIfExist(key));</span>
+<span class="fc" id="L1251">			return indexList.rem(map.idToIndexIfExist(key));</span>
 		}
 
 		@Override
 		public int getInt(int index) {
-<span class="fc" id="L1245">			return map.indexToIdInt(indexList.getInt(index));</span>
+<span class="fc" id="L1256">			return map.indexToIdInt(indexList.getInt(index));</span>
 		}
 
 		@Override
 		public int indexOf(int k) {
-<span class="fc" id="L1250">			int idx = map.idToIndexIfExist(k);</span>
-<span class="fc bfc" id="L1251" title="All 2 branches covered.">			return idx &lt; 0 ? -1 : indexList.indexOf(idx);</span>
+<span class="fc" id="L1261">			int idx = map.idToIndexIfExist(k);</span>
+<span class="fc bfc" id="L1262" title="All 2 branches covered.">			return idx &lt; 0 ? -1 : indexList.indexOf(idx);</span>
 		}
 
 		@Override
 		public int lastIndexOf(int k) {
-<span class="fc" id="L1256">			int idx = map.idToIndexIfExist(k);</span>
-<span class="fc bfc" id="L1257" title="All 2 branches covered.">			return idx &lt; 0 ? -1 : indexList.lastIndexOf(idx);</span>
+<span class="fc" id="L1267">			int idx = map.idToIndexIfExist(k);</span>
+<span class="fc bfc" id="L1268" title="All 2 branches covered.">			return idx &lt; 0 ? -1 : indexList.lastIndexOf(idx);</span>
 		}
 
 		@Override
 		public int removeInt(int index) {
-<span class="fc" id="L1262">			return map.indexToIdInt(indexList.removeInt(index));</span>
+<span class="fc" id="L1273">			return map.indexToIdInt(indexList.removeInt(index));</span>
 		}
 	}
 
@@ -1268,259 +1279,259 @@ public class IndexIdMaps {
 		private final Weights&lt;K, T&gt; idxWeights;
 		private final IndexIdMap&lt;K&gt; map;
 
-<span class="fc" id="L1271">		IdToIndexWeights(Weights&lt;K, T&gt; idxWeights, IndexIdMap&lt;K&gt; map) {</span>
-<span class="fc" id="L1272">			this.idxWeights = Objects.requireNonNull(idxWeights);</span>
-<span class="fc" id="L1273">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L1274">		}</span>
+<span class="fc" id="L1282">		IdToIndexWeights(Weights&lt;K, T&gt; idxWeights, IndexIdMap&lt;K&gt; map) {</span>
+<span class="fc" id="L1283">			this.idxWeights = Objects.requireNonNull(idxWeights);</span>
+<span class="fc" id="L1284">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L1285">		}</span>
 
 		Weights&lt;K, T&gt; idxWeights() {
-<span class="fc" id="L1277">			return idxWeights;</span>
+<span class="fc" id="L1288">			return idxWeights;</span>
 		}
 
 		K id(int index) {
-<span class="fc" id="L1281">			return map.indexToId(index);</span>
+<span class="fc" id="L1292">			return map.indexToId(index);</span>
 		}
 
 		static class Obj&lt;K, T&gt; extends IdToIndexWeights&lt;K, T&gt; implements IWeightsObj&lt;T&gt; {
 
 			Obj(WeightsObj&lt;K, T&gt; idxWeights, IndexIdMap&lt;K&gt; map) {
-<span class="fc" id="L1287">				super(idxWeights, map);</span>
-<span class="fc" id="L1288">			}</span>
+<span class="fc" id="L1298">				super(idxWeights, map);</span>
+<span class="fc" id="L1299">			}</span>
 
 			@Override
 			WeightsObj&lt;K, T&gt; idxWeights() {
-<span class="fc" id="L1292">				return (WeightsObj&lt;K, T&gt;) super.idxWeights();</span>
+<span class="fc" id="L1303">				return (WeightsObj&lt;K, T&gt;) super.idxWeights();</span>
 			}
 
 			@Override
 			public T get(int index) {
-<span class="fc" id="L1297">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1308">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, T weight) {
-<span class="fc" id="L1302">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1303">			}</span>
+<span class="fc" id="L1313">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1314">			}</span>
 
 			@Override
 			public T defaultWeight() {
-<span class="fc" id="L1307">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1318">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Byte&lt;K&gt; extends IdToIndexWeights&lt;K, java.lang.Byte&gt; implements IWeightsByte {
 
 			Byte(WeightsByte&lt;K&gt; idxWeights, IndexIdMap&lt;K&gt; map) {
-<span class="fc" id="L1314">				super(idxWeights, map);</span>
-<span class="fc" id="L1315">			}</span>
+<span class="fc" id="L1325">				super(idxWeights, map);</span>
+<span class="fc" id="L1326">			}</span>
 
 			@Override
 			WeightsByte&lt;K&gt; idxWeights() {
-<span class="fc" id="L1319">				return (WeightsByte&lt;K&gt;) super.idxWeights();</span>
+<span class="fc" id="L1330">				return (WeightsByte&lt;K&gt;) super.idxWeights();</span>
 			}
 
 			@Override
 			public byte get(int index) {
-<span class="fc" id="L1324">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1335">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, byte weight) {
-<span class="fc" id="L1329">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1330">			}</span>
+<span class="fc" id="L1340">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1341">			}</span>
 
 			@Override
 			public byte defaultWeight() {
-<span class="fc" id="L1334">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1345">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Short&lt;K&gt; extends IdToIndexWeights&lt;K, java.lang.Short&gt; implements IWeightsShort {
 
 			Short(WeightsShort&lt;K&gt; idxWeights, IndexIdMap&lt;K&gt; map) {
-<span class="fc" id="L1341">				super(idxWeights, map);</span>
-<span class="fc" id="L1342">			}</span>
+<span class="fc" id="L1352">				super(idxWeights, map);</span>
+<span class="fc" id="L1353">			}</span>
 
 			@Override
 			WeightsShort&lt;K&gt; idxWeights() {
-<span class="fc" id="L1346">				return (WeightsShort&lt;K&gt;) super.idxWeights();</span>
+<span class="fc" id="L1357">				return (WeightsShort&lt;K&gt;) super.idxWeights();</span>
 			}
 
 			@Override
 			public short get(int index) {
-<span class="fc" id="L1351">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1362">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, short weight) {
-<span class="fc" id="L1356">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1357">			}</span>
+<span class="fc" id="L1367">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1368">			}</span>
 
 			@Override
 			public short defaultWeight() {
-<span class="fc" id="L1361">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1372">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Int&lt;K&gt; extends IdToIndexWeights&lt;K, Integer&gt; implements IWeightsInt {
 
 			Int(WeightsInt&lt;K&gt; idxWeights, IndexIdMap&lt;K&gt; map) {
-<span class="fc" id="L1368">				super(idxWeights, map);</span>
-<span class="fc" id="L1369">			}</span>
+<span class="fc" id="L1379">				super(idxWeights, map);</span>
+<span class="fc" id="L1380">			}</span>
 
 			@Override
 			WeightsInt&lt;K&gt; idxWeights() {
-<span class="fc" id="L1373">				return (WeightsInt&lt;K&gt;) super.idxWeights();</span>
+<span class="fc" id="L1384">				return (WeightsInt&lt;K&gt;) super.idxWeights();</span>
 			}
 
 			@Override
 			public int get(int index) {
-<span class="fc" id="L1378">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1389">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, int weight) {
-<span class="fc" id="L1383">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1384">			}</span>
+<span class="fc" id="L1394">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1395">			}</span>
 
 			@Override
 			public int defaultWeight() {
-<span class="fc" id="L1388">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1399">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Long&lt;K&gt; extends IdToIndexWeights&lt;K, java.lang.Long&gt; implements IWeightsLong {
 
 			Long(WeightsLong&lt;K&gt; idxWeights, IndexIdMap&lt;K&gt; map) {
-<span class="fc" id="L1395">				super(idxWeights, map);</span>
-<span class="fc" id="L1396">			}</span>
+<span class="fc" id="L1406">				super(idxWeights, map);</span>
+<span class="fc" id="L1407">			}</span>
 
 			@Override
 			WeightsLong&lt;K&gt; idxWeights() {
-<span class="fc" id="L1400">				return (WeightsLong&lt;K&gt;) super.idxWeights();</span>
+<span class="fc" id="L1411">				return (WeightsLong&lt;K&gt;) super.idxWeights();</span>
 			}
 
 			@Override
 			public long get(int index) {
-<span class="fc" id="L1405">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1416">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, long weight) {
-<span class="fc" id="L1410">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1411">			}</span>
+<span class="fc" id="L1421">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1422">			}</span>
 
 			@Override
 			public long defaultWeight() {
-<span class="fc" id="L1415">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1426">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Float&lt;K&gt; extends IdToIndexWeights&lt;K, java.lang.Float&gt; implements IWeightsFloat {
 
 			Float(WeightsFloat&lt;K&gt; idxWeights, IndexIdMap&lt;K&gt; map) {
-<span class="fc" id="L1422">				super(idxWeights, map);</span>
-<span class="fc" id="L1423">			}</span>
+<span class="fc" id="L1433">				super(idxWeights, map);</span>
+<span class="fc" id="L1434">			}</span>
 
 			@Override
 			WeightsFloat&lt;K&gt; idxWeights() {
-<span class="fc" id="L1427">				return (WeightsFloat&lt;K&gt;) super.idxWeights();</span>
+<span class="fc" id="L1438">				return (WeightsFloat&lt;K&gt;) super.idxWeights();</span>
 			}
 
 			@Override
 			public float get(int index) {
-<span class="fc" id="L1432">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1443">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, float weight) {
-<span class="fc" id="L1437">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1438">			}</span>
+<span class="fc" id="L1448">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1449">			}</span>
 
 			@Override
 			public float defaultWeight() {
-<span class="fc" id="L1442">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1453">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Double&lt;K&gt; extends IdToIndexWeights&lt;K, java.lang.Double&gt; implements IWeightsDouble {
 
 			Double(WeightsDouble&lt;K&gt; idxWeights, IndexIdMap&lt;K&gt; map) {
-<span class="fc" id="L1449">				super(idxWeights, map);</span>
-<span class="fc" id="L1450">			}</span>
+<span class="fc" id="L1460">				super(idxWeights, map);</span>
+<span class="fc" id="L1461">			}</span>
 
 			@Override
 			WeightsDouble&lt;K&gt; idxWeights() {
-<span class="fc" id="L1454">				return (WeightsDouble&lt;K&gt;) super.idxWeights();</span>
+<span class="fc" id="L1465">				return (WeightsDouble&lt;K&gt;) super.idxWeights();</span>
 			}
 
 			@Override
 			public double get(int index) {
-<span class="fc" id="L1459">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1470">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, double weight) {
-<span class="fc" id="L1464">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1465">			}</span>
+<span class="fc" id="L1475">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1476">			}</span>
 
 			@Override
 			public double defaultWeight() {
-<span class="fc" id="L1469">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1480">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Bool&lt;K&gt; extends IdToIndexWeights&lt;K, Boolean&gt; implements IWeightsBool {
 
 			Bool(WeightsBool&lt;K&gt; idxWeights, IndexIdMap&lt;K&gt; map) {
-<span class="fc" id="L1476">				super(idxWeights, map);</span>
-<span class="fc" id="L1477">			}</span>
+<span class="fc" id="L1487">				super(idxWeights, map);</span>
+<span class="fc" id="L1488">			}</span>
 
 			@Override
 			WeightsBool&lt;K&gt; idxWeights() {
-<span class="fc" id="L1481">				return (WeightsBool&lt;K&gt;) super.idxWeights();</span>
+<span class="fc" id="L1492">				return (WeightsBool&lt;K&gt;) super.idxWeights();</span>
 			}
 
 			@Override
 			public boolean get(int index) {
-<span class="fc" id="L1486">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1497">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, boolean weight) {
-<span class="fc" id="L1491">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1492">			}</span>
+<span class="fc" id="L1502">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1503">			}</span>
 
 			@Override
 			public boolean defaultWeight() {
-<span class="fc" id="L1496">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1507">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Char&lt;K&gt; extends IdToIndexWeights&lt;K, Character&gt; implements IWeightsChar {
 
 			Char(WeightsChar&lt;K&gt; idxWeights, IndexIdMap&lt;K&gt; map) {
-<span class="fc" id="L1503">				super(idxWeights, map);</span>
-<span class="fc" id="L1504">			}</span>
+<span class="fc" id="L1514">				super(idxWeights, map);</span>
+<span class="fc" id="L1515">			}</span>
 
 			@Override
 			WeightsChar&lt;K&gt; idxWeights() {
-<span class="fc" id="L1508">				return (WeightsChar&lt;K&gt;) super.idxWeights();</span>
+<span class="fc" id="L1519">				return (WeightsChar&lt;K&gt;) super.idxWeights();</span>
 			}
 
 			@Override
 			public char get(int index) {
-<span class="fc" id="L1513">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1524">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, char weight) {
-<span class="fc" id="L1518">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1519">			}</span>
+<span class="fc" id="L1529">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1530">			}</span>
 
 			@Override
 			public char defaultWeight() {
-<span class="fc" id="L1523">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1534">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
@@ -1531,259 +1542,259 @@ public class IndexIdMaps {
 		private final IWeights&lt;T&gt; idxWeights;
 		private final IndexIntIdMap map;
 
-<span class="fc" id="L1534">		IntIdToIndexWeights(IWeights&lt;T&gt; idxWeights, IndexIntIdMap map) {</span>
-<span class="fc" id="L1535">			this.idxWeights = Objects.requireNonNull(idxWeights);</span>
-<span class="fc" id="L1536">			this.map = Objects.requireNonNull(map);</span>
-<span class="fc" id="L1537">		}</span>
+<span class="fc" id="L1545">		IntIdToIndexWeights(IWeights&lt;T&gt; idxWeights, IndexIntIdMap map) {</span>
+<span class="fc" id="L1546">			this.idxWeights = Objects.requireNonNull(idxWeights);</span>
+<span class="fc" id="L1547">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L1548">		}</span>
 
 		IWeights&lt;T&gt; idxWeights() {
-<span class="fc" id="L1540">			return idxWeights;</span>
+<span class="fc" id="L1551">			return idxWeights;</span>
 		}
 
 		int id(int index) {
-<span class="fc" id="L1544">			return map.indexToIdInt(index);</span>
+<span class="fc" id="L1555">			return map.indexToIdInt(index);</span>
 		}
 
 		static class Obj&lt;T&gt; extends IntIdToIndexWeights&lt;T&gt; implements IWeightsObj&lt;T&gt; {
 
 			Obj(IWeightsObj&lt;T&gt; idxWeights, IndexIntIdMap map) {
-<span class="fc" id="L1550">				super(idxWeights, map);</span>
-<span class="fc" id="L1551">			}</span>
+<span class="fc" id="L1561">				super(idxWeights, map);</span>
+<span class="fc" id="L1562">			}</span>
 
 			@Override
 			IWeightsObj&lt;T&gt; idxWeights() {
-<span class="fc" id="L1555">				return (IWeightsObj&lt;T&gt;) super.idxWeights();</span>
+<span class="fc" id="L1566">				return (IWeightsObj&lt;T&gt;) super.idxWeights();</span>
 			}
 
 			@Override
 			public T get(int index) {
-<span class="fc" id="L1560">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1571">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, T weight) {
-<span class="fc" id="L1565">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1566">			}</span>
+<span class="fc" id="L1576">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1577">			}</span>
 
 			@Override
 			public T defaultWeight() {
-<span class="fc" id="L1570">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1581">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Byte extends IntIdToIndexWeights&lt;java.lang.Byte&gt; implements IWeightsByte {
 
 			Byte(IWeightsByte idxWeights, IndexIntIdMap map) {
-<span class="fc" id="L1577">				super(idxWeights, map);</span>
-<span class="fc" id="L1578">			}</span>
+<span class="fc" id="L1588">				super(idxWeights, map);</span>
+<span class="fc" id="L1589">			}</span>
 
 			@Override
 			IWeightsByte idxWeights() {
-<span class="fc" id="L1582">				return (IWeightsByte) super.idxWeights();</span>
+<span class="fc" id="L1593">				return (IWeightsByte) super.idxWeights();</span>
 			}
 
 			@Override
 			public byte get(int index) {
-<span class="fc" id="L1587">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1598">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, byte weight) {
-<span class="fc" id="L1592">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1593">			}</span>
+<span class="fc" id="L1603">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1604">			}</span>
 
 			@Override
 			public byte defaultWeight() {
-<span class="fc" id="L1597">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1608">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Short extends IntIdToIndexWeights&lt;java.lang.Short&gt; implements IWeightsShort {
 
 			Short(IWeightsShort idxWeights, IndexIntIdMap map) {
-<span class="fc" id="L1604">				super(idxWeights, map);</span>
-<span class="fc" id="L1605">			}</span>
+<span class="fc" id="L1615">				super(idxWeights, map);</span>
+<span class="fc" id="L1616">			}</span>
 
 			@Override
 			IWeightsShort idxWeights() {
-<span class="fc" id="L1609">				return (IWeightsShort) super.idxWeights();</span>
+<span class="fc" id="L1620">				return (IWeightsShort) super.idxWeights();</span>
 			}
 
 			@Override
 			public short get(int index) {
-<span class="fc" id="L1614">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1625">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, short weight) {
-<span class="fc" id="L1619">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1620">			}</span>
+<span class="fc" id="L1630">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1631">			}</span>
 
 			@Override
 			public short defaultWeight() {
-<span class="fc" id="L1624">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1635">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Int extends IntIdToIndexWeights&lt;Integer&gt; implements IWeightsInt {
 
 			Int(IWeightsInt idxWeights, IndexIntIdMap map) {
-<span class="fc" id="L1631">				super(idxWeights, map);</span>
-<span class="fc" id="L1632">			}</span>
+<span class="fc" id="L1642">				super(idxWeights, map);</span>
+<span class="fc" id="L1643">			}</span>
 
 			@Override
 			IWeightsInt idxWeights() {
-<span class="fc" id="L1636">				return (IWeightsInt) super.idxWeights();</span>
+<span class="fc" id="L1647">				return (IWeightsInt) super.idxWeights();</span>
 			}
 
 			@Override
 			public int get(int index) {
-<span class="fc" id="L1641">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1652">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, int weight) {
-<span class="fc" id="L1646">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1647">			}</span>
+<span class="fc" id="L1657">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1658">			}</span>
 
 			@Override
 			public int defaultWeight() {
-<span class="fc" id="L1651">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1662">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Long extends IntIdToIndexWeights&lt;java.lang.Long&gt; implements IWeightsLong {
 
 			Long(IWeightsLong idxWeights, IndexIntIdMap map) {
-<span class="fc" id="L1658">				super(idxWeights, map);</span>
-<span class="fc" id="L1659">			}</span>
+<span class="fc" id="L1669">				super(idxWeights, map);</span>
+<span class="fc" id="L1670">			}</span>
 
 			@Override
 			IWeightsLong idxWeights() {
-<span class="fc" id="L1663">				return (IWeightsLong) super.idxWeights();</span>
+<span class="fc" id="L1674">				return (IWeightsLong) super.idxWeights();</span>
 			}
 
 			@Override
 			public long get(int index) {
-<span class="fc" id="L1668">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1679">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, long weight) {
-<span class="fc" id="L1673">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1674">			}</span>
+<span class="fc" id="L1684">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1685">			}</span>
 
 			@Override
 			public long defaultWeight() {
-<span class="fc" id="L1678">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1689">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Float extends IntIdToIndexWeights&lt;java.lang.Float&gt; implements IWeightsFloat {
 
 			Float(IWeightsFloat idxWeights, IndexIntIdMap map) {
-<span class="fc" id="L1685">				super(idxWeights, map);</span>
-<span class="fc" id="L1686">			}</span>
+<span class="fc" id="L1696">				super(idxWeights, map);</span>
+<span class="fc" id="L1697">			}</span>
 
 			@Override
 			IWeightsFloat idxWeights() {
-<span class="fc" id="L1690">				return (IWeightsFloat) super.idxWeights();</span>
+<span class="fc" id="L1701">				return (IWeightsFloat) super.idxWeights();</span>
 			}
 
 			@Override
 			public float get(int index) {
-<span class="fc" id="L1695">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1706">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, float weight) {
-<span class="fc" id="L1700">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1701">			}</span>
+<span class="fc" id="L1711">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1712">			}</span>
 
 			@Override
 			public float defaultWeight() {
-<span class="fc" id="L1705">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1716">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Double extends IntIdToIndexWeights&lt;java.lang.Double&gt; implements IWeightsDouble {
 
 			Double(IWeightsDouble idxWeights, IndexIntIdMap map) {
-<span class="fc" id="L1712">				super(idxWeights, map);</span>
-<span class="fc" id="L1713">			}</span>
+<span class="fc" id="L1723">				super(idxWeights, map);</span>
+<span class="fc" id="L1724">			}</span>
 
 			@Override
 			IWeightsDouble idxWeights() {
-<span class="fc" id="L1717">				return (IWeightsDouble) super.idxWeights();</span>
+<span class="fc" id="L1728">				return (IWeightsDouble) super.idxWeights();</span>
 			}
 
 			@Override
 			public double get(int index) {
-<span class="fc" id="L1722">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1733">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, double weight) {
-<span class="fc" id="L1727">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1728">			}</span>
+<span class="fc" id="L1738">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1739">			}</span>
 
 			@Override
 			public double defaultWeight() {
-<span class="fc" id="L1732">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1743">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Bool extends IntIdToIndexWeights&lt;Boolean&gt; implements IWeightsBool {
 
 			Bool(IWeightsBool idxWeights, IndexIntIdMap map) {
-<span class="fc" id="L1739">				super(idxWeights, map);</span>
-<span class="fc" id="L1740">			}</span>
+<span class="fc" id="L1750">				super(idxWeights, map);</span>
+<span class="fc" id="L1751">			}</span>
 
 			@Override
 			IWeightsBool idxWeights() {
-<span class="fc" id="L1744">				return (IWeightsBool) super.idxWeights();</span>
+<span class="fc" id="L1755">				return (IWeightsBool) super.idxWeights();</span>
 			}
 
 			@Override
 			public boolean get(int index) {
-<span class="fc" id="L1749">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1760">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, boolean weight) {
-<span class="fc" id="L1754">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1755">			}</span>
+<span class="fc" id="L1765">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1766">			}</span>
 
 			@Override
 			public boolean defaultWeight() {
-<span class="fc" id="L1759">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1770">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
 		static class Char extends IntIdToIndexWeights&lt;Character&gt; implements IWeightsChar {
 
 			Char(IWeightsChar idxWeights, IndexIntIdMap map) {
-<span class="fc" id="L1766">				super(idxWeights, map);</span>
-<span class="fc" id="L1767">			}</span>
+<span class="fc" id="L1777">				super(idxWeights, map);</span>
+<span class="fc" id="L1778">			}</span>
 
 			@Override
 			IWeightsChar idxWeights() {
-<span class="fc" id="L1771">				return (IWeightsChar) super.idxWeights();</span>
+<span class="fc" id="L1782">				return (IWeightsChar) super.idxWeights();</span>
 			}
 
 			@Override
 			public char get(int index) {
-<span class="fc" id="L1776">				return idxWeights().get(id(index));</span>
+<span class="fc" id="L1787">				return idxWeights().get(id(index));</span>
 			}
 
 			@Override
 			public void set(int index, char weight) {
-<span class="fc" id="L1781">				idxWeights().set(id(index), weight);</span>
-<span class="fc" id="L1782">			}</span>
+<span class="fc" id="L1792">				idxWeights().set(id(index), weight);</span>
+<span class="fc" id="L1793">			}</span>
 
 			@Override
 			public char defaultWeight() {
-<span class="fc" id="L1786">				return idxWeights().defaultWeight();</span>
+<span class="fc" id="L1797">				return idxWeights().defaultWeight();</span>
 			}
 		}
 
@@ -1792,48 +1803,48 @@ public class IndexIdMaps {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;K, T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT idToIndexWeightsWrapper(Weights&lt;K, T&gt; weights,
 			IndexIdMap&lt;K&gt; map) {
-<span class="pc bpc" id="L1795" title="1 of 4 branches missed.">		if (weights instanceof IWeights &amp;&amp; map instanceof IndexIntIdMap) {</span>
-<span class="fc" id="L1796">			IWeights&lt;T&gt; weights0 = (IWeights&lt;T&gt;) weights;</span>
-<span class="fc" id="L1797">			IndexIntIdMap map0 = (IndexIntIdMap) map;</span>
-<span class="fc bfc" id="L1798" title="All 2 branches covered.">			if (weights instanceof WeightsByte) {</span>
-<span class="fc" id="L1799">				return (WeightsT) new IntIdToIndexWeights.Byte((IWeightsByte) weights0, map0);</span>
-<span class="fc bfc" id="L1800" title="All 2 branches covered.">			} else if (weights instanceof WeightsShort) {</span>
-<span class="fc" id="L1801">				return (WeightsT) new IntIdToIndexWeights.Short((IWeightsShort) weights0, map0);</span>
-<span class="fc bfc" id="L1802" title="All 2 branches covered.">			} else if (weights instanceof WeightsInt) {</span>
-<span class="fc" id="L1803">				return (WeightsT) new IntIdToIndexWeights.Int((IWeightsInt) weights0, map0);</span>
-<span class="fc bfc" id="L1804" title="All 2 branches covered.">			} else if (weights instanceof WeightsLong) {</span>
-<span class="fc" id="L1805">				return (WeightsT) new IntIdToIndexWeights.Long((IWeightsLong) weights0, map0);</span>
-<span class="fc bfc" id="L1806" title="All 2 branches covered.">			} else if (weights instanceof WeightsFloat) {</span>
-<span class="fc" id="L1807">				return (WeightsT) new IntIdToIndexWeights.Float((IWeightsFloat) weights0, map0);</span>
-<span class="fc bfc" id="L1808" title="All 2 branches covered.">			} else if (weights instanceof WeightsDouble) {</span>
-<span class="fc" id="L1809">				return (WeightsT) new IntIdToIndexWeights.Double((IWeightsDouble) weights0, map0);</span>
-<span class="fc bfc" id="L1810" title="All 2 branches covered.">			} else if (weights instanceof WeightsBool) {</span>
-<span class="fc" id="L1811">				return (WeightsT) new IntIdToIndexWeights.Bool((IWeightsBool) weights0, map0);</span>
-<span class="fc bfc" id="L1812" title="All 2 branches covered.">			} else if (weights instanceof WeightsChar) {</span>
-<span class="fc" id="L1813">				return (WeightsT) new IntIdToIndexWeights.Char((IWeightsChar) weights0, map0);</span>
-<span class="pc bpc" id="L1814" title="1 of 2 branches missed.">			} else if (weights instanceof WeightsObj) {</span>
-<span class="fc" id="L1815">				return (WeightsT) new IntIdToIndexWeights.Obj&lt;&gt;((IWeightsObj&lt;T&gt;) weights0, map0);</span>
+<span class="pc bpc" id="L1806" title="1 of 4 branches missed.">		if (weights instanceof IWeights &amp;&amp; map instanceof IndexIntIdMap) {</span>
+<span class="fc" id="L1807">			IWeights&lt;T&gt; weights0 = (IWeights&lt;T&gt;) weights;</span>
+<span class="fc" id="L1808">			IndexIntIdMap map0 = (IndexIntIdMap) map;</span>
+<span class="fc bfc" id="L1809" title="All 2 branches covered.">			if (weights instanceof WeightsByte) {</span>
+<span class="fc" id="L1810">				return (WeightsT) new IntIdToIndexWeights.Byte((IWeightsByte) weights0, map0);</span>
+<span class="fc bfc" id="L1811" title="All 2 branches covered.">			} else if (weights instanceof WeightsShort) {</span>
+<span class="fc" id="L1812">				return (WeightsT) new IntIdToIndexWeights.Short((IWeightsShort) weights0, map0);</span>
+<span class="fc bfc" id="L1813" title="All 2 branches covered.">			} else if (weights instanceof WeightsInt) {</span>
+<span class="fc" id="L1814">				return (WeightsT) new IntIdToIndexWeights.Int((IWeightsInt) weights0, map0);</span>
+<span class="fc bfc" id="L1815" title="All 2 branches covered.">			} else if (weights instanceof WeightsLong) {</span>
+<span class="fc" id="L1816">				return (WeightsT) new IntIdToIndexWeights.Long((IWeightsLong) weights0, map0);</span>
+<span class="fc bfc" id="L1817" title="All 2 branches covered.">			} else if (weights instanceof WeightsFloat) {</span>
+<span class="fc" id="L1818">				return (WeightsT) new IntIdToIndexWeights.Float((IWeightsFloat) weights0, map0);</span>
+<span class="fc bfc" id="L1819" title="All 2 branches covered.">			} else if (weights instanceof WeightsDouble) {</span>
+<span class="fc" id="L1820">				return (WeightsT) new IntIdToIndexWeights.Double((IWeightsDouble) weights0, map0);</span>
+<span class="fc bfc" id="L1821" title="All 2 branches covered.">			} else if (weights instanceof WeightsBool) {</span>
+<span class="fc" id="L1822">				return (WeightsT) new IntIdToIndexWeights.Bool((IWeightsBool) weights0, map0);</span>
+<span class="fc bfc" id="L1823" title="All 2 branches covered.">			} else if (weights instanceof WeightsChar) {</span>
+<span class="fc" id="L1824">				return (WeightsT) new IntIdToIndexWeights.Char((IWeightsChar) weights0, map0);</span>
+<span class="pc bpc" id="L1825" title="1 of 2 branches missed.">			} else if (weights instanceof WeightsObj) {</span>
+<span class="fc" id="L1826">				return (WeightsT) new IntIdToIndexWeights.Obj&lt;&gt;((IWeightsObj&lt;T&gt;) weights0, map0);</span>
 			}
-<span class="pc bfc" id="L1817" title="All 2 branches covered.">		} else if (weights instanceof WeightsByte) {</span>
-<span class="fc" id="L1818">			return (WeightsT) new IdToIndexWeights.Byte&lt;&gt;((WeightsByte&lt;K&gt;) weights, map);</span>
-<span class="fc bfc" id="L1819" title="All 2 branches covered.">		} else if (weights instanceof WeightsShort) {</span>
-<span class="fc" id="L1820">			return (WeightsT) new IdToIndexWeights.Short&lt;&gt;((WeightsShort&lt;K&gt;) weights, map);</span>
-<span class="fc bfc" id="L1821" title="All 2 branches covered.">		} else if (weights instanceof WeightsInt) {</span>
-<span class="fc" id="L1822">			return (WeightsT) new IdToIndexWeights.Int&lt;&gt;((WeightsInt&lt;K&gt;) weights, map);</span>
-<span class="fc bfc" id="L1823" title="All 2 branches covered.">		} else if (weights instanceof WeightsLong) {</span>
-<span class="fc" id="L1824">			return (WeightsT) new IdToIndexWeights.Long&lt;&gt;((WeightsLong&lt;K&gt;) weights, map);</span>
-<span class="fc bfc" id="L1825" title="All 2 branches covered.">		} else if (weights instanceof WeightsFloat) {</span>
-<span class="fc" id="L1826">			return (WeightsT) new IdToIndexWeights.Float&lt;&gt;((WeightsFloat&lt;K&gt;) weights, map);</span>
-<span class="fc bfc" id="L1827" title="All 2 branches covered.">		} else if (weights instanceof WeightsDouble) {</span>
-<span class="fc" id="L1828">			return (WeightsT) new IdToIndexWeights.Double&lt;&gt;((WeightsDouble&lt;K&gt;) weights, map);</span>
-<span class="fc bfc" id="L1829" title="All 2 branches covered.">		} else if (weights instanceof WeightsBool) {</span>
-<span class="fc" id="L1830">			return (WeightsT) new IdToIndexWeights.Bool&lt;&gt;((WeightsBool&lt;K&gt;) weights, map);</span>
-<span class="fc bfc" id="L1831" title="All 2 branches covered.">		} else if (weights instanceof WeightsChar) {</span>
-<span class="fc" id="L1832">			return (WeightsT) new IdToIndexWeights.Char&lt;&gt;((WeightsChar&lt;K&gt;) weights, map);</span>
-<span class="pc bpc" id="L1833" title="1 of 2 branches missed.">		} else if (weights instanceof WeightsObj) {</span>
-<span class="fc" id="L1834">			return (WeightsT) new IdToIndexWeights.Obj&lt;&gt;((WeightsObj&lt;K, T&gt;) weights, map);</span>
+<span class="pc bfc" id="L1828" title="All 2 branches covered.">		} else if (weights instanceof WeightsByte) {</span>
+<span class="fc" id="L1829">			return (WeightsT) new IdToIndexWeights.Byte&lt;&gt;((WeightsByte&lt;K&gt;) weights, map);</span>
+<span class="fc bfc" id="L1830" title="All 2 branches covered.">		} else if (weights instanceof WeightsShort) {</span>
+<span class="fc" id="L1831">			return (WeightsT) new IdToIndexWeights.Short&lt;&gt;((WeightsShort&lt;K&gt;) weights, map);</span>
+<span class="fc bfc" id="L1832" title="All 2 branches covered.">		} else if (weights instanceof WeightsInt) {</span>
+<span class="fc" id="L1833">			return (WeightsT) new IdToIndexWeights.Int&lt;&gt;((WeightsInt&lt;K&gt;) weights, map);</span>
+<span class="fc bfc" id="L1834" title="All 2 branches covered.">		} else if (weights instanceof WeightsLong) {</span>
+<span class="fc" id="L1835">			return (WeightsT) new IdToIndexWeights.Long&lt;&gt;((WeightsLong&lt;K&gt;) weights, map);</span>
+<span class="fc bfc" id="L1836" title="All 2 branches covered.">		} else if (weights instanceof WeightsFloat) {</span>
+<span class="fc" id="L1837">			return (WeightsT) new IdToIndexWeights.Float&lt;&gt;((WeightsFloat&lt;K&gt;) weights, map);</span>
+<span class="fc bfc" id="L1838" title="All 2 branches covered.">		} else if (weights instanceof WeightsDouble) {</span>
+<span class="fc" id="L1839">			return (WeightsT) new IdToIndexWeights.Double&lt;&gt;((WeightsDouble&lt;K&gt;) weights, map);</span>
+<span class="fc bfc" id="L1840" title="All 2 branches covered.">		} else if (weights instanceof WeightsBool) {</span>
+<span class="fc" id="L1841">			return (WeightsT) new IdToIndexWeights.Bool&lt;&gt;((WeightsBool&lt;K&gt;) weights, map);</span>
+<span class="fc bfc" id="L1842" title="All 2 branches covered.">		} else if (weights instanceof WeightsChar) {</span>
+<span class="fc" id="L1843">			return (WeightsT) new IdToIndexWeights.Char&lt;&gt;((WeightsChar&lt;K&gt;) weights, map);</span>
+<span class="pc bpc" id="L1844" title="1 of 2 branches missed.">		} else if (weights instanceof WeightsObj) {</span>
+<span class="fc" id="L1845">			return (WeightsT) new IdToIndexWeights.Obj&lt;&gt;((WeightsObj&lt;K, T&gt;) weights, map);</span>
 		}
-<span class="nc" id="L1836">		throw new AssertionError(&quot;unknown weights type: &quot; + weights.getClass().getName());</span>
+<span class="nc" id="L1847">		throw new AssertionError(&quot;unknown weights type: &quot; + weights.getClass().getName());</span>
 	}
 
 	/**
@@ -1856,30 +1867,30 @@ public class IndexIdMaps {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K, T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT idToIndexWeights(Weights&lt;K, T&gt; weights,
 			IndexIdMap&lt;K&gt; map) {
-<span class="fc" id="L1859">		boolean immutableView = false;</span>
-<span class="pc bpc" id="L1860" title="1 of 2 branches missed.">		while (weights instanceof WeightsImpl.ImmutableView) {</span>
-<span class="nc" id="L1861">			weights = ((WeightsImpl.ImmutableView&lt;K, T&gt;) weights).weights();</span>
-<span class="nc" id="L1862">			immutableView = true;</span>
+<span class="fc" id="L1870">		boolean immutableView = false;</span>
+<span class="pc bpc" id="L1871" title="1 of 2 branches missed.">		while (weights instanceof WeightsImpl.ImmutableView) {</span>
+<span class="nc" id="L1872">			weights = ((WeightsImpl.ImmutableView&lt;K, T&gt;) weights).weights();</span>
+<span class="nc" id="L1873">			immutableView = true;</span>
 		}
 
 		IWeights&lt;T&gt; idxWeights;
-<span class="fc bfc" id="L1866" title="All 2 branches covered.">		if (weights instanceof WeightsImpl.IntMapped) {</span>
-<span class="pc bpc" id="L1867" title="1 of 2 branches missed.">			if (map != ((WeightsImpl.IntMapped&lt;?&gt;) weights).indexMap)</span>
-<span class="nc" id="L1868">				throw new IllegalArgumentException(&quot;wrong index-id map is used with weights container&quot;);</span>
-<span class="fc" id="L1869">			idxWeights = ((WeightsImpl.IntMapped&lt;T&gt;) weights).weights;</span>
+<span class="fc bfc" id="L1877" title="All 2 branches covered.">		if (weights instanceof WeightsImpl.IntMapped) {</span>
+<span class="pc bpc" id="L1878" title="1 of 2 branches missed.">			if (map != ((WeightsImpl.IntMapped&lt;?&gt;) weights).indexMap)</span>
+<span class="nc" id="L1879">				throw new IllegalArgumentException(&quot;wrong index-id map is used with weights container&quot;);</span>
+<span class="fc" id="L1880">			idxWeights = ((WeightsImpl.IntMapped&lt;T&gt;) weights).weights;</span>
 
-<span class="fc bfc" id="L1871" title="All 2 branches covered.">		} else if (weights instanceof WeightsImpl.ObjMapped) {</span>
-<span class="pc bpc" id="L1872" title="1 of 2 branches missed.">			if (map != ((WeightsImpl.ObjMapped&lt;?, ?&gt;) weights).indexMap)</span>
-<span class="nc" id="L1873">				throw new IllegalArgumentException(&quot;wrong index-id map is used with weights container&quot;);</span>
-<span class="fc" id="L1874">			idxWeights = ((WeightsImpl.ObjMapped&lt;K, T&gt;) weights).weights;</span>
+<span class="fc bfc" id="L1882" title="All 2 branches covered.">		} else if (weights instanceof WeightsImpl.ObjMapped) {</span>
+<span class="pc bpc" id="L1883" title="1 of 2 branches missed.">			if (map != ((WeightsImpl.ObjMapped&lt;?, ?&gt;) weights).indexMap)</span>
+<span class="nc" id="L1884">				throw new IllegalArgumentException(&quot;wrong index-id map is used with weights container&quot;);</span>
+<span class="fc" id="L1885">			idxWeights = ((WeightsImpl.ObjMapped&lt;K, T&gt;) weights).weights;</span>
 
 		} else {
-<span class="fc" id="L1877">			idxWeights = idToIndexWeightsWrapper(weights, map);</span>
+<span class="fc" id="L1888">			idxWeights = idToIndexWeightsWrapper(weights, map);</span>
 		}
 
-<span class="pc bpc" id="L1880" title="1 of 2 branches missed.">		if (immutableView)</span>
-<span class="nc" id="L1881">			idxWeights = WeightsImpl.IntImmutableView.newInstance(idxWeights);</span>
-<span class="fc" id="L1882">		return (WeightsT) idxWeights;</span>
+<span class="pc bpc" id="L1891" title="1 of 2 branches missed.">		if (immutableView)</span>
+<span class="nc" id="L1892">			idxWeights = WeightsImpl.IntImmutableView.newInstance(idxWeights);</span>
+<span class="fc" id="L1893">		return (WeightsT) idxWeights;</span>
 	}
 
 	/**
@@ -1892,37 +1903,37 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K&gt; IWeightFunction idToIndexWeightFunc(WeightFunction&lt;K&gt; w, IndexIdMap&lt;K&gt; map) {
-<span class="fc bfc" id="L1895" title="All 2 branches covered.">		if (WeightFunction.isCardinality(w)) {</span>
-<span class="fc" id="L1896">			return null;</span>
+<span class="fc bfc" id="L1906" title="All 2 branches covered.">		if (WeightFunction.isCardinality(w)) {</span>
+<span class="fc" id="L1907">			return null;</span>
 
-<span class="fc bfc" id="L1898" title="All 2 branches covered.">		} else if (w instanceof Weights) {</span>
+<span class="fc bfc" id="L1909" title="All 2 branches covered.">		} else if (w instanceof Weights) {</span>
 			/* The weight function is some implementation of a mapped weights container */
 			/* Instead of re-mapping by wrapping the weight function, return the underlying index weights container */
-<span class="fc" id="L1901">			return (IWeightFunction) idToIndexWeights((Weights&lt;K, ?&gt;) w, map);</span>
+<span class="fc" id="L1912">			return (IWeightFunction) idToIndexWeights((Weights&lt;K, ?&gt;) w, map);</span>
 
-<span class="pc bpc" id="L1903" title="1 of 4 branches missed.">		} else if (WeightFunction.isInteger(w) &amp;&amp; map instanceof IndexIntIdMap) {</span>
+<span class="pc bpc" id="L1914" title="1 of 4 branches missed.">		} else if (WeightFunction.isInteger(w) &amp;&amp; map instanceof IndexIntIdMap) {</span>
 			/* Unknown int weight function, return a mapped wrapper */
-<span class="fc" id="L1905">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
-<span class="fc" id="L1906">			IndexIntIdMap map0 = (IndexIntIdMap) map;</span>
-<span class="fc" id="L1907">			IWeightFunctionInt wIntMapped = idx -&gt; wInt.weightInt(map0.indexToIdInt(idx));</span>
-<span class="fc" id="L1908">			return wIntMapped;</span>
+<span class="fc" id="L1916">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
+<span class="fc" id="L1917">			IndexIntIdMap map0 = (IndexIntIdMap) map;</span>
+<span class="fc" id="L1918">			IWeightFunctionInt wIntMapped = idx -&gt; wInt.weightInt(map0.indexToIdInt(idx));</span>
+<span class="fc" id="L1919">			return wIntMapped;</span>
 
-<span class="pc bpc" id="L1910" title="1 of 4 branches missed.">		} else if (w instanceof IWeightFunction &amp;&amp; map instanceof IndexIntIdMap) {</span>
+<span class="pc bpc" id="L1921" title="1 of 4 branches missed.">		} else if (w instanceof IWeightFunction &amp;&amp; map instanceof IndexIntIdMap) {</span>
 			/* Unknown weight function, return a mapped wrapper */
-<span class="fc" id="L1912">			IWeightFunction wInt = (IWeightFunction) w;</span>
-<span class="fc" id="L1913">			IndexIntIdMap map0 = (IndexIntIdMap) map;</span>
-<span class="fc" id="L1914">			IWeightFunction wMapped = idx -&gt; wInt.weight(map0.indexToIdInt(idx));</span>
-<span class="fc" id="L1915">			return wMapped;</span>
+<span class="fc" id="L1923">			IWeightFunction wInt = (IWeightFunction) w;</span>
+<span class="fc" id="L1924">			IndexIntIdMap map0 = (IndexIntIdMap) map;</span>
+<span class="fc" id="L1925">			IWeightFunction wMapped = idx -&gt; wInt.weight(map0.indexToIdInt(idx));</span>
+<span class="fc" id="L1926">			return wMapped;</span>
 
-<span class="pc bpc" id="L1917" title="1 of 2 branches missed.">		} else if (WeightFunction.isInteger(w)) {</span>
+<span class="pc bpc" id="L1928" title="1 of 2 branches missed.">		} else if (WeightFunction.isInteger(w)) {</span>
 			/* Unknown int weight function, return a mapped wrapper */
-<span class="nc" id="L1919">			WeightFunctionInt&lt;K&gt; wInt = (WeightFunctionInt&lt;K&gt;) w;</span>
-<span class="nc" id="L1920">			IWeightFunctionInt wIntMapped = idx -&gt; wInt.weightInt(map.indexToId(idx));</span>
-<span class="nc" id="L1921">			return wIntMapped;</span>
+<span class="nc" id="L1930">			WeightFunctionInt&lt;K&gt; wInt = (WeightFunctionInt&lt;K&gt;) w;</span>
+<span class="nc" id="L1931">			IWeightFunctionInt wIntMapped = idx -&gt; wInt.weightInt(map.indexToId(idx));</span>
+<span class="nc" id="L1932">			return wIntMapped;</span>
 
 		} else {
 			/* Unknown weight function, return a mapped wrapper */
-<span class="fc" id="L1925">			return idx -&gt; w.weight(map.indexToId(idx));</span>
+<span class="fc" id="L1936">			return idx -&gt; w.weight(map.indexToId(idx));</span>
 		}
 	}
 
@@ -1935,7 +1946,7 @@ public class IndexIdMaps {
 	 * @return     an integer weight function that accept elements indices
 	 */
 	public static &lt;K&gt; IWeightFunctionInt idToIndexWeightFunc(WeightFunctionInt&lt;K&gt; w, IndexIdMap&lt;K&gt; map) {
-<span class="nc" id="L1938">		return (IWeightFunctionInt) idToIndexWeightFunc((WeightFunction&lt;K&gt;) w, map);</span>
+<span class="nc" id="L1949">		return (IWeightFunctionInt) idToIndexWeightFunc((WeightFunction&lt;K&gt;) w, map);</span>
 	}
 
 }

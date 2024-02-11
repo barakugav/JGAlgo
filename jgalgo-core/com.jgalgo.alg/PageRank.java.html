@@ -100,24 +100,25 @@ import com.jgalgo.graph.WeightFunctions;
 
 <span class="fc bfc" id="L101" title="All 2 branches covered.">				for (int v : range(n))</span>
 <span class="fc bfc" id="L102" title="All 2 branches covered.">					if (!g.outEdges(v).isEmpty())</span>
-<span class="fc" id="L103">						transferredScores[v] = scores[v] / weightSum[v];</span>
+						// TODO what do we do when weightSum[v] is zero
+<span class="fc" id="L104">						transferredScores[v] = scores[v] / weightSum[v];</span>
 
-<span class="fc" id="L105">				double maxChange = 0;</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">				for (int v : range(n)) {</span>
-<span class="fc" id="L107">					double score = 0;</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">					for (Predecessors.Iter it = ng.predecessors(v); it.hasNext(); it.advance())</span>
-<span class="fc" id="L109">						score += transferredScores[it.vertex()] * it.weight();</span>
-<span class="fc" id="L110">					score = rFactor + dampingFactor * score;</span>
-<span class="fc" id="L111">					maxChange = Math.max(maxChange, Math.abs(scores[v] - score));</span>
-<span class="fc" id="L112">					scores[v] = score;</span>
-<span class="fc" id="L113">				}</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">				if (maxChange &lt; tolerance)</span>
-<span class="fc" id="L115">					break;</span>
+<span class="fc" id="L106">				double maxChange = 0;</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">				for (int v : range(n)) {</span>
+<span class="fc" id="L108">					double score = 0;</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">					for (Predecessors.Iter it = ng.predecessors(v); it.hasNext(); it.advance())</span>
+<span class="fc" id="L110">						score += transferredScores[it.vertex()] * it.weight();</span>
+<span class="fc" id="L111">					score = rFactor + dampingFactor * score;</span>
+<span class="fc" id="L112">					maxChange = Math.max(maxChange, Math.abs(scores[v] - score));</span>
+<span class="fc" id="L113">					scores[v] = score;</span>
+<span class="fc" id="L114">				}</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">				if (maxChange &lt; tolerance)</span>
+<span class="fc" id="L116">					break;</span>
 			}
 
 		}
 
-<span class="fc" id="L120">		return new VertexScoringImpl.ResultImpl(scores);</span>
+<span class="fc" id="L121">		return new VertexScoringImpl.ResultImpl(scores);</span>
 	}
 
 	private static class Predecessors {
@@ -126,73 +127,73 @@ import com.jgalgo.graph.WeightFunctions;
 		private final int[] predecessorsBegin;
 		private final double[] weights;
 
-<span class="fc" id="L129">		Predecessors(IndexGraph g, IWeightFunction w) {</span>
-<span class="fc" id="L130">			final int n = g.vertices().size();</span>
-<span class="fc" id="L131">			final int m = g.edges().size();</span>
-<span class="fc" id="L132">			predecessorsBegin = new int[n + 1];</span>
+<span class="fc" id="L130">		Predecessors(IndexGraph g, IWeightFunction w) {</span>
+<span class="fc" id="L131">			final int n = g.vertices().size();</span>
+<span class="fc" id="L132">			final int m = g.edges().size();</span>
+<span class="fc" id="L133">			predecessorsBegin = new int[n + 1];</span>
 
-<span class="fc bfc" id="L134" title="All 2 branches covered.">			if (g.isDirected()) {</span>
-<span class="fc" id="L135">				predecessors = new int[m];</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc" id="L136">				predecessors = new int[m];</span>
 			} else {
-<span class="fc" id="L137">				int outDegreeSum = 0;</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">				for (int u : range(n))</span>
-<span class="fc" id="L139">					outDegreeSum += g.outEdges(u).size();</span>
-<span class="fc" id="L140">				predecessors = new int[outDegreeSum];</span>
+<span class="fc" id="L138">				int outDegreeSum = 0;</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">				for (int u : range(n))</span>
+<span class="fc" id="L140">					outDegreeSum += g.outEdges(u).size();</span>
+<span class="fc" id="L141">				predecessors = new int[outDegreeSum];</span>
 			}
 
-<span class="fc bfc" id="L143" title="All 2 branches covered.">			if (WeightFunction.isCardinality(w)) {</span>
-<span class="fc" id="L144">				weights = null;</span>
-<span class="fc" id="L145">				int eIdx = 0;</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">				for (int v : range(n)) {</span>
-<span class="fc" id="L147">					predecessorsBegin[v] = eIdx;</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L149">						eit.nextInt();</span>
-<span class="fc" id="L150">						predecessors[eIdx++] = eit.sourceInt();</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">			if (WeightFunction.isCardinality(w)) {</span>
+<span class="fc" id="L145">				weights = null;</span>
+<span class="fc" id="L146">				int eIdx = 0;</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">				for (int v : range(n)) {</span>
+<span class="fc" id="L148">					predecessorsBegin[v] = eIdx;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L150">						eit.nextInt();</span>
+<span class="fc" id="L151">						predecessors[eIdx++] = eit.sourceInt();</span>
 					}
-<span class="fc" id="L152">				}</span>
-<span class="fc" id="L153">			} else {</span>
-<span class="fc" id="L154">				weights = new double[predecessors.length];</span>
-<span class="fc" id="L155">				int eIdx = 0;</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">				for (int v : range(n)) {</span>
-<span class="fc" id="L157">					predecessorsBegin[v] = eIdx;</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L159">						int e = eit.nextInt();</span>
-<span class="fc" id="L160">						predecessors[eIdx] = eit.sourceInt();</span>
-<span class="fc" id="L161">						weights[eIdx] = w.weight(e);</span>
-<span class="fc" id="L162">						eIdx++;</span>
-<span class="fc" id="L163">					}</span>
-<span class="fc" id="L164">				}</span>
+<span class="fc" id="L153">				}</span>
+<span class="fc" id="L154">			} else {</span>
+<span class="fc" id="L155">				weights = new double[predecessors.length];</span>
+<span class="fc" id="L156">				int eIdx = 0;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">				for (int v : range(n)) {</span>
+<span class="fc" id="L158">					predecessorsBegin[v] = eIdx;</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L160">						int e = eit.nextInt();</span>
+<span class="fc" id="L161">						predecessors[eIdx] = eit.sourceInt();</span>
+<span class="fc" id="L162">						weights[eIdx] = w.weight(e);</span>
+<span class="fc" id="L163">						eIdx++;</span>
+<span class="fc" id="L164">					}</span>
+<span class="fc" id="L165">				}</span>
 			}
-<span class="fc" id="L166">			predecessorsBegin[n] = predecessors.length;</span>
-<span class="fc" id="L167">		}</span>
+<span class="fc" id="L167">			predecessorsBegin[n] = predecessors.length;</span>
+<span class="fc" id="L168">		}</span>
 
 		Predecessors.Iter predecessors(int target) {
-<span class="fc" id="L170">			return new Predecessors.Iter(target);</span>
+<span class="fc" id="L171">			return new Predecessors.Iter(target);</span>
 		}
 
 		class Iter {
 			private int index;
 			private final int end;
 
-<span class="fc" id="L177">			Iter(int target) {</span>
-<span class="fc" id="L178">				index = predecessorsBegin[target];</span>
-<span class="fc" id="L179">				end = predecessorsBegin[target + 1];</span>
-<span class="fc" id="L180">			}</span>
+<span class="fc" id="L178">			Iter(int target) {</span>
+<span class="fc" id="L179">				index = predecessorsBegin[target];</span>
+<span class="fc" id="L180">				end = predecessorsBegin[target + 1];</span>
+<span class="fc" id="L181">			}</span>
 
 			boolean hasNext() {
-<span class="fc bfc" id="L183" title="All 2 branches covered.">				return index &lt; end;</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">				return index &lt; end;</span>
 			}
 
 			void advance() {
-<span class="fc" id="L187">				index++;</span>
-<span class="fc" id="L188">			}</span>
+<span class="fc" id="L188">				index++;</span>
+<span class="fc" id="L189">			}</span>
 
 			int vertex() {
-<span class="fc" id="L191">				return predecessors[index];</span>
+<span class="fc" id="L192">				return predecessors[index];</span>
 			}
 
 			double weight() {
-<span class="fc" id="L195">				return weights[index];</span>
+<span class="fc" id="L196">				return weights[index];</span>
 			}
 		}
 
