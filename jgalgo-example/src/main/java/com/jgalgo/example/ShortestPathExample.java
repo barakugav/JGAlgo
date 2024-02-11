@@ -62,6 +62,11 @@ public class ShortestPathExample {
 		}
 	}
 
+	/**
+	 * Main function that runs the examples.
+	 *
+	 * @param args main args
+	 */
 	public static void main(String[] args) {
 		shortestPathExample();
 	}

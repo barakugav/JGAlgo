@@ -85,6 +85,11 @@ public class LowestCommonAncestorExample {
 		assert lcaAlgo.findLowestCommonAncestor(v3, v6) == rt;
 	}
 
+	/**
+	 * Main function that runs the examples.
+	 *
+	 * @param args main args
+	 */
 	public static void main(String[] args) {
 		staticLCAExample();
 		dynamicLCAExample();

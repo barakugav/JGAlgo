@@ -71,6 +71,11 @@ public class MaximumMatchingExample {
 		return g;
 	}
 
+	/**
+	 * Main function that runs the examples.
+	 *
+	 * @param args main args
+	 */
 	public static void main(String[] args) {
 		maximumMatchingExample();
 	}

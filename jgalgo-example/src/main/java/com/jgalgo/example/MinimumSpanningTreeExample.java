@@ -84,6 +84,11 @@ public class MinimumSpanningTreeExample {
 		System.out.println("The minimum spanning tree weight is " + w.weightSum(mst.edges()));
 	}
 
+	/**
+	 * Main function that runs the examples.
+	 *
+	 * @param args main args
+	 */
 	public static void main(String[] args) {
 		mstExample();
 	}
