@@ -89,8 +89,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * <p>
  * This generator is the bipartite version of {@link GnmGraphGenerator}.
  *
- * @see    BipartiteGraphs
- * @author Barak Ugav
+ * @see        BipartiteGraphs
+ * @param  <V> the vertices type
+ * @param  <E> the edges type
+ * @author     Barak Ugav
  */
 public class GnmBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
