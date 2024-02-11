@@ -72,7 +72,7 @@
               <goal>exec</goal>
             </goals>
             <configuration>
-              <executable>python</executable>
+              <executable>python3</executable>
               <arguments>
                 <argument>gensources.py</argument>
                 <argument>--clean</argument>
@@ -86,7 +86,7 @@
               <goal>exec</goal>
             </goals>
             <configuration>
-              <executable>python</executable>
+              <executable>python3</executable>
               <arguments>
                 <argument>gensources.py</argument>
               </arguments>
