@@ -441,9 +441,25 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 			if (bestWeight == Double.POSITIVE_INFINITY)
 				return null;
 			assert bestVertex >= 0;
-			if (bestEdge < 0)
-				while (sBacktrack[bestVertex] == tBacktrack[bestVertex])
+
+			/*
+			 * imagine we have the following graph: (s,t),(s,u),(u,t),(u,v), namely a triangle of s,t,u with additional
+			 * vertex v connected to u. If the edge (u,v) has a weight of 0, we can choose either of u or v as the
+			 * bestVertex when searching for a replacement path for (s,t). However, [s,u,v,u,t] is not a simple path.
+			 * The paper avoid these kind of paths by scanning the vertices in a DFS order, and the first vertex with
+			 * the best weight will always yield a simple path (the u vertex in the example graph). DFS is a bit
+			 * overkill, instead we use an arbitrary order, but if the backtracking edge of the vertex in both shortest
+			 * path tree is the same, we choose the other endpoint of the backtracking edge, which have a weight of
+			 * zero, and it removes the two duplications of the edge from the path. We perform this operation
+			 * repeatedly.
+			 */
+			if (bestEdge < 0) {
+				while (sBacktrack[bestVertex] == tBacktrack[bestVertex]) {
+					assert w.weight(sBacktrack[bestVertex]) == 0;
 					bestVertex = g.edgeEndpoint(sBacktrack[bestVertex], bestVertex);
+				}
+			}
+
 			IntArrayList path = new IntArrayList();
 
 			/* Add edges from source to bestVertex */
