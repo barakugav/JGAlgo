@@ -19,6 +19,9 @@ package com.jgalgo.graph;
 /**
  * Specific weights of {@code PRIMITIVE_TYPE_REAL} for {@linkplain IntGraph int graphs}.
  *
+#if PRIMITIVE_TYPE_REAL == "Object"
+ * @param  <T> the weights type
+#endif
  * @author Barak Ugav
  */
 public interface IWEIGHTS TYPE_GENERIC extends IWeights<TYPE_GENERIC_CLASS>, WEIGHTS<Integer TYPE_GENERIC_IN_TEMPLATE_LIST>
