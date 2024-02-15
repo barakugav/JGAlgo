@@ -35,7 +35,14 @@ public class NegativeCycleException extends RuntimeException {
 
 	private static final long serialVersionUID = 2383699177200213877L;
 
+	/**
+	 * The graph on which the negative cycle was detected.
+	 */
 	private final Graph<?, ?> graph;
+
+	/**
+	 * The negative cycle that was found in the graph.
+	 */
 	private final Path<?, ?> cycle;
 
 	<V, E> NegativeCycleException(Graph<V, E> g, Path<V, E> cycle) {
