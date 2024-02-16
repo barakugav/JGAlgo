@@ -262,6 +262,12 @@ public interface REFERENCEABLE_HEAP KEY_VALUE_GENERIC extends ReferenceableHeap,
 	/**
 	 * Get an instance of this interface with the default implementation.
 	 *
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+	 * @param  <K> the keys type
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
+	 * @param  <V> the values type
+#endif
 	 * @return an instance of this interface with the default implementation
 	 */
 	static KEY_VALUE_GENERIC REFERENCEABLE_HEAP KEY_VALUE_GENERIC newInstance() {
@@ -271,6 +277,12 @@ public interface REFERENCEABLE_HEAP KEY_VALUE_GENERIC extends ReferenceableHeap,
 	/**
 	 * Get an instance of this interface with the default implementation and custom comparator.
 	 *
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+	 * @param  <K> the keys type
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
+	 * @param  <V> the values type
+#endif
 	 * @param c a comparator to use for ordering the elements in the heap
 	 * @return an instance of this interface with the default implementation
 	 */

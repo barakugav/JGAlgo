@@ -180,6 +180,12 @@ public interface BINARY_SEARCH_TREE KEY_VALUE_GENERIC extends REFERENCEABLE_HEAP
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link BINARY_SEARCH_TREE} object.
 	 *
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+	 * @param  <K> the keys type
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
+	 * @param  <V> the values type
+#endif
 	 * @return a default implementation of {@link BINARY_SEARCH_TREE}
 	 */
 	static KEY_VALUE_GENERIC BINARY_SEARCH_TREE KEY_VALUE_GENERIC newInstance() {
@@ -192,6 +198,12 @@ public interface BINARY_SEARCH_TREE KEY_VALUE_GENERIC extends REFERENCEABLE_HEAP
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link BINARY_SEARCH_TREE} object.
 	 *
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+	 * @param  <K> the keys type
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
+	 * @param  <V> the values type
+#endif
 	 * @param  cmp a custom comparator
 	 * @return a default implementation of {@link BINARY_SEARCH_TREE}
 	 */
