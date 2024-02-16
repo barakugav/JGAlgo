@@ -34,7 +34,7 @@ import java.util.function.IntFunction;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.gen.GnpGraphGenerator;
 import com.jgalgo.internal.util.IterTools;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IterToolsTest;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -66,21 +66,7 @@ public class IndexIdMapsTest extends TestBase {
 							IterTools.map(indicesSet.iterator(), (IntFunction<Integer>) (map::indexToId))),
 					iteratedIds);
 
-			for (Iterator<Integer> it1 = IndexIdMaps.indexToIdIterator(indicesSet.iterator(), map),
-					it2 = IterTools.map(indicesSet.iterator(), (IntFunction<Integer>) (map::indexToId));;) {
-				assertEqualsBool(it1.hasNext(), it2.hasNext());
-				if (!it1.hasNext())
-					break;
-				if (rand.nextBoolean()) {
-					assertEquals(it1.next(), it2.next());
-				} else {
-					int skip = rand.nextInt(5);
-					int skipped1 = it1 instanceof IntIterator ? ((IntIterator) it1).skip(skip)
-							: JGAlgoUtils.objIterSkip(it1, skip);
-					int skipped2 = JGAlgoUtils.objIterSkip(it2, skip);
-					assertEquals(skipped1, skipped2);
-				}
-			}
+			IterToolsTest.testIterSkip(() -> IndexIdMaps.indexToIdIterator(indicesSet.iterator(), map), rand);
 
 			Set<Integer> removedIds = new HashSet<>();
 			Set<Integer> nonRemovedIds = new HashSet<>();
@@ -114,21 +100,7 @@ public class IndexIdMapsTest extends TestBase {
 				iteratedIndices.add(it.nextInt());
 			assertEquals(new IntArrayList(IterTools.map(idsSet.iterator(), map::idToIndex)), iteratedIndices);
 
-			for (Iterator<Integer> it1 = IndexIdMaps.idToIndexIterator(idsSet.iterator(), map),
-					it2 = IterTools.map(idsSet.iterator(), map::indexToId);;) {
-				assertEqualsBool(it1.hasNext(), it2.hasNext());
-				if (!it1.hasNext())
-					break;
-				if (rand.nextBoolean()) {
-					assertEquals(it1.next(), it2.next());
-				} else {
-					int skip = rand.nextInt(5);
-					int skipped1 = it1 instanceof IntIterator ? ((IntIterator) it1).skip(skip)
-							: JGAlgoUtils.objIterSkip(it1, skip);
-					int skipped2 = JGAlgoUtils.objIterSkip(it2, skip);
-					assertEquals(skipped1, skipped2);
-				}
-			}
+			IterToolsTest.testIterSkip(() -> IndexIdMaps.idToIndexIterator(idsSet.iterator(), map), rand);
 
 			IntSet removedIndices = new IntOpenHashSet();
 			IntSet nonRemovedIndices = new IntOpenHashSet();

@@ -27,7 +27,7 @@ import it.unimi.dsi.fastutil.Function;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class IterToolsTest extends TestBase {
 
@@ -57,37 +57,41 @@ public class IterToolsTest extends TestBase {
 				}
 			};
 			IntList list = new IntArrayList(range(10));
+			IntList expected = new IntArrayList();
+			for (int i : list)
+				expected.add(100 + i);
 
 			{
-				IntIterator it1 = list.iterator();
+				IntIterator it1 = expected.iterator();
 				Iterator<Integer> it2 = createIter.apply(list.iterator());
-				for (;;) {
-					assertEqualsBool(it1.hasNext(), it2.hasNext());
-					if (!it1.hasNext())
-						break;
-					assertEquals(100 + it1.nextInt(), (int) it2.next());
-				}
+				while (it1.hasNext() && it2.hasNext())
+					assertEquals(it1.nextInt(), it2.next());
+				assertEqualsBool(it1.hasNext(), it2.hasNext());
 			}
-			for (int repeat = 0; repeat < 10; repeat++) {
-				IntIterator it1 = list.iterator();
-				Iterator<Integer> it2 = createIter.apply(list.iterator());
-				for (;;) {
-					assertEqualsBool(it1.hasNext(), it2.hasNext());
-					if (!it1.hasNext())
-						break;
-					if (rand.nextBoolean()) {
-						assertEquals(100 + it1.nextInt(), it2.next());
-					} else {
-						int skip = rand.nextInt(5);
-						int skipped1 = it1.skip(skip);
-						int skipped2 = it2 instanceof IntIterator ? ((IntIterator) it2).skip(skip)
-								: ((ObjectIterator<?>) it2).skip(skip);
-						assertEquals(skipped1, skipped2);
-					}
-				}
-			}
-
+			testIterSkip(() -> createIter.apply(list.iterator()), rand);
 		}
+	}
+
+	public static <T> int skip(Iterator<T> it, int skip) {
+		return it instanceof IntIterator ? ((IntIterator) it).skip(skip) : JGAlgoUtils.objIterSkip(it, skip);
+	}
+
+	public static <T> void testIterSkip(Iterable<T> iterable, Random rand) {
+		Iterable<T> expected = new ObjectArrayList<>(iterable.iterator());
+		for (int repeat = 0; repeat < 10; repeat++) {
+			Iterator<T> it1 = expected.iterator(), it2 = iterable.iterator();
+			while (it1.hasNext() && it2.hasNext()) {
+				if (rand.nextBoolean()) {
+					assertEquals(it1.next(), it2.next());
+				} else {
+					int skip = rand.nextInt(5);
+					assertEquals(skip(it1, skip), skip(it2, skip));
+				}
+			}
+			assertEqualsBool(it1.hasNext(), it2.hasNext());
+			assertEquals(0, skip(it2, 10));
+		}
+		assertThrows(IllegalArgumentException.class, () -> skip(iterable.iterator(), -1));
 	}
 
 }
