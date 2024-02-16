@@ -82,8 +82,9 @@ public class Bitmap extends BitmapBase {
 	/**
 	 * Creates a new bitmap of the specified size, with the specified initial values provided from a predicate.
 	 *
-	 * @param size      the number of bits
-	 * @param predicate the predicate to provide the initial value of each bit
+	 * @param  size      the number of bits
+	 * @param  predicate the predicate to provide the initial value of each bit
+	 * @return           a new bitmap of the specified size, with the specified initial values provided from a predicate
 	 */
 	public static Bitmap fromPredicate(int size, IntPredicate predicate) {
 		Bitmap bitmap = new Bitmap(size);
