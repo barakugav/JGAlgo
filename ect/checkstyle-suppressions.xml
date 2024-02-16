@@ -20,5 +20,5 @@
 	<suppress files=".*IntLists2\.java"
 		checks="(ModifierOrder|SummaryJavadoc|NonEmptyAtclauseDescription|ArrayTypeStyle)" />
 	<suppress files=".*IntImmutableList2\.java"
-		checks="(ModifierOrder)" />
+		checks="(ModifierOrder|JavadocMethod)" />
 </suppressions>
