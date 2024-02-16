@@ -98,321 +98,323 @@ import it.unimi.dsi.fastutil.shorts.ShortList;
  * The GEXF format support both self edges and parallel edges. The format documentation can be found
  * &lt;a href= &quot;https://gexf.net/&quot;&gt;here&lt;/a&gt;.
  *
- * @see    GexfGraphReader
- * @author Barak Ugav
+ * @see        GexfGraphReader
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
  */
 public class GexfGraphWriter&lt;V, E&gt; extends GraphIoUtils.AbstractGraphWriter&lt;V, E&gt; {
 
-<span class="fc" id="L106">	private final SimpleDateFormat dateFormat = new SimpleDateFormat(Gexf.DateFormat);</span>
+<span class="fc" id="L108">	private final SimpleDateFormat dateFormat = new SimpleDateFormat(Gexf.DateFormat);</span>
 
 	/**
 	 * Create a new writer.
 	 */
-<span class="fc" id="L111">	public GexfGraphWriter() {}</span>
+<span class="fc" id="L113">	public GexfGraphWriter() {}</span>
 
 	@Override
 	void writeGraphImpl(Graph&lt;V, E&gt; graph, Writer writer) throws IOException {
 		try {
-<span class="fc" id="L116">			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();</span>
-<span class="fc" id="L117">			Element rootElm = document.createElement(&quot;gexf&quot;);</span>
-<span class="fc" id="L118">			rootElm.setAttribute(&quot;xmlns&quot;, &quot;http://gexf.net/1.3&quot;);</span>
-<span class="fc" id="L119">			document.appendChild(rootElm);</span>
+<span class="fc" id="L118">			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();</span>
+<span class="fc" id="L119">			Element rootElm = document.createElement(&quot;gexf&quot;);</span>
+<span class="fc" id="L120">			rootElm.setAttribute(&quot;xmlns&quot;, &quot;http://gexf.net/1.3&quot;);</span>
+<span class="fc" id="L121">			document.appendChild(rootElm);</span>
 
-<span class="fc" id="L121">			Element metaElm = document.createElement(&quot;meta&quot;);</span>
-<span class="fc" id="L122">			metaElm</span>
-<span class="fc" id="L123">					.setAttribute(&quot;lastmodifieddate&quot;,</span>
-<span class="fc" id="L124">							new SimpleDateFormat(&quot;yyyy-MM-dd&quot;).format(Calendar.getInstance().getTime()));</span>
-<span class="fc" id="L125">			Element creatorElm = document.createElement(&quot;creator&quot;);</span>
-<span class="fc" id="L126">			creatorElm.setTextContent(&quot;jgalgo.com&quot;);</span>
-<span class="fc" id="L127">			metaElm.appendChild(creatorElm);</span>
-<span class="fc" id="L128">			rootElm.appendChild(metaElm);</span>
+<span class="fc" id="L123">			Element metaElm = document.createElement(&quot;meta&quot;);</span>
+<span class="fc" id="L124">			metaElm</span>
+<span class="fc" id="L125">					.setAttribute(&quot;lastmodifieddate&quot;,</span>
+<span class="fc" id="L126">							new SimpleDateFormat(&quot;yyyy-MM-dd&quot;).format(Calendar.getInstance().getTime()));</span>
+<span class="fc" id="L127">			Element creatorElm = document.createElement(&quot;creator&quot;);</span>
+<span class="fc" id="L128">			creatorElm.setTextContent(&quot;jgalgo.com&quot;);</span>
+<span class="fc" id="L129">			metaElm.appendChild(creatorElm);</span>
+<span class="fc" id="L130">			rootElm.appendChild(metaElm);</span>
 
-<span class="fc" id="L130">			Element graphElm = document.createElement(&quot;graph&quot;);</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">			graphElm.setAttribute(&quot;defaultedgetype&quot;, graph.isDirected() ? &quot;directed&quot; : &quot;undirected&quot;);</span>
-<span class="fc" id="L132">			rootElm.appendChild(graphElm);</span>
+<span class="fc" id="L132">			Element graphElm = document.createElement(&quot;graph&quot;);</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">			graphElm.setAttribute(&quot;defaultedgetype&quot;, graph.isDirected() ? &quot;directed&quot; : &quot;undirected&quot;);</span>
+<span class="fc" id="L134">			rootElm.appendChild(graphElm);</span>
 
-<span class="fc" id="L134">			Element nodeAttributesElm = null;</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">			if (!graph.verticesWeightsKeys().isEmpty()) {</span>
-<span class="fc" id="L136">				nodeAttributesElm = document.createElement(&quot;attributes&quot;);</span>
-<span class="fc" id="L137">				nodeAttributesElm.setAttribute(&quot;class&quot;, &quot;node&quot;);</span>
-<span class="fc" id="L138">				graphElm.appendChild(nodeAttributesElm);</span>
+<span class="fc" id="L136">			Element nodeAttributesElm = null;</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			if (!graph.verticesWeightsKeys().isEmpty()) {</span>
+<span class="fc" id="L138">				nodeAttributesElm = document.createElement(&quot;attributes&quot;);</span>
+<span class="fc" id="L139">				nodeAttributesElm.setAttribute(&quot;class&quot;, &quot;node&quot;);</span>
+<span class="fc" id="L140">				graphElm.appendChild(nodeAttributesElm);</span>
 			}
-<span class="fc" id="L140">			List&lt;Function&lt;V, Element&gt;&gt; vWeightsWriters = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">			for (String weightKey : graph.verticesWeightsKeys()) {</span>
-<span class="fc" id="L142">				Weights&lt;V, ?&gt; weights = graph.verticesWeights(weightKey);</span>
-<span class="fc" id="L143">				Pair&lt;String, Function&lt;Object, String&gt;&gt; attrWriter0 = attrWriter(weights, graph.vertices());</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">				if (attrWriter0 == null)</span>
-<span class="fc" id="L145">					throw new IllegalArgumentException(</span>
+<span class="fc" id="L142">			List&lt;Function&lt;V, Element&gt;&gt; vWeightsWriters = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">			for (String weightKey : graph.verticesWeightsKeys()) {</span>
+<span class="fc" id="L144">				Weights&lt;V, ?&gt; weights = graph.verticesWeights(weightKey);</span>
+<span class="fc" id="L145">				Pair&lt;String, Function&lt;Object, String&gt;&gt; attrWriter0 = attrWriter(weights, graph.vertices());</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">				if (attrWriter0 == null)</span>
+<span class="fc" id="L147">					throw new IllegalArgumentException(</span>
 							&quot;Vertices weights with key '&quot; + weightKey + &quot;' are not supported&quot;);
-<span class="fc" id="L147">				String attrType = attrWriter0.first();</span>
-<span class="fc" id="L148">				Function&lt;Object, String&gt; attrWriter = attrWriter0.second();</span>
+<span class="fc" id="L149">				String attrType = attrWriter0.first();</span>
+<span class="fc" id="L150">				Function&lt;Object, String&gt; attrWriter = attrWriter0.second();</span>
 
-<span class="fc" id="L150">				Element weightElm = document.createElement(&quot;attribute&quot;);</span>
-<span class="fc" id="L151">				String weightId = String.valueOf(vWeightsWriters.size());</span>
-<span class="fc" id="L152">				weightElm.setAttribute(&quot;id&quot;, weightId);</span>
-<span class="fc" id="L153">				weightElm.setAttribute(&quot;title&quot;, weightKey);</span>
-<span class="fc" id="L154">				weightElm.setAttribute(&quot;type&quot;, attrType);</span>
-<span class="fc" id="L155">				Object defVal = weights.defaultWeightAsObj();</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">				if (defVal != null) {</span>
-<span class="fc" id="L157">					Element defaultElm = document.createElement(&quot;default&quot;);</span>
-<span class="fc" id="L158">					defaultElm.setTextContent(attrWriter.apply(defVal));</span>
-<span class="fc" id="L159">					weightElm.appendChild(defaultElm);</span>
+<span class="fc" id="L152">				Element weightElm = document.createElement(&quot;attribute&quot;);</span>
+<span class="fc" id="L153">				String weightId = String.valueOf(vWeightsWriters.size());</span>
+<span class="fc" id="L154">				weightElm.setAttribute(&quot;id&quot;, weightId);</span>
+<span class="fc" id="L155">				weightElm.setAttribute(&quot;title&quot;, weightKey);</span>
+<span class="fc" id="L156">				weightElm.setAttribute(&quot;type&quot;, attrType);</span>
+<span class="fc" id="L157">				Object defVal = weights.defaultWeightAsObj();</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">				if (defVal != null) {</span>
+<span class="fc" id="L159">					Element defaultElm = document.createElement(&quot;default&quot;);</span>
+<span class="fc" id="L160">					defaultElm.setTextContent(attrWriter.apply(defVal));</span>
+<span class="fc" id="L161">					weightElm.appendChild(defaultElm);</span>
 				}
-<span class="fc" id="L161">				nodeAttributesElm.appendChild(weightElm);</span>
+<span class="fc" id="L163">				nodeAttributesElm.appendChild(weightElm);</span>
 
-<span class="fc" id="L163">				vWeightsWriters.add(v -&gt; {</span>
-<span class="fc" id="L164">					Object w = weights.getAsObj(v);</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">					if (Objects.equals(defVal, w))</span>
-<span class="fc" id="L166">						return null;</span>
-<span class="fc" id="L167">					Element dataElm = document.createElement(&quot;attvalue&quot;);</span>
-<span class="fc" id="L168">					dataElm.setAttribute(&quot;for&quot;, weightId);</span>
-<span class="fc" id="L169">					dataElm.setAttribute(&quot;value&quot;, attrWriter.apply(w));</span>
-<span class="fc" id="L170">					return dataElm;</span>
+<span class="fc" id="L165">				vWeightsWriters.add(v -&gt; {</span>
+<span class="fc" id="L166">					Object w = weights.getAsObj(v);</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">					if (Objects.equals(defVal, w))</span>
+<span class="fc" id="L168">						return null;</span>
+<span class="fc" id="L169">					Element dataElm = document.createElement(&quot;attvalue&quot;);</span>
+<span class="fc" id="L170">					dataElm.setAttribute(&quot;for&quot;, weightId);</span>
+<span class="fc" id="L171">					dataElm.setAttribute(&quot;value&quot;, attrWriter.apply(w));</span>
+<span class="fc" id="L172">					return dataElm;</span>
 				});
-<span class="fc" id="L172">			}</span>
+<span class="fc" id="L174">			}</span>
 
-<span class="fc" id="L174">			Element edgeAttributesElm = null;</span>
-<span class="fc bfc" id="L175" title="All 2 branches covered.">			if (!graph.edgesWeightsKeys().isEmpty()) {</span>
-<span class="fc" id="L176">				edgeAttributesElm = document.createElement(&quot;attributes&quot;);</span>
-<span class="fc" id="L177">				edgeAttributesElm.setAttribute(&quot;class&quot;, &quot;edge&quot;);</span>
-<span class="fc" id="L178">				graphElm.appendChild(edgeAttributesElm);</span>
+<span class="fc" id="L176">			Element edgeAttributesElm = null;</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">			if (!graph.edgesWeightsKeys().isEmpty()) {</span>
+<span class="fc" id="L178">				edgeAttributesElm = document.createElement(&quot;attributes&quot;);</span>
+<span class="fc" id="L179">				edgeAttributesElm.setAttribute(&quot;class&quot;, &quot;edge&quot;);</span>
+<span class="fc" id="L180">				graphElm.appendChild(edgeAttributesElm);</span>
 			}
-<span class="fc" id="L180">			List&lt;Function&lt;E, Element&gt;&gt; eWeightsWriters = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L181" title="All 2 branches covered.">			for (String weightKey : graph.edgesWeightsKeys()) {</span>
-<span class="fc" id="L182">				Weights&lt;E, ?&gt; weights = graph.edgesWeights(weightKey);</span>
-<span class="fc" id="L183">				Pair&lt;String, Function&lt;Object, String&gt;&gt; attrWriter0 = attrWriter(weights, graph.edges());</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">				if (attrWriter0 == null)</span>
-<span class="fc" id="L185">					throw new IllegalArgumentException(&quot;Edges weights with key '&quot; + weightKey + &quot;' are not supported&quot;);</span>
-<span class="fc" id="L186">				String attrType = attrWriter0.first();</span>
-<span class="fc" id="L187">				Function&lt;Object, String&gt; attrWriter = attrWriter0.second();</span>
+<span class="fc" id="L182">			List&lt;Function&lt;E, Element&gt;&gt; eWeightsWriters = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">			for (String weightKey : graph.edgesWeightsKeys()) {</span>
+<span class="fc" id="L184">				Weights&lt;E, ?&gt; weights = graph.edgesWeights(weightKey);</span>
+<span class="fc" id="L185">				Pair&lt;String, Function&lt;Object, String&gt;&gt; attrWriter0 = attrWriter(weights, graph.edges());</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">				if (attrWriter0 == null)</span>
+<span class="fc" id="L187">					throw new IllegalArgumentException(&quot;Edges weights with key '&quot; + weightKey + &quot;' are not supported&quot;);</span>
+<span class="fc" id="L188">				String attrType = attrWriter0.first();</span>
+<span class="fc" id="L189">				Function&lt;Object, String&gt; attrWriter = attrWriter0.second();</span>
 
-<span class="fc" id="L189">				Element weightElm = document.createElement(&quot;attribute&quot;);</span>
-<span class="fc" id="L190">				String weightId = String.valueOf(eWeightsWriters.size());</span>
-<span class="fc" id="L191">				weightElm.setAttribute(&quot;id&quot;, weightId);</span>
-<span class="fc" id="L192">				weightElm.setAttribute(&quot;title&quot;, weightKey);</span>
-<span class="fc" id="L193">				weightElm.setAttribute(&quot;type&quot;, attrType);</span>
-<span class="fc" id="L194">				Object defVal = weights.defaultWeightAsObj();</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">				if (defVal != null) {</span>
-<span class="fc" id="L196">					Element defaultElm = document.createElement(&quot;default&quot;);</span>
-<span class="fc" id="L197">					defaultElm.setTextContent(attrWriter.apply(defVal));</span>
-<span class="fc" id="L198">					weightElm.appendChild(defaultElm);</span>
+<span class="fc" id="L191">				Element weightElm = document.createElement(&quot;attribute&quot;);</span>
+<span class="fc" id="L192">				String weightId = String.valueOf(eWeightsWriters.size());</span>
+<span class="fc" id="L193">				weightElm.setAttribute(&quot;id&quot;, weightId);</span>
+<span class="fc" id="L194">				weightElm.setAttribute(&quot;title&quot;, weightKey);</span>
+<span class="fc" id="L195">				weightElm.setAttribute(&quot;type&quot;, attrType);</span>
+<span class="fc" id="L196">				Object defVal = weights.defaultWeightAsObj();</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">				if (defVal != null) {</span>
+<span class="fc" id="L198">					Element defaultElm = document.createElement(&quot;default&quot;);</span>
+<span class="fc" id="L199">					defaultElm.setTextContent(attrWriter.apply(defVal));</span>
+<span class="fc" id="L200">					weightElm.appendChild(defaultElm);</span>
 				}
-<span class="fc" id="L200">				edgeAttributesElm.appendChild(weightElm);</span>
+<span class="fc" id="L202">				edgeAttributesElm.appendChild(weightElm);</span>
 
-<span class="fc" id="L202">				eWeightsWriters.add(e -&gt; {</span>
-<span class="fc" id="L203">					Object w = weights.getAsObj(e);</span>
-<span class="fc bfc" id="L204" title="All 2 branches covered.">					if (Objects.equals(defVal, w))</span>
-<span class="fc" id="L205">						return null;</span>
-<span class="fc" id="L206">					Element dataElm = document.createElement(&quot;attvalue&quot;);</span>
-<span class="fc" id="L207">					dataElm.setAttribute(&quot;for&quot;, weightId);</span>
-<span class="fc" id="L208">					dataElm.setAttribute(&quot;value&quot;, attrWriter.apply(w));</span>
-<span class="fc" id="L209">					return dataElm;</span>
+<span class="fc" id="L204">				eWeightsWriters.add(e -&gt; {</span>
+<span class="fc" id="L205">					Object w = weights.getAsObj(e);</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">					if (Objects.equals(defVal, w))</span>
+<span class="fc" id="L207">						return null;</span>
+<span class="fc" id="L208">					Element dataElm = document.createElement(&quot;attvalue&quot;);</span>
+<span class="fc" id="L209">					dataElm.setAttribute(&quot;for&quot;, weightId);</span>
+<span class="fc" id="L210">					dataElm.setAttribute(&quot;value&quot;, attrWriter.apply(w));</span>
+<span class="fc" id="L211">					return dataElm;</span>
 				});
-<span class="fc" id="L211">			}</span>
+<span class="fc" id="L213">			}</span>
 
-<span class="fc" id="L213">			Element nodesElm = null;</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">			if (!graph.vertices().isEmpty()) {</span>
-<span class="fc" id="L215">				nodesElm = document.createElement(&quot;nodes&quot;);</span>
-<span class="fc" id="L216">				graphElm.appendChild(nodesElm);</span>
+<span class="fc" id="L215">			Element nodesElm = null;</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">			if (!graph.vertices().isEmpty()) {</span>
+<span class="fc" id="L217">				nodesElm = document.createElement(&quot;nodes&quot;);</span>
+<span class="fc" id="L218">				graphElm.appendChild(nodesElm);</span>
 			}
-<span class="fc bfc" id="L218" title="All 2 branches covered.">			for (V vertex : graph.vertices()) {</span>
-<span class="fc" id="L219">				Element nodeElm = document.createElement(&quot;node&quot;);</span>
-<span class="fc" id="L220">				nodeElm.setAttribute(&quot;id&quot;, String.valueOf(vertex));</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">			for (V vertex : graph.vertices()) {</span>
+<span class="fc" id="L221">				Element nodeElm = document.createElement(&quot;node&quot;);</span>
+<span class="fc" id="L222">				nodeElm.setAttribute(&quot;id&quot;, String.valueOf(vertex));</span>
 
-<span class="fc" id="L222">				List&lt;Element&gt; ws = vWeightsWriters</span>
-<span class="fc" id="L223">						.stream()</span>
-<span class="fc" id="L224">						.map(w -&gt; w.apply(vertex))</span>
-<span class="fc" id="L225">						.filter(Objects::nonNull)</span>
-<span class="fc" id="L226">						.collect(Collectors.toList());</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">				if (!ws.isEmpty()) {</span>
-<span class="fc" id="L228">					Element attvaluesElm = document.createElement(&quot;attvalues&quot;);</span>
-<span class="fc" id="L229">					ws.forEach(attvaluesElm::appendChild);</span>
-<span class="fc" id="L230">					nodeElm.appendChild(attvaluesElm);</span>
+<span class="fc" id="L224">				List&lt;Element&gt; ws = vWeightsWriters</span>
+<span class="fc" id="L225">						.stream()</span>
+<span class="fc" id="L226">						.map(w -&gt; w.apply(vertex))</span>
+<span class="fc" id="L227">						.filter(Objects::nonNull)</span>
+<span class="fc" id="L228">						.collect(Collectors.toList());</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">				if (!ws.isEmpty()) {</span>
+<span class="fc" id="L230">					Element attvaluesElm = document.createElement(&quot;attvalues&quot;);</span>
+<span class="fc" id="L231">					ws.forEach(attvaluesElm::appendChild);</span>
+<span class="fc" id="L232">					nodeElm.appendChild(attvaluesElm);</span>
 				}
-<span class="fc" id="L232">				nodesElm.appendChild(nodeElm);</span>
-<span class="fc" id="L233">			}</span>
-<span class="fc" id="L234">			Element edgesElm = null;</span>
-<span class="fc bfc" id="L235" title="All 2 branches covered.">			if (!graph.edges().isEmpty()) {</span>
-<span class="fc" id="L236">				edgesElm = document.createElement(&quot;edges&quot;);</span>
-<span class="fc" id="L237">				graphElm.appendChild(edgesElm);</span>
+<span class="fc" id="L234">				nodesElm.appendChild(nodeElm);</span>
+<span class="fc" id="L235">			}</span>
+<span class="fc" id="L236">			Element edgesElm = null;</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">			if (!graph.edges().isEmpty()) {</span>
+<span class="fc" id="L238">				edgesElm = document.createElement(&quot;edges&quot;);</span>
+<span class="fc" id="L239">				graphElm.appendChild(edgesElm);</span>
 			}
-<span class="fc bfc" id="L239" title="All 2 branches covered.">			for (E edge : graph.edges()) {</span>
-<span class="fc" id="L240">				Element edgeElm = document.createElement(&quot;edge&quot;);</span>
-<span class="fc" id="L241">				edgeElm.setAttribute(&quot;id&quot;, String.valueOf(edge));</span>
-<span class="fc" id="L242">				edgeElm.setAttribute(&quot;source&quot;, String.valueOf(graph.edgeSource(edge)));</span>
-<span class="fc" id="L243">				edgeElm.setAttribute(&quot;target&quot;, String.valueOf(graph.edgeTarget(edge)));</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">			for (E edge : graph.edges()) {</span>
+<span class="fc" id="L242">				Element edgeElm = document.createElement(&quot;edge&quot;);</span>
+<span class="fc" id="L243">				edgeElm.setAttribute(&quot;id&quot;, String.valueOf(edge));</span>
+<span class="fc" id="L244">				edgeElm.setAttribute(&quot;source&quot;, String.valueOf(graph.edgeSource(edge)));</span>
+<span class="fc" id="L245">				edgeElm.setAttribute(&quot;target&quot;, String.valueOf(graph.edgeTarget(edge)));</span>
 
-<span class="fc" id="L245">				List&lt;Element&gt; ws = eWeightsWriters</span>
-<span class="fc" id="L246">						.stream()</span>
-<span class="fc" id="L247">						.map(w -&gt; w.apply(edge))</span>
-<span class="fc" id="L248">						.filter(Objects::nonNull)</span>
-<span class="fc" id="L249">						.collect(Collectors.toList());</span>
-<span class="fc bfc" id="L250" title="All 2 branches covered.">				if (!ws.isEmpty()) {</span>
-<span class="fc" id="L251">					Element attvaluesElm = document.createElement(&quot;attvalues&quot;);</span>
-<span class="fc" id="L252">					ws.forEach(attvaluesElm::appendChild);</span>
-<span class="fc" id="L253">					edgeElm.appendChild(attvaluesElm);</span>
+<span class="fc" id="L247">				List&lt;Element&gt; ws = eWeightsWriters</span>
+<span class="fc" id="L248">						.stream()</span>
+<span class="fc" id="L249">						.map(w -&gt; w.apply(edge))</span>
+<span class="fc" id="L250">						.filter(Objects::nonNull)</span>
+<span class="fc" id="L251">						.collect(Collectors.toList());</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">				if (!ws.isEmpty()) {</span>
+<span class="fc" id="L253">					Element attvaluesElm = document.createElement(&quot;attvalues&quot;);</span>
+<span class="fc" id="L254">					ws.forEach(attvaluesElm::appendChild);</span>
+<span class="fc" id="L255">					edgeElm.appendChild(attvaluesElm);</span>
 				}
 
-<span class="fc" id="L256">				edgesElm.appendChild(edgeElm);</span>
-<span class="fc" id="L257">			}</span>
+<span class="fc" id="L258">				edgesElm.appendChild(edgeElm);</span>
+<span class="fc" id="L259">			}</span>
 
-<span class="fc" id="L259">			Transformer transformer = TransformerFactory.newInstance().newTransformer();</span>
-<span class="fc" id="L260">			transformer.transform(new DOMSource(document), new StreamResult(writer));</span>
+<span class="fc" id="L261">			Transformer transformer = TransformerFactory.newInstance().newTransformer();</span>
+<span class="fc" id="L262">			transformer.transform(new DOMSource(document), new StreamResult(writer));</span>
 
-<span class="nc" id="L262">		} catch (TransformerFactoryConfigurationError | ParserConfigurationException | TransformerException e) {</span>
-<span class="nc" id="L263">			throw new IOException(e);</span>
-<span class="fc" id="L264">		}</span>
-<span class="fc" id="L265">	}</span>
+<span class="nc" id="L264">		} catch (TransformerFactoryConfigurationError | ParserConfigurationException | TransformerException e) {</span>
+<span class="nc" id="L265">			throw new IOException(e);</span>
+<span class="fc" id="L266">		}</span>
+<span class="fc" id="L267">	}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private &lt;K&gt; Pair&lt;String, Function&lt;Object, String&gt;&gt; attrWriter(Weights&lt;K, ?&gt; weights, Set&lt;K&gt; elements) {
-<span class="fc" id="L269">		Supplier&lt;Object[]&gt; objWeights = new Supplier&lt;&gt;() {</span>
+<span class="fc" id="L271">		Supplier&lt;Object[]&gt; objWeights = new Supplier&lt;&gt;() {</span>
 			Object[] objWeightsCache;
 
 			@Override
 			public Object[] get() {
-<span class="fc bfc" id="L274" title="All 2 branches covered.">				if (objWeightsCache == null) {</span>
-<span class="fc" id="L275">					WeightsObj&lt;K, ?&gt; ws = (WeightsObj&lt;K, ?&gt;) weights;</span>
-<span class="fc" id="L276">					objWeightsCache = elements.stream().map(ws::get).toArray();</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">				if (objWeightsCache == null) {</span>
+<span class="fc" id="L277">					WeightsObj&lt;K, ?&gt; ws = (WeightsObj&lt;K, ?&gt;) weights;</span>
+<span class="fc" id="L278">					objWeightsCache = elements.stream().map(ws::get).toArray();</span>
 				}
-<span class="fc" id="L278">				return objWeightsCache;</span>
+<span class="fc" id="L280">				return objWeightsCache;</span>
 			}
 		};
-<span class="fc" id="L281">		Predicate&lt;Class&lt;?&gt;&gt; allInstanceof = cls -&gt; {</span>
-<span class="fc bfc" id="L282" title="All 2 branches covered.">			if (!(weights instanceof WeightsObj))</span>
-<span class="fc" id="L283">				return false;</span>
-<span class="fc" id="L284">			WeightsObj&lt;K, ?&gt; ws = (WeightsObj&lt;K, ?&gt;) weights;</span>
-<span class="fc" id="L285">			Object defVal = ws.defaultWeight();</span>
-<span class="fc bfc" id="L286" title="All 4 branches covered.">			if (defVal != null &amp;&amp; !cls.isInstance(defVal))</span>
-<span class="fc" id="L287">				return false;</span>
-<span class="fc" id="L288">			return Arrays.stream(objWeights.get()).allMatch(cls::isInstance);</span>
+<span class="fc" id="L283">		Predicate&lt;Class&lt;?&gt;&gt; allInstanceof = cls -&gt; {</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">			if (!(weights instanceof WeightsObj))</span>
+<span class="fc" id="L285">				return false;</span>
+<span class="fc" id="L286">			WeightsObj&lt;K, ?&gt; ws = (WeightsObj&lt;K, ?&gt;) weights;</span>
+<span class="fc" id="L287">			Object defVal = ws.defaultWeight();</span>
+<span class="fc bfc" id="L288" title="All 4 branches covered.">			if (defVal != null &amp;&amp; !cls.isInstance(defVal))</span>
+<span class="fc" id="L289">				return false;</span>
+<span class="fc" id="L290">			return Arrays.stream(objWeights.get()).allMatch(cls::isInstance);</span>
 		};
 
 		/* check string first so that if there are no vertices/edges, string will be chosen */
-<span class="fc bfc" id="L292" title="All 4 branches covered.">		if (weights instanceof WeightsObj &amp;&amp; allInstanceof.test(String.class))</span>
-<span class="fc" id="L293">			return Pair.of(&quot;string&quot;, w -&gt; (String) w);</span>
+<span class="fc bfc" id="L294" title="All 4 branches covered.">		if (weights instanceof WeightsObj &amp;&amp; allInstanceof.test(String.class))</span>
+<span class="fc" id="L295">			return Pair.of(&quot;string&quot;, w -&gt; (String) w);</span>
 
-<span class="fc bfc" id="L295" title="All 4 branches covered.">		if (weights instanceof WeightsByte || allInstanceof.test(Byte.class))</span>
-<span class="fc" id="L296">			return Pair.of(&quot;byte&quot;, w -&gt; String.valueOf(((Byte) w).byteValue()));</span>
-<span class="fc bfc" id="L297" title="All 4 branches covered.">		if (weights instanceof WeightsShort || allInstanceof.test(Short.class))</span>
-<span class="fc" id="L298">			return Pair.of(&quot;short&quot;, w -&gt; String.valueOf(((Short) w).shortValue()));</span>
-<span class="fc bfc" id="L299" title="All 4 branches covered.">		if (weights instanceof WeightsInt || allInstanceof.test(Integer.class))</span>
-<span class="fc" id="L300">			return Pair.of(&quot;integer&quot;, w -&gt; String.valueOf(((Integer) w).intValue()));</span>
-<span class="fc bfc" id="L301" title="All 4 branches covered.">		if (weights instanceof WeightsLong || allInstanceof.test(Long.class))</span>
-<span class="fc" id="L302">			return Pair.of(&quot;long&quot;, w -&gt; String.valueOf(((Long) w).longValue()));</span>
-<span class="fc bfc" id="L303" title="All 4 branches covered.">		if (weights instanceof WeightsFloat || allInstanceof.test(Float.class))</span>
-<span class="fc" id="L304">			return Pair.of(&quot;float&quot;, w -&gt; String.valueOf(((Float) w).floatValue()));</span>
-<span class="fc bfc" id="L305" title="All 4 branches covered.">		if (weights instanceof WeightsDouble || allInstanceof.test(Double.class))</span>
-<span class="fc" id="L306">			return Pair.of(&quot;double&quot;, w -&gt; String.valueOf(((Double) w).doubleValue()));</span>
-<span class="fc bfc" id="L307" title="All 4 branches covered.">		if (weights instanceof WeightsBool || allInstanceof.test(Boolean.class))</span>
-<span class="fc" id="L308">			return Pair.of(&quot;boolean&quot;, w -&gt; String.valueOf(((Boolean) w).booleanValue()));</span>
-<span class="fc bfc" id="L309" title="All 4 branches covered.">		if (weights instanceof WeightsChar || allInstanceof.test(Character.class))</span>
-<span class="fc" id="L310">			return Pair.of(&quot;char&quot;, w -&gt; String.valueOf(((Character) w).charValue()));</span>
+<span class="fc bfc" id="L297" title="All 4 branches covered.">		if (weights instanceof WeightsByte || allInstanceof.test(Byte.class))</span>
+<span class="fc" id="L298">			return Pair.of(&quot;byte&quot;, w -&gt; String.valueOf(((Byte) w).byteValue()));</span>
+<span class="fc bfc" id="L299" title="All 4 branches covered.">		if (weights instanceof WeightsShort || allInstanceof.test(Short.class))</span>
+<span class="fc" id="L300">			return Pair.of(&quot;short&quot;, w -&gt; String.valueOf(((Short) w).shortValue()));</span>
+<span class="fc bfc" id="L301" title="All 4 branches covered.">		if (weights instanceof WeightsInt || allInstanceof.test(Integer.class))</span>
+<span class="fc" id="L302">			return Pair.of(&quot;integer&quot;, w -&gt; String.valueOf(((Integer) w).intValue()));</span>
+<span class="fc bfc" id="L303" title="All 4 branches covered.">		if (weights instanceof WeightsLong || allInstanceof.test(Long.class))</span>
+<span class="fc" id="L304">			return Pair.of(&quot;long&quot;, w -&gt; String.valueOf(((Long) w).longValue()));</span>
+<span class="fc bfc" id="L305" title="All 4 branches covered.">		if (weights instanceof WeightsFloat || allInstanceof.test(Float.class))</span>
+<span class="fc" id="L306">			return Pair.of(&quot;float&quot;, w -&gt; String.valueOf(((Float) w).floatValue()));</span>
+<span class="fc bfc" id="L307" title="All 4 branches covered.">		if (weights instanceof WeightsDouble || allInstanceof.test(Double.class))</span>
+<span class="fc" id="L308">			return Pair.of(&quot;double&quot;, w -&gt; String.valueOf(((Double) w).doubleValue()));</span>
+<span class="fc bfc" id="L309" title="All 4 branches covered.">		if (weights instanceof WeightsBool || allInstanceof.test(Boolean.class))</span>
+<span class="fc" id="L310">			return Pair.of(&quot;boolean&quot;, w -&gt; String.valueOf(((Boolean) w).booleanValue()));</span>
+<span class="fc bfc" id="L311" title="All 4 branches covered.">		if (weights instanceof WeightsChar || allInstanceof.test(Character.class))</span>
+<span class="fc" id="L312">			return Pair.of(&quot;char&quot;, w -&gt; String.valueOf(((Character) w).charValue()));</span>
 
-<span class="fc" id="L312">		WeightsObj&lt;K, ?&gt; ws = (WeightsObj&lt;K, ?&gt;) weights;</span>
-<span class="fc" id="L313">		Predicate&lt;Class&lt;?&gt;&gt; allListOf = cls -&gt; {</span>
-<span class="fc" id="L314">			Object defVal = ws.defaultWeight();</span>
-<span class="fc bfc" id="L315" title="All 4 branches covered.">			Predicate&lt;Object&gt; isListOf = o -&gt; o instanceof List &amp;&amp; ((List&lt;?&gt;) o).stream().allMatch(cls::isInstance);</span>
-<span class="fc bfc" id="L316" title="All 4 branches covered.">			if (defVal != null &amp;&amp; !isListOf.test(defVal))</span>
-<span class="fc" id="L317">				return false;</span>
-<span class="fc" id="L318">			return Arrays.stream(objWeights.get()).allMatch(isListOf);</span>
+<span class="fc" id="L314">		WeightsObj&lt;K, ?&gt; ws = (WeightsObj&lt;K, ?&gt;) weights;</span>
+<span class="fc" id="L315">		Predicate&lt;Class&lt;?&gt;&gt; allListOf = cls -&gt; {</span>
+<span class="fc" id="L316">			Object defVal = ws.defaultWeight();</span>
+<span class="fc bfc" id="L317" title="All 4 branches covered.">			Predicate&lt;Object&gt; isListOf = o -&gt; o instanceof List &amp;&amp; ((List&lt;?&gt;) o).stream().allMatch(cls::isInstance);</span>
+<span class="fc bfc" id="L318" title="All 4 branches covered.">			if (defVal != null &amp;&amp; !isListOf.test(defVal))</span>
+<span class="fc" id="L319">				return false;</span>
+<span class="fc" id="L320">			return Arrays.stream(objWeights.get()).allMatch(isListOf);</span>
 		};
 
-<span class="fc bfc" id="L321" title="All 2 branches covered.">		if (allInstanceof.test(Date.class))</span>
-<span class="fc" id="L322">			return Pair.of(&quot;date&quot;, w -&gt; dateFormat.format((Date) w));</span>
-<span class="fc bfc" id="L323" title="All 2 branches covered.">		if (allInstanceof.test(URI.class))</span>
-<span class="fc" id="L324">			return Pair.of(&quot;anyURI&quot;, w -&gt; ((URI) w).toString());</span>
-<span class="fc bfc" id="L325" title="All 2 branches covered.">		if (allInstanceof.test(BigDecimal.class))</span>
-<span class="fc" id="L326">			return Pair.of(&quot;bigdecimal&quot;, w -&gt; ((BigDecimal) w).toString());</span>
-<span class="fc bfc" id="L327" title="All 2 branches covered.">		if (allInstanceof.test(BigInteger.class))</span>
-<span class="fc" id="L328">			return Pair.of(&quot;biginteger&quot;, w -&gt; ((BigInteger) w).toString());</span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">		if (allInstanceof.test(Date.class))</span>
+<span class="fc" id="L324">			return Pair.of(&quot;date&quot;, w -&gt; dateFormat.format((Date) w));</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">		if (allInstanceof.test(URI.class))</span>
+<span class="fc" id="L326">			return Pair.of(&quot;anyURI&quot;, w -&gt; ((URI) w).toString());</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">		if (allInstanceof.test(BigDecimal.class))</span>
+<span class="fc" id="L328">			return Pair.of(&quot;bigdecimal&quot;, w -&gt; ((BigDecimal) w).toString());</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">		if (allInstanceof.test(BigInteger.class))</span>
+<span class="fc" id="L330">			return Pair.of(&quot;biginteger&quot;, w -&gt; ((BigInteger) w).toString());</span>
 
-<span class="fc bfc" id="L330" title="All 2 branches covered.">		if (allInstanceof.test(byte[].class))</span>
-<span class="fc" id="L331">			return Pair.of(&quot;listbyte&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((byte[]) w)));</span>
-<span class="fc bfc" id="L332" title="All 2 branches covered.">		if (allInstanceof.test(ByteList.class))</span>
-<span class="fc" id="L333">			return Pair.of(&quot;listbyte&quot;, w -&gt; ((ByteList) w).toString());</span>
-<span class="fc bfc" id="L334" title="All 2 branches covered.">		if (allListOf.test(Byte.class))</span>
-<span class="fc" id="L335">			return Pair.of(&quot;listbyte&quot;, w -&gt; requireNonNullList((List&lt;Byte&gt;) w).toString());</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">		if (allInstanceof.test(byte[].class))</span>
+<span class="fc" id="L333">			return Pair.of(&quot;listbyte&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((byte[]) w)));</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">		if (allInstanceof.test(ByteList.class))</span>
+<span class="fc" id="L335">			return Pair.of(&quot;listbyte&quot;, w -&gt; ((ByteList) w).toString());</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">		if (allListOf.test(Byte.class))</span>
+<span class="fc" id="L337">			return Pair.of(&quot;listbyte&quot;, w -&gt; requireNonNullList((List&lt;Byte&gt;) w).toString());</span>
 
-<span class="fc bfc" id="L337" title="All 2 branches covered.">		if (allInstanceof.test(short[].class))</span>
-<span class="fc" id="L338">			return Pair.of(&quot;listshort&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((short[]) w)));</span>
-<span class="fc bfc" id="L339" title="All 2 branches covered.">		if (allInstanceof.test(ShortList.class))</span>
-<span class="fc" id="L340">			return Pair.of(&quot;listshort&quot;, w -&gt; ((ShortList) w).toString());</span>
-<span class="fc bfc" id="L341" title="All 2 branches covered.">		if (allListOf.test(Short.class))</span>
-<span class="fc" id="L342">			return Pair.of(&quot;listshort&quot;, w -&gt; requireNonNullList((List&lt;Short&gt;) w).toString());</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">		if (allInstanceof.test(short[].class))</span>
+<span class="fc" id="L340">			return Pair.of(&quot;listshort&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((short[]) w)));</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">		if (allInstanceof.test(ShortList.class))</span>
+<span class="fc" id="L342">			return Pair.of(&quot;listshort&quot;, w -&gt; ((ShortList) w).toString());</span>
+<span class="fc bfc" id="L343" title="All 2 branches covered.">		if (allListOf.test(Short.class))</span>
+<span class="fc" id="L344">			return Pair.of(&quot;listshort&quot;, w -&gt; requireNonNullList((List&lt;Short&gt;) w).toString());</span>
 
-<span class="fc bfc" id="L344" title="All 2 branches covered.">		if (allInstanceof.test(int[].class))</span>
-<span class="fc" id="L345">			return Pair.of(&quot;listinteger&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((int[]) w)));</span>
-<span class="fc bfc" id="L346" title="All 2 branches covered.">		if (allInstanceof.test(IntList.class))</span>
-<span class="fc" id="L347">			return Pair.of(&quot;listinteger&quot;, w -&gt; ((IntList) w).toString());</span>
-<span class="fc bfc" id="L348" title="All 2 branches covered.">		if (allListOf.test(Integer.class))</span>
-<span class="fc" id="L349">			return Pair.of(&quot;listinteger&quot;, w -&gt; requireNonNullList((List&lt;Integer&gt;) w).toString());</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">		if (allInstanceof.test(int[].class))</span>
+<span class="fc" id="L347">			return Pair.of(&quot;listinteger&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((int[]) w)));</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">		if (allInstanceof.test(IntList.class))</span>
+<span class="fc" id="L349">			return Pair.of(&quot;listinteger&quot;, w -&gt; ((IntList) w).toString());</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">		if (allListOf.test(Integer.class))</span>
+<span class="fc" id="L351">			return Pair.of(&quot;listinteger&quot;, w -&gt; requireNonNullList((List&lt;Integer&gt;) w).toString());</span>
 
-<span class="fc bfc" id="L351" title="All 2 branches covered.">		if (allInstanceof.test(long[].class))</span>
-<span class="fc" id="L352">			return Pair.of(&quot;listlong&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((long[]) w)));</span>
-<span class="fc bfc" id="L353" title="All 2 branches covered.">		if (allInstanceof.test(LongList.class))</span>
-<span class="fc" id="L354">			return Pair.of(&quot;listlong&quot;, w -&gt; ((LongList) w).toString());</span>
-<span class="fc bfc" id="L355" title="All 2 branches covered.">		if (allListOf.test(Long.class))</span>
-<span class="fc" id="L356">			return Pair.of(&quot;listlong&quot;, w -&gt; requireNonNullList((List&lt;Long&gt;) w).toString());</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">		if (allInstanceof.test(long[].class))</span>
+<span class="fc" id="L354">			return Pair.of(&quot;listlong&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((long[]) w)));</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">		if (allInstanceof.test(LongList.class))</span>
+<span class="fc" id="L356">			return Pair.of(&quot;listlong&quot;, w -&gt; ((LongList) w).toString());</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">		if (allListOf.test(Long.class))</span>
+<span class="fc" id="L358">			return Pair.of(&quot;listlong&quot;, w -&gt; requireNonNullList((List&lt;Long&gt;) w).toString());</span>
 
-<span class="fc bfc" id="L358" title="All 2 branches covered.">		if (allInstanceof.test(float[].class))</span>
-<span class="fc" id="L359">			return Pair.of(&quot;listfloat&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((float[]) w)));</span>
-<span class="fc bfc" id="L360" title="All 2 branches covered.">		if (allInstanceof.test(FloatList.class))</span>
-<span class="fc" id="L361">			return Pair.of(&quot;listfloat&quot;, w -&gt; ((FloatList) w).toString());</span>
-<span class="fc bfc" id="L362" title="All 2 branches covered.">		if (allListOf.test(Float.class))</span>
-<span class="fc" id="L363">			return Pair.of(&quot;listfloat&quot;, w -&gt; requireNonNullList((List&lt;Float&gt;) w).toString());</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">		if (allInstanceof.test(float[].class))</span>
+<span class="fc" id="L361">			return Pair.of(&quot;listfloat&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((float[]) w)));</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">		if (allInstanceof.test(FloatList.class))</span>
+<span class="fc" id="L363">			return Pair.of(&quot;listfloat&quot;, w -&gt; ((FloatList) w).toString());</span>
+<span class="fc bfc" id="L364" title="All 2 branches covered.">		if (allListOf.test(Float.class))</span>
+<span class="fc" id="L365">			return Pair.of(&quot;listfloat&quot;, w -&gt; requireNonNullList((List&lt;Float&gt;) w).toString());</span>
 
-<span class="fc bfc" id="L365" title="All 2 branches covered.">		if (allInstanceof.test(double[].class))</span>
-<span class="fc" id="L366">			return Pair.of(&quot;listdouble&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((double[]) w)));</span>
-<span class="fc bfc" id="L367" title="All 2 branches covered.">		if (allInstanceof.test(DoubleList.class))</span>
-<span class="fc" id="L368">			return Pair.of(&quot;listdouble&quot;, w -&gt; ((DoubleList) w).toString());</span>
-<span class="fc bfc" id="L369" title="All 2 branches covered.">		if (allListOf.test(Double.class))</span>
-<span class="fc" id="L370">			return Pair.of(&quot;listdouble&quot;, w -&gt; requireNonNullList((List&lt;Double&gt;) w).toString());</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">		if (allInstanceof.test(double[].class))</span>
+<span class="fc" id="L368">			return Pair.of(&quot;listdouble&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((double[]) w)));</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">		if (allInstanceof.test(DoubleList.class))</span>
+<span class="fc" id="L370">			return Pair.of(&quot;listdouble&quot;, w -&gt; ((DoubleList) w).toString());</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">		if (allListOf.test(Double.class))</span>
+<span class="fc" id="L372">			return Pair.of(&quot;listdouble&quot;, w -&gt; requireNonNullList((List&lt;Double&gt;) w).toString());</span>
 
-<span class="fc bfc" id="L372" title="All 2 branches covered.">		if (allInstanceof.test(boolean[].class))</span>
-<span class="fc" id="L373">			return Pair.of(&quot;listboolean&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((boolean[]) w)));</span>
-<span class="fc bfc" id="L374" title="All 2 branches covered.">		if (allInstanceof.test(BooleanList.class))</span>
-<span class="fc" id="L375">			return Pair.of(&quot;listboolean&quot;, w -&gt; ((BooleanList) w).toString());</span>
-<span class="fc bfc" id="L376" title="All 2 branches covered.">		if (allListOf.test(Boolean.class))</span>
-<span class="fc" id="L377">			return Pair.of(&quot;listboolean&quot;, w -&gt; requireNonNullList((List&lt;Boolean&gt;) w).toString());</span>
+<span class="fc bfc" id="L374" title="All 2 branches covered.">		if (allInstanceof.test(boolean[].class))</span>
+<span class="fc" id="L375">			return Pair.of(&quot;listboolean&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((boolean[]) w)));</span>
+<span class="fc bfc" id="L376" title="All 2 branches covered.">		if (allInstanceof.test(BooleanList.class))</span>
+<span class="fc" id="L377">			return Pair.of(&quot;listboolean&quot;, w -&gt; ((BooleanList) w).toString());</span>
+<span class="fc bfc" id="L378" title="All 2 branches covered.">		if (allListOf.test(Boolean.class))</span>
+<span class="fc" id="L379">			return Pair.of(&quot;listboolean&quot;, w -&gt; requireNonNullList((List&lt;Boolean&gt;) w).toString());</span>
 
-<span class="fc bfc" id="L379" title="All 2 branches covered.">		if (allInstanceof.test(char[].class))</span>
-<span class="fc" id="L380">			return Pair.of(&quot;listchar&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((char[]) w)));</span>
-<span class="fc bfc" id="L381" title="All 2 branches covered.">		if (allInstanceof.test(CharList.class))</span>
-<span class="fc" id="L382">			return Pair.of(&quot;listchar&quot;, w -&gt; ((CharList) w).toString());</span>
-<span class="fc bfc" id="L383" title="All 2 branches covered.">		if (allListOf.test(Character.class))</span>
-<span class="fc" id="L384">			return Pair.of(&quot;listchar&quot;, w -&gt; requireNonNullList((List&lt;Character&gt;) w).toString());</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">		if (allInstanceof.test(char[].class))</span>
+<span class="fc" id="L382">			return Pair.of(&quot;listchar&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((char[]) w)));</span>
+<span class="fc bfc" id="L383" title="All 2 branches covered.">		if (allInstanceof.test(CharList.class))</span>
+<span class="fc" id="L384">			return Pair.of(&quot;listchar&quot;, w -&gt; ((CharList) w).toString());</span>
+<span class="fc bfc" id="L385" title="All 2 branches covered.">		if (allListOf.test(Character.class))</span>
+<span class="fc" id="L386">			return Pair.of(&quot;listchar&quot;, w -&gt; requireNonNullList((List&lt;Character&gt;) w).toString());</span>
 
-<span class="fc bfc" id="L386" title="All 2 branches covered.">		if (allInstanceof.test(String[].class))</span>
-<span class="fc" id="L387">			return Pair.of(&quot;liststring&quot;, w -&gt; Arrays.toString(requireNonNullArr((String[]) w)));</span>
-<span class="fc bfc" id="L388" title="All 2 branches covered.">		if (allListOf.test(String.class))</span>
-<span class="fc" id="L389">			return Pair.of(&quot;liststring&quot;, w -&gt; requireNonNullList((List&lt;String&gt;) w).toString());</span>
+<span class="fc bfc" id="L388" title="All 2 branches covered.">		if (allInstanceof.test(String[].class))</span>
+<span class="fc" id="L389">			return Pair.of(&quot;liststring&quot;, w -&gt; Arrays.toString(requireNonNullArr((String[]) w)));</span>
+<span class="fc bfc" id="L390" title="All 2 branches covered.">		if (allListOf.test(String.class))</span>
+<span class="fc" id="L391">			return Pair.of(&quot;liststring&quot;, w -&gt; requireNonNullList((List&lt;String&gt;) w).toString());</span>
 
-<span class="fc bfc" id="L391" title="All 2 branches covered.">		if (allInstanceof.test(BigDecimal[].class))</span>
-<span class="fc" id="L392">			return Pair.of(&quot;listbigdecimal&quot;, w -&gt; Arrays.toString(requireNonNullArr((BigDecimal[]) w)));</span>
-<span class="fc bfc" id="L393" title="All 2 branches covered.">		if (allListOf.test(BigDecimal.class))</span>
-<span class="fc" id="L394">			return Pair.of(&quot;listbigdecimal&quot;, w -&gt; requireNonNullList((List&lt;BigDecimal&gt;) w).toString());</span>
+<span class="fc bfc" id="L393" title="All 2 branches covered.">		if (allInstanceof.test(BigDecimal[].class))</span>
+<span class="fc" id="L394">			return Pair.of(&quot;listbigdecimal&quot;, w -&gt; Arrays.toString(requireNonNullArr((BigDecimal[]) w)));</span>
+<span class="fc bfc" id="L395" title="All 2 branches covered.">		if (allListOf.test(BigDecimal.class))</span>
+<span class="fc" id="L396">			return Pair.of(&quot;listbigdecimal&quot;, w -&gt; requireNonNullList((List&lt;BigDecimal&gt;) w).toString());</span>
 
-<span class="fc bfc" id="L396" title="All 2 branches covered.">		if (allInstanceof.test(BigInteger[].class))</span>
-<span class="fc" id="L397">			return Pair.of(&quot;listbiginteger&quot;, w -&gt; Arrays.toString(requireNonNullArr((BigInteger[]) w)));</span>
-<span class="fc bfc" id="L398" title="All 2 branches covered.">		if (allListOf.test(BigInteger.class))</span>
-<span class="fc" id="L399">			return Pair.of(&quot;listbiginteger&quot;, w -&gt; requireNonNullList((List&lt;BigInteger&gt;) w).toString());</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">		if (allInstanceof.test(BigInteger[].class))</span>
+<span class="fc" id="L399">			return Pair.of(&quot;listbiginteger&quot;, w -&gt; Arrays.toString(requireNonNullArr((BigInteger[]) w)));</span>
+<span class="fc bfc" id="L400" title="All 2 branches covered.">		if (allListOf.test(BigInteger.class))</span>
+<span class="fc" id="L401">			return Pair.of(&quot;listbiginteger&quot;, w -&gt; requireNonNullList((List&lt;BigInteger&gt;) w).toString());</span>
 
-<span class="fc" id="L401">		return null;</span>
+<span class="fc" id="L403">		return null;</span>
 	}
 
 	private static &lt;T&gt; T[] requireNonNullArr(T[] arr) {
-<span class="fc" id="L405">		Objects.requireNonNull(arr);</span>
-<span class="fc bfc" id="L406" title="All 2 branches covered.">		for (T t : arr)</span>
-<span class="fc" id="L407">			Objects.requireNonNull(t);</span>
-<span class="fc" id="L408">		return arr;</span>
+<span class="fc" id="L407">		Objects.requireNonNull(arr);</span>
+<span class="fc bfc" id="L408" title="All 2 branches covered.">		for (T t : arr)</span>
+<span class="fc" id="L409">			Objects.requireNonNull(t);</span>
+<span class="fc" id="L410">		return arr;</span>
 	}
 
 	private static &lt;T&gt; List&lt;T&gt; requireNonNullList(List&lt;T&gt; list) {
-<span class="fc" id="L412">		Objects.requireNonNull(list);</span>
-<span class="fc bfc" id="L413" title="All 2 branches covered.">		for (T t : list)</span>
-<span class="fc" id="L414">			Objects.requireNonNull(t);</span>
-<span class="fc" id="L415">		return list;</span>
+<span class="fc" id="L414">		Objects.requireNonNull(list);</span>
+<span class="fc bfc" id="L415" title="All 2 branches covered.">		for (T t : list)</span>
+<span class="fc" id="L416">			Objects.requireNonNull(t);</span>
+<span class="fc" id="L417">		return list;</span>
 	}
 
 }

@@ -82,16 +82,17 @@ public class Bitmap extends BitmapBase {
 	/**
 	 * Creates a new bitmap of the specified size, with the specified initial values provided from a predicate.
 	 *
-	 * @param size      the number of bits
-	 * @param predicate the predicate to provide the initial value of each bit
+	 * @param  size      the number of bits
+	 * @param  predicate the predicate to provide the initial value of each bit
+	 * @return           a new bitmap of the specified size, with the specified initial values provided from a predicate
 	 */
 	public static Bitmap fromPredicate(int size, IntPredicate predicate) {
-<span class="fc" id="L89">		Bitmap bitmap = new Bitmap(size);</span>
-<span class="fc" id="L90">		Objects.requireNonNull(predicate);</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (int idx : range(size))</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">			if (predicate.test(idx))</span>
-<span class="fc" id="L93">				bitmap.words[word(idx)] |= bit(idx);</span>
-<span class="fc" id="L94">		return bitmap;</span>
+<span class="fc" id="L90">		Bitmap bitmap = new Bitmap(size);</span>
+<span class="fc" id="L91">		Objects.requireNonNull(predicate);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int idx : range(size))</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			if (predicate.test(idx))</span>
+<span class="fc" id="L94">				bitmap.words[word(idx)] |= bit(idx);</span>
+<span class="fc" id="L95">		return bitmap;</span>
 	}
 
 	/**
@@ -101,10 +102,10 @@ public class Bitmap extends BitmapBase {
 	 * @return        a new bitmap from the specified immutable bitmap
 	 */
 	public static Bitmap of(ImmutableBitmap bitmap) {
-<span class="fc" id="L104">		Bitmap b = new Bitmap(bitmap.capacity());</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">		for (int i : range(b.words.length))</span>
-<span class="fc" id="L106">			b.words[i] = bitmap.words[i];</span>
-<span class="fc" id="L107">		return b;</span>
+<span class="fc" id="L105">		Bitmap b = new Bitmap(bitmap.capacity());</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">		for (int i : range(b.words.length))</span>
+<span class="fc" id="L107">			b.words[i] = bitmap.words[i];</span>
+<span class="fc" id="L108">		return b;</span>
 	}
 
 	/**
@@ -116,10 +117,10 @@ public class Bitmap extends BitmapBase {
 	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
 	 */
 	public boolean set(int idx, boolean val) {
-<span class="fc bfc" id="L119" title="All 2 branches covered.">		if (val) {</span>
-<span class="fc" id="L120">			return set(idx);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		if (val) {</span>
+<span class="fc" id="L121">			return set(idx);</span>
 		} else {
-<span class="fc" id="L122">			return clear(idx);</span>
+<span class="fc" id="L123">			return clear(idx);</span>
 		}
 	}
 
@@ -131,10 +132,10 @@ public class Bitmap extends BitmapBase {
 	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
 	 */
 	public boolean set(int idx) {
-<span class="fc bfc" id="L134" title="All 2 branches covered.">		if (get(idx)) /* bounds check */</span>
-<span class="fc" id="L135">			return false;</span>
-<span class="fc" id="L136">		words[word(idx)] |= bit(idx);</span>
-<span class="fc" id="L137">		return true;</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">		if (get(idx)) /* bounds check */</span>
+<span class="fc" id="L136">			return false;</span>
+<span class="fc" id="L137">		words[word(idx)] |= bit(idx);</span>
+<span class="fc" id="L138">		return true;</span>
 	}
 
 	/**
@@ -143,23 +144,23 @@ public class Bitmap extends BitmapBase {
 	 * @param val the value to set
 	 */
 	public void setAll(boolean val) {
-<span class="fc bfc" id="L146" title="All 2 branches covered.">		if (val) {</span>
-<span class="fc" id="L147">			setAll();</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">		if (val) {</span>
+<span class="fc" id="L148">			setAll();</span>
 		} else {
-<span class="fc" id="L149">			clear();</span>
+<span class="fc" id="L150">			clear();</span>
 		}
-<span class="fc" id="L151">	}</span>
+<span class="fc" id="L152">	}</span>
 
 	/**
 	 * Set all bits to {@code true}.
 	 */
 	public void setAll() {
-<span class="fc bfc" id="L157" title="All 2 branches covered.">		if (words.length == 0)</span>
-<span class="fc" id="L158">			return;</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">		for (int i : range(words.length - 1))</span>
-<span class="fc" id="L160">			words[i] = ~0L;</span>
-<span class="fc" id="L161">		words[words.length - 1] = lastWordMask();</span>
-<span class="fc" id="L162">	}</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">		if (words.length == 0)</span>
+<span class="fc" id="L159">			return;</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">		for (int i : range(words.length - 1))</span>
+<span class="fc" id="L161">			words[i] = ~0L;</span>
+<span class="fc" id="L162">		words[words.length - 1] = lastWordMask();</span>
+<span class="fc" id="L163">	}</span>
 
 	/**
 	 * Set the bit at the specified index to {@code false}.
@@ -169,29 +170,29 @@ public class Bitmap extends BitmapBase {
 	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
 	 */
 	public boolean clear(int idx) {
-<span class="fc bfc" id="L172" title="All 2 branches covered.">		if (!get(idx)) /* bounds check */</span>
-<span class="fc" id="L173">			return false;</span>
-<span class="fc" id="L174">		words[word(idx)] &amp;= ~bit(idx);</span>
-<span class="fc" id="L175">		return true;</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">		if (!get(idx)) /* bounds check */</span>
+<span class="fc" id="L174">			return false;</span>
+<span class="fc" id="L175">		words[word(idx)] &amp;= ~bit(idx);</span>
+<span class="fc" id="L176">		return true;</span>
 	}
 
 	/**
 	 * Set all bits to {@code false}.
 	 */
 	public void clear() {
-<span class="fc" id="L182">		Arrays.fill(words, 0L);</span>
-<span class="fc" id="L183">	}</span>
+<span class="fc" id="L183">		Arrays.fill(words, 0L);</span>
+<span class="fc" id="L184">	}</span>
 
 	/**
 	 * Flip every bit in this bitmap.
 	 */
 	public void not() {
-<span class="fc bfc" id="L189" title="All 2 branches covered.">		if (words.length == 0)</span>
-<span class="fc" id="L190">			return;</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">		for (int i : range(words.length))</span>
-<span class="fc" id="L192">			words[i] = ~words[i];</span>
-<span class="fc" id="L193">		words[words.length - 1] &amp;= lastWordMask();</span>
-<span class="fc" id="L194">	}</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">		if (words.length == 0)</span>
+<span class="fc" id="L191">			return;</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">		for (int i : range(words.length))</span>
+<span class="fc" id="L193">			words[i] = ~words[i];</span>
+<span class="fc" id="L194">		words[words.length - 1] &amp;= lastWordMask();</span>
+<span class="fc" id="L195">	}</span>
 
 	/**
 	 * Perform a bitwise or with another bitmap.
@@ -202,18 +203,18 @@ public class Bitmap extends BitmapBase {
 	 * @param b the other bitmap
 	 */
 	public void or(Bitmap b) {
-<span class="fc" id="L205">		checkSize(this, b);</span>
-<span class="fc bfc" id="L206" title="All 2 branches covered.">		for (int i : range(words.length))</span>
-<span class="fc" id="L207">			words[i] |= b.words[i];</span>
-<span class="fc" id="L208">	}</span>
+<span class="fc" id="L206">		checkSize(this, b);</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">		for (int i : range(words.length))</span>
+<span class="fc" id="L208">			words[i] |= b.words[i];</span>
+<span class="fc" id="L209">	}</span>
 
 	private static void checkSize(Bitmap a, Bitmap b) {
-<span class="fc bfc" id="L211" title="All 2 branches covered.">		if (a.size != b.size)</span>
-<span class="fc" id="L212">			throw new IllegalArgumentException(&quot;Bitmaps must be of the same size&quot;);</span>
-<span class="fc" id="L213">	}</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">		if (a.size != b.size)</span>
+<span class="fc" id="L213">			throw new IllegalArgumentException(&quot;Bitmaps must be of the same size&quot;);</span>
+<span class="fc" id="L214">	}</span>
 
 	private long lastWordMask() {
-<span class="fc bfc" id="L216" title="All 2 branches covered.">		return size % WordSize == 0 ? ~0L : (1L &lt;&lt; (size % WordSize)) - 1;</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">		return size % WordSize == 0 ? ~0L : (1L &lt;&lt; (size % WordSize)) - 1;</span>
 	}
 
 }

@@ -35,14 +35,21 @@ import com.jgalgo.graph.Graph;
 
 	private static final long serialVersionUID = 2383699177200213877L;
 
+	/**
+	 * The graph on which the negative cycle was detected.
+	 */
 	private final Graph&lt;?, ?&gt; graph;
+
+	/**
+	 * The negative cycle that was found in the graph.
+	 */
 	private final Path&lt;?, ?&gt; cycle;
 
 	&lt;V, E&gt; NegativeCycleException(Graph&lt;V, E&gt; g, Path&lt;V, E&gt; cycle) {
-<span class="fc" id="L42">		super(&quot;Negative cycle detected in graph during shortest path computation&quot;);</span>
-<span class="fc" id="L43">		this.graph = Objects.requireNonNull(g);</span>
-<span class="fc" id="L44">		this.cycle = Objects.requireNonNull(cycle);</span>
-<span class="fc" id="L45">	}</span>
+<span class="fc" id="L49">		super(&quot;Negative cycle detected in graph during shortest path computation&quot;);</span>
+<span class="fc" id="L50">		this.graph = Objects.requireNonNull(g);</span>
+<span class="fc" id="L51">		this.cycle = Objects.requireNonNull(cycle);</span>
+<span class="fc" id="L52">	}</span>
 
 	/**
 	 * Get the negative cycle that was found in the graph.
@@ -50,7 +57,7 @@ import com.jgalgo.graph.Graph;
 	 * @return the negative cycle that was found in the graph.
 	 */
 	public Path&lt;?, ?&gt; cycle() {
-<span class="fc" id="L53">		return cycle;</span>
+<span class="fc" id="L60">		return cycle;</span>
 	}
 
 	/**
@@ -67,16 +74,16 @@ import com.jgalgo.graph.Graph;
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public &lt;V, E&gt; Path&lt;V, E&gt; cycle(Graph&lt;V, E&gt; g) {
-<span class="pc bpc" id="L70" title="1 of 2 branches missed.">		if (g != this.graph)</span>
-<span class="nc" id="L71">			throw new IllegalArgumentException(&quot;Graph does not match&quot;);</span>
-<span class="fc" id="L72">		return (Path&lt;V, E&gt;) cycle;</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">		if (g != this.graph)</span>
+<span class="nc" id="L78">			throw new IllegalArgumentException(&quot;Graph does not match&quot;);</span>
+<span class="fc" id="L79">		return (Path&lt;V, E&gt;) cycle;</span>
 	}
 
 	static &lt;V, E&gt; NegativeCycleException fromIndexException(NegativeCycleException e, Graph&lt;V, E&gt; g) {
-<span class="pc bpc" id="L76" title="1 of 2 branches missed.">		assert g.indexGraph() == e.graph;</span>
-<span class="fc" id="L77">		IPath indexPath = (IPath) e.cycle(g.indexGraph());</span>
-<span class="fc" id="L78">		Path&lt;V, E&gt; path = Paths.pathFromIndexPath(g, indexPath);</span>
-<span class="fc" id="L79">		return new NegativeCycleException(g, path);</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">		assert g.indexGraph() == e.graph;</span>
+<span class="fc" id="L84">		IPath indexPath = (IPath) e.cycle(g.indexGraph());</span>
+<span class="fc" id="L85">		Path&lt;V, E&gt; path = Paths.pathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L86">		return new NegativeCycleException(g, path);</span>
 	}
 
 	// static &lt;V, E, R&gt; void runAndConvertException(Graph&lt;V, E&gt; g, Runnable runnable) {
@@ -89,9 +96,9 @@ import com.jgalgo.graph.Graph;
 
 	static &lt;V, E, R&gt; R runAndConvertException(Graph&lt;V, E&gt; g, Supplier&lt;R&gt; runnable) {
 		try {
-<span class="fc" id="L92">			return runnable.get();</span>
-<span class="fc" id="L93">		} catch (NegativeCycleException indexException) {</span>
-<span class="fc" id="L94">			throw NegativeCycleException.fromIndexException(indexException, g);</span>
+<span class="fc" id="L99">			return runnable.get();</span>
+<span class="fc" id="L100">		} catch (NegativeCycleException indexException) {</span>
+<span class="fc" id="L101">			throw NegativeCycleException.fromIndexException(indexException, g);</span>
 		}
 	}
 

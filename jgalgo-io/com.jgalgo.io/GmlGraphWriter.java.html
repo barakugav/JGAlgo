@@ -110,7 +110,9 @@ import it.unimi.dsi.fastutil.Pair;
  * &lt;p&gt;
  * The format was presented in a paper 'GML: A portable Graph File Format' by Michael Himsolt.
  *
- * @author Barak Ugav
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
  */
 public class GmlGraphWriter&lt;V, E&gt; extends GraphIoUtils.AbstractGraphWriter&lt;V, E&gt; {
 
@@ -125,7 +127,7 @@ public class GmlGraphWriter&lt;V, E&gt; extends GraphIoUtils.AbstractGraphWriter
 	/**
 	 * Create a new writer.
 	 */
-<span class="fc" id="L128">	public GmlGraphWriter() {}</span>
+<span class="fc" id="L130">	public GmlGraphWriter() {}</span>
 
 	/**
 	 * Set the weights keys of the vertices to write.
@@ -146,8 +148,8 @@ public class GmlGraphWriter&lt;V, E&gt; extends GraphIoUtils.AbstractGraphWriter
 	 *                                is the default)
 	 */
 	public void setVerticesWeightsKeys(Collection&lt;String&gt; verticesWeightsKeys) {
-<span class="fc bfc" id="L149" title="All 2 branches covered.">		this.verticesWeightsKeys = verticesWeightsKeys == null ? null : verticesWeightsKeys.toArray(String[]::new);</span>
-<span class="fc" id="L150">	}</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">		this.verticesWeightsKeys = verticesWeightsKeys == null ? null : verticesWeightsKeys.toArray(String[]::new);</span>
+<span class="fc" id="L152">	}</span>
 
 	/**
 	 * Set the weights keys of the edges to write.
@@ -168,92 +170,92 @@ public class GmlGraphWriter&lt;V, E&gt; extends GraphIoUtils.AbstractGraphWriter
 	 *                             the default)
 	 */
 	public void setEdgesWeightsKeys(Collection&lt;String&gt; edgesWeightsKeys) {
-<span class="fc bfc" id="L171" title="All 2 branches covered.">		this.edgesWeightsKeys = edgesWeightsKeys == null ? null : edgesWeightsKeys.toArray(String[]::new);</span>
-<span class="fc" id="L172">	}</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">		this.edgesWeightsKeys = edgesWeightsKeys == null ? null : edgesWeightsKeys.toArray(String[]::new);</span>
+<span class="fc" id="L174">	}</span>
 
 	@Override
 	public void writeGraphImpl(Graph&lt;V, E&gt; graph, Writer writer) throws IOException {
-<span class="fc" id="L176">		WeightsStringifier.Builder weightsStringifierBuilder = new WeightsStringifier.Builder();</span>
+<span class="fc" id="L178">		WeightsStringifier.Builder weightsStringifierBuilder = new WeightsStringifier.Builder();</span>
 		/* longs are written as floats */
-<span class="fc" id="L178">		weightsStringifierBuilder.setLongStringifier(l -&gt; Double.toString(l));</span>
+<span class="fc" id="L180">		weightsStringifierBuilder.setLongStringifier(l -&gt; Double.toString(l));</span>
 		/* chars are written as strings, and both chars and strings are wrapped in &quot;{weight}&quot; */
-<span class="fc" id="L180">		weightsStringifierBuilder.setObjectStringifier(o -&gt; {</span>
-<span class="fc" id="L181">			String str = String.valueOf(o);</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">			if (str.contains(&quot;\&quot;&quot;))</span>
-<span class="fc" id="L183">				throw new IllegalArgumentException(&quot;String '&quot; + str + &quot;' contains '\&quot;', which is not supported by GML&quot;);</span>
-<span class="fc" id="L184">			return &quot;\&quot;&quot; + str + &quot;\&quot;&quot;;</span>
+<span class="fc" id="L182">		weightsStringifierBuilder.setObjectStringifier(o -&gt; {</span>
+<span class="fc" id="L183">			String str = String.valueOf(o);</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">			if (str.contains(&quot;\&quot;&quot;))</span>
+<span class="fc" id="L185">				throw new IllegalArgumentException(&quot;String '&quot; + str + &quot;' contains '\&quot;', which is not supported by GML&quot;);</span>
+<span class="fc" id="L186">			return &quot;\&quot;&quot; + str + &quot;\&quot;&quot;;</span>
 		});
-<span class="fc" id="L186">		weightsStringifierBuilder.setCharStringifier(c -&gt; {</span>
-<span class="fc bfc" id="L187" title="All 2 branches covered.">			if (c == '&quot;')</span>
-<span class="fc" id="L188">				throw new IllegalArgumentException(&quot;Char '\&quot;' is not supported by GML&quot;);</span>
-<span class="fc" id="L189">			return &quot;\&quot;&quot; + c + &quot;\&quot;&quot;;</span>
+<span class="fc" id="L188">		weightsStringifierBuilder.setCharStringifier(c -&gt; {</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">			if (c == '&quot;')</span>
+<span class="fc" id="L190">				throw new IllegalArgumentException(&quot;Char '\&quot;' is not supported by GML&quot;);</span>
+<span class="fc" id="L191">			return &quot;\&quot;&quot; + c + &quot;\&quot;&quot;;</span>
 		});
 		/* boolean are written as ones and zeros */
-<span class="fc bfc" id="L192" title="All 2 branches covered.">		weightsStringifierBuilder.setBoolStringifier(b -&gt; b ? &quot;1&quot; : &quot;0&quot;);</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">		weightsStringifierBuilder.setBoolStringifier(b -&gt; b ? &quot;1&quot; : &quot;0&quot;);</span>
 
-<span class="fc" id="L194">		List&lt;Pair&lt;String, WeightsStringifier&lt;V&gt;&gt;&gt; vWeights = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L195">		List&lt;Pair&lt;String, WeightsStringifier&lt;E&gt;&gt;&gt; eWeights = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">		if (verticesWeightsKeys == null) {</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">			for (String key : graph.verticesWeightsKeys()) {</span>
-<span class="fc" id="L198">				Weights&lt;V, ?&gt; weights = graph.verticesWeights(key);</span>
-<span class="fc" id="L199">				vWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>
-<span class="fc" id="L200">			}</span>
+<span class="fc" id="L196">		List&lt;Pair&lt;String, WeightsStringifier&lt;V&gt;&gt;&gt; vWeights = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L197">		List&lt;Pair&lt;String, WeightsStringifier&lt;E&gt;&gt;&gt; eWeights = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">		if (verticesWeightsKeys == null) {</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">			for (String key : graph.verticesWeightsKeys()) {</span>
+<span class="fc" id="L200">				Weights&lt;V, ?&gt; weights = graph.verticesWeights(key);</span>
+<span class="fc" id="L201">				vWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>
+<span class="fc" id="L202">			}</span>
 		} else {
-<span class="fc bfc" id="L202" title="All 2 branches covered.">			for (String key : verticesWeightsKeys) {</span>
-<span class="fc" id="L203">				Weights&lt;V, ?&gt; weights = graph.verticesWeights(key);</span>
-<span class="fc bfc" id="L204" title="All 2 branches covered.">				if (weights == null)</span>
-<span class="fc" id="L205">					throw new IllegalArgumentException(&quot;Vertices weights key '&quot; + key + &quot;' does not exist&quot;);</span>
-<span class="fc" id="L206">				vWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">			for (String key : verticesWeightsKeys) {</span>
+<span class="fc" id="L205">				Weights&lt;V, ?&gt; weights = graph.verticesWeights(key);</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">				if (weights == null)</span>
+<span class="fc" id="L207">					throw new IllegalArgumentException(&quot;Vertices weights key '&quot; + key + &quot;' does not exist&quot;);</span>
+<span class="fc" id="L208">				vWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>
 			}
 		}
-<span class="fc bfc" id="L209" title="All 2 branches covered.">		if (edgesWeightsKeys == null) {</span>
-<span class="fc bfc" id="L210" title="All 2 branches covered.">			for (String key : graph.edgesWeightsKeys()) {</span>
-<span class="fc" id="L211">				Weights&lt;E, ?&gt; weights = graph.edgesWeights(key);</span>
-<span class="fc" id="L212">				eWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>
-<span class="fc" id="L213">			}</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">		if (edgesWeightsKeys == null) {</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">			for (String key : graph.edgesWeightsKeys()) {</span>
+<span class="fc" id="L213">				Weights&lt;E, ?&gt; weights = graph.edgesWeights(key);</span>
+<span class="fc" id="L214">				eWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>
+<span class="fc" id="L215">			}</span>
 		} else {
-<span class="fc bfc" id="L215" title="All 2 branches covered.">			for (String key : edgesWeightsKeys) {</span>
-<span class="fc" id="L216">				Weights&lt;E, ?&gt; weights = graph.edgesWeights(key);</span>
-<span class="fc bfc" id="L217" title="All 2 branches covered.">				if (weights == null)</span>
-<span class="fc" id="L218">					throw new IllegalArgumentException(&quot;Edges weights key '&quot; + key + &quot;' does not exist&quot;);</span>
-<span class="fc" id="L219">				eWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">			for (String key : edgesWeightsKeys) {</span>
+<span class="fc" id="L218">				Weights&lt;E, ?&gt; weights = graph.edgesWeights(key);</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">				if (weights == null)</span>
+<span class="fc" id="L220">					throw new IllegalArgumentException(&quot;Edges weights key '&quot; + key + &quot;' does not exist&quot;);</span>
+<span class="fc" id="L221">				eWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>
 			}
 		}
-<span class="fc bfc" id="L222" title="All 2 branches covered.">		for (Pair&lt;String, WeightsStringifier&lt;V&gt;&gt; w : vWeights)</span>
-<span class="fc" id="L223">			Gml.checkValidWeightsKey(w.first());</span>
-<span class="fc bfc" id="L224" title="All 2 branches covered.">		for (Pair&lt;String, WeightsStringifier&lt;E&gt;&gt; w : eWeights)</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">		for (Pair&lt;String, WeightsStringifier&lt;V&gt;&gt; w : vWeights)</span>
 <span class="fc" id="L225">			Gml.checkValidWeightsKey(w.first());</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">		for (Pair&lt;String, WeightsStringifier&lt;E&gt;&gt; w : eWeights)</span>
+<span class="fc" id="L227">			Gml.checkValidWeightsKey(w.first());</span>
 
-<span class="fc" id="L227">		Writer2 out = new Writer2(writer);</span>
-<span class="fc" id="L228">		out.append(&quot;graph [&quot;).appendNewline();</span>
-<span class="fc" id="L229">		out.append(&quot;comment \&quot;GML written graph by JGAlgo\&quot;&quot;).appendNewline();</span>
-<span class="fc bfc" id="L230" title="All 2 branches covered.">		out.append(&quot;\tdirected &quot;).append(graph.isDirected() ? &quot;1&quot; : &quot;0&quot;).appendNewline();</span>
-<span class="fc bfc" id="L231" title="All 2 branches covered.">		for (V v : graph.vertices()) {</span>
-<span class="fc" id="L232">			out.append(&quot;\tnode [&quot;).appendNewline();</span>
-<span class="fc" id="L233">			out.append(&quot;\t\tid &quot;).append(v).appendNewline();</span>
-<span class="fc bfc" id="L234" title="All 2 branches covered.">			for (Pair&lt;String, WeightsStringifier&lt;V&gt;&gt; weights : vWeights) {</span>
-<span class="fc" id="L235">				out.append(&quot;\t\t&quot;);</span>
-<span class="fc" id="L236">				String key = weights.first();</span>
-<span class="fc" id="L237">				String weightStr = weights.right().weightStr(v);</span>
-<span class="fc" id="L238">				out.append(key).append(' ').append(weightStr).appendNewline();</span>
-<span class="fc" id="L239">			}</span>
-<span class="fc" id="L240">			out.append(&quot;\t]&quot;).appendNewline();</span>
-<span class="fc" id="L241">		}</span>
-<span class="fc bfc" id="L242" title="All 2 branches covered.">		for (E e : graph.edges()) {</span>
-<span class="fc" id="L243">			out.append(&quot;\tedge [&quot;).appendNewline();</span>
-<span class="fc" id="L244">			out.append(&quot;\t\tid &quot;).append(e).appendNewline();</span>
-<span class="fc" id="L245">			out.append(&quot;\t\tsource &quot;).append(graph.edgeSource(e)).appendNewline();</span>
-<span class="fc" id="L246">			out.append(&quot;\t\ttarget &quot;).append(graph.edgeTarget(e)).appendNewline();</span>
-<span class="fc bfc" id="L247" title="All 2 branches covered.">			for (Pair&lt;String, WeightsStringifier&lt;E&gt;&gt; weights : eWeights) {</span>
-<span class="fc" id="L248">				out.append(&quot;\t\t&quot;);</span>
-<span class="fc" id="L249">				String key = weights.first();</span>
-<span class="fc" id="L250">				String weightStr = weights.right().weightStr(e);</span>
-<span class="fc" id="L251">				out.append(key).append(' ').append(weightStr).appendNewline();</span>
-<span class="fc" id="L252">			}</span>
-<span class="fc" id="L253">			out.append(&quot;\t]&quot;).appendNewline();</span>
-<span class="fc" id="L254">		}</span>
-<span class="fc" id="L255">		out.append(']').appendNewline();</span>
-<span class="fc" id="L256">	}</span>
+<span class="fc" id="L229">		Writer2 out = new Writer2(writer);</span>
+<span class="fc" id="L230">		out.append(&quot;graph [&quot;).appendNewline();</span>
+<span class="fc" id="L231">		out.append(&quot;comment \&quot;GML written graph by JGAlgo\&quot;&quot;).appendNewline();</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">		out.append(&quot;\tdirected &quot;).append(graph.isDirected() ? &quot;1&quot; : &quot;0&quot;).appendNewline();</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">		for (V v : graph.vertices()) {</span>
+<span class="fc" id="L234">			out.append(&quot;\tnode [&quot;).appendNewline();</span>
+<span class="fc" id="L235">			out.append(&quot;\t\tid &quot;).append(v).appendNewline();</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">			for (Pair&lt;String, WeightsStringifier&lt;V&gt;&gt; weights : vWeights) {</span>
+<span class="fc" id="L237">				out.append(&quot;\t\t&quot;);</span>
+<span class="fc" id="L238">				String key = weights.first();</span>
+<span class="fc" id="L239">				String weightStr = weights.right().weightStr(v);</span>
+<span class="fc" id="L240">				out.append(key).append(' ').append(weightStr).appendNewline();</span>
+<span class="fc" id="L241">			}</span>
+<span class="fc" id="L242">			out.append(&quot;\t]&quot;).appendNewline();</span>
+<span class="fc" id="L243">		}</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">		for (E e : graph.edges()) {</span>
+<span class="fc" id="L245">			out.append(&quot;\tedge [&quot;).appendNewline();</span>
+<span class="fc" id="L246">			out.append(&quot;\t\tid &quot;).append(e).appendNewline();</span>
+<span class="fc" id="L247">			out.append(&quot;\t\tsource &quot;).append(graph.edgeSource(e)).appendNewline();</span>
+<span class="fc" id="L248">			out.append(&quot;\t\ttarget &quot;).append(graph.edgeTarget(e)).appendNewline();</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">			for (Pair&lt;String, WeightsStringifier&lt;E&gt;&gt; weights : eWeights) {</span>
+<span class="fc" id="L250">				out.append(&quot;\t\t&quot;);</span>
+<span class="fc" id="L251">				String key = weights.first();</span>
+<span class="fc" id="L252">				String weightStr = weights.right().weightStr(e);</span>
+<span class="fc" id="L253">				out.append(key).append(' ').append(weightStr).appendNewline();</span>
+<span class="fc" id="L254">			}</span>
+<span class="fc" id="L255">			out.append(&quot;\t]&quot;).appendNewline();</span>
+<span class="fc" id="L256">		}</span>
+<span class="fc" id="L257">		out.append(']').appendNewline();</span>
+<span class="fc" id="L258">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

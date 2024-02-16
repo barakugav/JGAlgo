@@ -171,10 +171,11 @@ public interface DoubleObjBinarySearchTree &lt;V&gt; extends DoubleObjReferencea
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link DoubleObjBinarySearchTree} object.
 	 *
+	 * @param  &lt;V&gt; the values type
 	 * @return a default implementation of {@link DoubleObjBinarySearchTree}
 	 */
 	static &lt;V&gt; DoubleObjBinarySearchTree &lt;V&gt; newInstance() {
-<span class="fc" id="L177">		return newInstance(null);</span>
+<span class="fc" id="L178">		return newInstance(null);</span>
 	}
 
 	/**
@@ -183,11 +184,12 @@ public interface DoubleObjBinarySearchTree &lt;V&gt; extends DoubleObjReferencea
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link DoubleObjBinarySearchTree} object.
 	 *
+	 * @param  &lt;V&gt; the values type
 	 * @param  cmp a custom comparator
 	 * @return a default implementation of {@link DoubleObjBinarySearchTree}
 	 */
 	static &lt;V&gt; DoubleObjBinarySearchTree &lt;V&gt; newInstance(DoubleComparator  cmp) {
-<span class="fc" id="L190">		return new DoubleObjRedBlackTree &lt;&gt;(cmp);</span>
+<span class="fc" id="L192">		return new DoubleObjRedBlackTree &lt;&gt;(cmp);</span>
 	}
 
 }

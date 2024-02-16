@@ -170,10 +170,11 @@ public interface Heap&lt;E&gt; extends Iterable&lt;E&gt; {
 	 * This is the recommended way to instantiate a new {@link Heap} object. The {@link Heap.Builder} might support
 	 * different options to obtain different implementations.
 	 *
-	 * @return a default implementation of {@link Heap}
+	 * @param  &lt;E&gt; the elements type
+	 * @return     a default implementation of {@link Heap}
 	 */
 	static &lt;E&gt; Heap&lt;E&gt; newInstance() {
-<span class="nc" id="L176">		return builder().build();</span>
+<span class="nc" id="L177">		return builder().build();</span>
 	}
 
 	/**
@@ -183,10 +184,12 @@ public interface Heap&lt;E&gt; extends Iterable&lt;E&gt; {
 	 * This is the recommended way to instantiate a new {@link Heap} object. The {@link Heap.Builder} might support
 	 * different options to obtain different implementations.
 	 *
-	 * @return a default implementation of {@link Heap}
+	 * @param  &lt;E&gt; the elements type
+	 * @param  cmp a comparator to compare the elements of the heap or {@code null} to use the default comparator
+	 * @return     a default implementation of {@link Heap}
 	 */
 	static &lt;E&gt; Heap&lt;E&gt; newInstance(Comparator&lt;? super E&gt; cmp) {
-<span class="fc" id="L189">		return builder().build(cmp);</span>
+<span class="fc" id="L192">		return builder().build(cmp);</span>
 	}
 
 	/**
@@ -198,7 +201,7 @@ public interface Heap&lt;E&gt; extends Iterable&lt;E&gt; {
 	 * @return a new builder that can build {@link Heap} objects
 	 */
 	static Heap.Builder builder() {
-<span class="fc" id="L201">		return HeapBinary::new;</span>
+<span class="fc" id="L204">		return HeapBinary::new;</span>
 	}
 
 	/**
@@ -211,6 +214,7 @@ public interface Heap&lt;E&gt; extends Iterable&lt;E&gt; {
 		/**
 		 * Build a new heap with the given comparator.
 		 *
+		 * @param  &lt;E&gt; the elements type
 		 * @param  cmp the comparator that will be used to order the elements in the heap
 		 * @return     the newly constructed heap
 		 */
@@ -219,10 +223,11 @@ public interface Heap&lt;E&gt; extends Iterable&lt;E&gt; {
 		/**
 		 * Build a new heap with {@linkplain Comparable natural ordering}.
 		 *
-		 * @return the newly constructed heap
+		 * @param  &lt;E&gt; the elements type
+		 * @return     the newly constructed heap
 		 */
 		default &lt;E&gt; Heap&lt;E&gt; build() {
-<span class="nc" id="L225">			return build(null);</span>
+<span class="nc" id="L230">			return build(null);</span>
 		}
 
 		/**
@@ -241,7 +246,7 @@ public interface Heap&lt;E&gt; extends Iterable&lt;E&gt; {
 		 * @return       this builder
 		 */
 		default Heap.Builder setOption(String key, Object value) {
-<span class="nc" id="L244">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L249">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

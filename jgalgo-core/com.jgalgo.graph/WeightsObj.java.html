@@ -19,6 +19,8 @@ package com.jgalgo.graph;
 /**
  * Specific weights of {@code Object}.
  *
+ * @param  &lt;K&gt; the elements (vertices/edges) type
+ * @param  &lt;T&gt; the weights type
  * @author Barak Ugav
  */
 public interface WeightsObj&lt;K , T&gt; extends Weights&lt;K, T&gt;
@@ -40,7 +42,7 @@ public interface WeightsObj&lt;K , T&gt; extends Weights&lt;K, T&gt;
 	@Deprecated
 	@Override
 	default T getAsObj(K element) {
-<span class="fc" id="L43">		return get(element);</span>
+<span class="fc" id="L45">		return get(element);</span>
 	}
 
 	/**
@@ -59,8 +61,8 @@ public interface WeightsObj&lt;K , T&gt; extends Weights&lt;K, T&gt;
 	@Deprecated
 	@Override
 	default void setAsObj(K element, T weight) {
-<span class="fc" id="L62">		set(element, weight);</span>
-<span class="fc" id="L63">	}</span>
+<span class="fc" id="L64">		set(element, weight);</span>
+<span class="fc" id="L65">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.
@@ -81,7 +83,7 @@ public interface WeightsObj&lt;K , T&gt; extends Weights&lt;K, T&gt;
 	@Deprecated
 	@Override
 	default T defaultWeightAsObj() {
-<span class="fc" id="L84">		return defaultWeight();</span>
+<span class="fc" id="L86">		return defaultWeight();</span>
 	}
 
 }

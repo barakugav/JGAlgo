@@ -84,10 +84,11 @@ public interface SplitFindMin&lt;K&gt; extends SplitFind {
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link SplitFindMin} object.
 	 *
-	 * @return a default implementation of {@link SplitFindMin}
+	 * @param  &lt;K&gt; the keys type
+	 * @return     a default implementation of {@link SplitFindMin}
 	 */
 	static &lt;K&gt; SplitFindMin&lt;K&gt; newInstance() {
-<span class="fc" id="L90">		return new SplitFindMinArray&lt;&gt;();</span>
+<span class="fc" id="L91">		return new SplitFindMinArray&lt;&gt;();</span>
 	}
 
 }

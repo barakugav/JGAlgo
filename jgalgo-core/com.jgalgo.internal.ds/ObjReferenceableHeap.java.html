@@ -219,20 +219,22 @@ public interface ObjReferenceableHeap &lt;K&gt; extends ReferenceableHeap, Itera
 	/**
 	 * Get an instance of this interface with the default implementation.
 	 *
+	 * @param  &lt;K&gt; the keys type
 	 * @return an instance of this interface with the default implementation
 	 */
 	static &lt;K&gt; ObjReferenceableHeap &lt;K&gt; newInstance() {
-<span class="fc" id="L225">		return newInstance(null);</span>
+<span class="fc" id="L226">		return newInstance(null);</span>
 	}
 
 	/**
 	 * Get an instance of this interface with the default implementation and custom comparator.
 	 *
+	 * @param  &lt;K&gt; the keys type
 	 * @param c a comparator to use for ordering the elements in the heap
 	 * @return an instance of this interface with the default implementation
 	 */
 	static &lt;K&gt; ObjReferenceableHeap &lt;K&gt; newInstance(Comparator &lt;K&gt; c) {
-<span class="fc" id="L235">		return new ObjPairingHeap &lt;&gt; (c);</span>
+<span class="fc" id="L237">		return new ObjPairingHeap &lt;&gt; (c);</span>
 	}
 
 }

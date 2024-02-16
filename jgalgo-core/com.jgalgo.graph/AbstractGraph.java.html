@@ -25,21 +25,26 @@ package com.jgalgo.graph;
  * @param  &lt;E&gt; the edges type
  * @author     Barak Ugav
  */
-<span class="fc" id="L28">public abstract class AbstractGraph&lt;V, E&gt; implements Graph&lt;V, E&gt; {</span>
+public abstract class AbstractGraph&lt;V, E&gt; implements Graph&lt;V, E&gt; {
+
+	/**
+	 * Create a new abstract graph.
+	 */
+<span class="fc" id="L33">	public AbstractGraph() {}</span>
 
 	@Override
 	public boolean equals(Object other) {
-<span class="fc bfc" id="L32" title="All 4 branches covered.">		return other instanceof Graph &amp;&amp; Graphs.isEquals(this, (Graph&lt;?, ?&gt;) other);</span>
+<span class="fc bfc" id="L37" title="All 4 branches covered.">		return other instanceof Graph &amp;&amp; Graphs.isEquals(this, (Graph&lt;?, ?&gt;) other);</span>
 	}
 
 	@Override
 	public int hashCode() {
-<span class="fc" id="L37">		return Graphs.hashCode(this);</span>
+<span class="fc" id="L42">		return Graphs.hashCode(this);</span>
 	}
 
 	@Override
 	public String toString() {
-<span class="fc" id="L42">		return Graphs.toString(this);</span>
+<span class="fc" id="L47">		return Graphs.toString(this);</span>
 	}
 
 }

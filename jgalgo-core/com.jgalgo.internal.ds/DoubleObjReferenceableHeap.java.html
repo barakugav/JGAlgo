@@ -243,20 +243,22 @@ public interface DoubleObjReferenceableHeap &lt;V&gt; extends ReferenceableHeap,
 	/**
 	 * Get an instance of this interface with the default implementation.
 	 *
+	 * @param  &lt;V&gt; the values type
 	 * @return an instance of this interface with the default implementation
 	 */
 	static &lt;V&gt; DoubleObjReferenceableHeap &lt;V&gt; newInstance() {
-<span class="fc" id="L249">		return newInstance(null);</span>
+<span class="fc" id="L250">		return newInstance(null);</span>
 	}
 
 	/**
 	 * Get an instance of this interface with the default implementation and custom comparator.
 	 *
+	 * @param  &lt;V&gt; the values type
 	 * @param c a comparator to use for ordering the elements in the heap
 	 * @return an instance of this interface with the default implementation
 	 */
 	static &lt;V&gt; DoubleObjReferenceableHeap &lt;V&gt; newInstance(DoubleComparator  c) {
-<span class="fc" id="L259">		return new DoubleObjPairingHeap &lt;&gt; (c);</span>
+<span class="fc" id="L261">		return new DoubleObjPairingHeap &lt;&gt; (c);</span>
 	}
 
 }

@@ -182,10 +182,11 @@ public interface SubtreeMergeFindMin&lt;E&gt; {
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link SubtreeMergeFindMin} object.
 	 *
-	 * @return a default implementation of {@link SubtreeMergeFindMin}
+	 * @param  &lt;E&gt; the edges element type
+	 * @return     a default implementation of {@link SubtreeMergeFindMin}
 	 */
 	static &lt;E&gt; SubtreeMergeFindMin&lt;E&gt; newInstance() {
-<span class="nc" id="L188">		return new SubtreeMergeFindMinImpl&lt;&gt;();</span>
+<span class="nc" id="L189">		return new SubtreeMergeFindMinImpl&lt;&gt;();</span>
 	}
 
 	/**
@@ -194,10 +195,12 @@ public interface SubtreeMergeFindMin&lt;E&gt; {
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link SubtreeMergeFindMin} object.
 	 *
-	 * @return a default implementation of {@link SubtreeMergeFindMin}
+	 * @param  &lt;E&gt; the edges element type
+	 * @param  cmp a comparator to compare the edges of the elements or {@code null} to use the default comparator
+	 * @return     a default implementation of {@link SubtreeMergeFindMin}
 	 */
 	static &lt;E&gt; SubtreeMergeFindMin&lt;E&gt; newInstance(Comparator&lt;? super E&gt; cmp) {
-<span class="fc" id="L200">		return new SubtreeMergeFindMinImpl&lt;&gt;(cmp);</span>
+<span class="fc" id="L203">		return new SubtreeMergeFindMinImpl&lt;&gt;(cmp);</span>
 	}
 
 }

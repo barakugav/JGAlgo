@@ -246,20 +246,24 @@ public interface ObjObjReferenceableHeap &lt;K, V&gt; extends ReferenceableHeap,
 	/**
 	 * Get an instance of this interface with the default implementation.
 	 *
+	 * @param  &lt;K&gt; the keys type
+	 * @param  &lt;V&gt; the values type
 	 * @return an instance of this interface with the default implementation
 	 */
 	static &lt;K, V&gt; ObjObjReferenceableHeap &lt;K, V&gt; newInstance() {
-<span class="fc" id="L252">		return newInstance(null);</span>
+<span class="fc" id="L254">		return newInstance(null);</span>
 	}
 
 	/**
 	 * Get an instance of this interface with the default implementation and custom comparator.
 	 *
+	 * @param  &lt;K&gt; the keys type
+	 * @param  &lt;V&gt; the values type
 	 * @param c a comparator to use for ordering the elements in the heap
 	 * @return an instance of this interface with the default implementation
 	 */
 	static &lt;K, V&gt; ObjObjReferenceableHeap &lt;K, V&gt; newInstance(Comparator &lt;K&gt; c) {
-<span class="fc" id="L262">		return new ObjObjPairingHeap &lt;&gt; (c);</span>
+<span class="fc" id="L266">		return new ObjObjPairingHeap &lt;&gt; (c);</span>
 	}
 
 }

@@ -172,10 +172,12 @@ public interface ObjObjBinarySearchTree &lt;K, V&gt; extends ObjObjReferenceable
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link ObjObjBinarySearchTree} object.
 	 *
+	 * @param  &lt;K&gt; the keys type
+	 * @param  &lt;V&gt; the values type
 	 * @return a default implementation of {@link ObjObjBinarySearchTree}
 	 */
 	static &lt;K, V&gt; ObjObjBinarySearchTree &lt;K, V&gt; newInstance() {
-<span class="fc" id="L178">		return newInstance(null);</span>
+<span class="fc" id="L180">		return newInstance(null);</span>
 	}
 
 	/**
@@ -184,11 +186,13 @@ public interface ObjObjBinarySearchTree &lt;K, V&gt; extends ObjObjReferenceable
 	 * &lt;p&gt;
 	 * This is the recommended way to instantiate a new {@link ObjObjBinarySearchTree} object.
 	 *
+	 * @param  &lt;K&gt; the keys type
+	 * @param  &lt;V&gt; the values type
 	 * @param  cmp a custom comparator
 	 * @return a default implementation of {@link ObjObjBinarySearchTree}
 	 */
 	static &lt;K, V&gt; ObjObjBinarySearchTree &lt;K, V&gt; newInstance(Comparator &lt;K&gt; cmp) {
-<span class="fc" id="L191">		return new ObjObjRedBlackTree &lt;&gt;(cmp);</span>
+<span class="fc" id="L195">		return new ObjObjRedBlackTree &lt;&gt;(cmp);</span>
 	}
 
 }

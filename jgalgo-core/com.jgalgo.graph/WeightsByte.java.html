@@ -19,6 +19,7 @@ package com.jgalgo.graph;
 /**
  * Specific weights of {@code byte}.
  *
+ * @param  &lt;K&gt; the elements (vertices/edges) type
  * @author Barak Ugav
  */
 public interface WeightsByte&lt;K &gt; extends Weights&lt;K, Byte&gt;
@@ -41,7 +42,7 @@ public interface WeightsByte&lt;K &gt; extends Weights&lt;K, Byte&gt;
 	@Deprecated
 	@Override
 	default Byte getAsObj(K element) {
-<span class="fc" id="L44">		return Byte.valueOf(get(element));</span>
+<span class="fc" id="L45">		return Byte.valueOf(get(element));</span>
 	}
 
 	/**
@@ -60,8 +61,8 @@ public interface WeightsByte&lt;K &gt; extends Weights&lt;K, Byte&gt;
 	@Deprecated
 	@Override
 	default void setAsObj(K element, Byte weight) {
-<span class="fc" id="L63">		set(element, weight.byteValue());</span>
-<span class="fc" id="L64">	}</span>
+<span class="fc" id="L64">		set(element, weight.byteValue());</span>
+<span class="fc" id="L65">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.
@@ -82,7 +83,7 @@ public interface WeightsByte&lt;K &gt; extends Weights&lt;K, Byte&gt;
 	@Deprecated
 	@Override
 	default Byte defaultWeightAsObj() {
-<span class="fc" id="L85">		return Byte.valueOf(defaultWeight());</span>
+<span class="fc" id="L86">		return Byte.valueOf(defaultWeight());</span>
 	}
 
 	/**
@@ -93,7 +94,7 @@ public interface WeightsByte&lt;K &gt; extends Weights&lt;K, Byte&gt;
 	 */
 	@Override
 	default int weightInt(K element) {
-<span class="fc" id="L96">		return get(element);</span>
+<span class="fc" id="L97">		return get(element);</span>
 	}
 
 }
