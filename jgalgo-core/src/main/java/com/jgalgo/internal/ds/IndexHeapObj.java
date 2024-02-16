@@ -24,7 +24,8 @@ package com.jgalgo.internal.ds;
  * terms of memory and cache locality. This heap use object keys with the default comparator to compare different
  * elements (indices). Other than that, this heap is very similar to {@link ObjReferenceableHeap}.
  *
- * @author Barak Ugav
+ * @param  <K> the keys type
+ * @author     Barak Ugav
  */
 public interface IndexHeapObj<K extends Comparable<? super K>> extends IndexHeapBase {
 
@@ -63,6 +64,7 @@ public interface IndexHeapObj<K extends Comparable<? super K>> extends IndexHeap
 	/**
 	 * Creates a new instance of {@link IndexHeapObj}.
 	 *
+	 * @param  <K>  the keys type
 	 * @param  size the size of the heap
 	 * @return      a new instance of {@link IndexHeapObj}
 	 */

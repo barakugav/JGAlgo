@@ -170,7 +170,8 @@ public interface Heap<E> extends Iterable<E> {
 	 * This is the recommended way to instantiate a new {@link Heap} object. The {@link Heap.Builder} might support
 	 * different options to obtain different implementations.
 	 *
-	 * @return a default implementation of {@link Heap}
+	 * @param  <E> the elements type
+	 * @return     a default implementation of {@link Heap}
 	 */
 	static <E> Heap<E> newInstance() {
 		return builder().build();
@@ -183,7 +184,9 @@ public interface Heap<E> extends Iterable<E> {
 	 * This is the recommended way to instantiate a new {@link Heap} object. The {@link Heap.Builder} might support
 	 * different options to obtain different implementations.
 	 *
-	 * @return a default implementation of {@link Heap}
+	 * @param  <E> the elements type
+	 * @param  cmp a comparator to compare the elements of the heap or {@code null} to use the default comparator
+	 * @return     a default implementation of {@link Heap}
 	 */
 	static <E> Heap<E> newInstance(Comparator<? super E> cmp) {
 		return builder().build(cmp);
@@ -211,6 +214,7 @@ public interface Heap<E> extends Iterable<E> {
 		/**
 		 * Build a new heap with the given comparator.
 		 *
+		 * @param  <E> the elements type
 		 * @param  cmp the comparator that will be used to order the elements in the heap
 		 * @return     the newly constructed heap
 		 */
@@ -219,7 +223,8 @@ public interface Heap<E> extends Iterable<E> {
 		/**
 		 * Build a new heap with {@linkplain Comparable natural ordering}.
 		 *
-		 * @return the newly constructed heap
+		 * @param  <E> the elements type
+		 * @return     the newly constructed heap
 		 */
 		default <E> Heap<E> build() {
 			return build(null);
