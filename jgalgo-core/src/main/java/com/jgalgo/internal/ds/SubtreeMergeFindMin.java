@@ -182,7 +182,8 @@ public interface SubtreeMergeFindMin<E> {
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link SubtreeMergeFindMin} object.
 	 *
-	 * @return a default implementation of {@link SubtreeMergeFindMin}
+	 * @param  <E> the edges element type
+	 * @return     a default implementation of {@link SubtreeMergeFindMin}
 	 */
 	static <E> SubtreeMergeFindMin<E> newInstance() {
 		return new SubtreeMergeFindMinImpl<>();
@@ -194,7 +195,9 @@ public interface SubtreeMergeFindMin<E> {
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link SubtreeMergeFindMin} object.
 	 *
-	 * @return a default implementation of {@link SubtreeMergeFindMin}
+	 * @param  <E> the edges element type
+	 * @param  cmp a comparator to compare the edges of the elements or {@code null} to use the default comparator
+	 * @return     a default implementation of {@link SubtreeMergeFindMin}
 	 */
 	static <E> SubtreeMergeFindMin<E> newInstance(Comparator<? super E> cmp) {
 		return new SubtreeMergeFindMinImpl<>(cmp);

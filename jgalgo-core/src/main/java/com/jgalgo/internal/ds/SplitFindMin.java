@@ -84,7 +84,8 @@ public interface SplitFindMin<K> extends SplitFind {
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link SplitFindMin} object.
 	 *
-	 * @return a default implementation of {@link SplitFindMin}
+	 * @param  <K> the keys type
+	 * @return     a default implementation of {@link SplitFindMin}
 	 */
 	static <K> SplitFindMin<K> newInstance() {
 		return new SplitFindMinArray<>();
