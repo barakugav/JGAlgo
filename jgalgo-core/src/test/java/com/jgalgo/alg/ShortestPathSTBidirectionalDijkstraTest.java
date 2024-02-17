@@ -15,7 +15,12 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.TestBase;
 
 public class ShortestPathSTBidirectionalDijkstraTest extends TestBase {
@@ -58,6 +63,22 @@ public class ShortestPathSTBidirectionalDijkstraTest extends TestBase {
 	public void testSSSPDirectedCardinality() {
 		final long seed = 0xf0938b03455c55aeL;
 		ShortestPathSingleSourceTestUtils.testSSSPCardinality(sssp(), true, seed);
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void simpleSmallGraph() {
+		IntGraph g = IntGraph.newDirected();
+		g.addVertices(range(3));
+		g.addEdge(0, 1, 10);
+		g.addEdge(1, 2, 11);
+
+		ShortestPathST algo = new ShortestPathSTBidirectionalDijkstra();
+		assertEquals(Fastutil.list(10, 11), algo.computeShortestPath(g, null, 0, 2).edges());
+		assertEquals(Fastutil.list(10, 11), algo.computeShortestPathAndWeight(g, null, 0, 2).first().edges());
+		assertEquals(2, algo.computeShortestPathAndWeight(g, null, 0, 2).secondDouble());
+		assertNull(algo.computeShortestPath(g, null, 2, 0));
+		assertNull(algo.computeShortestPathAndWeight(g, null, 2, 0));
 	}
 
 }

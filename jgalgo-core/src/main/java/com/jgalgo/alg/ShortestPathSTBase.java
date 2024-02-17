@@ -22,16 +22,18 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
+import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 
 interface ShortestPathSTBase extends ShortestPathST {
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	default <V, E> Path<V, E> computeShortestPath(Graph<V, E> g, WeightFunction<E> w, V source, V target) {
+	default <V, E> ObjectDoublePair<Path<V, E>> computeShortestPathAndWeight(Graph<V, E> g, WeightFunction<E> w,
+			V source, V target) {
 		if (g instanceof IndexGraph) {
 			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 			int source0 = ((Integer) source).intValue(), target0 = ((Integer) target).intValue();
-			return (Path<V, E>) computeShortestPath((IndexGraph) g, w0, source0, target0);
+			return (ObjectDoublePair) computeShortestPathAndWeight((IndexGraph) g, w0, source0, target0);
 
 		} else {
 			IndexGraph iGraph = g.indexGraph();
@@ -41,12 +43,13 @@ interface ShortestPathSTBase extends ShortestPathST {
 			int iSource = viMap.idToIndex(source);
 			int iTarget = viMap.idToIndex(target);
 
-			IPath indexPath = NegativeCycleException
-					.runAndConvertException(g, () -> computeShortestPath(iGraph, iw, iSource, iTarget));
-			return Paths.pathFromIndexPath(g, indexPath);
+			ObjectDoublePair<IPath> indexPath = NegativeCycleException
+					.runAndConvertException(g, () -> computeShortestPathAndWeight(iGraph, iw, iSource, iTarget));
+			return indexPath == null ? null
+					: ObjectDoublePair.of(Paths.pathFromIndexPath(g, indexPath.first()), indexPath.secondDouble());
 		}
 	}
 
-	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target);
+	ObjectDoublePair<IPath> computeShortestPathAndWeight(IndexGraph g, IWeightFunction w, int source, int target);
 
 }

@@ -181,12 +181,12 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		for (Integer target : g.vertices()) {
 			double expectedDistance = expectedRes.distance(target);
 			double actualDistance = result.distance(target);
-			assertEquals(expectedDistance, actualDistance, "Distance to vertex " + target + " is wrong");
+			assertEquals(expectedDistance, actualDistance, 1e-8, "Distance to vertex " + target + " is wrong");
 			Path<Integer, Integer> path = result.getPath(target);
 			if (path != null) {
 				double pathWeight = WeightFunction.weightSum(w, path.edges());
-				assertEquals(pathWeight, actualDistance, () -> "Path to vertex " + target + " doesn't match distance ("
-						+ actualDistance + " != " + pathWeight + "): " + path);
+				assertEquals(pathWeight, actualDistance, 1e-8, () -> "Path to vertex " + target
+						+ " doesn't match distance (" + actualDistance + " != " + pathWeight + "): " + path);
 				if (path.edges().isEmpty()) {
 					assertNull(result.backtrackEdge(target));
 				} else {

@@ -19,6 +19,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 
 /**
  * An algorithm for computing the shortest path between two vertices in a graph.
@@ -59,7 +60,29 @@ public interface ShortestPathST {
 	 * @param  target the target vertex
 	 * @return        the shortest path from the source to the target, or {@code null} if there is no path
 	 */
-	<V, E> Path<V, E> computeShortestPath(Graph<V, E> g, WeightFunction<E> w, V source, V target);
+	default <V, E> Path<V, E> computeShortestPath(Graph<V, E> g, WeightFunction<E> w, V source, V target) {
+		ObjectDoublePair<Path<V, E>> sp = computeShortestPathAndWeight(g, w, source, target);
+		return sp != null ? sp.first() : null;
+	}
+
+	/**
+	 * Compute the shortest path from a source vertex to a target vertex, and its weight.
+	 *
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, a {@link IPath} object will be returned. In that case, its better to pass a
+	 * {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
+	 *
+	 * @param  <V>    the vertices type
+	 * @param  <E>    the edges type
+	 * @param  g      the graph
+	 * @param  w      an edge weight function
+	 * @param  source the source vertex
+	 * @param  target the target vertex
+	 * @return        a pair of the shortest path from the source to the target, and its weight, or {@code null} if
+	 *                there is no path
+	 */
+	<V, E> ObjectDoublePair<Path<V, E>> computeShortestPathAndWeight(Graph<V, E> g, WeightFunction<E> w, V source,
+			V target);
 
 	/**
 	 * Create a new S-T shortest path algorithm object.
@@ -89,11 +112,12 @@ public interface ShortestPathST {
 				ShortestPathST weightedStSp = new ShortestPathSTBidirectionalDijkstra();
 
 				@Override
-				public <V, E> Path<V, E> computeShortestPath(Graph<V, E> g, WeightFunction<E> w, V source, V target) {
+				public <V, E> ObjectDoublePair<Path<V, E>> computeShortestPathAndWeight(Graph<V, E> g,
+						WeightFunction<E> w, V source, V target) {
 					if (WeightFunction.isCardinality(w)) {
-						return cardinalityStSp.computeShortestPath(g, null, source, target);
+						return cardinalityStSp.computeShortestPathAndWeight(g, null, source, target);
 					} else {
-						return weightedStSp.computeShortestPath(g, w, source, target);
+						return weightedStSp.computeShortestPathAndWeight(g, w, source, target);
 					}
 				}
 			};

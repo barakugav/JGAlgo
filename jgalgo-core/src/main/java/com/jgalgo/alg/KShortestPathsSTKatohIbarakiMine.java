@@ -23,6 +23,7 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.ds.DoubleObjBinarySearchTree;
+import com.jgalgo.internal.ds.DoubleObjReferenceableHeap;
 import com.jgalgo.internal.ds.IndexHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
@@ -84,8 +85,11 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 
 		/* Compute the (first) shortest path and the next candidate */
 		{
-			IPath sp1 = (IPath) stSpAlgo.computeShortestPath(g, w, Integer.valueOf(source), Integer.valueOf(target));
-			if (sp1 != null) {
+			ObjectDoublePair<Path<Integer, Integer>> sp1Pair =
+					stSpAlgo.computeShortestPathAndWeight(g, w, Integer.valueOf(source), Integer.valueOf(target));
+			if (sp1Pair != null) {
+				IPath sp1 = (IPath) sp1Pair.first();
+				double sp1Weight = sp1Pair.secondDouble();
 				result.add(sp1);
 				if (k == 1)
 					return result;
@@ -93,7 +97,7 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 				ObjectDoublePair<IntList> sp2 =
 						spSubRoutine.computeNextShortestPath(source, sp1.edges(), sp1.edges().size());
 				if (sp2 != null) {
-					Node rootNode = new Node(null, sp1.edges(), sp1.edges(), source, w.weightSum(sp1.edges()), true);
+					Node rootNode = new Node(null, sp1.edges(), sp1.edges(), source, sp1Weight, true);
 					rootNode.bestDeviationPath = sp2.first();
 					candidates.insert(sp2.secondDouble(), rootNode);
 					candidateNum++;
@@ -105,9 +109,11 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 		List<Node> newCandidates = new ObjectArrayList<>(3);
 		while (candidateNum > 0 /* && result.size() < k (checked when adding new paths) */) {
 			/* Find path with lowest weight out of all candidates */
-			Node currentNode = candidates.extractMin().value();
+			DoubleObjReferenceableHeap.Ref<Node> minNode = candidates.extractMin();
+			Node currentNode = minNode.value();
 			candidateNum--;
 			IntList kthLocalPath = currentNode.bestDeviationPath;
+			double kthPathWeight = minNode.key();
 			Node parent = currentNode.parent;
 			{ /* Build the kth path and add to result list */
 				int kthPathBegin = n;
@@ -132,6 +138,7 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 					.get(IPath.verticesIter(g, currentNode.localPathSource, currentNode.localPath), commonPrefixLength);
 
 			newCandidates.clear();
+			double prefixWeight = parent != null ? parent.pathWeight : 0;
 			if (commonPrefixLength == 0) {
 				/* branches at the source of local path */
 				currentNode.sourceUsedOutEdges.add(kthLocalPath.getInt(commonPrefixLength));
@@ -140,7 +147,7 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 			} else {
 				/* have some prefix in common */
 				IntList prefixPath = currentNode.localPath.subList(0, commonPrefixLength);
-				double prefixWeight = (parent != null ? parent.pathWeight : 0) + w.weightSum(prefixPath);
+				prefixWeight += w.weightSum(prefixPath);
 				int prefixSource = currentNode.localPathSource;
 				Node prefixNode = new Node(parent, currentNode.spSuffix, prefixPath, prefixSource, prefixWeight,
 						currentNode.sourceUsedOutEdges);
@@ -161,7 +168,7 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 			/* Create a node for the suffix of the kth path, after branching from current node local path */
 			if (commonPrefixLength < kthLocalPath.size() - 1) {
 				IntList suffixPath = kthLocalPath.subList(commonPrefixLength, kthLocalPath.size());
-				double suffixWeight = (parent != null ? parent.pathWeight : 0) + w.weightSum(suffixPath);
+				double suffixWeight = kthPathWeight - prefixWeight;
 				Node suffixNode = new Node(parent, suffixPath, suffixPath, splitVertex, suffixWeight, false);
 				newCandidates.add(suffixNode);
 			}

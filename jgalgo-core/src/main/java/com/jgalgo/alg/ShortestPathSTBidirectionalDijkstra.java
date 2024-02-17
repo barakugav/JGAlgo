@@ -26,17 +26,19 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 
 class ShortestPathSTBidirectionalDijkstra implements ShortestPathSTBase {
 
 	@Override
-	public IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
+	public ObjectDoublePair<IPath> computeShortestPathAndWeight(IndexGraph g, IWeightFunction w, int source,
+			int target) {
 		if (!g.vertices().contains(source))
 			throw NoSuchVertexException.ofIndex(source);
 		if (!g.vertices().contains(target))
 			throw NoSuchVertexException.ofIndex(target);
 		if (source == target)
-			return IPath.valueOf(g, source, target, IntLists.emptyList());
+			return ObjectDoublePair.of(IPath.valueOf(g, source, target, IntLists.emptyList()), 0.0);
 		w = IWeightFunction.replaceNullWeightFunc(w);
 
 		DoubleIntReferenceableHeap heapS = DoubleIntReferenceableHeap.newInstance();
@@ -149,7 +151,7 @@ class ShortestPathSTBidirectionalDijkstra implements ShortestPathSTBase {
 			for (int u = middle, e; u != target; u = g.edgeEndpoint(e, u))
 				path.add(e = infoT.get(u).backtrack);
 		}
-		return IPath.valueOf(g, source, target, path);
+		return ObjectDoublePair.of(IPath.valueOf(g, source, target, path), mu);
 	}
 
 	static class Info {

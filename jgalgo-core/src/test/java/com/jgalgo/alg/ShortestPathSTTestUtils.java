@@ -21,6 +21,7 @@ import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 
 class ShortestPathSTTestUtils {
 
@@ -30,9 +31,10 @@ class ShortestPathSTTestUtils {
 			@Override
 			public <V, E> ShortestPathSingleSource.Result<V, E> computeShortestPaths(Graph<V, E> g, WeightFunction<E> w,
 					V source) {
-				Object2ObjectMap<V, Path<V, E>> paths = new Object2ObjectOpenHashMap<>(g.vertices().size());
+				Object2ObjectMap<V, ObjectDoublePair<Path<V, E>>> paths =
+						new Object2ObjectOpenHashMap<>(g.vertices().size());
 				for (V target : g.vertices())
-					paths.put(target, spst.computeShortestPath(g, w, source, target));
+					paths.put(target, spst.computeShortestPathAndWeight(g, w, source, target));
 				return new ShortestPathSingleSource.Result<>() {
 
 					@Override
@@ -41,8 +43,8 @@ class ShortestPathSTTestUtils {
 							throw NoSuchVertexException.ofVertex(target);
 						if (!paths.containsKey(target))
 							throw new IllegalArgumentException("Target vertex " + target + " is not in the graph");
-						Path<V, E> path = getPath(target);
-						return path == null ? Double.POSITIVE_INFINITY : WeightFunction.weightSum(w, path.edges());
+						ObjectDoublePair<Path<V, E>> path = paths.get(target);
+						return path != null ? path.secondDouble() : Double.POSITIVE_INFINITY;
 					}
 
 					@Override
@@ -51,7 +53,8 @@ class ShortestPathSTTestUtils {
 							throw NoSuchVertexException.ofVertex(target);
 						if (!paths.containsKey(target))
 							throw new IllegalArgumentException("Target vertex " + target + " is not in the graph");
-						return paths.get(target);
+						ObjectDoublePair<Path<V, E>> path = paths.get(target);
+						return path != null ? path.first() : null;
 					}
 
 					@Override
