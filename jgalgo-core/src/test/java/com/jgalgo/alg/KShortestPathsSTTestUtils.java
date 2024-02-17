@@ -17,7 +17,6 @@ package com.jgalgo.alg;
 
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Iterator;
@@ -139,9 +138,11 @@ class KShortestPathsSTTestUtils extends TestBase {
 		assertThrows(IllegalArgumentException.class, () -> builder.setOption("jdasg", "lhfj"));
 
 		builder.setOption("impl", "yen");
-		assertNotNull(builder.build());
+		assertEquals(KShortestPathsSTYen.class, builder.build().getClass());
 		builder.setOption("impl", "katoh-ibaraki-mine");
-		assertNotNull(builder.build());
+		assertEquals(KShortestPathsSTKatohIbarakiMine.class, builder.build().getClass());
+		builder.setOption("impl", "hershberger-maxel-suri");
+		assertEquals(KShortestPathsSTHershbergerMaxelSuri.class, builder.build().getClass());
 		builder.setOption("impl", "dmksm");
 		assertThrows(IllegalArgumentException.class, () -> builder.build());
 	}

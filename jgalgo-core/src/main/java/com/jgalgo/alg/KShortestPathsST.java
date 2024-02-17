@@ -91,6 +91,8 @@ public interface KShortestPathsST {
 							return new KShortestPathsSTYen();
 						case "katoh-ibaraki-mine":
 							return new KShortestPathsSTKatohIbarakiMine();
+						case "hershberger-maxel-suri":
+							return new KShortestPathsSTHershbergerMaxelSuri();
 						default:
 							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 					}
