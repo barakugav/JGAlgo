@@ -1561,7 +1561,7 @@ public class Graphs {
 		public EdgeSet<V, E> getEdges(V source, V target) {
 			if (source.equals(target))
 				return graph().getEdges(source, target);
-			return new EdgeSetSourceTarget(source, target);
+			return new EdgeSetSourceTarget<>(graph(), source, target);
 		}
 
 		@Override
@@ -1593,7 +1593,7 @@ public class Graphs {
 			return true;
 		}
 
-		private abstract class EdgeSetBase extends AbstractSet<E> implements EdgeSet<V, E> {
+		private abstract static class EdgeSetBase<V, E> extends AbstractSet<E> implements EdgeSet<V, E> {
 
 			final EdgeSet<V, E> out;
 			final EdgeSet<V, E> in;
@@ -1638,12 +1638,12 @@ public class Graphs {
 			}
 		}
 
-		private abstract class EdgeSetOutOrInBase extends EdgeSetBase {
+		private abstract static class EdgeSetOutOrInBase<V, E> extends EdgeSetBase<V, E> {
 
 			final V vertex;
 
-			EdgeSetOutOrInBase(V vertex) {
-				super(graph().outEdges(vertex), graph().inEdges(vertex));
+			EdgeSetOutOrInBase(Graph<V, E> g, V vertex) {
+				super(g.outEdges(vertex), g.inEdges(vertex));
 				this.vertex = vertex;
 			}
 		}
@@ -1716,9 +1716,9 @@ public class Graphs {
 			}
 		}
 
-		private class EdgeSetOut extends EdgeSetOutOrInBase {
+		private class EdgeSetOut extends EdgeSetOutOrInBase<V, E> {
 			EdgeSetOut(V source) {
-				super(source);
+				super(graph(), source);
 			}
 
 			@Override
@@ -1743,9 +1743,9 @@ public class Graphs {
 			}
 		}
 
-		private class EdgeSetIn extends EdgeSetOutOrInBase {
+		private class EdgeSetIn extends EdgeSetOutOrInBase<V, E> {
 			EdgeSetIn(V target) {
-				super(target);
+				super(graph(), target);
 			}
 
 			@Override
@@ -1770,12 +1770,12 @@ public class Graphs {
 			}
 		}
 
-		private class EdgeSetSourceTarget extends EdgeSetBase {
+		private static class EdgeSetSourceTarget<V, E> extends EdgeSetBase<V, E> {
 
 			private final V source, target;
 
-			EdgeSetSourceTarget(V source, V target) {
-				super(graph().getEdges(source, target), graph().getEdges(target, source));
+			EdgeSetSourceTarget(Graph<V, E> g, V source, V target) {
+				super(g.getEdges(source, target), g.getEdges(target, source));
 				this.source = source;
 				this.target = target;
 			}
@@ -1787,11 +1787,11 @@ public class Graphs {
 
 			@Override
 			public EdgeIter<V, E> iterator() {
-				return new EdgeIterSourceTarget(source, target, out, in);
+				return new EdgeIterSourceTarget<>(source, target, out, in);
 			}
 		}
 
-		private class EdgeIterSourceTarget implements EdgeIter<V, E>, ObjectIterator<E> {
+		private static class EdgeIterSourceTarget<V, E> implements EdgeIter<V, E>, ObjectIterator<E> {
 
 			private final V source, target;
 			private final EdgeIter<V, E> stIt;
@@ -1893,7 +1893,7 @@ public class Graphs {
 		public IEdgeSet getEdges(int source, int target) {
 			if (source == target)
 				return graph().getEdges(source, target);
-			return new EdgeSetSourceTarget(source, target);
+			return new EdgeSetSourceTarget(graph(), source, target);
 		}
 
 		@Override
@@ -1920,7 +1920,7 @@ public class Graphs {
 			return true;
 		}
 
-		private abstract class EdgeSetBase extends AbstractIntSet implements IEdgeSet {
+		private abstract static class EdgeSetBase extends AbstractIntSet implements IEdgeSet {
 
 			final IEdgeSet out;
 			final IEdgeSet in;
@@ -1955,12 +1955,12 @@ public class Graphs {
 			}
 		}
 
-		private abstract class EdgeSetOutOrInBase extends EdgeSetBase {
+		private abstract static class EdgeSetOutOrInBase extends EdgeSetBase {
 
 			final int vertex;
 
-			EdgeSetOutOrInBase(int vertex) {
-				super(graph().outEdges(vertex), graph().inEdges(vertex));
+			EdgeSetOutOrInBase(IntGraph g, int vertex) {
+				super(g.outEdges(vertex), g.inEdges(vertex));
 				this.vertex = vertex;
 			}
 
@@ -2041,7 +2041,7 @@ public class Graphs {
 
 		private class EdgeSetOut extends EdgeSetOutOrInBase {
 			EdgeSetOut(int source) {
-				super(source);
+				super(graph(), source);
 			}
 
 			@Override
@@ -2068,7 +2068,7 @@ public class Graphs {
 
 		private class EdgeSetIn extends EdgeSetOutOrInBase {
 			EdgeSetIn(int target) {
-				super(target);
+				super(graph(), target);
 			}
 
 			@Override
@@ -2093,12 +2093,12 @@ public class Graphs {
 			}
 		}
 
-		private class EdgeSetSourceTarget extends EdgeSetBase {
+		private static class EdgeSetSourceTarget extends EdgeSetBase {
 
 			private final int source, target;
 
-			EdgeSetSourceTarget(int source, int target) {
-				super(graph().getEdges(source, target), graph().getEdges(target, source));
+			EdgeSetSourceTarget(IntGraph g, int source, int target) {
+				super(g.getEdges(source, target), g.getEdges(target, source));
 				this.source = source;
 				this.target = target;
 			}
@@ -2114,7 +2114,7 @@ public class Graphs {
 			}
 		}
 
-		private class EdgeIterSourceTarget implements IEdgeIter {
+		private static class EdgeIterSourceTarget implements IEdgeIter {
 
 			private final int source, target;
 			private final IEdgeIter stIt;
