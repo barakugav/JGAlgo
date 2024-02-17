@@ -75,9 +75,10 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
-		final Bitmap verticesMask = new Bitmap(n);
+		// final Bitmap verticesMask = new Bitmap(n); /* no need, we mask the edges of masked vertices */
 		final Bitmap edgesMask = new Bitmap(m);
-		final ShortestPathSubroutine spSubRoutine = new ShortestPathSubroutine(g, w, target, verticesMask, edgesMask);
+		final ShortestPathSubroutine spSubRoutine =
+				new ShortestPathSubroutine(g, w, target, /* verticesMask, */ edgesMask);
 
 		List<IPath> result = new ObjectArrayList<>(k <= m ? k : 16);
 		DoubleObjBinarySearchTree<Node> candidates = DoubleObjBinarySearchTree.newInstance();
@@ -180,14 +181,14 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 				if (!allowDeviateFromSource && node.localPath.size() == 1)
 					continue;
 				final int localSource = node.localPathSource;
-				verticesMask.clear();
+				// verticesMask.clear();
 				edgesMask.clear();
 
 				/* mask the path up to the current node */
 				for (Node p = node.parent; p != null; p = p.parent) {
 					for (int v : IterTools.foreach(IPath.verticesIter(g, p.localPathSource, p.localPath))) {
 						if (v != localSource) {
-							verticesMask.set(v);
+							// verticesMask.set(v);
 							for (int e : g.outEdges(v))
 								edgesMask.set(e);
 						}
@@ -288,7 +289,7 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 		private final IWeightFunction w;
 		private final int target;
 
-		private final Bitmap verticesMask;
+		// private final Bitmap verticesMask;
 		private final Bitmap edgesMask;
 
 		private final IndexHeap heap;
@@ -300,12 +301,13 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 		private final int[] tXi;
 		private final Bitmap visited;
 
-		ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target, Bitmap verticesMask, Bitmap edgesMask) {
+		ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target,
+				/* Bitmap verticesMask, */ Bitmap edgesMask) {
 			this.g = g;
 			this.w = w;
 			this.target = target;
 
-			this.verticesMask = verticesMask;
+			// this.verticesMask = verticesMask;
 			this.edgesMask = edgesMask;
 
 			final int n = g.vertices().size();
@@ -364,8 +366,8 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 						if (edgesMask.get(e))
 							continue;
 						int v = g.edgeEndpoint(e, u);
-						if (verticesMask.get(v))
-							continue;
+						// if (verticesMask.get(v))
+						// continue;
 						if (visited.get(v))
 							continue;
 						double ew = w.weight(e);
@@ -430,8 +432,8 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 						if (edgesMask.get(e))
 							continue;
 						int v = eit.targetInt();
-						if (verticesMask.get(v))
-							continue;
+						// if (verticesMask.get(v))
+						// continue;
 						if (sXi[u] >= sXi[v])
 							continue;
 						if (sBacktrack[u] == e || sBacktrack[v] == e || tBacktrack[u] == e || tBacktrack[v] == e)
