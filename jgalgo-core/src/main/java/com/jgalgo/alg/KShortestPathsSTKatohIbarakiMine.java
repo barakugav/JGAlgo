@@ -180,9 +180,10 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 				if (!allowDeviateFromSource && node.localPath.size() == 1)
 					continue;
 				final int localSource = node.localPathSource;
+				verticesMask.clear();
+				edgesMask.clear();
 
 				/* mask the path up to the current node */
-				verticesMask.clear();
 				for (Node p = node.parent; p != null; p = p.parent) {
 					for (int v : IterTools.foreach(IPath.verticesIter(g, p.localPathSource, p.localPath))) {
 						if (v != localSource) {
@@ -194,7 +195,6 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 				}
 
 				/* mask source edges already used */
-				edgesMask.clear();
 				if (allowDeviateFromSource) {
 					for (int e : node.sourceUsedOutEdges)
 						edgesMask.set(e);
