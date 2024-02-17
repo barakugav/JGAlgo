@@ -28,6 +28,7 @@ import java.util.function.IntConsumer;
 import java.util.function.ObjIntConsumer;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntAdapters;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterables;
@@ -37,6 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectIterables;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 /**
@@ -648,7 +650,7 @@ public class Graphs {
 		}
 	}
 
-	private static class ImmutableEdgeIter<V, E> implements EdgeIter<V, E> {
+	private static class ImmutableEdgeIter<V, E> implements EdgeIter<V, E>, ObjectIterator<E> {
 		private final EdgeIter<V, E> it;
 
 		ImmutableEdgeIter(EdgeIter<V, E> it) {
@@ -678,6 +680,11 @@ public class Graphs {
 		@Override
 		public E peekNext() {
 			return it.peekNext();
+		}
+
+		@Override
+		public int skip(int n) {
+			return JGAlgoUtils.objIterSkip(it, n);
 		}
 	}
 
@@ -711,6 +718,11 @@ public class Graphs {
 		@Override
 		public int peekNextInt() {
 			return it.peekNextInt();
+		}
+
+		@Override
+		public int skip(int n) {
+			return it.skip(n);
 		}
 	}
 
@@ -1077,7 +1089,7 @@ public class Graphs {
 		}
 	}
 
-	private abstract static class EdgeIterView<V, E> implements EdgeIter<V, E> {
+	private abstract static class EdgeIterView<V, E> implements EdgeIter<V, E>, ObjectIterator<E> {
 		final EdgeIter<V, E> it;
 
 		EdgeIterView(EdgeIter<V, E> it) {
@@ -1114,6 +1126,11 @@ public class Graphs {
 		@Override
 		public void remove() {
 			it.remove();
+		}
+
+		@Override
+		public int skip(int n) {
+			return JGAlgoUtils.objIterSkip(it, n);
 		}
 	}
 
@@ -1154,6 +1171,11 @@ public class Graphs {
 		@Override
 		public void remove() {
 			it.remove();
+		}
+
+		@Override
+		public int skip(int n) {
+			return it.skip(n);
 		}
 	}
 
@@ -1626,7 +1648,7 @@ public class Graphs {
 			}
 		}
 
-		private abstract class EdgeIterOutOrInBase implements EdgeIter<V, E> {
+		private abstract class EdgeIterOutOrInBase implements EdgeIter<V, E>, ObjectIterator<E> {
 
 			private EdgeIter<V, E> outIt, inIt;
 			final V vertex;
@@ -1678,6 +1700,19 @@ public class Graphs {
 			public E peekNext() {
 				Assertions.hasNext(this);
 				return outIt != null ? outIt.peekNext() : inIt.peekNext();
+			}
+
+			@Override
+			public int skip(int n) {
+				int skipped = 0;
+				if (outIt != null) {
+					skipped = JGAlgoUtils.objIterSkip(outIt, n);
+					advance();
+					n -= skipped;
+					if (n == 0)
+						return skipped;
+				}
+				return skipped + ObjectIterator.super.skip(n);
 			}
 		}
 
@@ -1752,54 +1787,81 @@ public class Graphs {
 
 			@Override
 			public EdgeIter<V, E> iterator() {
-				return new EdgeIter<>() {
+				return new EdgeIterSourceTarget(source, target, out, in);
+			}
+		}
 
-					private final EdgeIter<V, E> stIt = out.iterator();
-					private final EdgeIter<V, E> tsIt = in.iterator();
-					private EdgeIter<V, E> it = stIt;
-					{
-						advance();
-					}
+		private class EdgeIterSourceTarget implements EdgeIter<V, E>, ObjectIterator<E> {
 
-					private void advance() {
-						if (it.hasNext())
-							return;
-						if (it == stIt && tsIt.hasNext()) {
-							it = tsIt;
-						} else {
-							it = null;
-						}
-					}
+			private final V source, target;
+			private final EdgeIter<V, E> stIt;
+			private final EdgeIter<V, E> tsIt;
+			private EdgeIter<V, E> it;
 
-					@Override
-					public boolean hasNext() {
-						return it != null;
-					}
+			EdgeIterSourceTarget(V source, V target, EdgeSet<V, E> stSet, EdgeSet<V, E> tsSet) {
+				this.source = source;
+				this.target = target;
+				stIt = stSet.iterator();
+				tsIt = tsSet.iterator();
+				it = stIt;
+				advance();
+			}
 
-					@Override
-					public E next() {
-						Assertions.hasNext(this);
-						E e = it.next();
-						advance();
-						return e;
-					}
+			private void advance() {
+				if (it.hasNext())
+					return;
+				if (it == stIt && tsIt.hasNext()) {
+					it = tsIt;
+				} else {
+					it = null;
+				}
+			}
 
-					@Override
-					public E peekNext() {
-						Assertions.hasNext(this);
-						return it.peekNext();
-					}
+			@Override
+			public boolean hasNext() {
+				return it != null;
+			}
 
-					@Override
-					public V source() {
-						return source;
-					}
+			@Override
+			public E next() {
+				Assertions.hasNext(this);
+				E e = it.next();
+				advance();
+				return e;
+			}
 
-					@Override
-					public V target() {
-						return target;
-					}
-				};
+			@Override
+			public E peekNext() {
+				Assertions.hasNext(this);
+				return it.peekNext();
+			}
+
+			@Override
+			public V source() {
+				return source;
+			}
+
+			@Override
+			public V target() {
+				return target;
+			}
+
+			@Override
+			public int skip(int n) {
+				if (it == null) {
+					if (n < 0)
+						throw new IllegalArgumentException("Argument must be nonnegative: " + n);
+					return 0;
+				}
+				int skipped = JGAlgoUtils.objIterSkip(it, n);
+				n -= skipped;
+				if (n == 0) {
+					advance();
+					return skipped;
+				}
+				skipped += JGAlgoUtils.objIterSkip(tsIt, n);
+				it = tsIt.hasNext() ? tsIt : null;
+				return skipped;
 			}
 		}
 	}
@@ -1912,7 +1974,7 @@ public class Graphs {
 
 			private IEdgeIter outIt, inIt;
 			final int vertex;
-			int endpoint;
+			int endpoint = -1;
 
 			EdgeIterOutOrInBase(int vertex) {
 				outIt = graph().outEdges(vertex).iterator();
@@ -1960,6 +2022,20 @@ public class Graphs {
 			public int peekNextInt() {
 				Assertions.hasNext(this);
 				return outIt != null ? outIt.peekNextInt() : inIt.peekNextInt();
+			}
+
+			@Override
+			public int skip(int n) {
+				endpoint = -1;
+				int skipped = 0;
+				if (outIt != null) {
+					skipped = JGAlgoUtils.objIterSkip(outIt, n);
+					advance();
+					n -= skipped;
+					if (n == 0)
+						return skipped;
+				}
+				return skipped + IEdgeIter.super.skip(n);
 			}
 		}
 
@@ -2034,57 +2110,83 @@ public class Graphs {
 
 			@Override
 			public IEdgeIter iterator() {
-				return new IEdgeIter() {
-
-					private final IEdgeIter stIt = out.iterator();
-					private final IEdgeIter tsIt = in.iterator();
-					private IEdgeIter it = stIt;
-					{
-						advance();
-					}
-
-					private void advance() {
-						if (it.hasNext())
-							return;
-						if (it == stIt && tsIt.hasNext()) {
-							it = tsIt;
-						} else {
-							it = null;
-						}
-					}
-
-					@Override
-					public boolean hasNext() {
-						return it != null;
-					}
-
-					@Override
-					public int nextInt() {
-						Assertions.hasNext(this);
-						int e = it.nextInt();
-						advance();
-						return e;
-					}
-
-					@Override
-					public int peekNextInt() {
-						Assertions.hasNext(this);
-						return it.peekNextInt();
-					}
-
-					@Override
-					public int sourceInt() {
-						return source;
-					}
-
-					@Override
-					public int targetInt() {
-						return target;
-					}
-				};
+				return new EdgeIterSourceTarget(source, target, out, in);
 			}
 		}
 
+		private class EdgeIterSourceTarget implements IEdgeIter {
+
+			private final int source, target;
+			private final IEdgeIter stIt;
+			private final IEdgeIter tsIt;
+			private IEdgeIter it;
+
+			EdgeIterSourceTarget(int source, int target, IEdgeSet stSet, IEdgeSet tsSet) {
+				this.source = source;
+				this.target = target;
+				stIt = stSet.iterator();
+				tsIt = tsSet.iterator();
+				it = stIt;
+				advance();
+			}
+
+			private void advance() {
+				if (it.hasNext())
+					return;
+				if (it == stIt && tsIt.hasNext()) {
+					it = tsIt;
+				} else {
+					it = null;
+				}
+			}
+
+			@Override
+			public boolean hasNext() {
+				return it != null;
+			}
+
+			@Override
+			public int nextInt() {
+				Assertions.hasNext(this);
+				int e = it.nextInt();
+				advance();
+				return e;
+			}
+
+			@Override
+			public int peekNextInt() {
+				Assertions.hasNext(this);
+				return it.peekNextInt();
+			}
+
+			@Override
+			public int sourceInt() {
+				return source;
+			}
+
+			@Override
+			public int targetInt() {
+				return target;
+			}
+
+			@Override
+			public int skip(int n) {
+				if (it == null) {
+					if (n < 0)
+						throw new IllegalArgumentException("Argument must be nonnegative: " + n);
+					return 0;
+				}
+				int skipped = it.skip(n);
+				n -= skipped;
+				if (n == 0) {
+					advance();
+					return skipped;
+				}
+				skipped += tsIt.skip(n);
+				it = tsIt.hasNext() ? tsIt : null;
+				return skipped;
+			}
+		}
 	}
 
 	private static class UndirectedViewInt extends UndirectedViewIntBase {

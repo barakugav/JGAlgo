@@ -77,6 +77,10 @@ public class IterToolsTest extends TestBase {
 	}
 
 	public static <T> void testIterSkip(Iterable<T> iterable, Random rand) {
+		testIterSkip(iterable, 5, rand);
+	}
+
+	public static <T> void testIterSkip(Iterable<T> iterable, int maxSkip, Random rand) {
 		Iterable<T> expected = new ObjectArrayList<>(iterable.iterator());
 		for (int repeat = 0; repeat < 10; repeat++) {
 			Iterator<T> it1 = expected.iterator(), it2 = iterable.iterator();
@@ -84,7 +88,7 @@ public class IterToolsTest extends TestBase {
 				if (rand.nextBoolean()) {
 					assertEquals(it1.next(), it2.next());
 				} else {
-					int skip = rand.nextInt(5);
+					int skip = rand.nextInt(maxSkip);
 					assertEquals(skip(it1, skip), skip(it2, skip));
 				}
 			}

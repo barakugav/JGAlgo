@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.internal.util.IterToolsTest;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -403,7 +404,8 @@ public class ReversedGraphViewTest extends TestBase {
 	}
 
 	@Test
-	public void testEdgesOutIn() {
+	public void edgesOutIn() {
+		final Random rand = new Random(0x571872cb5e0a65deL);
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
 			Graph<Integer, Integer> gRev0 = gOrig0.reverseView();
@@ -465,6 +467,13 @@ public class ReversedGraphViewTest extends TestBase {
 						assertFalse(edges.contains(e));
 					}
 				}
+			}
+
+			for (Integer u : gRev.vertices()) {
+				foreachBoolConfig(out -> {
+					Set<Integer> edges = out ? gRev.outEdges(u) : gRev.inEdges(u);
+					IterToolsTest.testIterSkip(edges, rand);
+				});
 			}
 		});
 	}

@@ -410,6 +410,16 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			Assertions.hasNext(this);
 			return edges[idx];
 		}
+
+		@Override
+		public int skip(int n) {
+			if (n < 0)
+				throw new IllegalArgumentException("Argument must be nonnegative: " + n);
+			n = Math.min(n, endIdx - idx);
+			idx += n;
+			lastEdge = -1;
+			return n;
+		}
 	}
 
 	static class BuilderProcessEdges {

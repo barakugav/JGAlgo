@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.internal.util.IterToolsTest;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 
@@ -215,7 +216,8 @@ public class ImmutableGraphViewTest extends TestBase {
 	}
 
 	@Test
-	public void testEdgesOutIn() {
+	public void edgesOutIn() {
+		final Random rand = new Random(0x1aac05927d08d012L);
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
 			Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
@@ -277,6 +279,13 @@ public class ImmutableGraphViewTest extends TestBase {
 						assertFalse(edges.contains(e));
 					}
 				}
+			}
+
+			for (Integer u : gImmutable.vertices()) {
+				foreachBoolConfig(out -> {
+					Set<Integer> edges = out ? gImmutable.outEdges(u) : gImmutable.inEdges(u);
+					IterToolsTest.testIterSkip(edges, rand);
+				});
 			}
 		});
 	}

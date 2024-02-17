@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.internal.util.IterToolsTest;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -384,7 +385,8 @@ public class UndirectedViewTest extends TestBase {
 	}
 
 	@Test
-	public void testEdgesOutIn() {
+	public void edgesOutIn() {
+		final Random rand = new Random(0x18488a1e7889a7aL);
 		foreachBoolConfig((intGraph, index) -> {
 			Graph<Integer, Integer> g = index ? createGraph(intGraph).indexGraph() : createGraph(intGraph);
 			Graph<Integer, Integer> undirectedG = g.undirectedView();
@@ -453,11 +455,19 @@ public class UndirectedViewTest extends TestBase {
 					}
 				}
 			}
+
+			for (Integer u : undirectedG.vertices()) {
+				foreachBoolConfig(out -> {
+					Set<Integer> edges = out ? undirectedG.outEdges(u) : undirectedG.inEdges(u);
+					IterToolsTest.testIterSkip(edges, rand);
+				});
+			}
 		});
 	}
 
 	@Test
-	public void testEdgesSourceTarget() {
+	public void getEdges() {
+		final Random rand = new Random(0xa49851434b3778e7L);
 		foreachBoolConfig((intGraph, index) -> {
 			Graph<Integer, Integer> g = index ? createGraph(intGraph).indexGraph() : createGraph(intGraph);
 			Graph<Integer, Integer> undirectedG = g.undirectedView();
@@ -491,6 +501,8 @@ public class UndirectedViewTest extends TestBase {
 						assertEquals(u, undirectedG.edgeEndpoint(e, v));
 						assertEquals(v, undirectedG.edgeEndpoint(e, u));
 					}
+
+					IterToolsTest.testIterSkip(edges, rand);
 				}
 			}
 		});

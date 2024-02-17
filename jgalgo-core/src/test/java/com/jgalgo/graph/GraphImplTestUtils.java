@@ -54,6 +54,7 @@ import com.jgalgo.alg.MinimumDirectedSpanningTree;
 import com.jgalgo.alg.MinimumDirectedSpanningTreeTarjanTest;
 import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.alg.MinimumSpanningTreeTestUtils;
+import com.jgalgo.internal.util.IterToolsTest;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
@@ -1672,7 +1673,7 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testGetEdgesOutIn(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
+	static void outInEdgesTest(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		final Random rand = new Random(0x55785cf48eb6bf43L);
 		foreachBoolConfig(directed -> {
 			final int n = 100;
@@ -1713,29 +1714,29 @@ class GraphImplTestUtils extends TestUtils {
 			}
 			if (directed) {
 				for (Integer u : g.vertices()) {
-					for (EdgeIter<Integer, Integer> eit = g.outEdges(u).iterator();;) {
-						if (!eit.hasNext()) {
-							assertThrows(NoSuchElementException.class, () -> eit.next());
-							break;
+					foreachBoolConfig(out -> {
+						EdgeSet<Integer, Integer> edges = out ? g.outEdges(u) : g.inEdges(u);
+						for (EdgeIter<Integer, Integer> eit = edges.iterator();;) {
+							if (!eit.hasNext()) {
+								assertThrows(NoSuchElementException.class, () -> eit.next());
+								break;
+							}
+							Integer e = eit.next();
+							if (out) {
+								assertEquals(u, eit.source());
+								assertEquals(g.edgeEndpoint(e, u), eit.target());
+							} else {
+								assertEquals(g.edgeEndpoint(e, u), eit.source());
+								assertEquals(u, eit.target());
+							}
 						}
-						Integer e = eit.next();
-						assertEquals(u, eit.source());
-						assertEquals(g.edgeEndpoint(e, u), eit.target());
-					}
-					assertEquals(outEdges.get(u), g.outEdges(u));
-					assertEquals(outEdges.get(u), g.outEdges(u));
-				}
-				for (Integer v : g.vertices()) {
-					Set<Integer> vEdges = new ObjectOpenHashSet<>();
-					for (EdgeIter<Integer, Integer> eit = g.inEdges(v).iterator(); eit.hasNext();) {
-						Integer e = eit.next();
-						assertEquals(v, eit.target());
-						assertEquals(g.edgeEndpoint(e, v), eit.source());
-						vEdges.add(e);
-					}
-					assertEquals(inEdges.get(v), vEdges);
+						assertEquals(out ? outEdges.get(u) : inEdges.get(u), edges);
+					});
 				}
 			}
+
+			for (Integer u : g.vertices())
+				foreachBoolConfig(out -> IterToolsTest.testIterSkip(out ? g.outEdges(u) : g.inEdges(u), rand));
 
 			for (int i = 0; i < 10; i++) {
 				Integer nonExistingVertex = GraphsTestUtils.nonExistingVertex(g, rand);

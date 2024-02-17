@@ -27,6 +27,7 @@ import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.gen.GnmGraphGenerator;
+import com.jgalgo.internal.util.IterToolsTest;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -40,7 +41,14 @@ public class ImmutableGraphCopyTest extends TestBase {
 	private static Graph<Integer, Integer> createGraph(boolean intGraph, boolean directed, boolean parallelEdges) {
 		final long seed = 0x4ff62bb8f3a0b831L;
 		final Random rand = new Random(seed);
-		final int n = 47, m = parallelEdges ? 1345 : 120;
+		final int n, m;
+		if (!parallelEdges) {
+			n = 47;
+			m = 120;
+		} else {
+			n = 15;
+			m = 1345;
+		}
 		GnmGraphGenerator<Integer, Integer> gen =
 				intGraph ? new GnmGraphGenerator<>(IntGraphFactory.undirected()) : new GnmGraphGenerator<>();
 		Graph<Integer, Integer> g = gen
@@ -344,6 +352,13 @@ public class ImmutableGraphCopyTest extends TestBase {
 					}
 				}
 
+				for (Integer u : gImmutable.vertices()) {
+					foreachBoolConfig(out -> {
+						Set<Integer> edges = out ? gImmutable.outEdges(u) : gImmutable.inEdges(u);
+						IterToolsTest.testIterSkip(edges, rand);
+					});
+				}
+
 				for (int i = 0; i < 10; i++) {
 					Integer nonExistingVertex = GraphsTestUtils.nonExistingVertex(gImmutable, rand);
 					assertThrows(NoSuchVertexException.class, () -> gImmutable.outEdges(nonExistingVertex));
@@ -365,8 +380,7 @@ public class ImmutableGraphCopyTest extends TestBase {
 				for (Integer u : gImmutable.vertices()) {
 					for (Integer v : gImmutable.vertices()) {
 						EdgeSet<Integer, Integer> edges = gImmutable.getEdges(u, v);
-						if (gOrig.getEdges(u, v).size() != edges.size())
-							assertEquals(gOrig.getEdges(u, v).size(), edges.size());
+						assertEquals(gOrig.getEdges(u, v).size(), edges.size());
 						assertEquals(gOrig.getEdges(u, v), edges);
 
 						if (edges.isEmpty()) {
@@ -401,6 +415,8 @@ public class ImmutableGraphCopyTest extends TestBase {
 							assertEquals(u, gImmutable.edgeEndpoint(e, v));
 							assertEquals(v, gImmutable.edgeEndpoint(e, u));
 						}
+
+						IterToolsTest.testIterSkip(edges, 32, rand);
 					}
 				}
 

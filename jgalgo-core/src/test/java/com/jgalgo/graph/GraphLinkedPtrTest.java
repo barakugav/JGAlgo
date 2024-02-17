@@ -110,7 +110,7 @@ public class GraphLinkedPtrTest extends TestBase {
 	@Test
 	public void testGetEdgesOutIn() {
 		foreachBoolConfig(selfEdges -> {
-			GraphImplTestUtils.testGetEdgesOutIn(graphImpl(selfEdges));
+			GraphImplTestUtils.outInEdgesTest(graphImpl(selfEdges));
 		});
 	}
 

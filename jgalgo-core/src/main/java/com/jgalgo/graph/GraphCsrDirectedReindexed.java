@@ -305,6 +305,15 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 			int lastEdge = nextEdge - 1; // undefined behavior if nextInt() wasn't called
 			return GraphCsrDirectedReindexed.this.target(lastEdge);
 		}
+
+		@Override
+		public int skip(int n) {
+			if (n < 0)
+				throw new IllegalArgumentException("Argument must be nonnegative: " + n);
+			n = Math.min(n, endIdx - nextEdge);
+			nextEdge += n;
+			return n;
+		}
 	}
 
 	private class EdgeIterIn extends EdgeIterAbstract {
@@ -435,6 +444,45 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		@Override
 		public int targetInt() {
 			return target;
+		}
+
+		@Override
+		public int skip(int n) {
+			if (n < 0)
+				throw new IllegalArgumentException("Argument must be nonnegative: " + n);
+			if (edge < 0)
+				return 0; /* iterator is exhausted */
+			if (edge + n >= sourceEnd)
+				n = sourceEnd - edge; /* don't skip more than the number of edges of the source */
+
+			if (n == 0 || GraphCsrDirectedReindexed.this.target(edge + n - 1) == target) {
+				/* we can skip at least n */
+				edge += n;
+				if (edge == sourceEnd || GraphCsrDirectedReindexed.this.target(edge) != target)
+					edge = -1;
+				return n;
+			}
+
+			/* we can't skip n, find what is the limit */
+			if (n < 16)
+				return IEdgeIter.super.skip(n);
+
+			/* perform a binary search */
+			int from = edge, to = edge + n;
+			for (int len = to - from; len > 0;) {
+				int half = len >> 1;
+				int mid = from + half;
+				if (GraphCsrDirectedReindexed.this.target(mid) != target) {
+					len = half;
+				} else {
+					from = mid + 1;
+					len = len - half - 1;
+				}
+			}
+			n = from - edge;
+
+			edge = -1;
+			return n;
 		}
 	}
 }

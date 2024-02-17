@@ -103,6 +103,15 @@ abstract class GraphArrayAbstract extends GraphBaseMutable {
 			lastEdge = -1;
 		}
 
+		@Override
+		public int skip(int n) {
+			if (n < 0)
+				throw new IllegalArgumentException("Argument must be nonnegative: " + n);
+			n = Math.min(n, count - idx);
+			idx += n;
+			lastEdge = -1;
+			return n;
+		}
 	}
 
 	abstract class EdgeIterOut extends EdgeIterBase {

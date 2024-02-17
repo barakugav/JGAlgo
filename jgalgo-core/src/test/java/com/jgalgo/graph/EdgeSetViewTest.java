@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.internal.util.IterToolsTest;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -252,6 +253,7 @@ public class EdgeSetViewTest extends TestBase {
 
 	@Test
 	public void iterator() {
+		final Random rand = new Random(0x321e7bbb012d74eL);
 		foreachBoolConfig((directed, intGraph, indexGraph) -> {
 			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
@@ -287,7 +289,10 @@ public class EdgeSetViewTest extends TestBase {
 				assertEquals(expectedTarget, target);
 			}
 			assertFalse(iter.hasNext());
+
+			IterToolsTest.testIterSkip(view, rand);
 		});
+
 		foreachBoolConfig((directed, intGraph, indexGraph) -> {
 			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
