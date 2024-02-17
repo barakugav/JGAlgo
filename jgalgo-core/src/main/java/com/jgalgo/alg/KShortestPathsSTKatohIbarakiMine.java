@@ -407,12 +407,11 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 		/* FSP(G, s, t R) */
 		ObjectDoublePair<IntList> computeNextShortestPath(int source, IntList prevSp,
 				int /* alpha */ maxDeviationPoint) {
-			final int n = g.vertices().size();
 			computeShortestPathTrees(source, prevSp);
 
 			double bestWeight = Double.POSITIVE_INFINITY;
 			int bestVertex = -1, bestEdge = -1;
-			for (int u : range(n)) {
+			for (int u : range(g.vertices().size())) {
 				/* We assume property (2.4) holds */
 				assert sXi[u] <= tXi[u];
 				if (sXi[u] >= maxDeviationPoint)
@@ -447,9 +446,8 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 				}
 			}
 
-			if (bestWeight == Double.POSITIVE_INFINITY)
+			if (bestVertex < 0)
 				return null;
-			assert bestVertex >= 0;
 
 			/*
 			 * imagine we have the following graph: (s,t),(s,u),(u,t),(u,v), namely a triangle of s,t,u with additional
@@ -472,13 +470,8 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 			IntArrayList path = new IntArrayList();
 
 			/* Add edges from source to bestVertex */
-			for (int v = bestVertex;;) {
-				int e = sBacktrack[v];
-				if (e < 0)
-					break;
+			for (int v = bestVertex, e; (e = sBacktrack[v]) >= 0; v = g.edgeEndpoint(e, v))
 				path.add(e);
-				v = g.edgeEndpoint(e, v);
-			}
 			IntArrays.reverse(path.elements(), 0, path.size());
 
 			/* Add the connecting edge that is not included in both shortest path trees */
@@ -489,16 +482,10 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 			}
 
 			/* Add edges from bestVertex to target */
-			for (;;) {
-				int e = tBacktrack[v];
-				if (e < 0)
-					break;
+			for (int e; (e = tBacktrack[v]) >= 0; v = g.edgeEndpoint(e, v))
 				path.add(e);
-				v = g.edgeEndpoint(e, v);
-			}
 
-			assert new IntOpenHashSet(IPath.verticesIter(g, source, path)).size() == path.size()
-					+ 1 : "path is not simple";
+			assert Path.valueOf(g, Integer.valueOf(source), Integer.valueOf(target), path).isSimple();
 			return ObjectDoublePair.of(path, bestWeight);
 		}
 	}
