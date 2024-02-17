@@ -93,7 +93,7 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 				ObjectDoublePair<IntList> sp2 =
 						spSubRoutine.computeNextShortestPath(source, sp1.edges(), sp1.edges().size());
 				if (sp2 != null) {
-					Node rootNode = new Node(null, sp1.edges(), sp1.edges(), target, w.weightSum(sp1.edges()), true);
+					Node rootNode = new Node(null, sp1.edges(), sp1.edges(), source, w.weightSum(sp1.edges()), true);
 					rootNode.bestDeviationPath = sp2.first();
 					candidates.insert(sp2.secondDouble(), rootNode);
 					candidateNum++;
@@ -128,6 +128,9 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 				if (currentNode.localPath.getInt(commonPrefixLength) != kthLocalPath.getInt(commonPrefixLength))
 					break;
 
+			int splitVertex = IterTools
+					.get(IPath.verticesIter(g, currentNode.localPathSource, currentNode.localPath), commonPrefixLength);
+
 			newCandidates.clear();
 			if (commonPrefixLength == 0) {
 				/* branches at the source of local path */
@@ -135,16 +138,16 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 				newCandidates.add(currentNode);
 
 			} else {
-				/* branches after the first edge, have some prefix in common */
+				/* have some prefix in common */
 				IntList prefixPath = currentNode.localPath.subList(0, commonPrefixLength);
 				double prefixWeight = (parent != null ? parent.pathWeight : 0) + w.weightSum(prefixPath);
-				int prefixSource = parent != null ? parent.localPathTarget : source;
-				int prefixTarget = IterTools.get(IPath.verticesIter(g, prefixSource, prefixPath), prefixPath.size());
-				Node prefixNode = new Node(parent, currentNode.spSuffix, prefixPath, prefixTarget, prefixWeight,
+				int prefixSource = currentNode.localPathSource;
+				Node prefixNode = new Node(parent, currentNode.spSuffix, prefixPath, prefixSource, prefixWeight,
 						currentNode.sourceUsedOutEdges);
 				newCandidates.add(prefixNode);
 
 				currentNode.parent = parent = prefixNode;
+				currentNode.localPathSource = splitVertex;
 				currentNode.sourceUsedOutEdges = new IntOpenHashSet(2);
 				currentNode.sourceUsedOutEdges.add(currentNode.localPath.getInt(commonPrefixLength));
 				currentNode.sourceUsedOutEdges.add(kthLocalPath.getInt(commonPrefixLength));
@@ -159,7 +162,7 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 			if (commonPrefixLength < kthLocalPath.size() - 1) {
 				IntList suffixPath = kthLocalPath.subList(commonPrefixLength, kthLocalPath.size());
 				double suffixWeight = (parent != null ? parent.pathWeight : 0) + w.weightSum(suffixPath);
-				Node suffixNode = new Node(parent, suffixPath, suffixPath, target, suffixWeight, false);
+				Node suffixNode = new Node(parent, suffixPath, suffixPath, splitVertex, suffixWeight, false);
 				newCandidates.add(suffixNode);
 			}
 
@@ -169,13 +172,12 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 				final boolean allowDeviateFromSource = node.sourceUsedOutEdges != null;
 				if (!allowDeviateFromSource && node.localPath.size() == 1)
 					continue;
-				final int localSource = node.parent != null ? node.parent.localPathTarget : source;
+				final int localSource = node.localPathSource;
 
 				/* mask the path up to the current node */
 				verticesMask.clear();
 				for (Node p = node.parent; p != null; p = p.parent) {
-					int s = p.parent != null ? p.parent.localPathTarget : source;
-					for (int v : IterTools.foreach(IPath.verticesIter(g, s, p.localPath))) {
+					for (int v : IterTools.foreach(IPath.verticesIter(g, p.localPathSource, p.localPath))) {
 						if (v != localSource) {
 							verticesMask.set(v);
 							for (int e : g.outEdges(v))
@@ -231,8 +233,8 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 
 		/* The local path of the node, the full path can be reconstructed by following the parent pointers */
 		IntList localPath;
-		/* The last vertex reached by the local path. The source can be found by the parent local target. */
-		int localPathTarget;
+		/* The first vertex visited by the local path. */
+		int localPathSource;
 		/* The parent node, null for the root node */
 		Node parent;
 		/*
@@ -251,20 +253,20 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 		/* The best deviation path for this node, null if there is no such one */
 		IntList bestDeviationPath;
 
-		Node(Node parent, IntList spSuffix, IntList localPath, int localPathTarget, double pathWeight,
+		Node(Node parent, IntList spSuffix, IntList localPath, int localPathSource, double pathWeight,
 				IntSet sourceUsedOutEdges) {
 			assert !localPath.isEmpty();
 			this.parent = parent;
 			this.spSuffix = spSuffix;
 			this.localPath = localPath;
-			this.localPathTarget = localPathTarget;
+			this.localPathSource = localPathSource;
 			this.pathWeight = pathWeight;
 			this.sourceUsedOutEdges = sourceUsedOutEdges;
 		}
 
-		Node(Node parent, IntList spSuffix, IntList localPath, int localPathTarget, double pathWeight,
+		Node(Node parent, IntList spSuffix, IntList localPath, int localPathSource, double pathWeight,
 				boolean allowDeviateFromSource) {
-			this(parent, spSuffix, localPath, localPathTarget, pathWeight,
+			this(parent, spSuffix, localPath, localPathSource, pathWeight,
 					allowDeviateFromSource ? new IntOpenHashSet() : null);
 		}
 
