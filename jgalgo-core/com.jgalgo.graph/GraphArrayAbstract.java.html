@@ -103,20 +103,29 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L103">			lastEdge = -1;</span>
 <span class="fc" id="L104">		}</span>
 
+		@Override
+		public int skip(int n) {
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (n &lt; 0)</span>
+<span class="fc" id="L109">				throw new IllegalArgumentException(&quot;Argument must be nonnegative: &quot; + n);</span>
+<span class="fc" id="L110">			n = Math.min(n, count - idx);</span>
+<span class="fc" id="L111">			idx += n;</span>
+<span class="fc" id="L112">			lastEdge = -1;</span>
+<span class="fc" id="L113">			return n;</span>
+		}
 	}
 
 	abstract class EdgeIterOut extends EdgeIterBase {
 
 		final int source;
 
-<span class="fc" id="L112">		EdgeIterOut(int source, int[] edges, int count) {</span>
-<span class="fc" id="L113">			super(edges, count);</span>
-<span class="fc" id="L114">			this.source = source;</span>
-<span class="fc" id="L115">		}</span>
+<span class="fc" id="L121">		EdgeIterOut(int source, int[] edges, int count) {</span>
+<span class="fc" id="L122">			super(edges, count);</span>
+<span class="fc" id="L123">			this.source = source;</span>
+<span class="fc" id="L124">		}</span>
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L119">			return source;</span>
+<span class="fc" id="L128">			return source;</span>
 		}
 	}
 
@@ -124,14 +133,14 @@ import com.jgalgo.internal.util.Assertions;
 
 		final int target;
 
-<span class="fc" id="L127">		EdgeIterIn(int target, int[] edges, int count) {</span>
-<span class="fc" id="L128">			super(edges, count);</span>
-<span class="fc" id="L129">			this.target = target;</span>
-<span class="fc" id="L130">		}</span>
+<span class="fc" id="L136">		EdgeIterIn(int target, int[] edges, int count) {</span>
+<span class="fc" id="L137">			super(edges, count);</span>
+<span class="fc" id="L138">			this.target = target;</span>
+<span class="fc" id="L139">		}</span>
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L134">			return target;</span>
+<span class="fc" id="L143">			return target;</span>
 		}
 	}
 

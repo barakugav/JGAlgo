@@ -267,12 +267,29 @@ public interface IPath extends Path&lt;Integer, Integer&gt; {
 				}
 <span class="fc" id="L268">				return u;</span>
 			}
+
+			@Override
+			public int skip(final int n) {
+<span class="fc bfc" id="L273" title="All 4 branches covered.">				if (n &lt; 1 || !directed)</span>
+<span class="fc" id="L274">					return IntIterator.super.skip(n);</span>
+
+<span class="fc" id="L276">				int skipped = eit.skip(n - 1);</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">				if (!eit.hasNext()) {</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">					if (v &gt;= 0) {</span>
+<span class="fc" id="L279">						skipped++;</span>
+<span class="fc" id="L280">						v = -1;</span>
+					}
+<span class="fc" id="L282">					return skipped;</span>
+				}
+<span class="fc" id="L284">				v = ig.edgeTarget(eit.nextInt());</span>
+<span class="fc" id="L285">				return n;</span>
+			}
 		};
 
-<span class="fc bfc" id="L272" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L273">			return indexIter;</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L290">			return indexIter;</span>
 		} else {
-<span class="fc" id="L275">			return IndexIdMaps.indexToIdIterator(indexIter, g.indexGraphVerticesMap());</span>
+<span class="fc" id="L292">			return IndexIdMaps.indexToIdIterator(indexIter, g.indexGraphVerticesMap());</span>
 		}
 	}
 
@@ -286,40 +303,40 @@ public interface IPath extends Path&lt;Integer, Integer&gt; {
 	static IntSet reachableVertices(IntGraph g, IntIterator sources) {
 		IndexGraph ig;
 		IntIterator iSources;
-<span class="fc bfc" id="L289" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L290">			ig = (IndexGraph) g;</span>
-<span class="fc" id="L291">			iSources = sources;</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L307">			ig = (IndexGraph) g;</span>
+<span class="fc" id="L308">			iSources = sources;</span>
 		} else {
-<span class="fc" id="L293">			ig = g.indexGraph();</span>
-<span class="fc" id="L294">			iSources = IndexIdMaps.idToIndexIterator(sources, g.indexGraphVerticesMap());</span>
+<span class="fc" id="L310">			ig = g.indexGraph();</span>
+<span class="fc" id="L311">			iSources = IndexIdMaps.idToIndexIterator(sources, g.indexGraphVerticesMap());</span>
 		}
 
-<span class="fc" id="L297">		final int n = g.vertices().size();</span>
-<span class="fc" id="L298">		Bitmap visited = new Bitmap(n);</span>
-<span class="fc" id="L299">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L314">		final int n = g.vertices().size();</span>
+<span class="fc" id="L315">		Bitmap visited = new Bitmap(n);</span>
+<span class="fc" id="L316">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
 
-<span class="fc bfc" id="L301" title="All 2 branches covered.">		while (iSources.hasNext()) {</span>
-<span class="fc" id="L302">			int source = iSources.nextInt();</span>
-<span class="fc" id="L303">			visited.set(source);</span>
-<span class="fc" id="L304">			queue.enqueue(source);</span>
-<span class="fc" id="L305">		}</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">		while (iSources.hasNext()) {</span>
+<span class="fc" id="L319">			int source = iSources.nextInt();</span>
+<span class="fc" id="L320">			visited.set(source);</span>
+<span class="fc" id="L321">			queue.enqueue(source);</span>
+<span class="fc" id="L322">		}</span>
 
-<span class="fc bfc" id="L307" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
-<span class="fc" id="L308">			int u = queue.dequeueInt();</span>
-<span class="fc bfc" id="L309" title="All 2 branches covered.">			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L310">				eit.nextInt();</span>
-<span class="fc" id="L311">				int v = eit.targetInt();</span>
-<span class="fc bfc" id="L312" title="All 2 branches covered.">				if (visited.get(v))</span>
-<span class="fc" id="L313">					continue;</span>
-<span class="fc" id="L314">				visited.set(v);</span>
-<span class="fc" id="L315">				queue.enqueue(v);</span>
-<span class="fc" id="L316">			}</span>
-<span class="fc" id="L317">		}</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
+<span class="fc" id="L325">			int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L327">				eit.nextInt();</span>
+<span class="fc" id="L328">				int v = eit.targetInt();</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">				if (visited.get(v))</span>
+<span class="fc" id="L330">					continue;</span>
+<span class="fc" id="L331">				visited.set(v);</span>
+<span class="fc" id="L332">				queue.enqueue(v);</span>
+<span class="fc" id="L333">			}</span>
+<span class="fc" id="L334">		}</span>
 
-<span class="fc" id="L319">		IntSet indexRes = ImmutableIntArraySet.withBitmap(visited);</span>
-<span class="fc bfc" id="L320" title="All 2 branches covered.">		if (!(g instanceof IndexGraph))</span>
-<span class="fc" id="L321">			indexRes = IndexIdMaps.indexToIdSet(indexRes, g.indexGraphVerticesMap());</span>
-<span class="fc" id="L322">		return indexRes;</span>
+<span class="fc" id="L336">		IntSet indexRes = ImmutableIntArraySet.withBitmap(visited);</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">		if (!(g instanceof IndexGraph))</span>
+<span class="fc" id="L338">			indexRes = IndexIdMaps.indexToIdSet(indexRes, g.indexGraphVerticesMap());</span>
+<span class="fc" id="L339">		return indexRes;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

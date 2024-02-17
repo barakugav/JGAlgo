@@ -167,6 +167,12 @@ final class IEdgeSetView extends AbstractIntSet implements IEdgeSet {
 <span class="fc" id="L167">				it.remove();</span>
 <span class="fc" id="L168">				lastEdge = -1;</span>
 <span class="fc" id="L169">			}</span>
+
+			@Override
+			public int skip(int n) {
+<span class="fc" id="L173">				lastEdge = -1;</span>
+<span class="fc" id="L174">				return it.skip(n);</span>
+			}
 		};
 	}
 
