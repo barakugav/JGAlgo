@@ -19,6 +19,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 
 /**
  * An algorithm for computing the shortest path between two vertices in a graph.
@@ -59,7 +60,29 @@ public interface ShortestPathST {
 	 * @param  target the target vertex
 	 * @return        the shortest path from the source to the target, or {@code null} if there is no path
 	 */
-	&lt;V, E&gt; Path&lt;V, E&gt; computeShortestPath(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source, V target);
+	default &lt;V, E&gt; Path&lt;V, E&gt; computeShortestPath(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source, V target) {
+<span class="fc" id="L64">		ObjectDoublePair&lt;Path&lt;V, E&gt;&gt; sp = computeShortestPathAndWeight(g, w, source, target);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		return sp != null ? sp.first() : null;</span>
+	}
+
+	/**
+	 * Compute the shortest path from a source vertex to a target vertex, and its weight.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, a {@link IPath} object will be returned. In that case, its better to pass a
+	 * {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
+	 *
+	 * @param  &lt;V&gt;    the vertices type
+	 * @param  &lt;E&gt;    the edges type
+	 * @param  g      the graph
+	 * @param  w      an edge weight function
+	 * @param  source the source vertex
+	 * @param  target the target vertex
+	 * @return        a pair of the shortest path from the source to the target, and its weight, or {@code null} if
+	 *                there is no path
+	 */
+	&lt;V, E&gt; ObjectDoublePair&lt;Path&lt;V, E&gt;&gt; computeShortestPathAndWeight(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source,
+			V target);
 
 	/**
 	 * Create a new S-T shortest path algorithm object.
@@ -71,7 +94,7 @@ public interface ShortestPathST {
 	 * @return a default implementation of {@link ShortestPathST}
 	 */
 	static ShortestPathST newInstance() {
-<span class="fc" id="L74">		return builder().build();</span>
+<span class="fc" id="L97">		return builder().build();</span>
 	}
 
 	/**
@@ -83,17 +106,18 @@ public interface ShortestPathST {
 	 * @return a new builder that can build {@link ShortestPathST} objects
 	 */
 	static ShortestPathST.Builder builder() {
-<span class="fc" id="L86">		return () -&gt; {</span>
-<span class="fc" id="L87">			return new ShortestPathST() {</span>
-<span class="fc" id="L88">				ShortestPathST cardinalityStSp = new ShortestPathSTBidirectionalBfs();</span>
-<span class="fc" id="L89">				ShortestPathST weightedStSp = new ShortestPathSTBidirectionalDijkstra();</span>
+<span class="fc" id="L109">		return () -&gt; {</span>
+<span class="fc" id="L110">			return new ShortestPathST() {</span>
+<span class="fc" id="L111">				ShortestPathST cardinalityStSp = new ShortestPathSTBidirectionalBfs();</span>
+<span class="fc" id="L112">				ShortestPathST weightedStSp = new ShortestPathSTBidirectionalDijkstra();</span>
 
 				@Override
-				public &lt;V, E&gt; Path&lt;V, E&gt; computeShortestPath(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source, V target) {
-<span class="fc bfc" id="L93" title="All 2 branches covered.">					if (WeightFunction.isCardinality(w)) {</span>
-<span class="fc" id="L94">						return cardinalityStSp.computeShortestPath(g, null, source, target);</span>
+				public &lt;V, E&gt; ObjectDoublePair&lt;Path&lt;V, E&gt;&gt; computeShortestPathAndWeight(Graph&lt;V, E&gt; g,
+						WeightFunction&lt;E&gt; w, V source, V target) {
+<span class="fc bfc" id="L117" title="All 2 branches covered.">					if (WeightFunction.isCardinality(w)) {</span>
+<span class="fc" id="L118">						return cardinalityStSp.computeShortestPathAndWeight(g, null, source, target);</span>
 					} else {
-<span class="fc" id="L96">						return weightedStSp.computeShortestPath(g, w, source, target);</span>
+<span class="fc" id="L120">						return weightedStSp.computeShortestPathAndWeight(g, w, source, target);</span>
 					}
 				}
 			};

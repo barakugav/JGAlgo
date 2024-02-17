@@ -86,13 +86,15 @@ public interface KShortestPathsST {
 			@Override
 			public KShortestPathsST build() {
 <span class="nc bnc" id="L88" title="All 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L89" title="All 3 branches missed.">					switch (impl) {</span>
+<span class="nc bnc" id="L89" title="All 4 branches missed.">					switch (impl) {</span>
 						case &quot;yen&quot;:
 <span class="nc" id="L91">							return new KShortestPathsSTYen();</span>
 						case &quot;katoh-ibaraki-mine&quot;:
 <span class="nc" id="L93">							return new KShortestPathsSTKatohIbarakiMine();</span>
+						case &quot;hershberger-maxel-suri&quot;:
+<span class="nc" id="L95">							return new KShortestPathsSTHershbergerMaxelSuri();</span>
 						default:
-<span class="nc" id="L95">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L97">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
 				/*-
@@ -116,19 +118,19 @@ public interface KShortestPathsST {
 				// } else {
 				// return undirectedAlgo.computeKShortestPaths(g, w, source, target, k);
 				// } } };
-<span class="nc" id="L119">				return new KShortestPathsSTYen();</span>
+<span class="nc" id="L121">				return new KShortestPathsSTYen();</span>
 			}
 
 			@Override
 			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L124" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L126">						impl = (String) value;</span>
-<span class="nc" id="L127">						break;</span>
+<span class="nc" id="L128">						impl = (String) value;</span>
+<span class="nc" id="L129">						break;</span>
 					default:
-<span class="nc" id="L129">						KShortestPathsST.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L131">						KShortestPathsST.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L131">			}</span>
+<span class="nc" id="L133">			}</span>
 		};
 	}
 

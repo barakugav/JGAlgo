@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KShortestPathsSTHershbergerMaxelSuri.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">KShortestPathsSTHershbergerMaxelSuri.java</span></div><h1>KShortestPathsSTHershbergerMaxelSuri.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Arrays;
+import java.util.List;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.ds.DoubleObjBinarySearchTree;
+import com.jgalgo.internal.ds.DoubleObjReferenceableHeap;
+import com.jgalgo.internal.ds.IndexHeap;
+import com.jgalgo.internal.ds.IndexHeapDouble;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.BitmapSet;
+import com.jgalgo.internal.util.Fastutil;
+import com.jgalgo.internal.util.IterTools;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
+
+/**
+ * Hershberger, Maxel and Suri algorithm for K shortest simple paths in directed graphs.
+ *
+ * &lt;p&gt;
+ * The algorithm is similar to Yen's algorithm, but to compute the best 'replacement' path (deviation path, the next
+ * shortest path that replace at least one edge from the previous k-th shortest path) it compute it in time \(O(m + n
+ * \log n)\) using two shortest path trees. Yen's algorithm runs a S-T shortest path computation for each edge in the
+ * last k-th shortest path, therefore each such iteration runs in time \(O(n(m + n \log n))\). Unlike the undirected
+ * case, see {@link KShortestPathsSTKatohIbarakiMine}, in directed graphs the fast replacement algorithm may fail to
+ * find a deviation path, in which case the regular Yen's algorithm is used.
+ *
+ * &lt;p&gt;
+ * The total running time of this algorithm is \(O(nk(m + n \log n))\) in the worst case, but in practice it usually
+ * runs in time \(O(k(m + n \log n))\).
+ *
+ * &lt;p&gt;
+ * Based on the paper 'Finding the k Shortest Simple Paths: A New Algorithm and its Implementation' by John Hershberger,
+ * Matthew Maxel and Subhash Suri.
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L64">class KShortestPathsSTHershbergerMaxelSuri implements KShortestPathsSTBase {</span>
+
+<span class="fc" id="L66">	private final ShortestPathST stSpAlgo = ShortestPathST.newInstance();</span>
+
+	@Override
+	public List&lt;IPath&gt; computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
+<span class="fc bfc" id="L70" title="All 4 branches covered.">		if (!g.vertices().contains(source) || !g.vertices().contains(target))</span>
+<span class="fc" id="L71">			throw new IllegalArgumentException(&quot;source or target not in graph&quot;);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		if (k &lt; 1)</span>
+<span class="fc" id="L73">			throw new IllegalArgumentException(&quot;k must be positive&quot;);</span>
+<span class="fc" id="L74">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
+<span class="fc" id="L75">		Assertions.onlyPositiveEdgesWeights(g, w);</span>
+<span class="fc" id="L76">		Assertions.onlyDirected(g);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">		if (source == target)</span>
+<span class="fc" id="L78">			return List.of(IPath.valueOf(g, source, target, Fastutil.list()));</span>
+
+<span class="fc" id="L80">		final int n = g.vertices().size();</span>
+<span class="fc" id="L81">		final int m = g.edges().size();</span>
+		// final Bitmap verticesMask = new Bitmap(n); /* no need, we mask the edges of masked vertices */
+<span class="fc" id="L83">		final Bitmap edgesMask = new Bitmap(m);</span>
+<span class="fc" id="L84">		final ShortestPathSubroutine spSubRoutine =</span>
+				new ShortestPathSubroutine(g, w, target, /* verticesMask, */ edgesMask);
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		List&lt;IPath&gt; result = new ObjectArrayList&lt;&gt;(k &lt;= m ? k : 16);</span>
+<span class="fc" id="L88">		DoubleObjBinarySearchTree&lt;Node&gt; candidates = DoubleObjBinarySearchTree.newInstance();</span>
+<span class="fc" id="L89">		int candidateNum = 0;</span>
+
+		/* Compute the (first) shortest path and the next candidate */
+		{
+<span class="fc" id="L93">			ObjectDoublePair&lt;Path&lt;Integer, Integer&gt;&gt; sp1Pair =</span>
+<span class="fc" id="L94">					stSpAlgo.computeShortestPathAndWeight(g, w, Integer.valueOf(source), Integer.valueOf(target));</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">			if (sp1Pair != null) {</span>
+<span class="fc" id="L96">				IPath sp1 = (IPath) sp1Pair.first();</span>
+<span class="fc" id="L97">				double sp1Weight = sp1Pair.secondDouble();</span>
+<span class="fc" id="L98">				result.add(sp1);</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">				if (k == 1)</span>
+<span class="fc" id="L100">					return result;</span>
+
+<span class="fc" id="L102">				ObjectDoublePair&lt;IntList&gt; sp2 =</span>
+<span class="fc" id="L103">						spSubRoutine.computeNextShortestPath(source, sp1.edges(), sp1.edges().size());</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">				if (sp2 != null) {</span>
+<span class="fc" id="L105">					Node rootNode = new Node(null, sp1.edges(), sp1.edges(), source, sp1Weight, true);</span>
+<span class="fc" id="L106">					rootNode.bestDeviationPath = sp2.first();</span>
+<span class="fc" id="L107">					candidates.insert(sp2.secondDouble(), rootNode);</span>
+<span class="fc" id="L108">					candidateNum++;</span>
+				}
+			}
+		}
+
+<span class="fc" id="L113">		int[] kthPathArr = new int[n];</span>
+<span class="fc" id="L114">		List&lt;Node&gt; newCandidates = new ObjectArrayList&lt;&gt;(3);</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">		while (candidateNum &gt; 0 /* &amp;&amp; result.size() &lt; k (checked when adding new paths) */) {</span>
+			/* Find path with lowest weight out of all candidates */
+<span class="fc" id="L117">			DoubleObjReferenceableHeap.Ref&lt;Node&gt; minNode = candidates.extractMin();</span>
+<span class="fc" id="L118">			Node currentNode = minNode.value();</span>
+<span class="fc" id="L119">			candidateNum--;</span>
+<span class="fc" id="L120">			IntList kthLocalPath = currentNode.bestDeviationPath;</span>
+<span class="fc" id="L121">			double kthPathWeight = minNode.key();</span>
+<span class="fc" id="L122">			Node parent = currentNode.parent;</span>
+			{ /* Build the kth path and add to result list */
+<span class="fc" id="L124">				int kthPathBegin = n;</span>
+<span class="fc" id="L125">				kthLocalPath.getElements(0, kthPathArr, kthPathBegin -= kthLocalPath.size(), kthLocalPath.size());</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">				for (Node node = parent; node != null; node = node.parent) {</span>
+<span class="fc" id="L127">					IntList p = node.localPath;</span>
+<span class="fc" id="L128">					p.getElements(0, kthPathArr, kthPathBegin -= p.size(), p.size());</span>
+				}
+				/* add the kth path to the result */
+<span class="fc" id="L131">				IntList kthPathList = Fastutil.list(IntArrays.copy(kthPathArr, kthPathBegin, n - kthPathBegin));</span>
+<span class="fc" id="L132">				result.add(IPath.valueOf(g, source, target, kthPathList));</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">				if (result.size() == k)</span>
+<span class="fc" id="L134">					break;</span>
+			}
+
+<span class="fc" id="L137">			int commonPrefixLength = 0;</span>
+<span class="fc" id="L138">			for (;; commonPrefixLength++)</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">				if (currentNode.localPath.getInt(commonPrefixLength) != kthLocalPath.getInt(commonPrefixLength))</span>
+<span class="fc" id="L140">					break;</span>
+
+<span class="fc" id="L142">			int splitVertex = g.edgeSource(currentNode.localPath.getInt(commonPrefixLength));</span>
+
+<span class="fc" id="L144">			newCandidates.clear();</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			double prefixWeight = parent != null ? parent.pathWeight : 0;</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			if (commonPrefixLength == 0) {</span>
+				/* branches at the source of local path */
+<span class="fc" id="L148">				currentNode.sourceUsedOutEdges.add(kthLocalPath.getInt(commonPrefixLength));</span>
+<span class="fc" id="L149">				newCandidates.add(currentNode);</span>
+
+			} else {
+				/* have some prefix in common */
+<span class="fc" id="L153">				IntList prefixPath = currentNode.localPath.subList(0, commonPrefixLength);</span>
+<span class="fc" id="L154">				prefixWeight += w.weightSum(prefixPath);</span>
+<span class="fc" id="L155">				int prefixSource = currentNode.localPathSource;</span>
+<span class="fc" id="L156">				Node prefixNode = new Node(parent, currentNode.spSuffix, prefixPath, prefixSource, prefixWeight,</span>
+						currentNode.sourceUsedOutEdges);
+<span class="fc" id="L158">				newCandidates.add(prefixNode);</span>
+
+<span class="fc" id="L160">				currentNode.parent = parent = prefixNode;</span>
+<span class="fc" id="L161">				currentNode.localPathSource = splitVertex;</span>
+<span class="fc" id="L162">				currentNode.sourceUsedOutEdges = new IntOpenHashSet(2);</span>
+<span class="fc" id="L163">				currentNode.sourceUsedOutEdges.add(currentNode.localPath.getInt(commonPrefixLength));</span>
+<span class="fc" id="L164">				currentNode.sourceUsedOutEdges.add(kthLocalPath.getInt(commonPrefixLength));</span>
+
+<span class="fc" id="L166">				currentNode.spSuffix = currentNode.spSuffix.subList(commonPrefixLength, currentNode.spSuffix.size());</span>
+<span class="fc" id="L167">				currentNode.localPath = currentNode.localPath.subList(commonPrefixLength, currentNode.localPath.size());</span>
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">				assert !currentNode.localPath.isEmpty();</span>
+<span class="fc" id="L169">				newCandidates.add(currentNode);</span>
+			}
+
+			/* Create a node for the suffix of the kth path, after branching from current node local path */
+<span class="fc bfc" id="L173" title="All 2 branches covered.">			if (commonPrefixLength &lt; kthLocalPath.size() - 1) {</span>
+<span class="fc" id="L174">				IntList suffixPath = kthLocalPath.subList(commonPrefixLength, kthLocalPath.size());</span>
+<span class="fc" id="L175">				double suffixWeight = kthPathWeight - prefixWeight;</span>
+<span class="fc" id="L176">				Node suffixNode = new Node(parent, suffixPath, suffixPath, splitVertex, suffixWeight, false);</span>
+<span class="fc" id="L177">				newCandidates.add(suffixNode);</span>
+			}
+
+			/* Compute for each modified or new node a candidate deviation path */
+<span class="fc" id="L181">			currentNode.clearBestDeviation();</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">			for (Node node : newCandidates) {</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">				final boolean allowDeviateFromSource = node.sourceUsedOutEdges != null;</span>
+<span class="fc bfc" id="L184" title="All 4 branches covered.">				if (!allowDeviateFromSource &amp;&amp; node.localPath.size() == 1)</span>
+<span class="fc" id="L185">					continue;</span>
+<span class="fc" id="L186">				final int localSource = node.localPathSource;</span>
+				// verticesMask.clear();
+<span class="fc" id="L188">				edgesMask.clear();</span>
+
+				/* mask the path up to the current node */
+<span class="fc bfc" id="L191" title="All 2 branches covered.">				for (Node p = node.parent; p != null; p = p.parent) {</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">					for (int e : p.localPath) {</span>
+<span class="fc" id="L193">						int v = g.edgeSource(e);</span>
+						// verticesMask.set(v);
+<span class="fc bfc" id="L195" title="All 2 branches covered.">						for (int vEdge : g.outEdges(v))</span>
+<span class="fc" id="L196">							edgesMask.set(vEdge);</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">						for (int vEdge : g.inEdges(v))</span>
+<span class="fc" id="L198">							edgesMask.set(vEdge);</span>
+<span class="fc" id="L199">					}</span>
+				}
+
+				/* mask source edges already used */
+<span class="fc bfc" id="L203" title="All 2 branches covered.">				if (allowDeviateFromSource) {</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">					for (int e : node.sourceUsedOutEdges)</span>
+<span class="fc" id="L205">						edgesMask.set(e);</span>
+				} else {
+<span class="fc" id="L207">					int requiredFirstEdge = node.localPath.getInt(0);</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">					for (int e : g.outEdges(localSource))</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">						if (e != requiredFirstEdge)</span>
+<span class="fc" id="L210">							edgesMask.set(e);</span>
+				}
+
+<span class="fc" id="L213">				ObjectDoublePair&lt;IntList&gt; bestDeviation =</span>
+<span class="fc" id="L214">						spSubRoutine.computeNextShortestPath(localSource, node.spSuffix, node.localPath.size());</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">				if (bestDeviation != null) {</span>
+<span class="fc" id="L216">					node.bestDeviationPath = bestDeviation.first();</span>
+					double deviationWeight =
+<span class="fc bfc" id="L218" title="All 2 branches covered.">							(node.parent != null ? node.parent.pathWeight : 0) + bestDeviation.secondDouble();</span>
+<span class="fc" id="L219">					candidates.insert(deviationWeight, node);</span>
+<span class="fc" id="L220">					candidateNum++;</span>
+				}
+<span class="fc" id="L222">			}</span>
+
+<span class="fc bfc" id="L224" title="All 2 branches covered.">			while (candidateNum &gt; k - result.size()) {</span>
+<span class="fc" id="L225">				candidates.extractMax();</span>
+<span class="fc" id="L226">				candidateNum--;</span>
+			}
+<span class="fc" id="L228">		}</span>
+
+<span class="fc" id="L230">		return result;</span>
+	}
+
+	/**
+	 * A node is a sub path in the tree of all the k-th shortest paths.
+	 *
+	 * &lt;p&gt;
+	 * Initially there is a single node for the first shortest path. Each time a k-th shortest path is computed, the
+	 * longest prefix of the k-th path that is common to the previous k-th path is found, and the tree is branched for
+	 * the suffix only. Each node contains a local path, a full path can be reconstructed by following the parent
+	 * pointers.
+	 *
+	 * @author Barak Ugav
+	 */
+<span class="fc" id="L244">	private static class Node {</span>
+
+		/* The local path of the node, the full path can be reconstructed by following the parent pointers */
+		IntList localPath;
+		/* The first vertex visited by the local path. */
+		int localPathSource;
+		/* The parent node, null for the root node */
+		Node parent;
+		/*
+		 * The first shortest path computed from the local path source to the global target. Used to compute xi in
+		 * shortest path subroutine
+		 */
+		IntList spSuffix;
+		/* The weight from the global source along the whole ancestors paths until this node local targets */
+		double pathWeight;
+		/*
+		 * The set of edges for which there is already a child for the parent-&gt;target. For each parent node, there is a
+		 * single child which is responsible for computing the shortest paths deviating for the parent target vertex,
+		 * which is the source vertex of all the children nodes. Only for that special child, the set is not null.
+		 */
+		IntSet sourceUsedOutEdges;
+		/* The best deviation path for this node, null if there is no such one */
+		IntList bestDeviationPath;
+
+		Node(Node parent, IntList spSuffix, IntList localPath, int localPathSource, double pathWeight,
+<span class="fc" id="L269">				IntSet sourceUsedOutEdges) {</span>
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">			assert !localPath.isEmpty();</span>
+<span class="fc" id="L271">			this.parent = parent;</span>
+<span class="fc" id="L272">			this.spSuffix = spSuffix;</span>
+<span class="fc" id="L273">			this.localPath = localPath;</span>
+<span class="fc" id="L274">			this.localPathSource = localPathSource;</span>
+<span class="fc" id="L275">			this.pathWeight = pathWeight;</span>
+<span class="fc" id="L276">			this.sourceUsedOutEdges = sourceUsedOutEdges;</span>
+<span class="fc" id="L277">		}</span>
+
+		Node(Node parent, IntList spSuffix, IntList localPath, int localPathSource, double pathWeight,
+				boolean allowDeviateFromSource) {
+<span class="fc" id="L281">			this(parent, spSuffix, localPath, localPathSource, pathWeight,</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">					allowDeviateFromSource ? new IntOpenHashSet() : null);</span>
+<span class="fc" id="L283">		}</span>
+
+		void clearBestDeviation() {
+<span class="fc" id="L286">			bestDeviationPath = null;</span>
+<span class="fc" id="L287">		}</span>
+	}
+
+<span class="fc" id="L290">	private static class ShortestPathSubroutine {</span>
+
+		private final IndexGraph g;
+		private final IWeightFunction w;
+		private final int target;
+
+		// private final Bitmap verticesMask;
+		private final Bitmap edgesMask;
+
+		/* Shared data structures (both the fast replacement and Yen's algorithms) */
+		private final int[] sBacktrack;
+		private final int[] tBacktrack;
+
+		/* Fast replacement algorithm data structures */
+		private final IndexHeap heap;
+		private final double[] sDistances;
+		private final double[] tDistances;
+		private final int[] sXi;
+		private final int[] tXi;
+		private final Bitmap visited;
+
+		/* Yen's algorithm data structures */
+		private final IndexHeapDouble heapS;
+		private final IndexHeapDouble heapT;
+		private final BitmapSet visitedS;
+		private final BitmapSet visitedT;
+
+		ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target,
+<span class="fc" id="L318">				/* Bitmap verticesMask, */ Bitmap edgesMask) {</span>
+<span class="fc" id="L319">			this.g = g;</span>
+<span class="fc" id="L320">			this.w = w;</span>
+<span class="fc" id="L321">			this.target = target;</span>
+
+			// this.verticesMask = verticesMask;
+<span class="fc" id="L324">			this.edgesMask = edgesMask;</span>
+
+<span class="fc" id="L326">			final int n = g.vertices().size();</span>
+<span class="fc" id="L327">			sDistances = new double[n];</span>
+<span class="fc" id="L328">			tDistances = new double[n];</span>
+<span class="fc" id="L329">			sBacktrack = new int[n];</span>
+<span class="fc" id="L330">			tBacktrack = new int[n];</span>
+<span class="fc" id="L331">			sXi = new int[n];</span>
+<span class="fc" id="L332">			tXi = new int[n];</span>
+<span class="fc" id="L333">			visited = new Bitmap(n);</span>
+
+<span class="fc" id="L335">			double[] heapDistances = tDistances;</span>
+<span class="fc" id="L336">			int[] heapXi = tXi;</span>
+<span class="fc" id="L337">			heap = IndexHeap.newInstance(n, (v1, v2) -&gt; {</span>
+<span class="fc" id="L338">				int c = Double.compare(heapDistances[v1], heapDistances[v2]);</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">				return c != 0 ? c : Integer.compare(heapXi[v1], heapXi[v2]);</span>
+			});
+
+<span class="fc" id="L342">			heapS = IndexHeapDouble.newInstance(n);</span>
+<span class="fc" id="L343">			heapT = IndexHeapDouble.newInstance(n);</span>
+<span class="fc" id="L344">			visitedS = new BitmapSet(n);</span>
+<span class="fc" id="L345">			visitedT = new BitmapSet(n);</span>
+<span class="fc" id="L346">		}</span>
+
+		private void computeShortestPathTrees(int source, IntList prevSp) {
+<span class="fc" id="L349">			final int n = g.vertices().size();</span>
+<span class="fc" id="L350">			final double[] heapDistances = tDistances;</span>
+<span class="fc" id="L351">			final int[] heapXi = tXi;</span>
+
+<span class="fc bfc" id="L353" title="All 2 branches covered.">			for (boolean direction : new boolean[] { true, false }) {</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">				int[] backtrack = direction ? sBacktrack : tBacktrack;</span>
+
+<span class="fc" id="L356">				Arrays.fill(heapDistances, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L357">				Arrays.fill(heapXi, Integer.MAX_VALUE);</span>
+<span class="fc" id="L358">				Arrays.fill(backtrack, -1);</span>
+
+<span class="fc bfc" id="L360" title="All 2 branches covered.">				int spVertex = direction ? source : target, spDistance = 0;</span>
+<span class="fc" id="L361">				int nextXi = 0;</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">				for (IntListIterator eit = prevSp.listIterator(direction ? 0 : prevSp.size());;) {</span>
+<span class="fc" id="L363">					int v = spVertex;</span>
+<span class="fc" id="L364">					heapDistances[v] = spDistance;</span>
+<span class="pc bpc" id="L365" title="1 of 2 branches missed.">					assert heapXi[v] == Integer.MAX_VALUE;</span>
+<span class="fc" id="L366">					heapXi[v] = nextXi++;</span>
+<span class="fc" id="L367">					heap.insert(v);</span>
+<span class="fc" id="L368">					visited.set(v);</span>
+<span class="fc bfc" id="L369" title="All 6 branches covered.">					if (!(direction ? eit.hasNext() : eit.hasPrevious()))</span>
+<span class="fc" id="L370">						break;</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">					int e = direction ? eit.nextInt() : eit.previousInt();</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">					spVertex = direction ? g.edgeTarget(e) : g.edgeSource(e);</span>
+<span class="fc" id="L373">					spDistance += w.weight(e);</span>
+<span class="fc" id="L374">					backtrack[spVertex] = e;</span>
+<span class="fc" id="L375">				}</span>
+
+<span class="fc bfc" id="L377" title="All 2 branches covered.">				while (heap.isNotEmpty()) {</span>
+<span class="fc" id="L378">					int u = heap.extractMin();</span>
+<span class="fc" id="L379">					visited.set(u);</span>
+<span class="fc" id="L380">					final int uXi = heapXi[u];</span>
+<span class="fc" id="L381">					final double uDistance = heapDistances[u];</span>
+
+<span class="fc bfc" id="L383" title="All 4 branches covered.">					for (int e : direction ? g.outEdges(u) : g.inEdges(u)) {</span>
+<span class="fc bfc" id="L384" title="All 2 branches covered.">						if (edgesMask.get(e))</span>
+<span class="fc" id="L385">							continue;</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">						int v = direction ? g.edgeTarget(e) : g.edgeSource(e);</span>
+						// if (verticesMask.get(v))
+						// continue;
+<span class="fc bfc" id="L389" title="All 2 branches covered.">						if (visited.get(v))</span>
+<span class="fc" id="L390">							continue;</span>
+<span class="fc" id="L391">						double ew = w.weight(e);</span>
+<span class="fc" id="L392">						double distance = uDistance + ew;</span>
+
+<span class="fc bfc" id="L394" title="All 2 branches covered.">						if (!heap.isInserted(v)) {</span>
+<span class="fc" id="L395">							heapDistances[v] = distance;</span>
+<span class="fc" id="L396">							heap.insert(v);</span>
+<span class="fc" id="L397">							backtrack[v] = e;</span>
+<span class="fc" id="L398">							heapXi[v] = uXi;</span>
+<span class="fc bfc" id="L399" title="All 6 branches covered.">						} else if (distance &lt; heapDistances[v] || (distance == heapDistances[v] &amp;&amp; uXi &lt; heapXi[v])) {</span>
+<span class="fc" id="L400">							heapDistances[v] = distance;</span>
+<span class="fc" id="L401">							heap.decreaseKey(v);</span>
+<span class="fc" id="L402">							backtrack[v] = e;</span>
+<span class="fc" id="L403">							heapXi[v] = uXi;</span>
+						}
+<span class="fc" id="L405">					}</span>
+<span class="fc" id="L406">				}</span>
+<span class="fc" id="L407">				visited.clear();</span>
+<span class="fc bfc" id="L408" title="All 2 branches covered.">				if (direction) {</span>
+<span class="fc" id="L409">					System.arraycopy(heapDistances, 0, sDistances, 0, n);</span>
+<span class="fc" id="L410">					System.arraycopy(heapXi, 0, sXi, 0, n);</span>
+				} else {
+					// No need, heapDistances == tDistances and heapXi == tXi
+					// System.arraycopy(heapDistances, 0, tDistances, 0, n);
+					// System.arraycopy(heapXi, 0, tXi, 0, n);
+				}
+			}
+
+			/* We computed xi of the sp tree from t in reverse order, namely tXi[target]=0 */
+			/* We flip the xi to match the same values of the sp tree from s */
+<span class="fc" id="L420">			final int maxXi = prevSp.size();</span>
+<span class="fc bfc" id="L421" title="All 2 branches covered.">			for (int v : range(n))</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">				if (tXi[v] != Integer.MAX_VALUE)</span>
+<span class="fc" id="L423">					tXi[v] = maxXi - tXi[v];</span>
+<span class="pc bpc" id="L424" title="2 of 4 branches missed.">			assert IterTools.stream(IPath.verticesIter(g, source, prevSp)).allMatch(v -&gt; sXi[v] == tXi[v]);</span>
+<span class="fc" id="L425">		}</span>
+
+		private FastReplacementAlgoResult fastReplacementAlgo(int source, IntList prevSp,
+				int /* alpha */ maxDeviationPoint) {
+
+<span class="fc" id="L430">			computeShortestPathTrees(source, prevSp);</span>
+
+<span class="fc" id="L432">			double bestWeight = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L433">			int bestEdge = -1;</span>
+			/* mask the edges on the previous SP so we wont consider them as replacement */
+<span class="fc" id="L435">			IntIterator prevSpIt = prevSp.subList(0, maxDeviationPoint).iterator();</span>
+<span class="pc bpc" id="L436" title="1 of 4 branches missed.">			boolean maskedFirstEdge = prevSpIt.hasNext() &amp;&amp; edgesMask.set(prevSpIt.nextInt());</span>
+<span class="fc" id="L437">			prevSpIt.forEachRemaining(edgesMask::set);</span>
+<span class="fc bfc" id="L438" title="All 2 branches covered.">			for (int e : range(g.edges().size())) {</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">				if (edgesMask.get(e))</span>
+<span class="fc" id="L440">					continue;</span>
+<span class="fc" id="L441">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+				// if (verticesMask.get(u) || verticesMask.get(v))
+				// continue;
+<span class="fc bfc" id="L444" title="All 2 branches covered.">				if (sXi[u] &gt;= maxDeviationPoint)</span>
+<span class="fc" id="L445">					continue;</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">				if (sXi[u] &gt;= sXi[v])</span>
+<span class="fc" id="L447">					continue;</span>
+
+<span class="fc" id="L449">				double d = sDistances[u] + w.weight(e) + tDistances[v];</span>
+<span class="fc bfc" id="L450" title="All 2 branches covered.">				if (d &lt; bestWeight) {</span>
+<span class="fc" id="L451">					bestEdge = e;</span>
+<span class="fc" id="L452">					bestWeight = d;</span>
+				}
+<span class="fc" id="L454">			}</span>
+			/* unmask the edges of the previous SP */
+<span class="fc" id="L456">			prevSpIt = prevSp.subList(0, maxDeviationPoint).iterator();</span>
+<span class="fc bfc" id="L457" title="All 2 branches covered.">			if (maskedFirstEdge)</span>
+<span class="fc" id="L458">				edgesMask.clear(prevSpIt.nextInt());</span>
+<span class="fc" id="L459">			prevSpIt.forEachRemaining(edgesMask::clear);</span>
+
+<span class="fc bfc" id="L461" title="All 2 branches covered.">			if (bestEdge &lt; 0)</span>
+<span class="fc" id="L462">				return FastReplacementAlgoResult.ofSuccess(null);</span>
+
+<span class="fc bfc" id="L464" title="All 2 branches covered.">			if (sXi[g.edgeSource(bestEdge)] &gt;= tXi[g.edgeTarget(bestEdge)])</span>
+<span class="fc" id="L465">				return FastReplacementAlgoResult.ofFailure();</span>
+
+			// TODO is this code needed?
+			// if (bestEdge &lt; 0) {
+			// while (sBacktrack[bestVertex] == tBacktrack[bestVertex]) {
+			// assert w.weight(sBacktrack[bestVertex]) == 0;
+			// bestVertex = g.edgeEndpoint(sBacktrack[bestVertex], bestVertex);
+			// }
+			// }
+
+<span class="fc" id="L475">			IntArrayList path = new IntArrayList();</span>
+
+			/* Add edges from source to bestVertex */
+<span class="fc bfc" id="L478" title="All 2 branches covered.">			for (int v = g.edgeSource(bestEdge), e; (e = sBacktrack[v]) &gt;= 0; v = g.edgeSource(e))</span>
+<span class="fc" id="L479">				path.add(e);</span>
+<span class="fc" id="L480">			IntArrays.reverse(path.elements(), 0, path.size());</span>
+
+			/* Add the connecting edge that is not included in both shortest path trees */
+<span class="fc" id="L483">			path.add(bestEdge);</span>
+
+			/* Add edges from bestVertex to target */
+<span class="fc bfc" id="L486" title="All 2 branches covered.">			for (int v = g.edgeTarget(bestEdge), e; (e = tBacktrack[v]) &gt;= 0; v = g.edgeTarget(e))</span>
+<span class="fc" id="L487">				path.add(e);</span>
+
+<span class="pc bpc" id="L489" title="1 of 2 branches missed.">			assert Path.valueOf(g, Integer.valueOf(source), Integer.valueOf(target), path).isSimple();</span>
+<span class="fc" id="L490">			return FastReplacementAlgoResult.ofSuccess(ObjectDoublePair.of(path, bestWeight));</span>
+		}
+
+		private static class FastReplacementAlgoResult {
+			final boolean success;
+			final ObjectDoublePair&lt;IntList&gt; value;
+
+<span class="fc" id="L497">			private FastReplacementAlgoResult(boolean success, ObjectDoublePair&lt;IntList&gt; value) {</span>
+<span class="fc" id="L498">				this.success = success;</span>
+<span class="fc" id="L499">				this.value = value;</span>
+<span class="fc" id="L500">			}</span>
+
+			static FastReplacementAlgoResult ofSuccess(ObjectDoublePair&lt;IntList&gt; value) {
+<span class="fc" id="L503">				return new FastReplacementAlgoResult(true, value);</span>
+			}
+
+			static FastReplacementAlgoResult ofFailure() {
+<span class="fc" id="L507">				return new FastReplacementAlgoResult(false, null);</span>
+			}
+		}
+
+		ObjectDoublePair&lt;IntList&gt; computeShortestPathYen(int source) {
+<span class="fc" id="L512">			final ObjectDoublePair&lt;IntList&gt; res = computeShortestPathYen0(source);</span>
+<span class="fc" id="L513">			heapS.clear();</span>
+<span class="fc" id="L514">			heapT.clear();</span>
+<span class="fc" id="L515">			visitedS.clear();</span>
+<span class="fc" id="L516">			visitedT.clear();</span>
+<span class="fc" id="L517">			return res;</span>
+		}
+
+		private ObjectDoublePair&lt;IntList&gt; computeShortestPathYen0(int source) {
+<span class="pc bpc" id="L521" title="1 of 2 branches missed.">			assert source != target;</span>
+			// assert !verticesMask.get(source);
+			// assert !verticesMask.get(target);
+
+<span class="pc bpc" id="L525" title="1 of 2 branches missed.">			assert visitedS.isEmpty();</span>
+<span class="pc bpc" id="L526" title="1 of 2 branches missed.">			assert visitedT.isEmpty();</span>
+<span class="pc bpc" id="L527" title="1 of 2 branches missed.">			assert heapS.isEmpty();</span>
+<span class="pc bpc" id="L528" title="1 of 2 branches missed.">			assert heapT.isEmpty();</span>
+
+<span class="fc" id="L530">			int middle = -1;</span>
+<span class="fc" id="L531">			double mu = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L532">			heapS.insert(source, 0);</span>
+<span class="fc" id="L533">			heapT.insert(target, 0);</span>
+<span class="fc bfc" id="L534" title="All 4 branches covered.">			while (heapS.isNotEmpty() &amp;&amp; heapT.isNotEmpty()) {</span>
+
+<span class="fc" id="L536">				int uS = heapS.extractMin();</span>
+<span class="fc" id="L537">				double uDistanceS = heapS.key(uS);</span>
+<span class="fc" id="L538">				visitedS.set(uS);</span>
+
+<span class="fc" id="L540">				int uT = heapT.extractMin();</span>
+<span class="fc" id="L541">				double uDistanceT = heapT.key(uT);</span>
+<span class="fc" id="L542">				visitedT.set(uT);</span>
+
+<span class="fc bfc" id="L544" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L545">					int e = eit.nextInt();</span>
+<span class="fc bfc" id="L546" title="All 2 branches covered.">					if (edgesMask.get(e))</span>
+<span class="fc" id="L547">						continue;</span>
+<span class="fc" id="L548">					int v = eit.targetInt();</span>
+					// if (verticesMask.get(v))
+					// continue;
+<span class="fc bfc" id="L551" title="All 2 branches covered.">					if (visitedS.get(v))</span>
+<span class="fc" id="L552">						continue;</span>
+<span class="fc" id="L553">					double ew = w.weight(e);</span>
+<span class="fc" id="L554">					double vDistance = uDistanceS + ew;</span>
+<span class="fc bfc" id="L555" title="All 2 branches covered.">					if (visitedT.get(v)) {</span>
+<span class="fc bfc" id="L556" title="All 2 branches covered.">						if (mu &gt; vDistance + heapT.key(v)) {</span>
+<span class="fc" id="L557">							mu = vDistance + heapT.key(v);</span>
+<span class="fc" id="L558">							middle = v;</span>
+						}
+					}
+
+<span class="fc bfc" id="L562" title="All 2 branches covered.">					if (!heapS.isInserted(v)) {</span>
+<span class="fc" id="L563">						heapS.insert(v, vDistance);</span>
+<span class="fc" id="L564">						sBacktrack[v] = e;</span>
+<span class="fc bfc" id="L565" title="All 2 branches covered.">					} else if (vDistance &lt; heapS.key(v)) {</span>
+<span class="fc" id="L566">						heapS.decreaseKey(v, vDistance);</span>
+<span class="fc" id="L567">						sBacktrack[v] = e;</span>
+					}
+<span class="fc" id="L569">				}</span>
+
+<span class="fc bfc" id="L571" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(uT).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L572">					int e = eit.nextInt();</span>
+<span class="fc bfc" id="L573" title="All 2 branches covered.">					if (edgesMask.get(e))</span>
+<span class="fc" id="L574">						continue;</span>
+<span class="fc" id="L575">					int v = eit.sourceInt();</span>
+					// if (verticesMask.get(v))
+					// continue;
+<span class="fc bfc" id="L578" title="All 2 branches covered.">					if (visitedT.get(v))</span>
+<span class="fc" id="L579">						continue;</span>
+<span class="fc" id="L580">					double ew = w.weight(e);</span>
+<span class="fc" id="L581">					double vDistance = uDistanceT + ew;</span>
+<span class="fc bfc" id="L582" title="All 2 branches covered.">					if (visitedS.get(v)) {</span>
+<span class="fc bfc" id="L583" title="All 2 branches covered.">						if (mu &gt; vDistance + heapS.key(v)) {</span>
+<span class="fc" id="L584">							mu = vDistance + heapS.key(v);</span>
+<span class="fc" id="L585">							middle = v;</span>
+						}
+					}
+
+<span class="fc bfc" id="L589" title="All 2 branches covered.">					if (!heapT.isInserted(v)) {</span>
+<span class="fc" id="L590">						heapT.insert(v, vDistance);</span>
+<span class="fc" id="L591">						tBacktrack[v] = e;</span>
+<span class="fc bfc" id="L592" title="All 2 branches covered.">					} else if (vDistance &lt; heapT.key(v)) {</span>
+<span class="fc" id="L593">						heapT.decreaseKey(v, vDistance);</span>
+<span class="fc" id="L594">						tBacktrack[v] = e;</span>
+					}
+<span class="fc" id="L596">				}</span>
+
+<span class="fc bfc" id="L598" title="All 2 branches covered.">				if (uDistanceS + uDistanceT &gt;= mu)</span>
+<span class="fc" id="L599">					break;</span>
+<span class="fc" id="L600">			}</span>
+<span class="fc bfc" id="L601" title="All 2 branches covered.">			if (middle &lt; 0)</span>
+<span class="fc" id="L602">				return null;</span>
+
+<span class="fc" id="L604">			IntArrayList path = new IntArrayList();</span>
+
+			/* add edges from source to middle */
+<span class="fc bfc" id="L607" title="All 2 branches covered.">			for (int u = middle, e; u != source; u = g.edgeSource(e))</span>
+<span class="fc" id="L608">				path.add(e = sBacktrack[u]);</span>
+<span class="fc" id="L609">			IntArrays.reverse(path.elements(), 0, path.size());</span>
+
+			/* add edges from middle to target */
+<span class="fc bfc" id="L612" title="All 2 branches covered.">			for (int u = middle, e; u != target; u = g.edgeTarget(e))</span>
+<span class="fc" id="L613">				path.add(e = tBacktrack[u]);</span>
+<span class="fc" id="L614">			return ObjectDoublePair.of(path, mu);</span>
+		}
+
+		ObjectDoublePair&lt;IntList&gt; computeNextShortestPath(int source, IntList prevSp,
+				int /* alpha */ maxDeviationPoint) {
+<span class="fc" id="L619">			FastReplacementAlgoResult result = fastReplacementAlgo(source, prevSp, maxDeviationPoint);</span>
+<span class="fc bfc" id="L620" title="All 2 branches covered.">			if (result.success)</span>
+<span class="fc" id="L621">				return result.value;</span>
+
+			/* The fast algorithm failed, we must use Yen's regular algorithm */
+<span class="fc" id="L624">			ObjectDoublePair&lt;IntList&gt; bestSp = null;</span>
+<span class="fc bfc" id="L625" title="All 2 branches covered.">			for (int maskedEdge : prevSp.subList(0, maxDeviationPoint)) {</span>
+<span class="fc" id="L626">				edgesMask.set(maskedEdge);</span>
+<span class="fc" id="L627">				ObjectDoublePair&lt;IntList&gt; sp = computeShortestPathYen(source);</span>
+<span class="fc bfc" id="L628" title="All 6 branches covered.">				if (sp != null &amp;&amp; (bestSp == null || sp.secondDouble() &lt; bestSp.secondDouble()))</span>
+<span class="fc" id="L629">					bestSp = sp;</span>
+<span class="fc" id="L630">				edgesMask.clear(maskedEdge);</span>
+<span class="fc" id="L631">			}</span>
+<span class="fc" id="L632">			return bestSp;</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -22,32 +22,35 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
+import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 
 interface ShortestPathSTBase extends ShortestPathST {
 
-	@SuppressWarnings(&quot;unchecked&quot;)
+	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	@Override
-	default &lt;V, E&gt; Path&lt;V, E&gt; computeShortestPath(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source, V target) {
-<span class="fc bfc" id="L31" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L32">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="fc" id="L33">			int source0 = ((Integer) source).intValue(), target0 = ((Integer) target).intValue();</span>
-<span class="fc" id="L34">			return (Path&lt;V, E&gt;) computeShortestPath((IndexGraph) g, w0, source0, target0);</span>
+	default &lt;V, E&gt; ObjectDoublePair&lt;Path&lt;V, E&gt;&gt; computeShortestPathAndWeight(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w,
+			V source, V target) {
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L34">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L35">			int source0 = ((Integer) source).intValue(), target0 = ((Integer) target).intValue();</span>
+<span class="fc" id="L36">			return (ObjectDoublePair) computeShortestPathAndWeight((IndexGraph) g, w0, source0, target0);</span>
 
 		} else {
-<span class="fc" id="L37">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L38">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L39">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L40">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L41">			int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L42">			int iTarget = viMap.idToIndex(target);</span>
+<span class="fc" id="L39">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L40">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L41">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L42">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L43">			int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L44">			int iTarget = viMap.idToIndex(target);</span>
 
-<span class="fc" id="L44">			IPath indexPath = NegativeCycleException</span>
-<span class="fc" id="L45">					.runAndConvertException(g, () -&gt; computeShortestPath(iGraph, iw, iSource, iTarget));</span>
-<span class="fc" id="L46">			return Paths.pathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L46">			ObjectDoublePair&lt;IPath&gt; indexPath = NegativeCycleException</span>
+<span class="fc" id="L47">					.runAndConvertException(g, () -&gt; computeShortestPathAndWeight(iGraph, iw, iSource, iTarget));</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">			return indexPath == null ? null</span>
+<span class="fc" id="L49">					: ObjectDoublePair.of(Paths.pathFromIndexPath(g, indexPath.first()), indexPath.secondDouble());</span>
 		}
 	}
 
-	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target);
+	ObjectDoublePair&lt;IPath&gt; computeShortestPathAndWeight(IndexGraph g, IWeightFunction w, int source, int target);
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
