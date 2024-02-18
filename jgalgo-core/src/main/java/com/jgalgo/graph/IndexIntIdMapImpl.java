@@ -34,23 +34,31 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 	private final IntSet idsSet = new IdSet();
 	private final Int2IntOpenHashMap idToIndex;
 	private int[] indexToId;
-	private final boolean isEdges;
+	private final boolean isVertices;
 	private final boolean immutable;
 
-	private IndexIntIdMapImpl(IntSet indicesSet, boolean isEdges, int expectedSize) {
-		assert indicesSet.isEmpty();
+	private IndexIntIdMapImpl(IntSet indicesSet, Int2IntOpenHashMap idToIndex, int[] indexToId, boolean isVertices,
+			boolean immutable) {
 		this.indicesSet = indicesSet;
-		idToIndex = new Int2IntOpenHashMap(expectedSize);
-		idToIndex.defaultReturnValue(-1);
-		indexToId = expectedSize == 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[expectedSize];
-		this.isEdges = isEdges;
-		immutable = false;
+		this.idToIndex = idToIndex;
+		this.indexToId = indexToId;
+		this.isVertices = isVertices;
+		this.immutable = immutable;
 	}
 
-	private IndexIntIdMapImpl(IndexIdMap<Integer> orig, Optional<IndexGraphBuilder.ReIndexingMap> reIndexing,
+	static IndexIntIdMapImpl newEmpty(IntSet indicesSet, boolean isEdges, int expectedSize) {
+		assert indicesSet.isEmpty();
+		Int2IntOpenHashMap idToIndex = new Int2IntOpenHashMap(expectedSize);
+		idToIndex.defaultReturnValue(-1);
+		int[] indexToId = expectedSize == 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[expectedSize];
+		return new IndexIntIdMapImpl(indicesSet, idToIndex, indexToId, !isEdges, false);
+	}
+
+	static IndexIntIdMapImpl newCopyOf(IndexIdMap<Integer> orig, Optional<IndexGraphBuilder.ReIndexingMap> reIndexing,
 			IntSet indicesSet, boolean isEdges, boolean immutable) {
-		this.indicesSet = indicesSet;
-		int elementsSize = this.indicesSet.size();
+		final int elementsSize = indicesSet.size();
+		Int2IntOpenHashMap idToIndex;
+		int[] indexToId;
 		if (orig instanceof IndexIntIdMapImpl && reIndexing.isEmpty()) {
 			IndexIntIdMapImpl orig0 = (IndexIntIdMapImpl) orig;
 			idToIndex = new Int2IntOpenHashMap(orig0.idToIndex);
@@ -60,7 +68,7 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 		} else {
 			idToIndex = new Int2IntOpenHashMap(elementsSize);
 			idToIndex.defaultReturnValue(-1);
-			if (this.indicesSet.isEmpty()) {
+			if (elementsSize == 0) {
 				indexToId = IntArrays.DEFAULT_EMPTY_ARRAY;
 			} else {
 				indexToId = new int[elementsSize];
@@ -91,28 +99,14 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 				}
 			}
 		}
-		this.isEdges = isEdges;
-		this.immutable = immutable;
-	}
-
-	static IndexIntIdMapImpl newEmpty(IntSet indicesSet, boolean isEdges, int expectedSize) {
-		return new IndexIntIdMapImpl(indicesSet, isEdges, expectedSize);
-	}
-
-	static IndexIntIdMapImpl newCopyOf(IndexIdMap<Integer> orig, Optional<IndexGraphBuilder.ReIndexingMap> reIndexing,
-			IntSet indicesSet, boolean isEdges, boolean immutable) {
-		return new IndexIntIdMapImpl(orig, reIndexing, indicesSet, isEdges, immutable);
+		return new IndexIntIdMapImpl(indicesSet, idToIndex, indexToId, !isEdges, immutable);
 	}
 
 	void addId(int id, int idx) {
 		boolean added = addIdIfNotDuplicate(id, idx);
-		if (!added) {
-			if (isEdges) {
-				throw new IllegalArgumentException("Graph already contain such an edge: " + id);
-			} else {
-				throw new IllegalArgumentException("Graph already contain such a vertex: " + id);
-			}
-		}
+		if (!added)
+			throw new IllegalArgumentException(
+					"Graph already contain such " + (isVertices ? "vertex: " : "edge: ") + id);
 	}
 
 	boolean addIdIfNotDuplicate(int id, int idx) {
@@ -163,10 +157,10 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 				IndexIntIdMapImpl.this.removeLast(removedIdx);
 			}
 		};
-		if (isEdges) {
-			g.addEdgeRemoveListener(listener);
-		} else {
+		if (isVertices) {
 			g.addVertexRemoveListener(listener);
+		} else {
+			g.addEdgeRemoveListener(listener);
 		}
 	}
 
@@ -177,7 +171,7 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 
 	@Override
 	public int indexToIdInt(int index) {
-		Assertions.checkGraphId(index, indicesSet.size(), isEdges);
+		Assertions.checkGraphId(index, indicesSet.size(), !isVertices);
 		return indexToId[index];
 	}
 
@@ -192,10 +186,10 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 	public int idToIndex(int id) {
 		int idx = idToIndex.get(id);
 		if (idx < 0) {
-			if (isEdges) {
-				throw NoSuchEdgeException.ofEdge(id);
-			} else {
+			if (isVertices) {
 				throw NoSuchVertexException.ofVertex(id);
+			} else {
+				throw NoSuchEdgeException.ofEdge(id);
 			}
 		}
 		return idx;
@@ -207,29 +201,22 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 	}
 
 	void renameId(int oldId, int newId) {
-		if (immutable) {
-			if (isEdges) {
-				throw new UnsupportedOperationException("graph is immutable, cannot rename vertices");
-			} else {
-				throw new UnsupportedOperationException("graph is immutable, cannot rename edges");
-			}
-		}
+		if (immutable)
+			throw new UnsupportedOperationException(
+					"graph is immutable, cannot rename " + (isVertices ? "vertices" : "edges"));
 		int idx = idToIndex.remove(oldId);
 		if (idx < 0) {
-			if (isEdges) {
-				throw NoSuchEdgeException.ofEdge(oldId);
-			} else {
+			if (isVertices) {
 				throw NoSuchVertexException.ofVertex(oldId);
+			} else {
+				throw NoSuchEdgeException.ofEdge(oldId);
 			}
 		}
 		int oldIdx = idToIndex.putIfAbsent(newId, idx);
 		if (oldIdx >= 0) {
 			idToIndex.put(oldId, idx); /* roll back */
-			if (isEdges) {
-				throw new IllegalArgumentException("Graph already contain such an edge: " + newId);
-			} else {
-				throw new IllegalArgumentException("Graph already contain such a vertex: " + newId);
-			}
+			throw new IllegalArgumentException(
+					"Graph already contain such " + (isVertices ? "vertex: " : "edge: ") + newId);
 		}
 		indexToId[idx] = newId;
 	}
