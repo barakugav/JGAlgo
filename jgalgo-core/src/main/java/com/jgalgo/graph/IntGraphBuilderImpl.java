@@ -26,56 +26,65 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 class IntGraphBuilderImpl implements IntGraphBuilder {
 
-	private final IntGraphFactoryImpl factory;
-	final IndexGraphBuilder ibuilder;
-	final IndexIntIdMapImpl viMap;
-	final IndexIntIdMapImpl eiMap;
+	final IntGraphFactoryImpl factory;
+	final IndexGraphBuilder iBuilder;
+	IndexIntIdMapImpl viMap;
+	IndexIntIdMapImpl eiMap;
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> verticesWeights = new IdentityHashMap<>();
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> edgesWeights = new IdentityHashMap<>();
 	private IdBuilderInt vertexBuilder;
 	private IdBuilderInt edgeBuilder;
 
+	private boolean isNewGraphShouldStealInterior;
+	private IntGraph lastImmutableGraph;
+	private Optional<IndexGraphBuilder.ReIndexingMap> lastImmutableVerticesReIndexingMap;
+	private Optional<IndexGraphBuilder.ReIndexingMap> lastImmutableEdgesReIndexingMap;
+
 	IntGraphBuilderImpl(IntGraphFactoryImpl factory) {
 		this.factory = factory;
-		this.ibuilder = factory.indexFactory.newBuilder();
-		viMap = IndexIntIdMapImpl.newEmpty(ibuilder.vertices(), false, 0);
-		eiMap = IndexIntIdMapImpl.newEmpty(ibuilder.edges(), true, 0);
+		this.iBuilder = factory.indexFactory.newBuilder();
+		viMap = IndexIntIdMapImpl.newEmpty(iBuilder.vertices(), false, 0);
+		eiMap = IndexIntIdMapImpl.newEmpty(iBuilder.edges(), true, 0);
 		resetVertexAndEdgeBuilders();
 	}
 
 	IntGraphBuilderImpl(IntGraphFactoryImpl factory, Graph<Integer, Integer> g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 		this.factory = factory;
-		this.ibuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
+		this.iBuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
 		viMap = IndexIntIdMapImpl
-				.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), ibuilder.vertices(), false, false);
-		eiMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), Optional.empty(), ibuilder.edges(), true, false);
+				.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), iBuilder.vertices(), false, false);
+		eiMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), Optional.empty(), iBuilder.edges(), true, false);
 		resetVertexAndEdgeBuilders();
 	}
 
 	@Override
 	public IntSet vertices() {
+		copyOnWriteFromLastGraph();
 		return viMap.idSet();
 	}
 
 	@Override
 	public IntSet edges() {
+		copyOnWriteFromLastGraph();
 		return eiMap.idSet();
 	}
 
 	@Override
 	public void addVertex(int vertex) {
+		copyOnWriteFromLastGraph();
 		if (vertex < 0)
 			throw new IllegalArgumentException("Vertex must be non negative");
 
-		int vIdx = ibuilder.vertices().size();
+		int vIdx = iBuilder.vertices().size();
 		viMap.addId(vertex, vIdx);
-		int vIdx2 = ibuilder.addVertexInt();
+		int vIdx2 = iBuilder.addVertexInt();
 		assert vIdx == vIdx2;
 	}
 
 	@Override
 	public void addVertices(Collection<? extends Integer> vertices) {
+		copyOnWriteFromLastGraph();
 		if (vertices.isEmpty())
 			return;
 		if (!(vertices instanceof IntCollection))
@@ -86,7 +95,7 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 			if (vertex < 0)
 				throw new IllegalArgumentException("Vertex must be non negative");
 
-		final int verticesNumBefore = ibuilder.vertices().size();
+		final int verticesNumBefore = iBuilder.vertices().size();
 		ensureVertexCapacity(verticesNumBefore + vertices.size());
 		int nextIdx = verticesNumBefore;
 		for (int vertex : vertices) {
@@ -98,25 +107,27 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 			}
 			nextIdx++;
 		}
-		ibuilder.addVertices(range(verticesNumBefore, nextIdx));
+		iBuilder.addVertices(range(verticesNumBefore, nextIdx));
 	}
 
 	@Override
 	public void addEdge(int source, int target, int edge) {
+		copyOnWriteFromLastGraph();
 		if (edge < 0)
 			throw new IllegalArgumentException("Edge must be non negative");
 
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
-		int eIdx = ibuilder.edges().size();
+		int eIdx = iBuilder.edges().size();
 		eiMap.addId(edge, eIdx);
-		int eIdx2 = ibuilder.addEdge(uIdx, vIdx);
+		int eIdx2 = iBuilder.addEdge(uIdx, vIdx);
 		assert eIdx == eIdx2;
 	}
 
 	@Override
 	public void addEdges(EdgeSet<? extends Integer, ? extends Integer> edges) {
-		final int edgesNumBefore = ibuilder.edges().size();
+		copyOnWriteFromLastGraph();
+		final int edgesNumBefore = iBuilder.edges().size();
 		ensureEdgeCapacity(edgesNumBefore + edges.size());
 		int nextMapIdx = edgesNumBefore;
 		try {
@@ -131,7 +142,7 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 
 			@SuppressWarnings("unchecked")
 			EdgeSet<Integer, Integer> edges0 = (EdgeSet<Integer, Integer>) edges;
-			ibuilder.addEdgesReassignIds(new IntGraphImpl.AddEdgesIgnoreIdsIndexSet(edges0, viMap));
+			iBuilder.addEdgesReassignIds(new IntGraphImpl.AddEdgesIgnoreIdsIndexSet(edges0, viMap));
 
 		} catch (RuntimeException e) {
 			for (; nextMapIdx-- > edgesNumBefore;)
@@ -142,20 +153,22 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 
 	@Override
 	public void ensureVertexCapacity(int verticesNum) {
-		ibuilder.ensureVertexCapacity(verticesNum);
+		copyOnWriteFromLastGraph();
+		iBuilder.ensureVertexCapacity(verticesNum);
 		viMap.ensureCapacity(verticesNum);
 	}
 
 	@Override
 	public void ensureEdgeCapacity(int edgesNum) {
-		ibuilder.ensureEdgeCapacity(edgesNum);
+		copyOnWriteFromLastGraph();
+		iBuilder.ensureEdgeCapacity(edgesNum);
 		eiMap.ensureCapacity(edgesNum);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT verticesWeights(String key) {
-		WeightsImpl.Index<T> indexWeights = ibuilder.verticesWeights(key);
+		WeightsImpl.Index<T> indexWeights = iBuilder.verticesWeights(key);
 		if (indexWeights == null)
 			return null;
 		return (WeightsT) verticesWeights
@@ -165,19 +178,20 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
 			T defVal) {
-		ibuilder.addVerticesWeights(key, type, defVal);
+		copyOnWriteFromLastGraph();
+		iBuilder.addVerticesWeights(key, type, defVal);
 		return verticesWeights(key);
 	}
 
 	@Override
 	public Set<String> verticesWeightsKeys() {
-		return ibuilder.verticesWeightsKeys();
+		return iBuilder.verticesWeightsKeys();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT edgesWeights(String key) {
-		WeightsImpl.Index<T> indexWeights = ibuilder.edgesWeights(key);
+		WeightsImpl.Index<T> indexWeights = iBuilder.edgesWeights(key);
 		if (indexWeights == null)
 			return null;
 		return (WeightsT) edgesWeights
@@ -187,13 +201,14 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
 			T defVal) {
-		ibuilder.addEdgesWeights(key, type, defVal);
+		copyOnWriteFromLastGraph();
+		iBuilder.addEdgesWeights(key, type, defVal);
 		return edgesWeights(key);
 	}
 
 	@Override
 	public Set<String> edgesWeightsKeys() {
-		return ibuilder.edgesWeightsKeys();
+		return iBuilder.edgesWeightsKeys();
 	}
 
 	@Override
@@ -208,9 +223,17 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 
 	@Override
 	public void clear() {
-		ibuilder.clear();
-		viMap.idsClear();
-		eiMap.idsClear();
+		iBuilder.clear();
+		if (lastImmutableGraph == null) {
+			viMap.idsClear();
+			eiMap.idsClear();
+		} else {
+			viMap = IndexIntIdMapImpl.newEmpty(iBuilder.vertices(), false, 0);
+			eiMap = IndexIntIdMapImpl.newEmpty(iBuilder.edges(), true, 0);
+			lastImmutableGraph = null;
+			lastImmutableVerticesReIndexingMap = null;
+			lastImmutableEdgesReIndexingMap = null;
+		}
 		verticesWeights.clear();
 		edgesWeights.clear();
 		resetVertexAndEdgeBuilders();
@@ -223,24 +246,79 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 
 	@Override
 	public boolean isDirected() {
-		return ibuilder.isDirected();
+		return iBuilder.isDirected();
 	}
 
 	@Override
 	public IntGraph build() {
-		return buildFromReIndexed(ibuilder.reIndexAndBuild(true, true));
+		if (lastImmutableGraph != null)
+			return lastImmutableGraph;
+
+		IndexGraphBuilder.ReIndexedGraph reIndexedGraph = iBuilder.reIndexAndBuild(true, true);
+		IndexGraph iGraph = reIndexedGraph.graph;
+		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing;
+		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing;
+
+		isNewGraphShouldStealInterior = iGraph.verticesWeightsKeys().isEmpty() && iGraph.edgesWeightsKeys().isEmpty();
+		IntGraph g = new IntGraphImpl(this, iGraph, vReIndexing, eReIndexing);
+
+		if (isNewGraphShouldStealInterior) {
+			lastImmutableGraph = g;
+			lastImmutableVerticesReIndexingMap = vReIndexing;
+			lastImmutableEdgesReIndexingMap = eReIndexing;
+		}
+		return g;
 	}
 
 	@Override
 	public IntGraph buildMutable() {
-		return buildFromReIndexed(ibuilder.reIndexAndBuildMutable(true, true));
-	}
+		if (lastImmutableGraph != null) {
+			IndexGraph ig = lastImmutableGraph.indexGraph().copy();
+			IndexIntIdMap prevViMap = lastImmutableGraph.indexGraphVerticesMap();
+			IndexIntIdMap prevEiMap = lastImmutableGraph.indexGraphEdgesMap();
+			return new IntGraphImpl(factory, ig, prevViMap, prevEiMap, Optional.empty(), Optional.empty());
+		}
 
-	private IntGraph buildFromReIndexed(IndexGraphBuilder.ReIndexedGraph reIndexedGraph) {
+		IndexGraphBuilder.ReIndexedGraph reIndexedGraph = iBuilder.reIndexAndBuildMutable(true, true);
 		IndexGraph iGraph = reIndexedGraph.graph;
 		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing;
 		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing;
+		isNewGraphShouldStealInterior = false;
 		return new IntGraphImpl(factory, iGraph, viMap, eiMap, vReIndexing, eReIndexing);
+	}
+
+	IndexIntIdMapImpl stealViMap() {
+		assert isNewGraphShouldStealInterior && viMap != null;
+		IndexIntIdMapImpl map = viMap;
+		viMap = null;
+		return map;
+	}
+
+	IndexIntIdMapImpl stealEiMap() {
+		assert isNewGraphShouldStealInterior && eiMap != null;
+		IndexIntIdMapImpl map = eiMap;
+		eiMap = null;
+		return map;
+	}
+
+	boolean isNewGraphShouldStealInterior() {
+		return isNewGraphShouldStealInterior;
+	}
+
+	private void copyOnWriteFromLastGraph() {
+		if (lastImmutableGraph == null)
+			return;
+		viMap = IndexIntIdMapImpl
+				.newCopyOf(lastImmutableGraph.indexGraphVerticesMap(),
+						lastImmutableVerticesReIndexingMap.map(IndexGraphBuilder.ReIndexingMap::inverse),
+						iBuilder.vertices(), false, false);
+		eiMap = IndexIntIdMapImpl
+				.newCopyOf(lastImmutableGraph.indexGraphEdgesMap(),
+						lastImmutableEdgesReIndexingMap.map(IndexGraphBuilder.ReIndexingMap::inverse), iBuilder.edges(),
+						true, false);
+		lastImmutableGraph = null;
+		lastImmutableVerticesReIndexingMap = null;
+		lastImmutableEdgesReIndexingMap = null;
 	}
 
 }

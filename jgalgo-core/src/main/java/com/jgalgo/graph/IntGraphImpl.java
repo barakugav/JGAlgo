@@ -59,6 +59,31 @@ class IntGraphImpl extends AbstractGraphImpl<Integer, Integer> implements IntGra
 		edgeBuilder = factory.edgeFactory != null ? factory.edgeFactory.get() : null;
 	}
 
+	/* If builder.isNewGraphShouldStealInterior(), the graph steal the vertices and edges maps of the builder */
+	IntGraphImpl(IntGraphBuilderImpl builder, IndexGraph indexGraph,
+			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing,
+			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing) {
+		super(indexGraph);
+		boolean immutable = this.indexGraph instanceof ImmutableGraph;
+
+		if (builder.isNewGraphShouldStealInterior()) {
+			viMap = builder.stealViMap().intoImmutable(vReIndexing);
+			eiMap = builder.stealEiMap().intoImmutable(eReIndexing);
+		} else {
+			viMap = IndexIntIdMapImpl
+					.newCopyOf(builder.viMap, vReIndexing, this.indexGraph.vertices(), false, immutable);
+			eiMap = IndexIntIdMapImpl.newCopyOf(builder.eiMap, eReIndexing, this.indexGraph.edges(), true, immutable);
+		}
+		if (!immutable) {
+			viMap.initListeners(this.indexGraph);
+			eiMap.initListeners(this.indexGraph);
+		}
+
+		IntGraphFactoryImpl factory = builder.factory;
+		vertexBuilder = factory.vertexFactory != null ? factory.vertexFactory.get() : null;
+		edgeBuilder = factory.edgeFactory != null ? factory.edgeFactory.get() : null;
+	}
+
 	@Override
 	public IndexIntIdMap indexGraphVerticesMap() {
 		return viMap;

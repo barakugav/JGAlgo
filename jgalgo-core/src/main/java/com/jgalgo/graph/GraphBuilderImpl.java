@@ -24,60 +24,69 @@ import java.util.Set;
 
 class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 
-	private final GraphFactoryImpl<V, E> factory;
-	final IndexGraphBuilder ibuilder;
-	final IndexIdMapImpl<V> viMap;
-	final IndexIdMapImpl<E> eiMap;
+	final GraphFactoryImpl<V, E> factory;
+	final IndexGraphBuilder iBuilder;
+	IndexIdMapImpl<V> viMap;
+	IndexIdMapImpl<E> eiMap;
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.ObjMapped<V, ?>> verticesWeights = new IdentityHashMap<>();
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.ObjMapped<E, ?>> edgesWeights = new IdentityHashMap<>();
 	private IdBuilder<V> vertexBuilder;
 	private IdBuilder<E> edgeBuilder;
 
+	private boolean isNewGraphShouldStealInterior;
+	private Graph<V, E> lastImmutableGraph;
+	private Optional<IndexGraphBuilder.ReIndexingMap> lastImmutableVerticesReIndexingMap;
+	private Optional<IndexGraphBuilder.ReIndexingMap> lastImmutableEdgesReIndexingMap;
+
 	GraphBuilderImpl(GraphFactoryImpl<V, E> factory) {
 		this.factory = factory;
-		this.ibuilder = factory.indexFactory.newBuilder();
-		viMap = IndexIdMapImpl.newEmpty(ibuilder.vertices(), false, 0);
-		eiMap = IndexIdMapImpl.newEmpty(ibuilder.edges(), true, 0);
+		this.iBuilder = factory.indexFactory.newBuilder();
+		viMap = IndexIdMapImpl.newEmpty(iBuilder.vertices(), false, 0);
+		eiMap = IndexIdMapImpl.newEmpty(iBuilder.edges(), true, 0);
 		resetVertexAndEdgeBuilders();
 	}
 
 	GraphBuilderImpl(GraphFactoryImpl<V, E> factory, Graph<V, E> g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 		this.factory = factory;
-		this.ibuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
+		this.iBuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
 		viMap = IndexIdMapImpl
-				.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), ibuilder.vertices(), false, false);
-		eiMap = IndexIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), Optional.empty(), ibuilder.edges(), true, false);
+				.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), iBuilder.vertices(), false, false);
+		eiMap = IndexIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), Optional.empty(), iBuilder.edges(), true, false);
 		resetVertexAndEdgeBuilders();
 	}
 
 	@Override
 	public Set<V> vertices() {
+		copyOnWriteFromLastGraph();
 		return viMap.idSet();
 	}
 
 	@Override
 	public Set<E> edges() {
+		copyOnWriteFromLastGraph();
 		return eiMap.idSet();
 	}
 
 	@Override
 	public void addVertex(V vertex) {
+		copyOnWriteFromLastGraph();
 		if (vertex == null)
 			throw new NullPointerException("Vertex must be non null");
-		int vIdx = ibuilder.vertices().size();
+		int vIdx = iBuilder.vertices().size();
 		viMap.addId(vertex, vIdx);
-		int vIdx2 = ibuilder.addVertexInt();
+		int vIdx2 = iBuilder.addVertexInt();
 		assert vIdx == vIdx2;
 	}
 
 	@Override
 	public void addVertices(Collection<? extends V> vertices) {
+		copyOnWriteFromLastGraph();
 		for (V vertex : vertices)
 			if (vertex == null)
 				throw new NullPointerException("Vertex must be non null");
 
-		final int verticesNumBefore = ibuilder.vertices().size();
+		final int verticesNumBefore = iBuilder.vertices().size();
 		ensureVertexCapacity(verticesNumBefore + vertices.size());
 		int nextIdx = verticesNumBefore;
 		for (V vertex : vertices) {
@@ -89,25 +98,27 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 			}
 			nextIdx++;
 		}
-		ibuilder.addVertices(range(verticesNumBefore, nextIdx));
+		iBuilder.addVertices(range(verticesNumBefore, nextIdx));
 	}
 
 	@Override
 	public void addEdge(V source, V target, E edge) {
+		copyOnWriteFromLastGraph();
 		if (edge == null)
 			throw new NullPointerException("Edge must be non null");
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
-		int eIdx = ibuilder.edges().size();
+		int eIdx = iBuilder.edges().size();
 		eiMap.addId(edge, eIdx);
 
-		int eIdx2 = ibuilder.addEdge(uIdx, vIdx);
+		int eIdx2 = iBuilder.addEdge(uIdx, vIdx);
 		assert eIdx == eIdx2;
 	}
 
 	@Override
 	public void addEdges(EdgeSet<? extends V, ? extends E> edges) {
-		final int edgesNumBefore = ibuilder.edges().size();
+		copyOnWriteFromLastGraph();
+		final int edgesNumBefore = iBuilder.edges().size();
 		ensureEdgeCapacity(edgesNumBefore + edges.size());
 		int nextMapIdx = edgesNumBefore;
 		try {
@@ -120,7 +131,7 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 				nextMapIdx++;
 			}
 
-			ibuilder.addEdgesReassignIds(new GraphImpl.AddEdgesIgnoreIdsIndexSet<>(edges, viMap));
+			iBuilder.addEdgesReassignIds(new GraphImpl.AddEdgesIgnoreIdsIndexSet<>(edges, viMap));
 
 		} catch (RuntimeException e) {
 			for (; nextMapIdx-- > edgesNumBefore;)
@@ -131,20 +142,22 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 
 	@Override
 	public void ensureVertexCapacity(int verticesNum) {
-		ibuilder.ensureVertexCapacity(verticesNum);
+		copyOnWriteFromLastGraph();
+		iBuilder.ensureVertexCapacity(verticesNum);
 		viMap.ensureCapacity(verticesNum);
 	}
 
 	@Override
 	public void ensureEdgeCapacity(int edgesNum) {
-		ibuilder.ensureEdgeCapacity(edgesNum);
+		copyOnWriteFromLastGraph();
+		iBuilder.ensureEdgeCapacity(edgesNum);
 		eiMap.ensureCapacity(edgesNum);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T, WeightsT extends Weights<V, T>> WeightsT verticesWeights(String key) {
-		WeightsImpl.Index<T> indexWeights = ibuilder.verticesWeights(key);
+		WeightsImpl.Index<T> indexWeights = iBuilder.verticesWeights(key);
 		if (indexWeights == null)
 			return null;
 		return (WeightsT) verticesWeights
@@ -154,19 +167,20 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 	@Override
 	public <T, WeightsT extends Weights<V, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
 			T defVal) {
-		ibuilder.addVerticesWeights(key, type, defVal);
+		copyOnWriteFromLastGraph();
+		iBuilder.addVerticesWeights(key, type, defVal);
 		return verticesWeights(key);
 	}
 
 	@Override
 	public Set<String> verticesWeightsKeys() {
-		return ibuilder.verticesWeightsKeys();
+		return iBuilder.verticesWeightsKeys();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T, WeightsT extends Weights<E, T>> WeightsT edgesWeights(String key) {
-		WeightsImpl.Index<T> indexWeights = ibuilder.edgesWeights(key);
+		WeightsImpl.Index<T> indexWeights = iBuilder.edgesWeights(key);
 		if (indexWeights == null)
 			return null;
 		return (WeightsT) edgesWeights
@@ -175,13 +189,14 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 
 	@Override
 	public <T, WeightsT extends Weights<E, T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal) {
-		ibuilder.addEdgesWeights(key, type, defVal);
+		copyOnWriteFromLastGraph();
+		iBuilder.addEdgesWeights(key, type, defVal);
 		return edgesWeights(key);
 	}
 
 	@Override
 	public Set<String> edgesWeightsKeys() {
-		return ibuilder.edgesWeightsKeys();
+		return iBuilder.edgesWeightsKeys();
 	}
 
 	@Override
@@ -196,9 +211,17 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 
 	@Override
 	public void clear() {
-		ibuilder.clear();
-		viMap.idsClear();
-		eiMap.idsClear();
+		iBuilder.clear();
+		if (lastImmutableGraph == null) {
+			viMap.idsClear();
+			eiMap.idsClear();
+		} else {
+			viMap = IndexIdMapImpl.newEmpty(iBuilder.vertices(), false, 0);
+			eiMap = IndexIdMapImpl.newEmpty(iBuilder.edges(), true, 0);
+			lastImmutableGraph = null;
+			lastImmutableVerticesReIndexingMap = null;
+			lastImmutableEdgesReIndexingMap = null;
+		}
 		verticesWeights.clear();
 		edgesWeights.clear();
 		resetVertexAndEdgeBuilders();
@@ -211,24 +234,79 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 
 	@Override
 	public boolean isDirected() {
-		return ibuilder.isDirected();
+		return iBuilder.isDirected();
 	}
 
 	@Override
 	public Graph<V, E> build() {
-		return buildFromReIndexed(ibuilder.reIndexAndBuild(true, true));
+		if (lastImmutableGraph != null)
+			return lastImmutableGraph;
+
+		IndexGraphBuilder.ReIndexedGraph reIndexedGraph = iBuilder.reIndexAndBuild(true, true);
+		IndexGraph iGraph = reIndexedGraph.graph;
+		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing;
+		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing;
+
+		isNewGraphShouldStealInterior = iGraph.verticesWeightsKeys().isEmpty() && iGraph.edgesWeightsKeys().isEmpty();
+		Graph<V, E> g = new GraphImpl<>(this, iGraph, vReIndexing, eReIndexing);
+
+		if (isNewGraphShouldStealInterior) {
+			lastImmutableGraph = g;
+			lastImmutableVerticesReIndexingMap = vReIndexing;
+			lastImmutableEdgesReIndexingMap = eReIndexing;
+		}
+		return g;
 	}
 
 	@Override
 	public Graph<V, E> buildMutable() {
-		return buildFromReIndexed(ibuilder.reIndexAndBuildMutable(true, true));
-	}
+		if (lastImmutableGraph != null) {
+			IndexGraph ig = lastImmutableGraph.indexGraph().copy();
+			IndexIdMap<V> prevViMap = lastImmutableGraph.indexGraphVerticesMap();
+			IndexIdMap<E> prevEiMap = lastImmutableGraph.indexGraphEdgesMap();
+			return new GraphImpl<>(factory, ig, prevViMap, prevEiMap, Optional.empty(), Optional.empty());
+		}
 
-	private Graph<V, E> buildFromReIndexed(IndexGraphBuilder.ReIndexedGraph reIndexedGraph) {
+		IndexGraphBuilder.ReIndexedGraph reIndexedGraph = iBuilder.reIndexAndBuildMutable(true, true);
 		IndexGraph iGraph = reIndexedGraph.graph;
 		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing;
 		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing;
-		return new GraphImpl<>(factory, iGraph, viMap, eiMap, vReIndexing, eReIndexing);
+		isNewGraphShouldStealInterior = false;
+		return new GraphImpl<>(this, iGraph, vReIndexing, eReIndexing);
+	}
+
+	IndexIdMapImpl<V> stealViMap() {
+		assert isNewGraphShouldStealInterior && viMap != null;
+		IndexIdMapImpl<V> map = viMap;
+		viMap = null;
+		return map;
+	}
+
+	IndexIdMapImpl<E> stealEiMap() {
+		assert isNewGraphShouldStealInterior && eiMap != null;
+		IndexIdMapImpl<E> map = eiMap;
+		eiMap = null;
+		return map;
+	}
+
+	boolean isNewGraphShouldStealInterior() {
+		return isNewGraphShouldStealInterior;
+	}
+
+	private void copyOnWriteFromLastGraph() {
+		if (lastImmutableGraph == null)
+			return;
+		viMap = IndexIdMapImpl
+				.newCopyOf(lastImmutableGraph.indexGraphVerticesMap(),
+						lastImmutableVerticesReIndexingMap.map(IndexGraphBuilder.ReIndexingMap::inverse),
+						iBuilder.vertices(), false, false);
+		eiMap = IndexIdMapImpl
+				.newCopyOf(lastImmutableGraph.indexGraphEdgesMap(),
+						lastImmutableEdgesReIndexingMap.map(IndexGraphBuilder.ReIndexingMap::inverse), iBuilder.edges(),
+						true, false);
+		lastImmutableGraph = null;
+		lastImmutableVerticesReIndexingMap = null;
+		lastImmutableEdgesReIndexingMap = null;
 	}
 
 }

@@ -19,6 +19,7 @@ import static com.jgalgo.internal.util.Range.range;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -469,6 +470,71 @@ public class GraphBuilderTest extends TestBase {
 			GraphFactory<String, String> factory = GraphFactory.newInstance(directed);
 			assertThrows(IllegalArgumentException.class, () -> factory.setOption("unknown-option", "value"));
 		});
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void immutableGraphStealIdIndexMaps() {
+		GraphBuilderImpl<Integer, Integer> b = new GraphBuilderImpl<>(new GraphFactoryImpl<>(true));
+		b.addVertex(10);
+		b.addVertex(20);
+		b.addEdge(20, 10, 5);
+		b.addEdge(10, 20, 300);
+		Graph<Integer, Integer> g = b.build();
+
+		assertNull(b.viMap);
+		assertNull(b.eiMap);
+		assertTrue(g == b.build());
+
+		assertEquals(g, b.buildMutable());
+
+		b.addVertex(9);
+		assertNotNull(b.viMap);
+		assertNotNull(b.eiMap);
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void immutableGraphDontStealIdIndexMapsWithWeights() {
+		foreachBoolConfig(verticesWeights -> {
+			GraphBuilderImpl<Integer, Integer> b = new GraphBuilderImpl<>(new GraphFactoryImpl<>(true));
+			b.addVertex(10);
+			b.addVertex(20);
+			b.addEdge(20, 10, 5);
+			b.addEdge(10, 20, 300);
+
+			b.build();
+			assertNull(b.viMap);
+			assertNull(b.eiMap);
+
+			if (verticesWeights) {
+				b.addVerticesWeights("weights", int.class);
+			} else {
+				b.addEdgesWeights("weights", int.class);
+			}
+			b.build();
+			assertNotNull(b.viMap);
+			assertNotNull(b.eiMap);
+		});
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void clearAfterImmutableGraphSteakIdIndexMaps() {
+		GraphBuilderImpl<Integer, Integer> b = new GraphBuilderImpl<>(new GraphFactoryImpl<>(true));
+		b.addVertex(10);
+		b.addVertex(20);
+		b.addEdge(20, 10, 5);
+		b.addEdge(10, 20, 300);
+
+		b.build();
+		assertNull(b.viMap);
+		assertNull(b.eiMap);
+
+		b.clear();
+		assertNotNull(b.viMap);
+		assertNotNull(b.eiMap);
+		assertEquals(Graph.newDirected(), b.build());
 	}
 
 }

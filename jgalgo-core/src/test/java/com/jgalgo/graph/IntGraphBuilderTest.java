@@ -19,6 +19,7 @@ import static com.jgalgo.internal.util.Range.range;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -541,6 +542,68 @@ public class IntGraphBuilderTest extends TestBase {
 			eWeights.set(e, rand.nextInt(10000));
 		}
 		return g;
+	}
+
+	@Test
+	public void immutableGraphStealIdIndexMaps() {
+		IntGraphBuilderImpl b = new IntGraphBuilderImpl(new IntGraphFactoryImpl(true));
+		b.addVertex(10);
+		b.addVertex(20);
+		b.addEdge(20, 10, 5);
+		b.addEdge(10, 20, 300);
+		IntGraph g = b.build();
+
+		assertNull(b.viMap);
+		assertNull(b.eiMap);
+		assertTrue(g == b.build());
+
+		assertEquals(g, b.buildMutable());
+
+		b.addVertex(9);
+		assertNotNull(b.viMap);
+		assertNotNull(b.eiMap);
+	}
+
+	@Test
+	public void immutableGraphDontStealIdIndexMapsWithWeights() {
+		foreachBoolConfig(verticesWeights -> {
+			IntGraphBuilderImpl b = new IntGraphBuilderImpl(new IntGraphFactoryImpl(true));
+			b.addVertex(10);
+			b.addVertex(20);
+			b.addEdge(20, 10, 5);
+			b.addEdge(10, 20, 300);
+
+			b.build();
+			assertNull(b.viMap);
+			assertNull(b.eiMap);
+
+			if (verticesWeights) {
+				b.addVerticesWeights("weights", int.class);
+			} else {
+				b.addEdgesWeights("weights", int.class);
+			}
+			b.build();
+			assertNotNull(b.viMap);
+			assertNotNull(b.eiMap);
+		});
+	}
+
+	@Test
+	public void clearAfterImmutableGraphSteakIdIndexMaps() {
+		IntGraphBuilderImpl b = new IntGraphBuilderImpl(new IntGraphFactoryImpl(true));
+		b.addVertex(10);
+		b.addVertex(20);
+		b.addEdge(20, 10, 5);
+		b.addEdge(10, 20, 300);
+
+		b.build();
+		assertNull(b.viMap);
+		assertNull(b.eiMap);
+
+		b.clear();
+		assertNotNull(b.viMap);
+		assertNotNull(b.eiMap);
+		assertEquals(IntGraph.newDirected(), b.build());
 	}
 
 }

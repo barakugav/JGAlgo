@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Optional;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -101,6 +102,20 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 			}
 		}
 		return new IndexIntIdMapImpl(indicesSet, idToIndex, indexToId, !isEdges, immutable);
+	}
+
+	/* This object should not be used again. Responsibility of the user (of this class). */
+	IndexIntIdMapImpl intoImmutable(Optional<IndexGraphBuilder.ReIndexingMap> reIndexing) {
+		if (reIndexing.isPresent()) {
+			IndexGraphBuilder.ReIndexingMap reIndexing0 = reIndexing.get();
+			for (var entry : Int2IntMaps.fastIterable(idToIndex)) {
+				int origIdx = entry.getIntValue();
+				int newIdx = reIndexing0.map(origIdx);
+				entry.setValue(newIdx);
+				indexToId[newIdx] = entry.getIntKey();
+			}
+		}
+		return new IndexIntIdMapImpl(indicesSet, idToIndex, indexToId, isVertices, true);
 	}
 
 	void addId(int id, int idx) {
