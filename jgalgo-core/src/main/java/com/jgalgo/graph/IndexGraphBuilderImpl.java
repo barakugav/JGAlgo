@@ -397,25 +397,4 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		}
 	}
 
-	static class ReIndexingMapImpl implements IndexGraphBuilder.ReIndexingMap {
-
-		private final int[] origToReIndexed;
-		private final int[] reIndexedToOrig;
-
-		ReIndexingMapImpl(int[] origToReIndexed, int[] reIndexedToOrig) {
-			this.origToReIndexed = Objects.requireNonNull(origToReIndexed);
-			this.reIndexedToOrig = Objects.requireNonNull(reIndexedToOrig);
-		}
-
-		@Override
-		public int origToReIndexed(int orig) {
-			return origToReIndexed[orig];
-		}
-
-		@Override
-		public int reIndexedToOrig(int reindexed) {
-			return reIndexedToOrig[reindexed];
-		}
-	}
-
 }

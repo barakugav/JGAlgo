@@ -166,7 +166,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 			int[] edgesOrigToCsr = new int[m];
 			for (int eCsr : range(m))
 				edgesOrigToCsr[edgesCsrToOrig[eCsr]] = eCsr;
-			edgesReIndexing = Optional.of(new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig));
+			edgesReIndexing = Optional.of(new IndexGraphBuilder.ReIndexingMap(edgesOrigToCsr, edgesCsrToOrig));
 		}
 
 		GraphCsrDirectedReindexed g = new GraphCsrDirectedReindexed(graphOrBuilder, processEdges, edgesReIndexing,

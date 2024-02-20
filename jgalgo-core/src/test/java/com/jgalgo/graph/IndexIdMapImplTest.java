@@ -134,8 +134,8 @@ public class IndexIdMapImplTest extends TestBase {
 				.mapToInt(p -> p.first())
 				.toArray();
 
-		IndexGraphBuilderImpl.ReIndexingMapImpl reindexing =
-				new IndexGraphBuilderImpl.ReIndexingMapImpl(origToReIndexed, reIndexedToOrig);
+		IndexGraphBuilder.ReIndexingMap reindexing =
+				new IndexGraphBuilder.ReIndexingMap(origToReIndexed, reIndexedToOrig);
 
 		IndexIdMap<String> map1 = fromMap(idToIndex);
 		IndexIdMap<String> map2 = IndexIdMapImpl.newCopyOf(map1, Optional.of(reindexing), indices, false, false);
@@ -166,17 +166,8 @@ public class IndexIdMapImplTest extends TestBase {
 		idToIndex.put(String.valueOf(8), 0);
 		idToIndex.put(null, 1);
 		IntSet indices = range(1);
-		IndexGraphBuilder.ReIndexingMap reindexing = new IndexGraphBuilder.ReIndexingMap() {
-			@Override
-			public int origToReIndexed(int orig) {
-				return 1 - orig;
-			}
-
-			@Override
-			public int reIndexedToOrig(int reindexed) {
-				return 1 - reindexed;
-			}
-		};
+		IndexGraphBuilder.ReIndexingMap reindexing =
+				new IndexGraphBuilder.ReIndexingMap(new int[] { 1, 0 }, new int[] { 1, 0 });
 
 		IndexIdMap<String> map1 = fromMap(idToIndex);
 		assertThrows(NullPointerException.class,
@@ -215,17 +206,8 @@ public class IndexIdMapImplTest extends TestBase {
 				return -1;
 			}
 		};
-		IndexGraphBuilder.ReIndexingMap reindexing = new IndexGraphBuilder.ReIndexingMap() {
-			@Override
-			public int origToReIndexed(int orig) {
-				return 1 - orig;
-			}
-
-			@Override
-			public int reIndexedToOrig(int reindexed) {
-				return 1 - reindexed;
-			}
-		};
+		IndexGraphBuilder.ReIndexingMap reindexing =
+				new IndexGraphBuilder.ReIndexingMap(new int[] { 1, 0 }, new int[] { 1, 0 });
 
 		assertThrows(IllegalArgumentException.class,
 				() -> IndexIdMapImpl.newCopyOf(map1, Optional.of(reindexing), indices, false, false));

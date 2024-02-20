@@ -16,6 +16,7 @@
 package com.jgalgo.graph;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -331,7 +332,15 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @see    ReIndexedGraph
 	 * @author Barak Ugav
 	 */
-	static interface ReIndexingMap {
+	static final class ReIndexingMap {
+
+		private final int[] origToReIndexed;
+		private final int[] reIndexedToOrig;
+
+		ReIndexingMap(int[] origToReIndexed, int[] reIndexedToOrig) {
+			this.origToReIndexed = Objects.requireNonNull(origToReIndexed);
+			this.reIndexedToOrig = Objects.requireNonNull(reIndexedToOrig);
+		}
 
 		/**
 		 * Map an element's original index to its re-indexed index.
@@ -339,7 +348,9 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 		 * @param  orig an element's original index
 		 * @return      the element's re-index index
 		 */
-		int origToReIndexed(int orig);
+		public int origToReIndexed(int orig) {
+			return origToReIndexed[orig];
+		}
 
 		/**
 		 * Map an element's re-indexed index to its original index.
@@ -347,7 +358,9 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 		 * @param  reindexed an element's re-indexed index
 		 * @return           the element's original index
 		 */
-		int reIndexedToOrig(int reindexed);
+		public int reIndexedToOrig(int reindexed) {
+			return reIndexedToOrig[reindexed];
+		}
 
 	}
 
