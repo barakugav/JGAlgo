@@ -87,8 +87,9 @@ class IndexIdMapImpl<K> implements IndexIdMap<K> {
 
 				} else {
 					IndexGraphBuilder.ReIndexingMap reIndexing0 = reIndexing.get();
-					for (int idx : range(elementsSize)) {
-						K id = orig.indexToId(reIndexing0.reIndexedToOrig(idx));
+					for (int origIdx : range(elementsSize)) {
+						int idx = reIndexing0.map(origIdx);
+						K id = orig.indexToId(origIdx);
 						if (id == null)
 							throw new NullPointerException("null id");
 						indexToId[idx] = id;

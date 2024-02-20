@@ -86,8 +86,9 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 
 				} else {
 					IndexGraphBuilder.ReIndexingMap reIndexing0 = reIndexing.get();
-					for (int idx : range(elementsSize)) {
-						int id = orig.indexToId(reIndexing0.reIndexedToOrig(idx)).intValue();
+					for (int origIdx : range(elementsSize)) {
+						int idx = reIndexing0.map(origIdx);
+						int id = orig.indexToId(origIdx).intValue();
 						if (id < 0)
 							throw new IllegalArgumentException("negative id: " + id);
 						indexToId[idx] = id;

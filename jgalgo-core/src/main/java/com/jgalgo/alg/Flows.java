@@ -255,9 +255,11 @@ class Flows {
 				int[] twin = new int[m];
 				if (reindexedGraph.edgesReIndexing().isPresent()) {
 					IndexGraphBuilder.ReIndexingMap eIdxMap = reindexedGraph.edgesReIndexing().get();
-					for (int eBuilder : range(m)) {
-						edgeRef[eBuilder] = edgeRefTemp[eIdxMap.reIndexedToOrig(eBuilder)];
-						twin[eBuilder] = eIdxMap.origToReIndexed(twinTemp[eIdxMap.reIndexedToOrig(eBuilder)]);
+					for (int eOrig : range(m)) {
+						int eBuilder = eIdxMap.map(eOrig);
+						edgeRef[eBuilder] = edgeRefTemp[eOrig];
+						twin[eBuilder] = eIdxMap.map(twinTemp[eOrig]);
+
 					}
 				} else {
 					for (int eBuilder : range(m)) {

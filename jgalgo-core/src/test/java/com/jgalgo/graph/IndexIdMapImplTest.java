@@ -23,7 +23,6 @@ import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -127,25 +126,18 @@ public class IndexIdMapImplTest extends TestBase {
 
 		int[] origToReIndexed = indices.toIntArray();
 		IntArrays.shuffle(origToReIndexed, rand);
-		@SuppressWarnings("boxing")
-		int[] reIndexedToOrig = range(n)
-				.mapToObj(x -> Pair.of(x, origToReIndexed[x]))
-				.sorted((p1, p2) -> Integer.compare(p1.second(), p2.second()))
-				.mapToInt(p -> p.first())
-				.toArray();
 
-		IndexGraphBuilder.ReIndexingMap reindexing =
-				new IndexGraphBuilder.ReIndexingMap(origToReIndexed, reIndexedToOrig);
+		IndexGraphBuilder.ReIndexingMap reindexing = new IndexGraphBuilder.ReIndexingMap(origToReIndexed);
 
 		IndexIdMap<String> map1 = fromMap(idToIndex);
 		IndexIdMap<String> map2 = IndexIdMapImpl.newCopyOf(map1, Optional.of(reindexing), indices, false, false);
 		for (int idx : indices) {
-			assertEquals(map1.indexToId(reindexing.reIndexedToOrig(idx)), map2.indexToId(idx));
-			assertEquals(map1.indexToId(reindexing.reIndexedToOrig(idx)), map2.indexToIdIfExist(idx));
+			assertEquals(map1.indexToId(reindexing.inverse().map(idx)), map2.indexToId(idx));
+			assertEquals(map1.indexToId(reindexing.inverse().map(idx)), map2.indexToIdIfExist(idx));
 		}
 		for (String id : ids) {
-			assertEquals(reindexing.origToReIndexed(map1.idToIndex(id)), map2.idToIndex(id));
-			assertEquals(reindexing.origToReIndexed(map1.idToIndex(id)), map2.idToIndexIfExist(id));
+			assertEquals(reindexing.map(map1.idToIndex(id)), map2.idToIndex(id));
+			assertEquals(reindexing.map(map1.idToIndex(id)), map2.idToIndexIfExist(id));
 		}
 		for (int idx : range(-15, 0))
 			assertEquals(null, map2.indexToIdIfExist(idx));
@@ -155,7 +147,7 @@ public class IndexIdMapImplTest extends TestBase {
 			String id = String.valueOf(id0);
 			int expected = map1.idToIndexIfExist(id);
 			if (expected >= 0)
-				expected = reindexing.origToReIndexed(expected);
+				expected = reindexing.map(expected);
 			assertEquals(expected, map2.idToIndexIfExist(id));
 		}
 	}
@@ -165,9 +157,8 @@ public class IndexIdMapImplTest extends TestBase {
 		Object2IntMap<String> idToIndex = new Object2IntOpenHashMap<>();
 		idToIndex.put(String.valueOf(8), 0);
 		idToIndex.put(null, 1);
-		IntSet indices = range(1);
-		IndexGraphBuilder.ReIndexingMap reindexing =
-				new IndexGraphBuilder.ReIndexingMap(new int[] { 1, 0 }, new int[] { 1, 0 });
+		IntSet indices = range(2);
+		IndexGraphBuilder.ReIndexingMap reindexing = new IndexGraphBuilder.ReIndexingMap(new int[] { 1, 0 });
 
 		IndexIdMap<String> map1 = fromMap(idToIndex);
 		assertThrows(NullPointerException.class,
@@ -206,8 +197,7 @@ public class IndexIdMapImplTest extends TestBase {
 				return -1;
 			}
 		};
-		IndexGraphBuilder.ReIndexingMap reindexing =
-				new IndexGraphBuilder.ReIndexingMap(new int[] { 1, 0 }, new int[] { 1, 0 });
+		IndexGraphBuilder.ReIndexingMap reindexing = new IndexGraphBuilder.ReIndexingMap(new int[] { 1, 0 });
 
 		assertThrows(IllegalArgumentException.class,
 				() -> IndexIdMapImpl.newCopyOf(map1, Optional.of(reindexing), indices, false, false));

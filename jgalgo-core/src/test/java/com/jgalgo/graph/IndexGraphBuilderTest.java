@@ -634,13 +634,13 @@ public class IndexGraphBuilderTest extends TestBase {
 								: b.reIndexAndBuild(reIndexVertices, reIndexEdges);
 
 				IntUnaryOperator vOrigToReIndexed =
-						gReIndexed0.verticesReIndexing().<IntUnaryOperator>map(m -> m::origToReIndexed).orElse(v -> v);
+						gReIndexed0.verticesReIndexing().<IntUnaryOperator>map(m -> m::map).orElse(v -> v);
 				IntUnaryOperator vReIndexedToOrig =
-						gReIndexed0.verticesReIndexing().<IntUnaryOperator>map(m -> m::reIndexedToOrig).orElse(v -> v);
+						gReIndexed0.verticesReIndexing().<IntUnaryOperator>map(m -> m.inverse()::map).orElse(v -> v);
 				IntUnaryOperator eOrigToReIndexed =
-						gReIndexed0.edgesReIndexing().<IntUnaryOperator>map(m -> m::origToReIndexed).orElse(e -> e);
+						gReIndexed0.edgesReIndexing().<IntUnaryOperator>map(m -> m::map).orElse(e -> e);
 				IntUnaryOperator eReIndexedToOrig =
-						gReIndexed0.edgesReIndexing().<IntUnaryOperator>map(m -> m::reIndexedToOrig).orElse(e -> e);
+						gReIndexed0.edgesReIndexing().<IntUnaryOperator>map(m -> m.inverse()::map).orElse(e -> e);
 
 				IndexGraph gReIndexed = gReIndexed0.graph();
 				for (int v : g.vertices())
