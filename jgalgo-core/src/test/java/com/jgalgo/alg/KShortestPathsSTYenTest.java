@@ -42,6 +42,7 @@ public class KShortestPathsSTYenTest extends TestBase {
 		KShortestPathsSTTestUtils.invalidArgsTest(new KShortestPathsSTYen(), true);
 	}
 
+	@SuppressWarnings("boxing")
 	@Test
 	public void k1() {
 		IntGraph g = IntGraph.newUndirected();

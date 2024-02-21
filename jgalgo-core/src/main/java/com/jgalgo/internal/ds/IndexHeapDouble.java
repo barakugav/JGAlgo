@@ -70,4 +70,15 @@ public interface IndexHeapDouble extends IndexHeapBase {
 		return new IndexPairingHeapDouble(size);
 	}
 
+	/**
+	 * Creates a new instance of {@link IndexHeapDouble} that uses the given array to store keys.
+	 *
+	 * @param  keys an array of keys that should be used by the new heap
+	 * @return      a new heap that uses the given array to store keys. The size of the heap is the length of the keys
+	 *              array
+	 */
+	static IndexHeapDouble newInstance(double[] keys) {
+		return new IndexPairingHeapDouble(keys);
+	}
+
 }

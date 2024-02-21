@@ -21,21 +21,15 @@ import java.util.List;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.ds.DoubleObjBinarySearchTree;
-import com.jgalgo.internal.ds.DoubleObjReferenceableHeap;
 import com.jgalgo.internal.ds.IndexHeap;
+import com.jgalgo.internal.ds.IndexHeapDouble;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
-import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 
 /**
@@ -43,9 +37,10 @@ import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
  *
  * <p>
  * The algorithm is similar to Yen's algorithm, but to compute the best 'replacement' path (deviation path, the next
- * shortest path that replace at least one edge from the previous k-th shortest path) it compute it in time \(O(m + n
- * \log n)\) using two shortest path trees. Yen's algorithm runs a S-T shortest path computation for each edge in the
- * last k-th shortest path, therefore each such iteration runs in time \(O(n(m + n \log n))\).
+ * shortest path that replace at least one edge from the previous k-th shortest path) a more carful subroutine is used,
+ * running in time \(O(m + n \log n)\) using two shortest path trees. Yen's algorithm runs a S-T shortest path
+ * computation for each edge in the last k-th shortest path, therefore each such iteration runs in time \(O(n(m + n \log
+ * n))\).
  *
  * <p>
  * The total running time of this algorithm is \(O(k(m + n \log n))\). In practice Yen's algorithm may be faster for
@@ -56,265 +51,44 @@ import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
  *
  * @author Barak Ugav
  */
-class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
-
-	private final ShortestPathST stSpAlgo = ShortestPathST.newInstance();
+class KShortestPathsSTKatohIbarakiMine extends KShortestPathsSTPathsTreeBased {
 
 	@Override
 	public List<IPath> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
-		if (!g.vertices().contains(source) || !g.vertices().contains(target))
-			throw new IllegalArgumentException("source or target not in graph");
-		if (k < 1)
-			throw new IllegalArgumentException("k must be positive");
-		w = WeightFunctions.localEdgeWeightFunction(g, w);
-		w = IWeightFunction.replaceNullWeightFunc(w);
-		Assertions.onlyPositiveEdgesWeights(g, w);
 		Assertions.onlyUndirected(g);
-		if (source == target)
-			return List.of(IPath.valueOf(g, source, target, Fastutil.list()));
-
-		final int n = g.vertices().size();
-		final int m = g.edges().size();
-		// final Bitmap verticesMask = new Bitmap(n); /* no need, we mask the edges of masked vertices */
-		final Bitmap edgesMask = new Bitmap(m);
-		final ShortestPathSubroutine spSubRoutine =
-				new ShortestPathSubroutine(g, w, target, /* verticesMask, */ edgesMask);
-
-		List<IPath> result = new ObjectArrayList<>(k <= m ? k : 16);
-		DoubleObjBinarySearchTree<Node> candidates = DoubleObjBinarySearchTree.newInstance();
-		int candidateNum = 0;
-
-		/* Compute the (first) shortest path and the next candidate */
-		{
-			ObjectDoublePair<Path<Integer, Integer>> sp1Pair =
-					stSpAlgo.computeShortestPathAndWeight(g, w, Integer.valueOf(source), Integer.valueOf(target));
-			if (sp1Pair != null) {
-				IPath sp1 = (IPath) sp1Pair.first();
-				double sp1Weight = sp1Pair.secondDouble();
-				result.add(sp1);
-				if (k == 1)
-					return result;
-
-				ObjectDoublePair<IntList> sp2 =
-						spSubRoutine.computeNextShortestPath(source, sp1.edges(), sp1.edges().size());
-				if (sp2 != null) {
-					Node rootNode = new Node(null, sp1.edges(), sp1.edges(), source, sp1Weight, true);
-					rootNode.bestDeviationPath = sp2.first();
-					candidates.insert(sp2.secondDouble(), rootNode);
-					candidateNum++;
-				}
-			}
-		}
-
-		int[] kthPathArr = new int[n];
-		List<Node> newCandidates = new ObjectArrayList<>(3);
-		while (candidateNum > 0 /* && result.size() < k (checked when adding new paths) */) {
-			/* Find path with lowest weight out of all candidates */
-			DoubleObjReferenceableHeap.Ref<Node> minNode = candidates.extractMin();
-			Node currentNode = minNode.value();
-			candidateNum--;
-			IntList kthLocalPath = currentNode.bestDeviationPath;
-			double kthPathWeight = minNode.key();
-			Node parent = currentNode.parent;
-			{ /* Build the kth path and add to result list */
-				int kthPathBegin = n;
-				kthLocalPath.getElements(0, kthPathArr, kthPathBegin -= kthLocalPath.size(), kthLocalPath.size());
-				for (Node node = parent; node != null; node = node.parent) {
-					IntList p = node.localPath;
-					p.getElements(0, kthPathArr, kthPathBegin -= p.size(), p.size());
-				}
-				/* add the kth path to the result */
-				IntList kthPathList = Fastutil.list(IntArrays.copy(kthPathArr, kthPathBegin, n - kthPathBegin));
-				result.add(IPath.valueOf(g, source, target, kthPathList));
-				if (result.size() == k)
-					break;
-			}
-
-			int commonPrefixLength = 0;
-			for (;; commonPrefixLength++)
-				if (currentNode.localPath.getInt(commonPrefixLength) != kthLocalPath.getInt(commonPrefixLength))
-					break;
-
-			int splitVertex = IterTools
-					.get(IPath.verticesIter(g, currentNode.localPathSource, currentNode.localPath), commonPrefixLength);
-
-			newCandidates.clear();
-			double prefixWeight = parent != null ? parent.pathWeight : 0;
-			if (commonPrefixLength == 0) {
-				/* branches at the source of local path */
-				currentNode.sourceUsedOutEdges.add(kthLocalPath.getInt(commonPrefixLength));
-				newCandidates.add(currentNode);
-
-			} else {
-				/* have some prefix in common */
-				IntList prefixPath = currentNode.localPath.subList(0, commonPrefixLength);
-				prefixWeight += w.weightSum(prefixPath);
-				int prefixSource = currentNode.localPathSource;
-				Node prefixNode = new Node(parent, currentNode.spSuffix, prefixPath, prefixSource, prefixWeight,
-						currentNode.sourceUsedOutEdges);
-				newCandidates.add(prefixNode);
-
-				currentNode.parent = parent = prefixNode;
-				currentNode.localPathSource = splitVertex;
-				currentNode.sourceUsedOutEdges = new IntOpenHashSet(2);
-				currentNode.sourceUsedOutEdges.add(currentNode.localPath.getInt(commonPrefixLength));
-				currentNode.sourceUsedOutEdges.add(kthLocalPath.getInt(commonPrefixLength));
-
-				currentNode.spSuffix = currentNode.spSuffix.subList(commonPrefixLength, currentNode.spSuffix.size());
-				currentNode.localPath = currentNode.localPath.subList(commonPrefixLength, currentNode.localPath.size());
-				assert !currentNode.localPath.isEmpty();
-				newCandidates.add(currentNode);
-			}
-
-			/* Create a node for the suffix of the kth path, after branching from current node local path */
-			if (commonPrefixLength < kthLocalPath.size() - 1) {
-				IntList suffixPath = kthLocalPath.subList(commonPrefixLength, kthLocalPath.size());
-				double suffixWeight = kthPathWeight - prefixWeight;
-				Node suffixNode = new Node(parent, suffixPath, suffixPath, splitVertex, suffixWeight, false);
-				newCandidates.add(suffixNode);
-			}
-
-			/* Compute for each modified or new node a candidate deviation path */
-			currentNode.clearBestDeviation();
-			for (Node node : newCandidates) {
-				final boolean allowDeviateFromSource = node.sourceUsedOutEdges != null;
-				if (!allowDeviateFromSource && node.localPath.size() == 1)
-					continue;
-				final int localSource = node.localPathSource;
-				// verticesMask.clear();
-				edgesMask.clear();
-
-				/* mask the path up to the current node */
-				for (Node p = node.parent; p != null; p = p.parent) {
-					for (int v : IterTools.foreach(IPath.verticesIter(g, p.localPathSource, p.localPath))) {
-						if (v != localSource) {
-							// verticesMask.set(v);
-							for (int e : g.outEdges(v))
-								edgesMask.set(e);
-						}
-					}
-				}
-
-				/* mask source edges already used */
-				if (allowDeviateFromSource) {
-					for (int e : node.sourceUsedOutEdges)
-						edgesMask.set(e);
-				} else {
-					int requiredFirstEdge = node.localPath.getInt(0);
-					for (int e : g.outEdges(localSource))
-						if (e != requiredFirstEdge)
-							edgesMask.set(e);
-				}
-
-				ObjectDoublePair<IntList> bestDeviation =
-						spSubRoutine.computeNextShortestPath(localSource, node.spSuffix, node.localPath.size());
-				if (bestDeviation != null) {
-					node.bestDeviationPath = bestDeviation.first();
-					double deviationWeight =
-							(node.parent != null ? node.parent.pathWeight : 0) + bestDeviation.secondDouble();
-					candidates.insert(deviationWeight, node);
-					candidateNum++;
-				}
-			}
-
-			while (candidateNum > k - result.size()) {
-				candidates.extractMax();
-				candidateNum--;
-			}
-		}
-
-		return result;
+		return super.computeKShortestPaths(g, w, source, target, k);
 	}
 
-	/**
-	 * A node is a sub path in the tree of all the k-th shortest paths.
-	 *
-	 * <p>
-	 * Initially there is a single node for the first shortest path. Each time a k-th shortest path is computed, the
-	 * longest prefix of the k-th path that is common to the previous k-th path is found, and the tree is branched for
-	 * the suffix only. Each node contains a local path, a full path can be reconstructed by following the parent
-	 * pointers.
-	 *
-	 * @author Barak Ugav
-	 */
-	private static class Node {
-
-		/* The local path of the node, the full path can be reconstructed by following the parent pointers */
-		IntList localPath;
-		/* The first vertex visited by the local path. */
-		int localPathSource;
-		/* The parent node, null for the root node */
-		Node parent;
-		/*
-		 * The first shortest path computed from the local path source to the global target. Used to compute xi in
-		 * shortest path subroutine
-		 */
-		IntList spSuffix;
-		/* The weight from the global source along the whole ancestors paths until this node local targets */
-		double pathWeight;
-		/*
-		 * The set of edges for which there is already a child for the parent->target. For each parent node, there is a
-		 * single child which is responsible for computing the shortest paths deviating for the parent target vertex,
-		 * which is the source vertex of all the children nodes. Only for that special child, the set is not null.
-		 */
-		IntSet sourceUsedOutEdges;
-		/* The best deviation path for this node, null if there is no such one */
-		IntList bestDeviationPath;
-
-		Node(Node parent, IntList spSuffix, IntList localPath, int localPathSource, double pathWeight,
-				IntSet sourceUsedOutEdges) {
-			assert !localPath.isEmpty();
-			this.parent = parent;
-			this.spSuffix = spSuffix;
-			this.localPath = localPath;
-			this.localPathSource = localPathSource;
-			this.pathWeight = pathWeight;
-			this.sourceUsedOutEdges = sourceUsedOutEdges;
-		}
-
-		Node(Node parent, IntList spSuffix, IntList localPath, int localPathSource, double pathWeight,
-				boolean allowDeviateFromSource) {
-			this(parent, spSuffix, localPath, localPathSource, pathWeight,
-					allowDeviateFromSource ? new IntOpenHashSet() : null);
-		}
-
-		void clearBestDeviation() {
-			bestDeviationPath = null;
-		}
+	@Override
+	KShortestPathsSTPathsTreeBased.ShortestPathSubroutine newShortestPathSubroutine(IndexGraph g, IWeightFunction w,
+			int target, Bitmap edgesMask) {
+		return ShortestPathSubroutine.newInstance(g, w, target, edgesMask);
 	}
 
-	private static class ShortestPathSubroutine {
-
-		private final IndexGraph g;
-		private final IWeightFunction w;
-		private final int target;
-
-		// private final Bitmap verticesMask;
-		private final Bitmap edgesMask;
+	private static class ShortestPathSubroutine extends KShortestPathsSTPathsTreeBased.ShortestPathSubroutine {
 
 		private final IndexHeap heap;
 		private final double[] sDistances;
 		private final double[] tDistances;
-		private final int[] sBacktrack;
-		private final int[] tBacktrack;
 		private final int[] sXi;
 		private final int[] tXi;
 		private final Bitmap visited;
 
-		ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target,
-				/* Bitmap verticesMask, */ Bitmap edgesMask) {
-			this.g = g;
-			this.w = w;
-			this.target = target;
+		static ShortestPathSubroutine newInstance(IndexGraph g, IWeightFunction w, int target, Bitmap edgesMask) {
+			final int n = g.vertices().size();
+			double[] sDistances = new double[n];
+			double[] tDistances = new double[n];
+			return new ShortestPathSubroutine(g, w, target, edgesMask, sDistances, tDistances);
+		}
 
-			// this.verticesMask = verticesMask;
-			this.edgesMask = edgesMask;
+		ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target, Bitmap edgesMask, double[] sDistances,
+				double[] tDistances) {
+			super(g, w, target, edgesMask, IndexHeapDouble.newInstance(sDistances),
+					IndexHeapDouble.newInstance(tDistances));
 
 			final int n = g.vertices().size();
-			sDistances = new double[n];
-			tDistances = new double[n];
-			sBacktrack = new int[n];
-			tBacktrack = new int[n];
+			this.sDistances = sDistances;
+			this.tDistances = tDistances;
 			sXi = new int[n];
 			tXi = new int[n];
 			visited = new Bitmap(n);
@@ -407,7 +181,8 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 		}
 
 		/* FSP(G, s, t R) */
-		ObjectDoublePair<IntList> computeNextShortestPath(int source, IntList prevSp,
+		@Override
+		FastReplacementAlgoResult computeBestDeviationPath(int source, IntList prevSp,
 				int /* alpha */ maxDeviationPoint) {
 			computeShortestPathTrees(source, prevSp);
 
@@ -449,7 +224,7 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 			}
 
 			if (bestVertex < 0)
-				return null;
+				return FastReplacementAlgoResult.ofSuccess(null);
 
 			/*
 			 * imagine we have the following graph: (s,t),(s,u),(u,t),(u,v), namely a triangle of s,t,u with additional
@@ -488,7 +263,7 @@ class KShortestPathsSTKatohIbarakiMine implements KShortestPathsSTBase {
 				path.add(e);
 
 			assert Path.valueOf(g, Integer.valueOf(source), Integer.valueOf(target), path).isSimple();
-			return ObjectDoublePair.of(path, bestWeight);
+			return FastReplacementAlgoResult.ofSuccess(ObjectDoublePair.of(path, bestWeight));
 		}
 	}
 }
