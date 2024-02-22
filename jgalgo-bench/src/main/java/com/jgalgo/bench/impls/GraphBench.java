@@ -1423,7 +1423,7 @@ public class GraphBench {
 					IndexGraphBuilder g1 = IndexGraphBuilder.directed();
 					g1.addVertices(g.vertices());
 					g1.addEdges(EdgeSet.allOf(g));
-					IndexGraph g1Graph = g1.reIndexAndBuild(true, true).graph();
+					IndexGraph g1Graph = g1.reIndexAndBuild(true, true).graph;
 					assert g1Graph.isDirected() == directed;
 					return g1Graph;
 				}, directed, allowParallelEdges, allowSelfEdges);

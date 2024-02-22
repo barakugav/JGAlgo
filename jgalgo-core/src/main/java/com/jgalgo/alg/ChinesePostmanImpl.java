@@ -67,7 +67,7 @@ class ChinesePostmanImpl implements ChinesePostmanBase {
 		for (int v : range(oddVertices.length))
 			for (int u : range(v + 1, oddVertices.length))
 				oddGraph0.addEdge(v, u);
-		IndexGraph oddGraph = oddGraph0.reIndexAndBuild(true, true).graph();
+		IndexGraph oddGraph = oddGraph0.reIndexAndBuild(true, true).graph;
 		ShortestPathAllPairs.IResult allPairsRes = (ShortestPathAllPairs.IResult) shortestPathAllPairsAlgo
 				.computeSubsetShortestPaths(g, oddVerticesList, w);
 		IWeightFunction oddW = e -> {

@@ -237,9 +237,9 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	}
 
 	private IntGraph buildFromReIndexed(IndexGraphBuilder.ReIndexedGraph reIndexedGraph) {
-		IndexGraph iGraph = reIndexedGraph.graph();
-		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
-		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
+		IndexGraph iGraph = reIndexedGraph.graph;
+		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing;
+		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing;
 		return new IntGraphImpl(factory, iGraph, viMap, eiMap, vReIndexing, eReIndexing);
 	}
 

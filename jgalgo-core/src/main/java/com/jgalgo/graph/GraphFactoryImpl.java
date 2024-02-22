@@ -48,9 +48,9 @@ class GraphFactoryImpl<V, E> implements GraphFactory<V, E> {
 				.newCopyOfWithReIndex(g.indexGraph(), true, true, copyVerticesWeights, copyEdgesWeights);
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 		IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-		IndexGraph iGraph = reIndexedGraph.graph();
-		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
-		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
+		IndexGraph iGraph = reIndexedGraph.graph;
+		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing;
+		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing;
 		return new GraphImpl<>(this, iGraph, viMap, eiMap, vReIndexing, eReIndexing);
 	}
 

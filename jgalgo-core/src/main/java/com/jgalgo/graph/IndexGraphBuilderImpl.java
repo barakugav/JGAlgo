@@ -19,7 +19,6 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -366,35 +365,6 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	private void checkEdge(int edge) {
 		if (!edges().contains(edge))
 			throw NoSuchEdgeException.ofIndex(edge);
-	}
-
-	static class ReIndexedGraphImpl implements IndexGraphBuilder.ReIndexedGraph {
-
-		private final IndexGraph graph;
-		private final Optional<IndexGraphBuilder.ReIndexingMap> verticesReIndexing;
-		private final Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing;
-
-		ReIndexedGraphImpl(IndexGraph graph, Optional<IndexGraphBuilder.ReIndexingMap> verticesReIndexing,
-				Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing) {
-			this.graph = Objects.requireNonNull(graph);
-			this.verticesReIndexing = Objects.requireNonNull(verticesReIndexing);
-			this.edgesReIndexing = Objects.requireNonNull(edgesReIndexing);
-		}
-
-		@Override
-		public IndexGraph graph() {
-			return graph;
-		}
-
-		@Override
-		public Optional<IndexGraphBuilder.ReIndexingMap> verticesReIndexing() {
-			return verticesReIndexing;
-		}
-
-		@Override
-		public Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing() {
-			return edgesReIndexing;
-		}
 	}
 
 }

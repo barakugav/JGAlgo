@@ -77,13 +77,13 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 		for (int v : range(mGn))
 			for (int u : range(v + 1, mGn))
 				mG0.addEdge(v, u);
-		IndexGraph oddGraph = mG0.reIndexAndBuild(true, true).graph();
+		IndexGraph oddGraph = mG0.reIndexAndBuild(true, true).graph;
 		IWeightFunction mGWeights = e -> {
 			int u = mVtoV[oddGraph.edgeSource(e)];
 			int v = mVtoV[oddGraph.edgeTarget(e)];
 			return w.weight(g.getEdge(u, v));
 		};
-		IndexGraph mG = mG0.reIndexAndBuild(true, true).graph();
+		IndexGraph mG = mG0.reIndexAndBuild(true, true).graph;
 
 		/* Calculate maximum matching between the odd vertices */
 		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(mG, mGWeights);

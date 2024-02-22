@@ -50,9 +50,9 @@ class IntGraphFactoryImpl implements IntGraphFactory {
 				.newCopyOfWithReIndex(g.indexGraph(), true, true, copyVerticesWeights, copyEdgesWeights);
 		IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
 		IndexIdMap<Integer> eiMap = g.indexGraphEdgesMap();
-		IndexGraph iGraph = reIndexedGraph.graph();
-		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
-		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
+		IndexGraph iGraph = reIndexedGraph.graph;
+		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing;
+		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing;
 		return new IntGraphImpl(this, iGraph, viMap, eiMap, vReIndexing, eReIndexing);
 	}
 

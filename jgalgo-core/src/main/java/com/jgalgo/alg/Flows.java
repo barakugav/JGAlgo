@@ -247,14 +247,14 @@ class Flows {
 
 			ResidualGraph build() {
 				IndexGraphBuilder.ReIndexedGraph reindexedGraph = gBuilder.reIndexAndBuild(false, true);
-				IndexGraph g = reindexedGraph.graph();
+				IndexGraph g = reindexedGraph.graph;
 				final int m = g.edges().size();
 				int[] edgeRefTemp = edgeRef.elements();
 				int[] twinTemp = twin.elements();
 				int[] edgeRef = new int[m];
 				int[] twin = new int[m];
-				if (reindexedGraph.edgesReIndexing().isPresent()) {
-					IndexGraphBuilder.ReIndexingMap eIdxMap = reindexedGraph.edgesReIndexing().get();
+				if (reindexedGraph.edgesReIndexing.isPresent()) {
+					IndexGraphBuilder.ReIndexingMap eIdxMap = reindexedGraph.edgesReIndexing.get();
 					for (int eOrig : range(m)) {
 						int eBuilder = eIdxMap.map(eOrig);
 						edgeRef[eBuilder] = edgeRefTemp[eOrig];

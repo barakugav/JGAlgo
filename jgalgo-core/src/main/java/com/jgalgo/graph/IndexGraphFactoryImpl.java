@@ -19,7 +19,6 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.function.Function;
 import com.jgalgo.graph.IndexGraphBuilder.ReIndexedGraph;
-import com.jgalgo.graph.IndexGraphBuilderImpl.ReIndexedGraphImpl;
 
 class IndexGraphFactoryImpl implements IndexGraphFactory {
 
@@ -84,7 +83,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 		default IndexGraphBuilder.ReIndexedGraph newFromBuilderWithReIndex(IndexGraphBuilderImpl builder,
 				boolean reIndexVertices, boolean reIndexEdges) {
-			return new ReIndexedGraphImpl(newFromBuilder(builder), Optional.empty(), Optional.empty());
+			return new IndexGraphBuilder.ReIndexedGraph(newFromBuilder(builder), Optional.empty(), Optional.empty());
 		}
 
 	}
@@ -387,9 +386,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 					if (graph instanceof GraphCsrDirectedReindexed) {
 						IndexGraphBuilder.ReIndexedGraph reIndexedGraph = GraphCsrDirectedReindexed
 								.newInstance(graph, copyVerticesWeights, copyEdgesWeights, fastLookup);
-						assert reIndexedGraph.verticesReIndexing().isEmpty()
-								&& reIndexedGraph.edgesReIndexing().isEmpty();
-						return reIndexedGraph.graph();
+						assert reIndexedGraph.verticesReIndexing.isEmpty() && reIndexedGraph.edgesReIndexing.isEmpty();
+						return reIndexedGraph.graph;
 					} else {
 						return new GraphCsrDirected(graph, copyVerticesWeights, copyEdgesWeights, fastLookup);
 					}
@@ -402,8 +400,9 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 						return GraphCsrDirectedReindexed
 								.newInstance(graph, copyVerticesWeights, copyEdgesWeights, fastLookup);
 					} else {
-						return new ReIndexedGraphImpl(newCopyOf(graph, copyVerticesWeights, copyEdgesWeights),
-								Optional.empty(), Optional.empty());
+						return new IndexGraphBuilder.ReIndexedGraph(
+								newCopyOf(graph, copyVerticesWeights, copyEdgesWeights), Optional.empty(),
+								Optional.empty());
 					}
 				}
 
@@ -420,7 +419,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 					if (reIndexEdges) {
 						return GraphCsrDirectedReindexed.newInstance(builder, fastLookup);
 					} else {
-						return new ReIndexedGraphImpl(newFromBuilder(builder), Optional.empty(), Optional.empty());
+						return new IndexGraphBuilder.ReIndexedGraph(newFromBuilder(builder), Optional.empty(),
+								Optional.empty());
 					}
 				}
 			} : new ImmutableImpl() {
@@ -433,7 +433,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				public IndexGraphBuilder.ReIndexedGraph newCopyOfWithReIndex(IndexGraph graph, boolean reIndexVertices,
 						boolean reIndexEdges, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 					/* no re-indexing for undirected graph */
-					return new ReIndexedGraphImpl(newCopyOf(graph, copyVerticesWeights, copyEdgesWeights),
+					return new IndexGraphBuilder.ReIndexedGraph(newCopyOf(graph, copyVerticesWeights, copyEdgesWeights),
 							Optional.empty(), Optional.empty());
 				}
 
@@ -448,7 +448,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				public ReIndexedGraph newFromBuilderWithReIndex(IndexGraphBuilderImpl builder, boolean reIndexVertices,
 						boolean reIndexEdges) {
 					/* no re-indexing for undirected graph */
-					return new ReIndexedGraphImpl(newFromBuilder(builder), Optional.empty(), Optional.empty());
+					return new IndexGraphBuilder.ReIndexedGraph(newFromBuilder(builder), Optional.empty(),
+							Optional.empty());
 				}
 			};
 		};

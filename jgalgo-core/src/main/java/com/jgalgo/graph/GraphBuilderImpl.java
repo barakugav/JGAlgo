@@ -225,9 +225,9 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 	}
 
 	private Graph<V, E> buildFromReIndexed(IndexGraphBuilder.ReIndexedGraph reIndexedGraph) {
-		IndexGraph iGraph = reIndexedGraph.graph();
-		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
-		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
+		IndexGraph iGraph = reIndexedGraph.graph;
+		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing;
+		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing;
 		return new GraphImpl<>(factory, iGraph, viMap, eiMap, vReIndexing, eReIndexing);
 	}
 

@@ -222,11 +222,11 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @param  reIndexVertices if {@code true}, the implementation is allowed (but not required) to re-index the
 	 *                             vertices of the graph. If {@code false}, the original vertices identifiers are used.
 	 *                             Whether or not re-indexing was performed can be checked via
-	 *                             {@link ReIndexedGraph#verticesReIndexing()}.
+	 *                             {@link ReIndexedGraph#verticesReIndexing}.
 	 * @param  reIndexEdges    if {@code true}, the implementation is allowed (but not required) to re-index the edges
 	 *                             of the graph. If {@code false}, the original edges identifiers are used. Whether or
 	 *                             not re-indexing was performed can be checked via
-	 *                             {@link ReIndexedGraph#edgesReIndexing()}.
+	 *                             {@link ReIndexedGraph#edgesReIndexing}.
 	 * @return                 the re-indexed immutable graph, along with the re-indexing mapping to the original
 	 *                         indices
 	 */
@@ -252,11 +252,11 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @param  reIndexVertices if {@code true}, the implementation is allowed (but not required) to re-index the
 	 *                             vertices of the graph. If {@code false}, the original vertices identifiers are used.
 	 *                             Whether or not re-indexing was performed can be checked via
-	 *                             {@link ReIndexedGraph#verticesReIndexing()}.
+	 *                             {@link ReIndexedGraph#verticesReIndexing}.
 	 * @param  reIndexEdges    if {@code true}, the implementation is allowed (but not required) to re-index the edges
 	 *                             of the graph. If {@code false}, the original edges identifiers are used. Whether or
 	 *                             not re-indexing was performed can be checked via
-	 *                             {@link ReIndexedGraph#edgesReIndexing()}.
+	 *                             {@link ReIndexedGraph#edgesReIndexing}.
 	 * @return                 the re-indexed mutable graph, along with the re-indexing mapping to the original indices
 	 */
 	IndexGraphBuilder.ReIndexedGraph reIndexAndBuildMutable(boolean reIndexVertices, boolean reIndexEdges);
@@ -272,43 +272,44 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * <p>
 	 * During the lifetime of a {@link IndexGraphBuilder}, vertices and edges are added to it, each one of them has a
 	 * unique {@code int} identifier which is also its index (see {@link IndexGraph}). The builder can re-index the
-	 * vertices/edges and build a new graph, resulting in a re-indexed graph {@link #graph()}, the vertices re-indexing
-	 * {@link #verticesReIndexing()} and the edges re-indexing {@link #edgesReIndexing()}.
+	 * vertices/edges and build a new graph, resulting in a re-indexed graph {@link #graph}, the vertices re-indexing
+	 * {@link #verticesReIndexing} and the edges re-indexing {@link #edgesReIndexing}.
 	 *
 	 * @see    IndexGraphBuilder#reIndexAndBuild(boolean, boolean)
 	 * @see    ReIndexingMap
 	 * @author Barak Ugav
 	 */
-	static interface ReIndexedGraph {
+	static final class ReIndexedGraph {
 
 		/**
-		 * Get the newly created re-indexed graph.
-		 *
-		 * @return the actual re-indexed graph
+		 * The newly created re-indexed graph.
 		 */
-		IndexGraph graph();
+		public final IndexGraph graph;
 
 		/**
-		 * Get the re-indexing map of the vertices.
+		 * The re-indexing map of the vertices.
 		 *
 		 * <p>
-		 * The returned object (if present) can map each original vertex index to its new index after re-indexing. If
-		 * the returned is not present, the vertices were not re-indexed.
-		 *
-		 * @return the re-indexing map of the vertices
+		 * The map (if present) can map each original vertex index to its new index after re-indexing. If the map is not
+		 * present, the vertices were not re-indexed.
 		 */
-		Optional<IndexGraphBuilder.ReIndexingMap> verticesReIndexing();
+		public final Optional<IndexGraphBuilder.ReIndexingMap> verticesReIndexing;
 
 		/**
-		 * Get the re-indexing map of the edges.
+		 * The re-indexing map of the edges.
 		 *
 		 * <p>
-		 * The returned object (if present) can map each original edge index to its new index after re-indexing. If the
-		 * returned is not present, the edges were not re-indexed.
-		 *
-		 * @return the re-indexing map of the edges
+		 * The map (if present) can map each original edge index to its new index after re-indexing. If the map is not
+		 * present, the edges were not re-indexed.
 		 */
-		Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing();
+		public final Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing;
+
+		ReIndexedGraph(IndexGraph graph, Optional<IndexGraphBuilder.ReIndexingMap> verticesReIndexing,
+				Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing) {
+			this.graph = Objects.requireNonNull(graph);
+			this.verticesReIndexing = Objects.requireNonNull(verticesReIndexing);
+			this.edgesReIndexing = Objects.requireNonNull(edgesReIndexing);
+		}
 	}
 
 	/**

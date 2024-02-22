@@ -79,13 +79,13 @@ class WEIGHTS_IMPL {
 #if PRIMITIVE_TYPE_REAL != "boolean"
 			weights = Arrays.copyOf(weights, elements.size());
 			for (int i : range(elements.size()))
-				weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
+				weights[reIndexMap.map(i)] = orig.weights[i];
 #else
 			if (defaultWeight) {
 				Arrays.fill(weights, ~0L);
 				for (int oldIdx : range(elements.size())) {
 					if ((orig.weights[word(oldIdx)] & bit(oldIdx)) == 0) {
-						int newIdx = reIndexMap.origToReIndexed(oldIdx);
+						int newIdx = reIndexMap.map(oldIdx);
 						weights[word(newIdx)] &= ~bit(newIdx);
 					}
 				}
@@ -93,7 +93,7 @@ class WEIGHTS_IMPL {
 				Arrays.fill(weights, 0);
 				for (int oldIdx : range(elements.size())) {
 					if ((orig.weights[word(oldIdx)] & bit(oldIdx)) != 0) {
-						int newIdx = reIndexMap.origToReIndexed(oldIdx);
+						int newIdx = reIndexMap.map(oldIdx);
 						weights[word(newIdx)] |= bit(newIdx);
 					}
 				}

@@ -167,7 +167,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 
 		GraphCsrDirectedReindexed g = new GraphCsrDirectedReindexed(graphOrBuilder, processEdges, edgesReIndexing,
 				copyVerticesWeights, copyEdgesWeights, fastLookup);
-		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), edgesReIndexing);
+		return new IndexGraphBuilderImpl.ReIndexedGraph(g, Optional.empty(), edgesReIndexing);
 	}
 
 	@Override
