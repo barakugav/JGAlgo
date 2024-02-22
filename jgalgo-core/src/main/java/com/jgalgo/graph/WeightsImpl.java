@@ -31,10 +31,11 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
-interface WeightsImpl {
+class WeightsImpl {
 
-	static interface Index<T> extends IWeights<T>, WeightsImpl {
+	private WeightsImpl() {}
 
+	static interface Index<T> extends IWeights<T> {
 	}
 
 	abstract static class IndexAbstract<T> implements WeightsImpl.Index<T> {
@@ -329,7 +330,7 @@ interface WeightsImpl {
 
 	}
 
-	static interface IndexImmutable<T> extends IWeights<T>, WeightsImpl {
+	static interface IndexImmutable<T> extends IWeights<T> {
 
 		static WeightsImpl.IndexImmutable<?> copyOf(IWeights<?> weights, IntSet elements, boolean isEdges) {
 			if (weights instanceof WeightsImpl.IntImmutableView<?>)
@@ -428,7 +429,7 @@ interface WeightsImpl {
 
 	}
 
-	abstract static class IntMapped<T> implements IWeights<T>, WeightsImpl {
+	abstract static class IntMapped<T> implements IWeights<T> {
 
 		final WeightsImpl.IndexAbstract<T> weights;
 		final IndexIntIdMap indexMap;
@@ -467,7 +468,7 @@ interface WeightsImpl {
 
 	}
 
-	static class ImmutableView<K, T> implements WeightsImpl {
+	static class ImmutableView<K, T> {
 
 		private final Weights<K, T> weights;
 
@@ -704,7 +705,7 @@ interface WeightsImpl {
 		return h;
 	}
 
-	abstract static class ObjMapped<K, T> implements Weights<K, T>, WeightsImpl {
+	abstract static class ObjMapped<K, T> implements Weights<K, T> {
 
 		final WeightsImpl.IndexAbstract<T> weights;
 		final IndexIdMap<K> indexMap;
