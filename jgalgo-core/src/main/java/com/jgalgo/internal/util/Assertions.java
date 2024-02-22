@@ -134,13 +134,13 @@ public class Assertions {
 		}
 	}
 
-	public static void checkGraphId(int elementIdx, int length, boolean isEdge) {
+	public static void checkGraphId(int elementIdx, int length, boolean isVertices) {
 		if (JGAlgoConfigImpl.AssertionsGraphIdCheck) {
 			if (elementIdx < 0 || elementIdx >= length) {
-				if (isEdge) {
-					throw NoSuchEdgeException.ofIndex(elementIdx);
-				} else {
+				if (isVertices) {
 					throw NoSuchVertexException.ofIndex(elementIdx);
+				} else {
+					throw NoSuchEdgeException.ofIndex(elementIdx);
 				}
 			}
 		}

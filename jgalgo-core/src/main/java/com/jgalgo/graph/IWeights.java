@@ -172,7 +172,7 @@ public interface IWeights<T> extends Weights<Integer, T> {
 	public static <T, WeightsT extends IWeights<T>> WeightsT createExternalVerticesWeights(IntGraph g,
 			Class<? super T> type, T defVal) {
 		IntSet vertices = g.indexGraph().vertices();
-		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, false, type, defVal);
+		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, true, type, defVal);
 		if (g instanceof IndexGraph) {
 			return (WeightsT) weights;
 		} else {
@@ -218,7 +218,7 @@ public interface IWeights<T> extends Weights<Integer, T> {
 	public static <T, WeightsT extends IWeights<T>> WeightsT createExternalEdgesWeights(IntGraph g,
 			Class<? super T> type, T defVal) {
 		IntSet edges = g.indexGraph().edges();
-		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, true, type, defVal);
+		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, false, type, defVal);
 		if (g instanceof IndexGraph) {
 			return (WeightsT) weights;
 		} else {

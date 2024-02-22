@@ -36,8 +36,8 @@ class IntGraphImpl extends AbstractGraphImpl<Integer, Integer> implements IntGra
 
 	IntGraphImpl(IntGraphFactoryImpl factory) {
 		super(factory.indexFactory.newGraph());
-		viMap = IndexIntIdMapImpl.newEmpty(indexGraph.vertices(), false, factory.indexFactory.expectedVerticesNum);
-		eiMap = IndexIntIdMapImpl.newEmpty(indexGraph.edges(), true, factory.indexFactory.expectedEdgesNum);
+		viMap = IndexIntIdMapImpl.newEmpty(indexGraph.vertices(), true, factory.indexFactory.expectedVerticesNum);
+		eiMap = IndexIntIdMapImpl.newEmpty(indexGraph.edges(), false, factory.indexFactory.expectedEdgesNum);
 		viMap.initListeners(indexGraph);
 		eiMap.initListeners(indexGraph);
 		vertexBuilder = factory.vertexFactory != null ? factory.vertexFactory.get() : null;
@@ -49,8 +49,8 @@ class IntGraphImpl extends AbstractGraphImpl<Integer, Integer> implements IntGra
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing) {
 		super(indexGraph);
 		boolean immutable = this.indexGraph instanceof ImmutableGraph;
-		this.viMap = IndexIntIdMapImpl.newCopyOf(viMap, vReIndexing, this.indexGraph.vertices(), false, immutable);
-		this.eiMap = IndexIntIdMapImpl.newCopyOf(eiMap, eReIndexing, this.indexGraph.edges(), true, immutable);
+		this.viMap = IndexIntIdMapImpl.newCopyOf(viMap, vReIndexing, this.indexGraph.vertices(), true, immutable);
+		this.eiMap = IndexIntIdMapImpl.newCopyOf(eiMap, eReIndexing, this.indexGraph.edges(), false, immutable);
 		if (!immutable) {
 			this.viMap.initListeners(this.indexGraph);
 			this.eiMap.initListeners(this.indexGraph);
@@ -71,8 +71,8 @@ class IntGraphImpl extends AbstractGraphImpl<Integer, Integer> implements IntGra
 			eiMap = builder.stealEiMap().intoImmutable(eReIndexing);
 		} else {
 			viMap = IndexIntIdMapImpl
-					.newCopyOf(builder.viMap, vReIndexing, this.indexGraph.vertices(), false, immutable);
-			eiMap = IndexIntIdMapImpl.newCopyOf(builder.eiMap, eReIndexing, this.indexGraph.edges(), true, immutable);
+					.newCopyOf(builder.viMap, vReIndexing, this.indexGraph.vertices(), true, immutable);
+			eiMap = IndexIntIdMapImpl.newCopyOf(builder.eiMap, eReIndexing, this.indexGraph.edges(), false, immutable);
 		}
 		if (!immutable) {
 			viMap.initListeners(this.indexGraph);

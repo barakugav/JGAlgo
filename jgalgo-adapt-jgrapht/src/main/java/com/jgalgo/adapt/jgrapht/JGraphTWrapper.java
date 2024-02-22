@@ -144,8 +144,8 @@ public class JGraphTWrapper<V, E> extends com.jgalgo.graph.AbstractGraph<V, E> {
 			};
 		}
 
-		indexGraphVerticesMap = new IndexIdMapImpl<>(false);
-		indexGraphEdgesMap = new IndexIdMapImpl<>(true);
+		indexGraphVerticesMap = new IndexIdMapImpl<>(true);
+		indexGraphEdgesMap = new IndexIdMapImpl<>(false);
 		for (V vertex : graph.vertexSet())
 			indexGraphVerticesMap.add(vertex);
 		for (E edge : graph.edgeSet())
@@ -593,13 +593,13 @@ public class JGraphTWrapper<V, E> extends com.jgalgo.graph.AbstractGraph<V, E> {
 
 		private final Object2IntMap<K> idToIdx;
 		private final List<K> idxToId;
-		private final boolean isEdges;
+		private final boolean isVertices;
 
-		public IndexIdMapImpl(boolean isEdges) {
+		public IndexIdMapImpl(boolean isVertices) {
 			idToIdx = new Object2IntOpenHashMap<>();
 			idToIdx.defaultReturnValue(-1);
 			idxToId = new ObjectArrayList<>();
-			this.isEdges = isEdges;
+			this.isVertices = isVertices;
 		}
 
 		void add(K id) {
@@ -630,10 +630,10 @@ public class JGraphTWrapper<V, E> extends com.jgalgo.graph.AbstractGraph<V, E> {
 		@Override
 		public K indexToId(int index) {
 			if (!(0 <= index && index < idxToId.size())) {
-				if (isEdges) {
-					throw NoSuchEdgeException.ofIndex(index);
-				} else {
+				if (isVertices) {
 					throw NoSuchVertexException.ofIndex(index);
+				} else {
+					throw NoSuchEdgeException.ofIndex(index);
 				}
 			}
 			return idxToId.get(index);
@@ -650,10 +650,10 @@ public class JGraphTWrapper<V, E> extends com.jgalgo.graph.AbstractGraph<V, E> {
 		public int idToIndex(K id) {
 			int idx = idToIdx.getInt(id);
 			if (idx < 0) {
-				if (isEdges) {
-					throw NoSuchEdgeException.ofEdge(id);
-				} else {
+				if (isVertices) {
 					throw NoSuchVertexException.ofVertex(id);
+				} else {
+					throw NoSuchEdgeException.ofEdge(id);
 				}
 			}
 			return idx;

@@ -36,8 +36,8 @@ class GraphImpl<V, E> extends AbstractGraphImpl<V, E> {
 
 	GraphImpl(GraphFactoryImpl<V, E> factory) {
 		super(factory.indexFactory.newGraph());
-		viMap = IndexIdMapImpl.newEmpty(indexGraph.vertices(), false, factory.indexFactory.expectedVerticesNum);
-		eiMap = IndexIdMapImpl.newEmpty(indexGraph.edges(), true, factory.indexFactory.expectedEdgesNum);
+		viMap = IndexIdMapImpl.newEmpty(indexGraph.vertices(), true, factory.indexFactory.expectedVerticesNum);
+		eiMap = IndexIdMapImpl.newEmpty(indexGraph.edges(), false, factory.indexFactory.expectedEdgesNum);
 		viMap.initListeners(indexGraph);
 		eiMap.initListeners(indexGraph);
 		vertexBuilder = factory.vertexFactory != null ? factory.vertexFactory.get() : null;
@@ -49,8 +49,8 @@ class GraphImpl<V, E> extends AbstractGraphImpl<V, E> {
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing) {
 		super(indexGraph);
 		boolean immutable = this.indexGraph instanceof ImmutableGraph;
-		this.viMap = IndexIdMapImpl.newCopyOf(viMap, vReIndexing, this.indexGraph.vertices(), false, immutable);
-		this.eiMap = IndexIdMapImpl.newCopyOf(eiMap, eReIndexing, this.indexGraph.edges(), true, immutable);
+		this.viMap = IndexIdMapImpl.newCopyOf(viMap, vReIndexing, this.indexGraph.vertices(), true, immutable);
+		this.eiMap = IndexIdMapImpl.newCopyOf(eiMap, eReIndexing, this.indexGraph.edges(), false, immutable);
 		if (!immutable) {
 			this.viMap.initListeners(this.indexGraph);
 			this.eiMap.initListeners(this.indexGraph);
@@ -71,8 +71,8 @@ class GraphImpl<V, E> extends AbstractGraphImpl<V, E> {
 			eiMap = builder.stealEiMap().intoImmutable(eReIndexing);
 
 		} else {
-			viMap = IndexIdMapImpl.newCopyOf(builder.viMap, vReIndexing, this.indexGraph.vertices(), false, immutable);
-			eiMap = IndexIdMapImpl.newCopyOf(builder.eiMap, eReIndexing, this.indexGraph.edges(), true, immutable);
+			viMap = IndexIdMapImpl.newCopyOf(builder.viMap, vReIndexing, this.indexGraph.vertices(), true, immutable);
+			eiMap = IndexIdMapImpl.newCopyOf(builder.eiMap, eReIndexing, this.indexGraph.edges(), false, immutable);
 		}
 		if (!immutable) {
 			viMap.initListeners(this.indexGraph);

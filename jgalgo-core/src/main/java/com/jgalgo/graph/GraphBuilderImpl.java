@@ -41,8 +41,8 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 	GraphBuilderImpl(GraphFactoryImpl<V, E> factory) {
 		this.factory = factory;
 		this.iBuilder = factory.indexFactory.newBuilder();
-		viMap = IndexIdMapImpl.newEmpty(iBuilder.vertices(), false, 0);
-		eiMap = IndexIdMapImpl.newEmpty(iBuilder.edges(), true, 0);
+		viMap = IndexIdMapImpl.newEmpty(iBuilder.vertices(), true, 0);
+		eiMap = IndexIdMapImpl.newEmpty(iBuilder.edges(), false, 0);
 		resetVertexAndEdgeBuilders();
 	}
 
@@ -50,9 +50,8 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 			boolean copyEdgesWeights) {
 		this.factory = factory;
 		this.iBuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
-		viMap = IndexIdMapImpl
-				.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), iBuilder.vertices(), false, false);
-		eiMap = IndexIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), Optional.empty(), iBuilder.edges(), true, false);
+		viMap = IndexIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), iBuilder.vertices(), true, false);
+		eiMap = IndexIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), Optional.empty(), iBuilder.edges(), false, false);
 		resetVertexAndEdgeBuilders();
 	}
 
@@ -216,8 +215,8 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 			viMap.idsClear();
 			eiMap.idsClear();
 		} else {
-			viMap = IndexIdMapImpl.newEmpty(iBuilder.vertices(), false, 0);
-			eiMap = IndexIdMapImpl.newEmpty(iBuilder.edges(), true, 0);
+			viMap = IndexIdMapImpl.newEmpty(iBuilder.vertices(), true, 0);
+			eiMap = IndexIdMapImpl.newEmpty(iBuilder.edges(), false, 0);
 			lastImmutableGraph = null;
 			lastImmutableVerticesReIndexingMap = null;
 			lastImmutableEdgesReIndexingMap = null;

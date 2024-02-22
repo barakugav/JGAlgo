@@ -44,7 +44,7 @@ public class IndexIntIdMapImplTest extends TestBase {
 		IntSet ids = idToIndex.keySet();
 
 		IndexIntIdMap map1 = fromMap(idToIndex);
-		IndexIntIdMap map2 = IndexIntIdMapImpl.newCopyOf(map1, Optional.empty(), indices, false, false);
+		IndexIntIdMap map2 = IndexIntIdMapImpl.newCopyOf(map1, Optional.empty(), indices, true, false);
 		for (int idx : indices) {
 			assertEquals(map1.indexToIdInt(idx), map2.indexToIdInt(idx));
 			assertEquals(map1.indexToIdInt(idx), map2.indexToIdIfExistInt(idx));
@@ -68,7 +68,7 @@ public class IndexIntIdMapImplTest extends TestBase {
 		IntSet indices = range(1);
 		IndexIntIdMap map1 = fromMap(idToIndex);
 		assertThrows(IllegalArgumentException.class,
-				() -> IndexIntIdMapImpl.newCopyOf(map1, Optional.empty(), indices, false, false));
+				() -> IndexIntIdMapImpl.newCopyOf(map1, Optional.empty(), indices, true, false));
 	}
 
 	@Test
@@ -127,7 +127,7 @@ public class IndexIntIdMapImplTest extends TestBase {
 		IndexGraphBuilder.ReIndexingMap reindexing = new IndexGraphBuilder.ReIndexingMap(origToReIndexed);
 
 		IndexIntIdMap map1 = fromMap(idToIndex);
-		IndexIntIdMap map2 = IndexIntIdMapImpl.newCopyOf(map1, Optional.of(reindexing), indices, false, false);
+		IndexIntIdMap map2 = IndexIntIdMapImpl.newCopyOf(map1, Optional.of(reindexing), indices, true, false);
 		for (int idx : indices) {
 			assertEquals(map1.indexToIdInt(reindexing.inverse().map(idx)), map2.indexToIdInt(idx));
 			assertEquals(map1.indexToIdInt(reindexing.inverse().map(idx)), map2.indexToIdIfExistInt(idx));
@@ -158,7 +158,7 @@ public class IndexIntIdMapImplTest extends TestBase {
 
 		IndexIntIdMap map1 = fromMap(idToIndex);
 		assertThrows(IllegalArgumentException.class,
-				() -> IndexIntIdMapImpl.newCopyOf(map1, Optional.of(reindexing), indices, false, false));
+				() -> IndexIntIdMapImpl.newCopyOf(map1, Optional.of(reindexing), indices, true, false));
 	}
 
 	@Test
@@ -196,7 +196,7 @@ public class IndexIntIdMapImplTest extends TestBase {
 		IndexGraphBuilder.ReIndexingMap reindexing = new IndexGraphBuilder.ReIndexingMap(new int[] { 1, 0 });
 
 		assertThrows(IllegalArgumentException.class,
-				() -> IndexIntIdMapImpl.newCopyOf(map1, Optional.of(reindexing), indices, false, false));
+				() -> IndexIntIdMapImpl.newCopyOf(map1, Optional.of(reindexing), indices, true, false));
 	}
 
 	private static IndexIntIdMap fromMap(Int2IntMap map) {

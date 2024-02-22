@@ -50,8 +50,8 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
 		verticesInternalContainers = new DataContainer.Manager(expectedVerticesNum);
 		edgesInternalContainers = new DataContainer.Manager(expectedEdgesNum);
-		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedVerticesNum, false);
-		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum, true);
+		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedVerticesNum, true);
+		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum, false);
 
 		edgeEndpointsContainer = newEdgesLongContainer(DefaultEndpoints, newArr -> edgeEndpoints = newArr);
 	}
@@ -67,16 +67,16 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 			Assertions.onlyUndirected(g);
 		}
 
-		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), false);
-		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), true);
+		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), true);
+		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), false);
 		if (copyVerticesWeights) {
 			for (String key : g.verticesWeightsKeys())
 				verticesUserWeights
-						.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.verticesWeights(key), vertices, false));
+						.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.verticesWeights(key), vertices, true));
 		}
 		if (copyEdgesWeights) {
 			for (String key : g.edgesWeightsKeys())
-				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.edgesWeights(key), edges, true));
+				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.edgesWeights(key), edges, false));
 		}
 
 		/* internal data containers should be copied manually */
@@ -672,7 +672,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
 			T defVal) {
-		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, false, type, defVal);
+		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, true, type, defVal);
 		verticesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;
@@ -682,7 +682,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
 			T defVal) {
-		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, true, type, defVal);
+		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, false, type, defVal);
 		edgesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;

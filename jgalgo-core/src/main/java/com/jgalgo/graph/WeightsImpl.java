@@ -41,11 +41,11 @@ class WeightsImpl {
 	abstract static class IndexAbstract<T> implements WeightsImpl.Index<T> {
 
 		final IntSet elements;
-		private final boolean isEdges;
+		private final boolean isVertices;
 
-		IndexAbstract(IntSet elements, boolean isEdges) {
+		IndexAbstract(IntSet elements, boolean isVertices) {
 			this.elements = elements;
-			this.isEdges = isEdges;
+			this.isVertices = isVertices;
 		}
 
 		public int size() {
@@ -53,7 +53,7 @@ class WeightsImpl {
 		}
 
 		void checkIdx(int idx) {
-			Assertions.checkGraphId(idx, elements.size(), isEdges);
+			Assertions.checkGraphId(idx, elements.size(), isVertices);
 		}
 
 	}
@@ -70,71 +70,71 @@ class WeightsImpl {
 
 		void swapAndClear(int removedIdx, int swappedIdx);
 
-		static <D> WeightsImpl.IndexMutable<D> newInstance(IntSet elements, boolean isEdges, Class<? super D> type,
+		static <D> WeightsImpl.IndexMutable<D> newInstance(IntSet elements, boolean isVertices, Class<? super D> type,
 				D defVal) {
 			IWeights<?> container;
 			if (type == byte.class) {
 				byte defVal0 = defVal != null ? ((java.lang.Byte) defVal).byteValue() : 0;
-				container = new WeightsImplByte.IndexMutable(elements, isEdges, defVal0);
+				container = new WeightsImplByte.IndexMutable(elements, isVertices, defVal0);
 
 			} else if (type == short.class) {
 				short defVal0 = defVal != null ? ((java.lang.Short) defVal).shortValue() : 0;
-				container = new WeightsImplShort.IndexMutable(elements, isEdges, defVal0);
+				container = new WeightsImplShort.IndexMutable(elements, isVertices, defVal0);
 
 			} else if (type == int.class) {
 				int defVal0 = defVal != null ? ((Integer) defVal).intValue() : 0;
-				container = new WeightsImplInt.IndexMutable(elements, isEdges, defVal0);
+				container = new WeightsImplInt.IndexMutable(elements, isVertices, defVal0);
 
 			} else if (type == long.class) {
 				long defVal0 = defVal != null ? ((java.lang.Long) defVal).longValue() : 0;
-				container = new WeightsImplLong.IndexMutable(elements, isEdges, defVal0);
+				container = new WeightsImplLong.IndexMutable(elements, isVertices, defVal0);
 
 			} else if (type == float.class) {
 				float defVal0 = defVal != null ? ((java.lang.Float) defVal).floatValue() : 0;
-				container = new WeightsImplFloat.IndexMutable(elements, isEdges, defVal0);
+				container = new WeightsImplFloat.IndexMutable(elements, isVertices, defVal0);
 
 			} else if (type == double.class) {
 				double defVal0 = defVal != null ? ((java.lang.Double) defVal).doubleValue() : 0;
-				container = new WeightsImplDouble.IndexMutable(elements, isEdges, defVal0);
+				container = new WeightsImplDouble.IndexMutable(elements, isVertices, defVal0);
 
 			} else if (type == boolean.class) {
 				boolean defVal0 = defVal != null ? ((Boolean) defVal).booleanValue() : false;
-				container = new WeightsImplBool.IndexMutable(elements, isEdges, defVal0);
+				container = new WeightsImplBool.IndexMutable(elements, isVertices, defVal0);
 
 			} else if (type == char.class) {
 				char defVal0 = defVal != null ? ((Character) defVal).charValue() : 0;
-				container = new WeightsImplChar.IndexMutable(elements, isEdges, defVal0);
+				container = new WeightsImplChar.IndexMutable(elements, isVertices, defVal0);
 
 			} else {
 				Objects.requireNonNull(type);
-				container = new WeightsImplObj.IndexMutable<>(elements, isEdges, defVal);
+				container = new WeightsImplObj.IndexMutable<>(elements, isVertices, defVal);
 			}
 			@SuppressWarnings("unchecked")
 			WeightsImpl.IndexMutable<D> container0 = (WeightsImpl.IndexMutable<D>) container;
 			return container0;
 		}
 
-		static WeightsImpl.IndexMutable<?> copyOf(Weights<Integer, ?> weights, IntSet elements, boolean isEdges) {
+		static WeightsImpl.IndexMutable<?> copyOf(Weights<Integer, ?> weights, IntSet elements, boolean isVertices) {
 			if (weights instanceof WeightsImpl.IntImmutableView<?>)
 				weights = ((WeightsImpl.IntImmutableView<?>) weights).weights();
 			if (weights instanceof WeightsImplByte.IndexImpl) {
-				return new WeightsImplByte.IndexMutable((WeightsImplByte.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplByte.IndexMutable((WeightsImplByte.IndexImpl) weights, elements, isVertices);
 			} else if (weights instanceof WeightsImplShort.IndexImpl) {
-				return new WeightsImplShort.IndexMutable((WeightsImplShort.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplShort.IndexMutable((WeightsImplShort.IndexImpl) weights, elements, isVertices);
 			} else if (weights instanceof WeightsImplInt.IndexImpl) {
-				return new WeightsImplInt.IndexMutable((WeightsImplInt.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplInt.IndexMutable((WeightsImplInt.IndexImpl) weights, elements, isVertices);
 			} else if (weights instanceof WeightsImplLong.IndexImpl) {
-				return new WeightsImplLong.IndexMutable((WeightsImplLong.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplLong.IndexMutable((WeightsImplLong.IndexImpl) weights, elements, isVertices);
 			} else if (weights instanceof WeightsImplFloat.IndexImpl) {
-				return new WeightsImplFloat.IndexMutable((WeightsImplFloat.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplFloat.IndexMutable((WeightsImplFloat.IndexImpl) weights, elements, isVertices);
 			} else if (weights instanceof WeightsImplDouble.IndexImpl) {
-				return new WeightsImplDouble.IndexMutable((WeightsImplDouble.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplDouble.IndexMutable((WeightsImplDouble.IndexImpl) weights, elements, isVertices);
 			} else if (weights instanceof WeightsImplBool.IndexImpl) {
-				return new WeightsImplBool.IndexMutable((WeightsImplBool.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplBool.IndexMutable((WeightsImplBool.IndexImpl) weights, elements, isVertices);
 			} else if (weights instanceof WeightsImplChar.IndexImpl) {
-				return new WeightsImplChar.IndexMutable((WeightsImplChar.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplChar.IndexMutable((WeightsImplChar.IndexImpl) weights, elements, isVertices);
 			} else if (weights instanceof WeightsImplObj.IndexImpl) {
-				return new WeightsImplObj.IndexMutable<>((WeightsImplObj.IndexImpl<?>) weights, elements, isEdges);
+				return new WeightsImplObj.IndexMutable<>((WeightsImplObj.IndexImpl<?>) weights, elements, isVertices);
 			}
 
 			/* not an index weights or unknown implementation */
@@ -143,7 +143,7 @@ class WeightsImpl {
 				@SuppressWarnings("unchecked")
 				WeightsByte<Integer> weightsByte = (WeightsByte<Integer>) weights;
 				WeightsImplByte.IndexMutable newWeights =
-						new WeightsImplByte.IndexMutable(elements, isEdges, weightsByte.defaultWeight());
+						new WeightsImplByte.IndexMutable(elements, isVertices, weightsByte.defaultWeight());
 				for (int elm : range(elements.size()))
 					newWeights.set(elm, weightsByte.get(Integer.valueOf(elm)));
 				return newWeights;
@@ -151,7 +151,7 @@ class WeightsImpl {
 				@SuppressWarnings("unchecked")
 				WeightsShort<Integer> weightsShort = (WeightsShort<Integer>) weights;
 				WeightsImplShort.IndexMutable newWeights =
-						new WeightsImplShort.IndexMutable(elements, isEdges, weightsShort.defaultWeight());
+						new WeightsImplShort.IndexMutable(elements, isVertices, weightsShort.defaultWeight());
 				for (int elm : range(elements.size()))
 					newWeights.set(elm, weightsShort.get(Integer.valueOf(elm)));
 				return newWeights;
@@ -159,7 +159,7 @@ class WeightsImpl {
 				@SuppressWarnings("unchecked")
 				WeightsInt<Integer> weightsInt = (WeightsInt<Integer>) weights;
 				WeightsImplInt.IndexMutable newWeights =
-						new WeightsImplInt.IndexMutable(elements, isEdges, weightsInt.defaultWeight());
+						new WeightsImplInt.IndexMutable(elements, isVertices, weightsInt.defaultWeight());
 				for (int elm : range(elements.size()))
 					newWeights.set(elm, weightsInt.get(Integer.valueOf(elm)));
 				return newWeights;
@@ -167,7 +167,7 @@ class WeightsImpl {
 				@SuppressWarnings("unchecked")
 				WeightsLong<Integer> weightsLong = (WeightsLong<Integer>) weights;
 				WeightsImplLong.IndexMutable newWeights =
-						new WeightsImplLong.IndexMutable(elements, isEdges, weightsLong.defaultWeight());
+						new WeightsImplLong.IndexMutable(elements, isVertices, weightsLong.defaultWeight());
 				for (int elm : range(elements.size()))
 					newWeights.set(elm, weightsLong.get(Integer.valueOf(elm)));
 				return newWeights;
@@ -175,7 +175,7 @@ class WeightsImpl {
 				@SuppressWarnings("unchecked")
 				WeightsFloat<Integer> weightsFloat = (WeightsFloat<Integer>) weights;
 				WeightsImplFloat.IndexMutable newWeights =
-						new WeightsImplFloat.IndexMutable(elements, isEdges, weightsFloat.defaultWeight());
+						new WeightsImplFloat.IndexMutable(elements, isVertices, weightsFloat.defaultWeight());
 				for (int elm : range(elements.size()))
 					newWeights.set(elm, weightsFloat.get(Integer.valueOf(elm)));
 				return newWeights;
@@ -183,7 +183,7 @@ class WeightsImpl {
 				@SuppressWarnings("unchecked")
 				WeightsDouble<Integer> weightsDouble = (WeightsDouble<Integer>) weights;
 				WeightsImplDouble.IndexMutable newWeights =
-						new WeightsImplDouble.IndexMutable(elements, isEdges, weightsDouble.defaultWeight());
+						new WeightsImplDouble.IndexMutable(elements, isVertices, weightsDouble.defaultWeight());
 				for (int elm : range(elements.size()))
 					newWeights.set(elm, weightsDouble.get(Integer.valueOf(elm)));
 				return newWeights;
@@ -191,7 +191,7 @@ class WeightsImpl {
 				@SuppressWarnings("unchecked")
 				WeightsBool<Integer> weightsBool = (WeightsBool<Integer>) weights;
 				WeightsImplBool.IndexMutable newWeights =
-						new WeightsImplBool.IndexMutable(elements, isEdges, weightsBool.defaultWeight());
+						new WeightsImplBool.IndexMutable(elements, isVertices, weightsBool.defaultWeight());
 				for (int elm : range(elements.size()))
 					newWeights.set(elm, weightsBool.get(Integer.valueOf(elm)));
 				return newWeights;
@@ -199,7 +199,7 @@ class WeightsImpl {
 				@SuppressWarnings("unchecked")
 				WeightsChar<Integer> weightsChar = (WeightsChar<Integer>) weights;
 				WeightsImplChar.IndexMutable newWeights =
-						new WeightsImplChar.IndexMutable(elements, isEdges, weightsChar.defaultWeight());
+						new WeightsImplChar.IndexMutable(elements, isVertices, weightsChar.defaultWeight());
 				for (int elm : range(elements.size()))
 					newWeights.set(elm, weightsChar.get(Integer.valueOf(elm)));
 				return newWeights;
@@ -207,7 +207,7 @@ class WeightsImpl {
 				@SuppressWarnings("unchecked")
 				WeightsObj<Integer, Object> weightsObj = (WeightsObj<Integer, Object>) weights;
 				WeightsImplObj.IndexMutable<Object> newWeights =
-						new WeightsImplObj.IndexMutable<>(elements, isEdges, weightsObj.defaultWeight());
+						new WeightsImplObj.IndexMutable<>(elements, isVertices, weightsObj.defaultWeight());
 				for (int elm : range(elements.size()))
 					newWeights.set(elm, weightsObj.get(Integer.valueOf(elm)));
 				return newWeights;
@@ -220,24 +220,24 @@ class WeightsImpl {
 			private WeightsImpl.IndexMutable<?>[] weights;
 			private final Object2IntMap<String> keyToIdx;
 			private int weightsCapacity;
-			private final boolean isEdges;
+			private final boolean isVertices;
 
 			private static final String[] EMPTY_WEIGHTS_KEY_ARR = new String[0];
 			private static final WeightsImpl.IndexMutable<?>[] EMPTY_WEIGHTS_ARR = new WeightsImpl.IndexMutable<?>[0];
 
-			Manager(int initCapacity, boolean isEdges) {
+			Manager(int initCapacity, boolean isVertices) {
 				weightsKey = EMPTY_WEIGHTS_KEY_ARR;
 				weights = EMPTY_WEIGHTS_ARR;
 				keyToIdx = new Object2IntOpenHashMap<>();
 				keyToIdx.defaultReturnValue(-1);
 				weightsCapacity = initCapacity;
-				this.isEdges = isEdges;
+				this.isVertices = isVertices;
 			}
 
 			Manager(Manager orig, IntSet elements) {
 				weightsCapacity = elements.size();
 				int numberOfWeights = orig.keyToIdx.size();
-				isEdges = orig.isEdges;
+				isVertices = orig.isVertices;
 				if (numberOfWeights == 0) {
 					weightsKey = EMPTY_WEIGHTS_KEY_ARR;
 					weights = EMPTY_WEIGHTS_ARR;
@@ -247,7 +247,7 @@ class WeightsImpl {
 					weightsKey = Arrays.copyOf(orig.weightsKey, numberOfWeights);
 					weights = new WeightsImpl.IndexMutable[numberOfWeights];
 					for (int i : range(numberOfWeights))
-						weights[i] = WeightsImpl.IndexMutable.copyOf(orig.weights[i], elements, isEdges);
+						weights[i] = WeightsImpl.IndexMutable.copyOf(orig.weights[i], elements, isVertices);
 					keyToIdx = new Object2IntOpenHashMap<>(orig.keyToIdx);
 				}
 				keyToIdx.defaultReturnValue(-1);
@@ -332,62 +332,63 @@ class WeightsImpl {
 
 	static interface IndexImmutable<T> extends IWeights<T> {
 
-		static WeightsImpl.IndexImmutable<?> copyOf(IWeights<?> weights, IntSet elements, boolean isEdges) {
+		static WeightsImpl.IndexImmutable<?> copyOf(IWeights<?> weights, IntSet elements, boolean isVertices) {
 			if (weights instanceof WeightsImpl.IntImmutableView<?>)
 				weights = ((WeightsImpl.IntImmutableView<?>) weights).weights();
 			if (weights instanceof WeightsImplByte.IndexImpl) {
-				return new WeightsImplByte.IndexImmutable((WeightsImplByte.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplByte.IndexImmutable((WeightsImplByte.IndexImpl) weights, elements, isVertices);
 			} else if (weights instanceof WeightsImplShort.IndexImpl) {
-				return new WeightsImplShort.IndexImmutable((WeightsImplShort.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplShort.IndexImmutable((WeightsImplShort.IndexImpl) weights, elements, isVertices);
 			} else if (weights instanceof WeightsImplInt.IndexImpl) {
-				return new WeightsImplInt.IndexImmutable((WeightsImplInt.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplInt.IndexImmutable((WeightsImplInt.IndexImpl) weights, elements, isVertices);
 			} else if (weights instanceof WeightsImplLong.IndexImpl) {
-				return new WeightsImplLong.IndexImmutable((WeightsImplLong.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplLong.IndexImmutable((WeightsImplLong.IndexImpl) weights, elements, isVertices);
 			} else if (weights instanceof WeightsImplFloat.IndexImpl) {
-				return new WeightsImplFloat.IndexImmutable((WeightsImplFloat.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplFloat.IndexImmutable((WeightsImplFloat.IndexImpl) weights, elements, isVertices);
 			} else if (weights instanceof WeightsImplDouble.IndexImpl) {
-				return new WeightsImplDouble.IndexImmutable((WeightsImplDouble.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplDouble.IndexImmutable((WeightsImplDouble.IndexImpl) weights, elements,
+						isVertices);
 			} else if (weights instanceof WeightsImplBool.IndexImpl) {
-				return new WeightsImplBool.IndexImmutable((WeightsImplBool.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplBool.IndexImmutable((WeightsImplBool.IndexImpl) weights, elements, isVertices);
 			} else if (weights instanceof WeightsImplChar.IndexImpl) {
-				return new WeightsImplChar.IndexImmutable((WeightsImplChar.IndexImpl) weights, elements, isEdges);
+				return new WeightsImplChar.IndexImmutable((WeightsImplChar.IndexImpl) weights, elements, isVertices);
 			} else if (weights instanceof WeightsImplObj.IndexImpl) {
-				return new WeightsImplObj.IndexImmutable<>((WeightsImplObj.IndexImpl<?>) weights, elements, isEdges);
+				return new WeightsImplObj.IndexImmutable<>((WeightsImplObj.IndexImpl<?>) weights, elements, isVertices);
 			} else {
 				throw new IllegalArgumentException("unknown weights implementation: " + weights.getClass());
 			}
 		}
 
-		static WeightsImpl.IndexImmutable<?> copyOfReindexed(IWeights<?> weights, IntSet elements, boolean isEdges,
+		static WeightsImpl.IndexImmutable<?> copyOfReindexed(IWeights<?> weights, IntSet elements, boolean isVertices,
 				IndexGraphBuilder.ReIndexingMap reIndexMap) {
 			if (weights instanceof WeightsImpl.IntImmutableView<?>)
 				weights = ((WeightsImpl.IntImmutableView<?>) weights).weights();
 			if (weights instanceof WeightsImplByte.IndexImpl) {
-				return new WeightsImplByte.IndexImmutable((WeightsImplByte.IndexImpl) weights, elements, isEdges,
+				return new WeightsImplByte.IndexImmutable((WeightsImplByte.IndexImpl) weights, elements, isVertices,
 						reIndexMap);
 			} else if (weights instanceof WeightsImplShort.IndexImpl) {
-				return new WeightsImplShort.IndexImmutable((WeightsImplShort.IndexImpl) weights, elements, isEdges,
+				return new WeightsImplShort.IndexImmutable((WeightsImplShort.IndexImpl) weights, elements, isVertices,
 						reIndexMap);
 			} else if (weights instanceof WeightsImplInt.IndexImpl) {
-				return new WeightsImplInt.IndexImmutable((WeightsImplInt.IndexImpl) weights, elements, isEdges,
+				return new WeightsImplInt.IndexImmutable((WeightsImplInt.IndexImpl) weights, elements, isVertices,
 						reIndexMap);
 			} else if (weights instanceof WeightsImplLong.IndexImpl) {
-				return new WeightsImplLong.IndexImmutable((WeightsImplLong.IndexImpl) weights, elements, isEdges,
+				return new WeightsImplLong.IndexImmutable((WeightsImplLong.IndexImpl) weights, elements, isVertices,
 						reIndexMap);
 			} else if (weights instanceof WeightsImplFloat.IndexImpl) {
-				return new WeightsImplFloat.IndexImmutable((WeightsImplFloat.IndexImpl) weights, elements, isEdges,
+				return new WeightsImplFloat.IndexImmutable((WeightsImplFloat.IndexImpl) weights, elements, isVertices,
 						reIndexMap);
 			} else if (weights instanceof WeightsImplDouble.IndexImpl) {
-				return new WeightsImplDouble.IndexImmutable((WeightsImplDouble.IndexImpl) weights, elements, isEdges,
+				return new WeightsImplDouble.IndexImmutable((WeightsImplDouble.IndexImpl) weights, elements, isVertices,
 						reIndexMap);
 			} else if (weights instanceof WeightsImplBool.IndexImpl) {
-				return new WeightsImplBool.IndexImmutable((WeightsImplBool.IndexImpl) weights, elements, isEdges,
+				return new WeightsImplBool.IndexImmutable((WeightsImplBool.IndexImpl) weights, elements, isVertices,
 						reIndexMap);
 			} else if (weights instanceof WeightsImplChar.IndexImpl) {
-				return new WeightsImplChar.IndexImmutable((WeightsImplChar.IndexImpl) weights, elements, isEdges,
+				return new WeightsImplChar.IndexImmutable((WeightsImplChar.IndexImpl) weights, elements, isVertices,
 						reIndexMap);
 			} else if (weights instanceof WeightsImplObj.IndexImpl) {
-				return new WeightsImplObj.IndexImmutable<>((WeightsImplObj.IndexImpl<?>) weights, elements, isEdges,
+				return new WeightsImplObj.IndexImmutable<>((WeightsImplObj.IndexImpl<?>) weights, elements, isVertices,
 						reIndexMap);
 			} else {
 				throw new IllegalArgumentException("unknown weights implementation: " + weights.getClass());
@@ -397,18 +398,19 @@ class WeightsImpl {
 		static class Builder {
 
 			private final IntSet elements;
-			private final boolean isEdges;
+			private final boolean isVertices;
 			private final Map<String, WeightsImpl.IndexImmutable<?>> weights;
 
-			Builder(IntSet elements, boolean isEdges) {
+			Builder(IntSet elements, boolean isVertices) {
 				this.elements = Objects.requireNonNull(elements);
-				this.isEdges = isEdges;
+				this.isVertices = isVertices;
 				weights = new Object2ObjectOpenHashMap<>();
 			}
 
 			void copyAndAddWeights(String key, IWeights<?> weights) {
 				Objects.requireNonNull(key);
-				WeightsImpl.IndexImmutable<?> weights0 = WeightsImpl.IndexImmutable.copyOf(weights, elements, isEdges);
+				WeightsImpl.IndexImmutable<?> weights0 =
+						WeightsImpl.IndexImmutable.copyOf(weights, elements, isVertices);
 				Object oldWeights = this.weights.put(key, weights0);
 				if (oldWeights != null)
 					throw new IllegalArgumentException("duplicate key: " + key);
@@ -417,7 +419,8 @@ class WeightsImpl {
 			void copyAndAddWeightsReindexed(String key, IWeights<?> weights,
 					IndexGraphBuilder.ReIndexingMap reIndexMap) {
 				Object oldWeights = this.weights
-						.put(key, WeightsImpl.IndexImmutable.copyOfReindexed(weights, elements, isEdges, reIndexMap));
+						.put(key,
+								WeightsImpl.IndexImmutable.copyOfReindexed(weights, elements, isVertices, reIndexMap));
 				if (oldWeights != null)
 					throw new IllegalArgumentException("duplicate key: " + key);
 			}

@@ -160,7 +160,7 @@ public interface IndexIntIdMap extends IndexIdMap<Integer> {
 	 * @return           an identity mapping of the vertices
 	 */
 	static IndexIntIdMap identityVerticesMap(IntSet vertexSet) {
-		return new IdentityIndexIdMap(vertexSet, false);
+		return new IdentityIndexIdMap(vertexSet, true);
 	}
 
 	/**
@@ -179,7 +179,7 @@ public interface IndexIntIdMap extends IndexIdMap<Integer> {
 	 * @return         an identity mapping of the edges
 	 */
 	static IndexIntIdMap identityEdgesMap(IntSet edgeSet) {
-		return new IdentityIndexIdMap(edgeSet, true);
+		return new IdentityIndexIdMap(edgeSet, false);
 	}
 
 }

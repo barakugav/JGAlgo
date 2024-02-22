@@ -27,13 +27,13 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 abstract class GraphElementSet extends AbstractIntSet {
 
 	int size;
-	final boolean isEdges;
+	final boolean isVertices;
 
-	GraphElementSet(int initSize, boolean isEdges) {
+	GraphElementSet(int initSize, boolean isVertices) {
 		if (initSize < 0)
 			throw new IllegalArgumentException("Initial size can not be negative: " + initSize);
 		size = initSize;
-		this.isEdges = isEdges;
+		this.isVertices = isVertices;
 	}
 
 	@Override
@@ -67,38 +67,37 @@ abstract class GraphElementSet extends AbstractIntSet {
 	}
 
 	void checkIdx(int idx) {
-		Assertions.checkGraphId(idx, size, isEdges);
+		Assertions.checkGraphId(idx, size, isVertices);
 	}
 
 	static class Immutable extends GraphElementSet {
 
-		private Immutable(int size, boolean isEdges) {
-			super(size, isEdges);
-		}
-
-		static GraphElementSet.Immutable ofEdges(int size) {
-			return new GraphElementSet.Immutable(size, true);
+		private Immutable(int size, boolean isVertices) {
+			super(size, isVertices);
 		}
 
 		static GraphElementSet.Immutable ofVertices(int size) {
-			return new GraphElementSet.Immutable(size, false);
+			return new GraphElementSet.Immutable(size, true);
 		}
 
+		static GraphElementSet.Immutable ofEdges(int size) {
+			return new GraphElementSet.Immutable(size, false);
+		}
 	}
 
 	static class Mutable extends GraphElementSet {
 
 		private final List<IndexRemoveListener> removeListeners = new CopyOnWriteArrayList<>();
 
-		private Mutable(int initSize, boolean isEdges) {
-			super(initSize, isEdges);
-		}
-
-		static GraphElementSet.Mutable ofEdges(int initSize) {
-			return new GraphElementSet.Mutable(initSize, true);
+		private Mutable(int initSize, boolean isVertices) {
+			super(initSize, isVertices);
 		}
 
 		static GraphElementSet.Mutable ofVertices(int initSize) {
+			return new GraphElementSet.Mutable(initSize, true);
+		}
+
+		static GraphElementSet.Mutable ofEdges(int initSize) {
 			return new GraphElementSet.Mutable(initSize, false);
 		}
 

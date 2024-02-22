@@ -48,16 +48,16 @@ class IndexIdMapImpl<K> implements IndexIdMap<K> {
 		this.immutable = immutable;
 	}
 
-	static <K> IndexIdMapImpl<K> newEmpty(IntSet indicesSet, boolean isEdges, int expectedSize) {
+	static <K> IndexIdMapImpl<K> newEmpty(IntSet indicesSet, boolean isVertices, int expectedSize) {
 		assert indicesSet.isEmpty();
 		Object2IntOpenHashMap<K> idToIndex = new Object2IntOpenHashMap<>(expectedSize);
 		idToIndex.defaultReturnValue(-1);
 		Object[] indexToId = expectedSize == 0 ? ObjectArrays.DEFAULT_EMPTY_ARRAY : new Object[expectedSize];
-		return new IndexIdMapImpl<>(indicesSet, idToIndex, indexToId, !isEdges, false);
+		return new IndexIdMapImpl<>(indicesSet, idToIndex, indexToId, isVertices, false);
 	}
 
 	static <K> IndexIdMapImpl<K> newCopyOf(IndexIdMap<K> orig, Optional<IndexGraphBuilder.ReIndexingMap> reIndexing,
-			IntSet indicesSet, boolean isEdges, boolean immutable) {
+			IntSet indicesSet, boolean isVertices, boolean immutable) {
 		final int elementsSize = indicesSet.size();
 		Object2IntOpenHashMap<K> idToIndex;
 		Object[] indexToId;
@@ -102,7 +102,7 @@ class IndexIdMapImpl<K> implements IndexIdMap<K> {
 				}
 			}
 		}
-		return new IndexIdMapImpl<>(indicesSet, idToIndex, indexToId, !isEdges, immutable);
+		return new IndexIdMapImpl<>(indicesSet, idToIndex, indexToId, isVertices, immutable);
 	}
 
 	/* This object should not be used again. Responsibility of the user (of this class). */
@@ -190,7 +190,7 @@ class IndexIdMapImpl<K> implements IndexIdMap<K> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public K indexToId(int index) {
-		Assertions.checkGraphId(index, indicesSet.size(), !isVertices);
+		Assertions.checkGraphId(index, indicesSet.size(), isVertices);
 		return (K) indexToId[index];
 	}
 

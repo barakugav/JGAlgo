@@ -40,8 +40,8 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		this.directed = directed;
 		vertices = GraphElementSet.Mutable.ofVertices(0);
 		edges = GraphElementSet.Mutable.ofEdges(0);
-		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(0, false);
-		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(0, true);
+		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(0, true);
+		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(0, false);
 		setDefaultImpls();
 	}
 
@@ -78,15 +78,15 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			}
 		}
 
-		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), false);
-		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), true);
+		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), true);
+		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), false);
 		if (copyVerticesWeights)
 			for (String key : g.verticesWeightsKeys())
 				verticesUserWeights
-						.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.verticesWeights(key), vertices, false));
+						.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.verticesWeights(key), vertices, true));
 		if (copyEdgesWeights)
 			for (String key : g.edgesWeightsKeys())
-				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.edgesWeights(key), edges, true));
+				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.edgesWeights(key), edges, false));
 
 		setDefaultImpls();
 	}
@@ -325,7 +325,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
 			T defVal) {
-		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, false, type, defVal);
+		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, true, type, defVal);
 		verticesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;
@@ -345,7 +345,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
 			T defVal) {
-		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, true, type, defVal);
+		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, false, type, defVal);
 		edgesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;

@@ -43,8 +43,8 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	IntGraphBuilderImpl(IntGraphFactoryImpl factory) {
 		this.factory = factory;
 		this.iBuilder = factory.indexFactory.newBuilder();
-		viMap = IndexIntIdMapImpl.newEmpty(iBuilder.vertices(), false, 0);
-		eiMap = IndexIntIdMapImpl.newEmpty(iBuilder.edges(), true, 0);
+		viMap = IndexIntIdMapImpl.newEmpty(iBuilder.vertices(), true, 0);
+		eiMap = IndexIntIdMapImpl.newEmpty(iBuilder.edges(), false, 0);
 		resetVertexAndEdgeBuilders();
 	}
 
@@ -53,8 +53,8 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		this.factory = factory;
 		this.iBuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
 		viMap = IndexIntIdMapImpl
-				.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), iBuilder.vertices(), false, false);
-		eiMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), Optional.empty(), iBuilder.edges(), true, false);
+				.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), iBuilder.vertices(), true, false);
+		eiMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), Optional.empty(), iBuilder.edges(), false, false);
 		resetVertexAndEdgeBuilders();
 	}
 
@@ -228,8 +228,8 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 			viMap.idsClear();
 			eiMap.idsClear();
 		} else {
-			viMap = IndexIntIdMapImpl.newEmpty(iBuilder.vertices(), false, 0);
-			eiMap = IndexIntIdMapImpl.newEmpty(iBuilder.edges(), true, 0);
+			viMap = IndexIntIdMapImpl.newEmpty(iBuilder.vertices(), true, 0);
+			eiMap = IndexIntIdMapImpl.newEmpty(iBuilder.edges(), false, 0);
 			lastImmutableGraph = null;
 			lastImmutableVerticesReIndexingMap = null;
 			lastImmutableEdgesReIndexingMap = null;
