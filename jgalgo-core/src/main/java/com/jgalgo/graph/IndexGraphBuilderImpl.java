@@ -20,15 +20,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
-import it.unimi.dsi.fastutil.ints.IntArrays;
+import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.longs.LongArrays;
 
 class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	private final boolean directed;
 	final GraphElementSet.Mutable vertices;
 	final GraphElementSet.Mutable edges;
-	private int[] endpoints = IntArrays.EMPTY_ARRAY;
+	private long[] endpoints = LongArrays.EMPTY_ARRAY;
 
 	final WeightsImpl.IndexMutable.Manager verticesUserWeights;
 	final WeightsImpl.IndexMutable.Manager edgesUserWeights;
@@ -60,7 +61,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		vertices = GraphElementSet.Mutable.ofVertices(n);
 		edges = GraphElementSet.Mutable.ofEdges(m);
 
-		endpoints = new int[m * 2];
+		endpoints = new long[m];
 
 		if (g instanceof IntGraph) {
 			IntGraph g0 = (IntGraph) g;
@@ -257,8 +258,8 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	@Override
 	public void ensureEdgeCapacity(int edgesNum) {
 		edgesUserWeights.ensureCapacity(edgesNum);
-		if (edgesNum * 2 > endpoints.length)
-			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, edgesNum * 2)));
+		if (edgesNum > endpoints.length)
+			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, edgesNum)));
 	}
 
 	@Override
@@ -275,26 +276,17 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	private void setEdgeEndpoints(int e, int source, int target) {
-		endpoints[edgeSourceIndex(e)] = source;
-		endpoints[edgeTargetIndex(e)] = target;
-	}
-
-	private static int edgeSourceIndex(int e) {
-		return e * 2 + 0;
-	}
-
-	private static int edgeTargetIndex(int e) {
-		return e * 2 + 1;
+		endpoints[e] = IntPair.of(source, target);
 	}
 
 	int edgeSource(int edge) {
 		checkEdge(edge);
-		return endpoints[edgeSourceIndex(edge)];
+		return IntPair.first(endpoints[edge]);
 	}
 
 	int edgeTarget(int edge) {
 		checkEdge(edge);
-		return endpoints[edgeTargetIndex(edge)];
+		return IntPair.second(endpoints[edge]);
 	}
 
 	@Override
