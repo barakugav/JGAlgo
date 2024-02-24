@@ -27,7 +27,6 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
-import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -299,7 +298,6 @@ class ShortestPathSingleSourceUtils {
 		private boolean cardinalityWeight;
 
 		private String impl;
-		private ReferenceableHeap.Builder heapBuilder;
 
 		@Override
 		public ShortestPathSingleSource build() {
@@ -334,8 +332,6 @@ class ShortestPathSingleSourceUtils {
 				}
 			} else {
 				final ShortestPathSingleSourceDijkstra ssspDijkstra = new ShortestPathSingleSourceDijkstra();
-				if (heapBuilder != null)
-					ssspDijkstra.setHeapBuilder(heapBuilder);
 
 				if (intWeights && maxDistance < Integer.MAX_VALUE) {
 					return new ShortestPathSingleSourceBase() {
@@ -396,9 +392,6 @@ class ShortestPathSingleSourceUtils {
 			switch (key) {
 				case "impl":
 					impl = (String) value;
-					break;
-				case "heap-builder":
-					heapBuilder = (ReferenceableHeap.Builder) value;
 					break;
 				default:
 					ShortestPathSingleSource.Builder.super.setOption(key, value);

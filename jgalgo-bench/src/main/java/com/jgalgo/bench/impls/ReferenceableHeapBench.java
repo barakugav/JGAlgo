@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
@@ -34,7 +33,6 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -83,15 +81,20 @@ public class ReferenceableHeapBench {
 	}
 
 	private void benchHeap(ReferenceableHeap.Builder heapBuilder, Blackhole blackhole) {
+		@SuppressWarnings("unused")
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 
 		/* SSSP */
-		ShortestPathSingleSource.Builder ssspBuilder = ShortestPathSingleSource.builder();
-		ssspBuilder.setOption("heap-builder", heapBuilder);
-		ShortestPathSingleSource ssspAlgo = ssspBuilder.build();
-		ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) ssspAlgo
-				.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));
-		blackhole.consume(ssspRes);
+		/*
+		 * Dijkstra impl no longer uses a referenceable heap, rather an index heap. TODO: find another algorithm to
+		 * bench here.
+		 */
+		// ShortestPathSingleSource.Builder ssspBuilder = ShortestPathSingleSource.builder();
+		// ssspBuilder.setOption("heap-builder", heapBuilder);
+		// ShortestPathSingleSource ssspAlgo = ssspBuilder.build();
+		// ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) ssspAlgo
+		// .computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));
+		// blackhole.consume(ssspRes);
 
 		/*
 		 * Prim impl no longer uses a referenceable heap, rather an index heap. TODO: find another algorithm to bench
@@ -106,7 +109,7 @@ public class ReferenceableHeapBench {
 		// blackhole.consume(mst);
 	}
 
-	@Benchmark
+	// @Benchmark
 	public void Pairings(Blackhole blackhole) {
 		benchHeap((keyType, valueType, comparator) -> {
 			if (keyType == int.class && valueType == int.class)
@@ -115,7 +118,7 @@ public class ReferenceableHeapBench {
 		}, blackhole);
 	}
 
-	@Benchmark
+	// @Benchmark
 	public void Fibonacci(Blackhole blackhole) {
 		benchHeap((keyType, valueType, comparator) -> {
 			if (keyType == int.class && valueType == int.class)
@@ -124,7 +127,7 @@ public class ReferenceableHeapBench {
 		}, blackhole);
 	}
 
-	@Benchmark
+	// @Benchmark
 	public void Binomial(Blackhole blackhole) {
 		benchHeap((keyType, valueType, comparator) -> {
 			if (keyType == int.class && valueType == int.class)
@@ -133,7 +136,7 @@ public class ReferenceableHeapBench {
 		}, blackhole);
 	}
 
-	@Benchmark
+	// @Benchmark
 	public void RedBlackTree(Blackhole blackhole) {
 		benchHeap((keyType, valueType, comparator) -> {
 			if (keyType == int.class && valueType == int.class)
@@ -142,7 +145,7 @@ public class ReferenceableHeapBench {
 		}, blackhole);
 	}
 
-	@Benchmark
+	// @Benchmark
 	public void SplayTree(Blackhole blackhole) {
 		benchHeap((keyType, valueType, comparator) -> {
 			if (keyType == int.class && valueType == int.class)
@@ -151,6 +154,7 @@ public class ReferenceableHeapBench {
 		}, blackhole);
 	}
 
+	@SuppressWarnings("unused")
 	private static class GraphArgs {
 		final IntGraph g;
 		final IWeightFunctionInt w;

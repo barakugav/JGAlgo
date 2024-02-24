@@ -16,15 +16,10 @@
 
 package com.jgalgo.alg;
 
-import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.DoubleIntReferenceableHeap;
-import com.jgalgo.internal.ds.IntIntReferenceableHeap;
-import com.jgalgo.internal.ds.ReferenceableHeap;
+import com.jgalgo.internal.ds.IndexHeapDouble;
 import com.jgalgo.internal.util.Assertions;
 
 /**
@@ -49,21 +44,10 @@ import com.jgalgo.internal.util.Assertions;
  */
 class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSourceBase {
 
-	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
-
 	/**
 	 * Construct a new SSSP algorithm.
 	 */
 	ShortestPathSingleSourceDijkstra() {}
-
-	/**
-	 * Set the implementation of the heap used by this algorithm.
-	 *
-	 * @param heapBuilder a builder for heaps used by this algorithm
-	 */
-	void setHeapBuilder(ReferenceableHeap.Builder heapBuilder) {
-		this.heapBuilder = Objects.requireNonNull(heapBuilder);
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -73,84 +57,33 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSourceBase {
 	@Override
 	public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		w = IWeightFunction.replaceNullWeightFunc(w);
-		if (WeightFunction.isInteger(w)) {
-			return computeSsspInts(g, (IWeightFunctionInt) w, source);
-		} else {
-			return computeSsspDoubles(g, w, source);
-		}
-	}
-
-	private ShortestPathSingleSource.IResult computeSsspDoubles(IndexGraph g, IWeightFunction w, int source) {
-		final int n = g.vertices().size();
-		DoubleIntReferenceableHeap heap = (DoubleIntReferenceableHeap) heapBuilder.build(double.class, int.class);
-		DoubleIntReferenceableHeap.Ref[] verticesPtrs = new DoubleIntReferenceableHeap.Ref[n];
-
 		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);
 		res.distances[source] = 0;
+		IndexHeapDouble heap = IndexHeapDouble.newInstance(res.distances);
 
 		for (int u = source;;) {
-			final double uDistance = res.distances[u];
+			final double uDistance = heap.key(u);
 			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.targetInt();
-				if (res.distances[v] != Double.POSITIVE_INFINITY)
+				if (heap.key(v) != Double.POSITIVE_INFINITY)
 					continue;
 				double ew = w.weight(e);
 				Assertions.onlyPositiveWeight(ew);
 				double distance = uDistance + ew;
 
-				DoubleIntReferenceableHeap.Ref vPtr = verticesPtrs[v];
-				if (vPtr == null) {
-					verticesPtrs[v] = heap.insert(distance, v);
+				if (!heap.isInserted(v)) {
+					heap.insert(v, distance);
 					res.backtrack[v] = e;
-				} else if (distance < vPtr.key()) {
-					heap.decreaseKey(vPtr, distance);
-					res.backtrack[v] = e;
-				}
-			}
-
-			if (heap.isEmpty())
-				break;
-			DoubleIntReferenceableHeap.Ref next = heap.extractMin();
-			res.distances[u = next.value()] = next.key();
-		}
-
-		return res;
-	}
-
-	private ShortestPathSingleSource.IResult computeSsspInts(IndexGraph g, IWeightFunctionInt w, int source) {
-		final int n = g.vertices().size();
-		IntIntReferenceableHeap heap = (IntIntReferenceableHeap) heapBuilder.build(int.class, int.class);
-		IntIntReferenceableHeap.Ref[] verticesPtrs = new IntIntReferenceableHeap.Ref[n];
-
-		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);
-		res.distances[source] = 0;
-
-		for (int u = source;;) {
-			final int uDistance = (int) res.distances[u];
-			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-				int e = eit.nextInt();
-				int v = eit.targetInt();
-				if (res.distances[v] != Double.POSITIVE_INFINITY)
-					continue;
-				int ew = w.weightInt(e);
-				Assertions.onlyPositiveWeight(ew);
-				int distance = uDistance + ew;
-
-				IntIntReferenceableHeap.Ref vPtr = verticesPtrs[v];
-				if (vPtr == null) {
-					verticesPtrs[v] = heap.insert(distance, v);
-					res.backtrack[v] = e;
-				} else if (distance < vPtr.key()) {
-					heap.decreaseKey(vPtr, distance);
+				} else if (distance < heap.key(v)) {
+					heap.decreaseKey(v, distance);
 					res.backtrack[v] = e;
 				}
 			}
 
 			if (heap.isEmpty())
 				break;
-			IntIntReferenceableHeap.Ref next = heap.extractMin();
-			res.distances[u = next.value()] = next.key();
+			u = heap.extractMin();
 		}
 
 		return res;
