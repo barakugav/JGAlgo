@@ -64,8 +64,8 @@ public class SSSPPositiveWeightsBench {
 	@State(Scope.Benchmark)
 	public static class Gnp extends SSSPPositiveWeightsBench {
 
-		@Param({ "|V|=64 MaxWeight=64", "|V|=512 MaxWeight=50", "|V|=512 MaxWeight=600", "|V|=4096 MaxWeight=200",
-				"|V|=4096 MaxWeight=6000" })
+		@Param({ "|V|=64 MaxWeight=64", "|V|=512 MaxWeight=50", "|V|=512 MaxWeight=600", "|V|=1600 MaxWeight=200",
+				"|V|=1600 MaxWeight=6000" })
 		public String args;
 
 		@Setup(Level.Trial)
