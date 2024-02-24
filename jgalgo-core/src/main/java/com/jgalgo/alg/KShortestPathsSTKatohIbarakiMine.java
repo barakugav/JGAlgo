@@ -53,6 +53,8 @@ import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
  */
 class KShortestPathsSTKatohIbarakiMine extends KShortestPathsSTPathsTreeBased {
 
+	private int fastReplacementThreshold = 50;
+
 	@Override
 	public List<IPath> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
 		Assertions.onlyUndirected(g);
@@ -62,10 +64,27 @@ class KShortestPathsSTKatohIbarakiMine extends KShortestPathsSTPathsTreeBased {
 	@Override
 	KShortestPathsSTPathsTreeBased.ShortestPathSubroutine newShortestPathSubroutine(IndexGraph g, IWeightFunction w,
 			int target, Bitmap edgesMask) {
-		return ShortestPathSubroutine.newInstance(g, w, target, edgesMask);
+		final int n = g.vertices().size();
+		double[] sDistances = new double[n];
+		double[] tDistances = new double[n];
+		return new ShortestPathSubroutine(g, w, target, edgesMask, sDistances, tDistances);
 	}
 
-	private static class ShortestPathSubroutine extends KShortestPathsSTPathsTreeBased.ShortestPathSubroutine {
+	/**
+	 * Set the threshold for the fast replacement algorithm.
+	 *
+	 * <p>
+	 * If the path, for each a replacement path is computed, is shorter than the threshold, the algorithm falls back to
+	 * Yen's algorithm, as the fast replacement algorithm is more complex and it's theoretical advantage is relevant
+	 * when a large number of S-Y computation are required in Yen's algorithm.
+	 *
+	 * @param threshold if the path is shorter than this threshold, the fast replacement algorithm is not used
+	 */
+	void setFastReplacementThreshold(int threshold) {
+		fastReplacementThreshold = threshold;
+	}
+
+	private class ShortestPathSubroutine extends KShortestPathsSTPathsTreeBased.ShortestPathSubroutine {
 
 		private final IndexHeap heap;
 		private final double[] sDistances;
@@ -73,13 +92,6 @@ class KShortestPathsSTKatohIbarakiMine extends KShortestPathsSTPathsTreeBased {
 		private final int[] sXi;
 		private final int[] tXi;
 		private final Bitmap visited;
-
-		static ShortestPathSubroutine newInstance(IndexGraph g, IWeightFunction w, int target, Bitmap edgesMask) {
-			final int n = g.vertices().size();
-			double[] sDistances = new double[n];
-			double[] tDistances = new double[n];
-			return new ShortestPathSubroutine(g, w, target, edgesMask, sDistances, tDistances);
-		}
 
 		ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target, Bitmap edgesMask, double[] sDistances,
 				double[] tDistances) {
@@ -184,6 +196,9 @@ class KShortestPathsSTKatohIbarakiMine extends KShortestPathsSTPathsTreeBased {
 		@Override
 		FastReplacementAlgoResult computeBestDeviationPath(int source, IntList prevSp,
 				int /* alpha */ maxDeviationPoint) {
+			if (maxDeviationPoint < fastReplacementThreshold)
+				return FastReplacementAlgoResult.ofFailure();
+
 			computeShortestPathTrees(source, prevSp);
 
 			double bestWeight = Double.POSITIVE_INFINITY;

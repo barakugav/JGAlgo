@@ -43,7 +43,6 @@ class KShortestPathsSTTestUtils extends TestBase {
 
 	static void randGraphs(KShortestPathsST algo, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(2, 1, 200).repeat(10);
 		tester.addPhase().withArgs(3, 3, 200).repeat(64);
@@ -54,17 +53,20 @@ class KShortestPathsSTTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 256, 13).repeat(64);
 		tester.addPhase().withArgs(512, 4096, 21).repeat(8);
 		tester.addPhase().withArgs(4096, 16384, 23).repeat(1);
-		tester.run((n, m, k) -> {
-			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
-			g = maybeIndexGraph(g, rand);
-			WeightFunctionInt<Integer> w = null;
-			if (rand.nextInt(10) != 0)
-				w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			Integer source = Graphs.randVertex(g, rand);
-			Integer target = Graphs.randVertex(g, rand);
+		tester.run((n, m, k) -> randGraph(algo, directed, n, m, k, seedGen.nextSeed()));
+	}
 
-			validateKShortestPath(g, w, source, target, k, algo);
-		});
+	static void randGraph(KShortestPathsST algo, boolean directed, int n, int m, int k, long seed) {
+		Random rand = new Random(seed);
+		Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, rand.nextLong());
+		g = maybeIndexGraph(g, rand);
+		WeightFunctionInt<Integer> w = null;
+		if (rand.nextInt(10) != 0)
+			w = GraphsTestUtils.assignRandWeightsIntPos(g, rand.nextLong());
+		Integer source = Graphs.randVertex(g, rand);
+		Integer target = Graphs.randVertex(g, rand);
+
+		validateKShortestPath(g, w, source, target, k, algo);
 	}
 
 	private static <V, E> void validateKShortestPath(Graph<V, E> g, WeightFunctionInt<E> w, V source, V target, int k,

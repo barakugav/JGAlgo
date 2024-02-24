@@ -82,6 +82,8 @@ public interface KShortestPathsST {
 	static KShortestPathsST.Builder builder() {
 		return new KShortestPathsST.Builder() {
 			String impl;
+			int fastReplacementThreshold = Integer.MAX_VALUE;
+			boolean fastReplacementThresholdValid = false;
 
 			@Override
 			public KShortestPathsST build() {
@@ -89,10 +91,19 @@ public interface KShortestPathsST {
 					switch (impl) {
 						case "yen":
 							return new KShortestPathsSTYen();
-						case "katoh-ibaraki-mine":
-							return new KShortestPathsSTKatohIbarakiMine();
-						case "hershberger-maxel-suri":
-							return new KShortestPathsSTHershbergerMaxelSuri();
+
+						case "katoh-ibaraki-mine": {
+							KShortestPathsSTKatohIbarakiMine algo = new KShortestPathsSTKatohIbarakiMine();
+							if (fastReplacementThresholdValid)
+								algo.setFastReplacementThreshold(fastReplacementThreshold);
+							return algo;
+						}
+						case "hershberger-maxel-suri": {
+							KShortestPathsSTHershbergerMaxelSuri algo = new KShortestPathsSTHershbergerMaxelSuri();
+							if (fastReplacementThresholdValid)
+								algo.setFastReplacementThreshold(fastReplacementThreshold);
+							return algo;
+						}
 						default:
 							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 					}
@@ -126,6 +137,10 @@ public interface KShortestPathsST {
 				switch (key) {
 					case "impl":
 						impl = (String) value;
+						break;
+					case "fast-replacement-threshold":
+						fastReplacementThreshold = ((Integer) value).intValue();
+						fastReplacementThresholdValid = true;
 						break;
 					default:
 						KShortestPathsST.Builder.super.setOption(key, value);

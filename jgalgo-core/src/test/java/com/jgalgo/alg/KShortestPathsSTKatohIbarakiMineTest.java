@@ -28,9 +28,18 @@ import com.jgalgo.internal.util.TestBase;
 public class KShortestPathsSTKatohIbarakiMineTest extends TestBase {
 
 	@Test
-	public void randGraphUndirected() {
-		final long seed = 0x3b8b75d281206314L;
-		KShortestPathsSTTestUtils.randGraphs(new KShortestPathsSTKatohIbarakiMine(), false, seed);
+	public void randGraphs() {
+		KShortestPathsST.Builder builder = KShortestPathsST.builder();
+		builder.setOption("impl", "katoh-ibaraki-mine");
+		builder.setOption("fast-replacement-threshold", Integer.valueOf(5));
+		KShortestPathsSTTestUtils.randGraphs(builder.build(), false, 0x3b8b75d281206314L);
+	}
+
+	@Test
+	public void randGraphWithDefaultFastReplacementAlgoThreshold() {
+		KShortestPathsST.Builder builder = KShortestPathsST.builder();
+		builder.setOption("impl", "katoh-ibaraki-mine");
+		KShortestPathsSTTestUtils.randGraph(builder.build(), false, 1000, 3000, 10, 0xc9c5279d5fd2e4acL);
 	}
 
 	@Test

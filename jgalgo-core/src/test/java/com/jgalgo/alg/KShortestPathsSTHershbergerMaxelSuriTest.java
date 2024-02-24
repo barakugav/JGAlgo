@@ -18,9 +18,7 @@ package com.jgalgo.alg;
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Fastutil;
@@ -29,9 +27,18 @@ import com.jgalgo.internal.util.TestBase;
 public class KShortestPathsSTHershbergerMaxelSuriTest extends TestBase {
 
 	@Test
-	public void randGraphDirected() {
-		final long seed = 0x81541a81321bcabcL;
-		KShortestPathsSTTestUtils.randGraphs(new KShortestPathsSTHershbergerMaxelSuri(), true, seed);
+	public void randGraphs() {
+		KShortestPathsST.Builder builder = KShortestPathsST.builder();
+		builder.setOption("impl", "hershberger-maxel-suri");
+		builder.setOption("fast-replacement-threshold", Integer.valueOf(5));
+		KShortestPathsSTTestUtils.randGraphs(builder.build(), true, 0x81541a81321bcabcL);
+	}
+
+	@Test
+	public void randGraphWithDefaultFastReplacementAlgoThreshold() {
+		KShortestPathsST.Builder builder = KShortestPathsST.builder();
+		builder.setOption("impl", "hershberger-maxel-suri");
+		KShortestPathsSTTestUtils.randGraph(builder.build(), true, 1000, 3000, 10, 0x337126dc7194280bL);
 	}
 
 	@SuppressWarnings("boxing")
