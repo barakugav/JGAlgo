@@ -70,5 +70,16 @@ public interface IndexHeapDouble extends IndexHeapBase {
 <span class="fc" id="L70">		return new IndexPairingHeapDouble(size);</span>
 	}
 
+	/**
+	 * Creates a new instance of {@link IndexHeapDouble} that uses the given array to store keys.
+	 *
+	 * @param  keys an array of keys that should be used by the new heap
+	 * @return      a new heap that uses the given array to store keys. The size of the heap is the length of the keys
+	 *              array
+	 */
+	static IndexHeapDouble newInstance(double[] keys) {
+<span class="fc" id="L81">		return new IndexPairingHeapDouble(keys);</span>
+	}
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
