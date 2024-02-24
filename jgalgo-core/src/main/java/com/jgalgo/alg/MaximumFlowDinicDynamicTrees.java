@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see    MaximumFlowDinic
  * @author Barak Ugav
  */
-class MaximumFlowDinicDynamicTrees extends MaximumFlows.WithResidualGraph {
+class MaximumFlowDinicDynamicTrees extends MaximumFlows.AbstractImplWithResidualGraph {
 
 	private final DebugPrinter debug = new DebugPrinter(false);
 
@@ -56,17 +56,16 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlows.WithResidualGraph {
 	MaximumFlowDinicDynamicTrees() {}
 
 	@Override
-	public IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
+	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
 		return new Worker(g, capacity, source, sink).computeMaximumFlow();
 	}
 
 	@Override
-	public IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, IntCollection sources,
-			IntCollection sinks) {
+	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, IntCollection sources, IntCollection sinks) {
 		return new Worker(g, capacity, sources, sinks).computeMaximumFlow();
 	}
 
-	private class Worker extends MaximumFlows.WithResidualGraph.Worker {
+	private class Worker extends MaximumFlows.AbstractImplWithResidualGraph.Worker {
 
 		final double[] capacity;
 		final double[] flow;

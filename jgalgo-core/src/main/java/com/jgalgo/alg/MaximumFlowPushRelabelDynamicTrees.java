@@ -58,7 +58,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see    MaximumFlowPushRelabelFifo
  * @author Barak Ugav
  */
-class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph {
+class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.AbstractImplWithResidualGraph {
 
 	/**
 	 * Create a new maximum flow algorithm object.
@@ -66,7 +66,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 	MaximumFlowPushRelabelDynamicTrees() {}
 
 	@Override
-	public IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
+	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
 		if (WeightFunction.isInteger(capacity)) {
 			return new WorkerInt(g, (IWeightFunctionInt) capacity, source, sink).computeMaxFlow();
 		} else {
@@ -75,12 +75,11 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 	}
 
 	@Override
-	public IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, IntCollection sources,
-			IntCollection sinks) {
+	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, IntCollection sources, IntCollection sinks) {
 		throw new UnsupportedOperationException("multi source/sink not supported");
 	}
 
-	private abstract static class AbstractWorker extends MaximumFlows.WithResidualGraph.Worker {
+	private abstract static class AbstractWorker extends MaximumFlows.AbstractImplWithResidualGraph.Worker {
 
 		final DynamicTree dt;
 		final DynamicTreeExtension.TreeSize dtTreeSize;

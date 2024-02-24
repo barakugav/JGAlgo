@@ -69,7 +69,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
+class MaximumFlowPushRelabel extends MaximumFlows.AbstractImplWithoutResidualGraph {
 
 	private static enum ActiveOrderPolicy {
 		FIFO, HighestFirst, LowestFirst, MoveToFront;
@@ -118,7 +118,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
+	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
 		if (WeightFunction.isInteger(capacity)) {
 			return new WorkerInt(g, (IWeightFunctionInt) capacity, source, sink, activeOrderPolicy, dischargePolicy)
 					.computeMaxFlow();
@@ -137,7 +137,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 		}
 	}
 
-	abstract static class Worker extends MaximumFlows.WithoutResidualGraph.Worker {
+	abstract static class Worker extends MaximumFlows.AbstractImplWithoutResidualGraph.Worker {
 
 		final int[] label;
 		final IEdgeIter[] outEdgeIters;
