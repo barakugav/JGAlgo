@@ -24,9 +24,12 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -35,6 +38,45 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 class ShortestPathSingleSourceUtils {
 
 	private ShortestPathSingleSourceUtils() {}
+
+	abstract static class AbstractImpl implements ShortestPathSingleSource {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <V, E> ShortestPathSingleSource.Result<V, E> computeShortestPaths(Graph<V, E> g, WeightFunction<E> w,
+				V source) {
+			if (g instanceof IndexGraph) {
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				int source0 = ((Integer) source).intValue();
+				return (ShortestPathSingleSource.Result<V, E>) computeShortestPaths((IndexGraph) g, w0, source0);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+				int iSource = viMap.idToIndex(source);
+				ShortestPathSingleSource.IResult indexResult = NegativeCycleException
+						.runAndConvertException(g, () -> computeShortestPaths(iGraph, iw, iSource));
+				return resultFromIndexResult(g, indexResult);
+			}
+		}
+
+		abstract ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source);
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> ShortestPathSingleSource.Result<V, E> resultFromIndexResult(Graph<V, E> g,
+			ShortestPathSingleSource.IResult indexResult) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (ShortestPathSingleSource.Result<V, E>) new ShortestPathSingleSourceUtils.IntResultFromIndexResult(
+					(IntGraph) g, indexResult);
+		} else {
+			return new ShortestPathSingleSourceUtils.ObjResultFromIndexResult<>(g, indexResult);
+		}
+	}
 
 	static class IndexResult implements ShortestPathSingleSource.IResult {
 
@@ -334,7 +376,7 @@ class ShortestPathSingleSourceUtils {
 				final ShortestPathSingleSourceDijkstra ssspDijkstra = new ShortestPathSingleSourceDijkstra();
 
 				if (intWeights && maxDistance < Integer.MAX_VALUE) {
-					return new ShortestPathSingleSourceBase() {
+					return new AbstractImpl() {
 						private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();
 						private final int maxDistance = (int) BuilderImpl.this.maxDistance;
 
@@ -350,7 +392,6 @@ class ShortestPathSingleSourceUtils {
 								return ssspDijkstra.computeShortestPaths(g, w, source);
 							}
 						}
-
 					};
 				}
 				return ssspDijkstra;

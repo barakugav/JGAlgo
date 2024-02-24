@@ -54,7 +54,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase {
+class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.AbstractImpl {
 
 	private ShortestPathSingleSource positiveSsspAlgo = ShortestPathSingleSource.newInstance();
 	private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();
@@ -88,7 +88,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase {
 	 *                                      {@link IWeightFunctionInt}
 	 */
 	@Override
-	public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.onlyDirected(g);
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		w = IWeightFunction.replaceNullWeightFunc(w);

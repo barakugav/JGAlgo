@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * @see    TopologicalOrderAlgo
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceDag implements ShortestPathSingleSourceBase {
+class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.AbstractImpl {
 
 	private final TopologicalOrderAlgo topoAlg = TopologicalOrderAlgo.newInstance();
 
@@ -49,7 +49,7 @@ class ShortestPathSingleSourceDag implements ShortestPathSingleSourceBase {
 	 * @throws IllegalArgumentException if graph is not directed or contains cycles
 	 */
 	@Override
-	public ShortestPathSingleSourceDag.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	ShortestPathSingleSourceDag.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.onlyDirected(g);
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		return WeightFunction.isInteger(w) ? computeSsspInt(g, (IWeightFunctionInt) w, source)

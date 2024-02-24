@@ -42,7 +42,7 @@ import com.jgalgo.internal.util.Assertions;
  * @see    <a href= "https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSourceBase {
+class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.AbstractImpl {
 
 	/**
 	 * Construct a new SSSP algorithm.
@@ -55,7 +55,7 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSourceBase {
 	 * @throws IllegalArgumentException if one of the edge weights is negative
 	 */
 	@Override
-	public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);
 		res.distances[source] = 0;
