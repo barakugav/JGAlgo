@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
+class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.AbstractImpl {
 
 	/**
 	 * Create a new APSP algorithm object.
@@ -42,14 +42,14 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
 	ShortestPathAllPairsFloydWarshall() {}
 
 	@Override
-	public ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
+	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		return g.isDirected() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);
 	}
 
 	@Override
-	public ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w) {
 		return computeAllShortestPaths(g, w);
 	}

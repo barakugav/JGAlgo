@@ -18,14 +18,20 @@ package com.jgalgo.alg;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import com.jgalgo.alg.ShortestPathSingleSource.IResult;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.BigArrays;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -34,6 +40,54 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class ShortestPathAllPairsUtils {
 
 	private ShortestPathAllPairsUtils() {}
+
+	abstract static class AbstractImpl implements ShortestPathAllPairs {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <V, E> ShortestPathAllPairs.Result<V, E> computeAllShortestPaths(Graph<V, E> g, WeightFunction<E> w) {
+			if (g instanceof IndexGraph) {
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				return (ShortestPathAllPairs.Result<V, E>) computeAllShortestPaths((IndexGraph) g, w0);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+				ShortestPathAllPairs.IResult indexResult =
+						NegativeCycleException.runAndConvertException(g, () -> computeAllShortestPaths(iGraph, iw));
+				return resultFromIndexResult(g, indexResult);
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <V, E> ShortestPathAllPairs.Result<V, E> computeSubsetShortestPaths(Graph<V, E> g,
+				Collection<V> verticesSubset, WeightFunction<E> w) {
+			if (g instanceof IndexGraph) {
+				IntCollection verticesSubset0 = IntAdapters.asIntCollection((Collection<Integer>) verticesSubset);
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				return (ShortestPathAllPairs.Result<V, E>) computeSubsetShortestPaths((IndexGraph) g, verticesSubset0,
+						w0);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IntCollection iVerticesSubset = IndexIdMaps.idToIndexCollection(verticesSubset, viMap);
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+				ShortestPathAllPairs.IResult indexResult = NegativeCycleException
+						.runAndConvertException(g, () -> computeSubsetShortestPaths(iGraph, iVerticesSubset, iw));
+				return resultFromIndexResult(g, indexResult);
+			}
+		}
+
+		abstract ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w);
+
+		abstract ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+				IWeightFunction w);
+
+	}
 
 	static int[] vToResIdx(IndexGraph g, IntCollection verticesSubset) {
 		int[] vToResIdx = new int[g.vertices().size()];
@@ -239,7 +293,7 @@ class ShortestPathAllPairsUtils {
 
 	}
 
-	static class ObjResultFromIndexResult<V, E> implements ShortestPathAllPairs.Result<V, E> {
+	private static class ObjResultFromIndexResult<V, E> implements ShortestPathAllPairs.Result<V, E> {
 
 		private final ShortestPathAllPairs.IResult indexRes;
 		private final Graph<V, E> g;
@@ -263,7 +317,7 @@ class ShortestPathAllPairsUtils {
 		}
 	}
 
-	static class IntResultFromIndexResult implements ShortestPathAllPairs.IResult {
+	private static class IntResultFromIndexResult implements ShortestPathAllPairs.IResult {
 
 		private final ShortestPathAllPairs.IResult indexRes;
 		private final IntGraph g;
@@ -284,6 +338,17 @@ class ShortestPathAllPairsUtils {
 		public IPath getPath(int source, int target) {
 			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));
 			return (IPath) Paths.pathFromIndexPath(g, indexPath);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> ShortestPathAllPairs.Result<V, E> resultFromIndexResult(Graph<V, E> g,
+			ShortestPathAllPairs.IResult indexResult) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (ShortestPathAllPairs.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexResult);
 		}
 	}
 

@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see    ShortestPathSingleSourceCardinality
  * @author Barak Ugav
  */
-class ShortestPathAllPairsCardinality implements ShortestPathAllPairsBase {
+class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.AbstractImpl {
 
 	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
@@ -52,13 +52,13 @@ class ShortestPathAllPairsCardinality implements ShortestPathAllPairsBase {
 	ShortestPathAllPairsCardinality() {}
 
 	@Override
-	public ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
+	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyCardinality(w);
 		return computeSubsetCardinalityShortestPaths(g, g.vertices(), true);
 	}
 
 	@Override
-	public ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w) {
 		Assertions.onlyCardinality(w);
 		return computeSubsetCardinalityShortestPaths(g, verticesSubset, false);
