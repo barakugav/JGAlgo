@@ -48,7 +48,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    <a href= "https://en.wikipedia.org/wiki/Kruskal%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MinimumSpanningTreeKruskal implements MinimumSpanningTreeBase {
+class MinimumSpanningTreeKruskal extends MinimumSpanningTrees.AbstractUndirected {
 
 	private UnionFind.Builder unionFindBuilder = UnionFind.builder();
 	private boolean parallelEnable = JGAlgoConfigImpl.ParallelByDefault;
@@ -74,7 +74,7 @@ class MinimumSpanningTreeKruskal implements MinimumSpanningTreeBase {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();

@@ -49,7 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    <a href="https://en.wikipedia.org/wiki/Prim%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MinimumSpanningTreePrim implements MinimumSpanningTreeBase {
+class MinimumSpanningTreePrim extends MinimumSpanningTrees.AbstractUndirected {
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -62,7 +62,7 @@ class MinimumSpanningTreePrim implements MinimumSpanningTreeBase {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 		int n = g.vertices().size();
 		if (n == 0)
@@ -121,8 +121,6 @@ class MinimumSpanningTreePrim implements MinimumSpanningTreeBase {
 		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
 		return new MinimumSpanningTrees.IndexResult(mstSet);
 	}
-
-
 
 	private static MinimumSpanningTree.IResult computeMSTInt(IndexGraph g, IWeightFunctionInt w) {
 		final int n = g.vertices().size();

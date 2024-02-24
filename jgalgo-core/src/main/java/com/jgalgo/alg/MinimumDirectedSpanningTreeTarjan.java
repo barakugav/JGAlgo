@@ -45,7 +45,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  *
  * @author Barak Ugav
  */
-class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTreeBase {
+class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTrees.AbstractDirected {
 
 	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();
@@ -65,7 +65,7 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTreeBa
 	}
 
 	@Override
-	public MinimumSpanningTree.IResult computeMinimumDirectedSpanningTree(IndexGraph g, IWeightFunction w, int root) {
+	MinimumSpanningTree.IResult computeMinimumDirectedSpanningTree(IndexGraph g, IWeightFunction w, int root) {
 		Assertions.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return MinimumSpanningTrees.IndexResult.Empty;

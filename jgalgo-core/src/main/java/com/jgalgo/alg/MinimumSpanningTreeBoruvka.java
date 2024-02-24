@@ -47,7 +47,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    <a href= "https://en.wikipedia.org/wiki/Bor%C5%AFvka%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MinimumSpanningTreeBoruvka implements MinimumSpanningTreeBase {
+class MinimumSpanningTreeBoruvka extends MinimumSpanningTrees.AbstractUndirected {
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -60,7 +60,7 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTreeBase {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		return new MinimumSpanningTrees.IndexResult(computeMST(g, w, Integer.MAX_VALUE).mst);
 	}
 

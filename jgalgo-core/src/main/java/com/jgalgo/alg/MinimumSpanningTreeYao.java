@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class MinimumSpanningTreeYao implements MinimumSpanningTreeBase {
+class MinimumSpanningTreeYao extends MinimumSpanningTrees.AbstractUndirected {
 
 	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;
 
@@ -56,7 +56,7 @@ class MinimumSpanningTreeYao implements MinimumSpanningTreeBase {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 		int n = g.vertices().size();
 
