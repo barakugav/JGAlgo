@@ -49,8 +49,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 	private static final int alpha = 16;
 
 	@Override
-	public IFlow computeMinCostFlow(IndexGraph g, IWeightFunction capacity, IWeightFunction cost,
-			IWeightFunction supply) {
+	IFlow computeMinCostFlow(IndexGraph g, IWeightFunction capacity, IWeightFunction cost, IWeightFunction supply) {
 		if (!(WeightFunction.isInteger(capacity) && WeightFunction.isInteger(supply)))
 			throw new IllegalArgumentException("only integer capacities and flows are supported");
 		if (!WeightFunction.isInteger(cost))
