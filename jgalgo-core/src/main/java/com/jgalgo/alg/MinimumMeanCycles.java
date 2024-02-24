@@ -23,24 +23,29 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 
-interface MinimumMeanCycleBase extends MinimumMeanCycle {
+class MinimumMeanCycles {
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default <V, E> Path<V, E> computeMinimumMeanCycle(Graph<V, E> g, WeightFunction<E> w) {
-		if (g instanceof IndexGraph) {
-			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-			return (Path<V, E>) computeMinimumMeanCycle((IndexGraph) g, w0);
+	private MinimumMeanCycles() {}
 
-		} else {
-			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-			IPath indexPath = computeMinimumMeanCycle(iGraph, iw);
-			return Paths.pathFromIndexPath(g, indexPath);
+	abstract static class AbstractImpl implements MinimumMeanCycle {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <V, E> Path<V, E> computeMinimumMeanCycle(Graph<V, E> g, WeightFunction<E> w) {
+			if (g instanceof IndexGraph) {
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				return (Path<V, E>) computeMinimumMeanCycle((IndexGraph) g, w0);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+				IPath indexPath = computeMinimumMeanCycle(iGraph, iw);
+				return Paths.pathFromIndexPath(g, indexPath);
+			}
 		}
-	}
 
-	IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w);
+		abstract IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w);
+	}
 
 }
