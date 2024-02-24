@@ -28,11 +28,10 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 
-class ShortestPathSTBidirectionalDijkstra implements ShortestPathSTBase {
+class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 
 	@Override
-	public ObjectDoublePair<IPath> computeShortestPathAndWeight(IndexGraph g, IWeightFunction w, int source,
-			int target) {
+	ObjectDoublePair<IPath> computeShortestPathAndWeight(IndexGraph g, IWeightFunction w, int source, int target) {
 		if (!g.vertices().contains(source))
 			throw NoSuchVertexException.ofIndex(source);
 		if (!g.vertices().contains(target))
