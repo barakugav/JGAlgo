@@ -34,7 +34,6 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
@@ -94,13 +93,17 @@ public class ReferenceableHeapBench {
 				.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));
 		blackhole.consume(ssspRes);
 
-		/* Prim MST */
-		MinimumSpanningTree.Builder mstBuilder = MinimumSpanningTree.builder();
-		mstBuilder.setOption("heap-builder", heapBuilder);
-		MinimumSpanningTree mstAlgo = mstBuilder.build();
-		MinimumSpanningTree.IResult mst =
-				(MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(args.g, args.w);
-		blackhole.consume(mst);
+		/*
+		 * Prim impl no longer uses a referenceable heap, rather an index heap. TODO: find another algorithm to bench
+		 * here.
+		 */
+		// /* Prim MST */
+		// MinimumSpanningTree.Builder mstBuilder = MinimumSpanningTree.builder();
+		// mstBuilder.setOption("heap-builder", heapBuilder);
+		// MinimumSpanningTree mstAlgo = mstBuilder.build();
+		// MinimumSpanningTree.IResult mst =
+		// (MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(args.g, args.w);
+		// blackhole.consume(mst);
 	}
 
 	@Benchmark

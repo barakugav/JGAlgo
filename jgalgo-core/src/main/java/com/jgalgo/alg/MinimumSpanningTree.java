@@ -27,7 +27,6 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -275,7 +274,6 @@ public interface MinimumSpanningTree {
 	static MinimumSpanningTree.Builder builder() {
 		return new MinimumSpanningTree.Builder() {
 			String impl;
-			private ReferenceableHeap.Builder heapBuilder;
 
 			@Override
 			public MinimumSpanningTree build() {
@@ -299,10 +297,7 @@ public interface MinimumSpanningTree {
 				}
 
 				// TODO check for which graphs sizes Kruskal is faster
-				MinimumSpanningTreePrim algo = new MinimumSpanningTreePrim();
-				if (heapBuilder != null)
-					algo.setHeapBuilder(heapBuilder);
-				return algo;
+				return new MinimumSpanningTreePrim();
 			}
 
 			@Override
@@ -310,9 +305,6 @@ public interface MinimumSpanningTree {
 				switch (key) {
 					case "impl":
 						impl = (String) value;
-						break;
-					case "heap-builder":
-						heapBuilder = (ReferenceableHeap.Builder) value;
 						break;
 					default:
 						MinimumSpanningTree.Builder.super.setOption(key, value);
