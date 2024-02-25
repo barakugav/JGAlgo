@@ -20,7 +20,7 @@ import com.jgalgo.internal.util.Assertions;
 
 class GraphCsrUndirected extends GraphCsrAbstractUnindexed {
 
-	GraphCsrUndirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesUndirected processEdges, boolean fastLookup) {
+	GraphCsrUndirected(IndexGraphBuilderImpl builder, ProcessedEdgesUndirected processEdges, boolean fastLookup) {
 		super(false, builder, processEdges, fastLookup);
 		assert !builder.isDirected();
 	}

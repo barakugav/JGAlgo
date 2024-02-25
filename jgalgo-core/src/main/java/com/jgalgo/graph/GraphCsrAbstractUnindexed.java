@@ -32,7 +32,7 @@ abstract class GraphCsrAbstractUnindexed extends GraphCsrBase {
 	private final Int2IntMap[] edgesLookupTable;
 	private final int[] edgesLookupNext;
 
-	GraphCsrAbstractUnindexed(boolean directed, IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges,
+	GraphCsrAbstractUnindexed(boolean directed, IndexGraphBuilderImpl builder, ProcessedEdges processEdges,
 			boolean fastLookup) {
 		super(directed, Variant2.ofB(builder), processEdges, Optional.empty(), true, true);
 		edgesOut = processEdges.edgesOut;

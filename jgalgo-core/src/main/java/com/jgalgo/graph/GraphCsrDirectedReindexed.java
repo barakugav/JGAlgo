@@ -34,7 +34,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 	private final Int2IntMap[] edgesLookupTable;
 
 	private GraphCsrDirectedReindexed(Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
-			BuilderProcessEdgesDirected processEdges, Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing,
+			ProcessedEdgesDirected processEdges, Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights, boolean fastLookup) {
 		super(true, graphOrBuilder, processEdges, edgesReIndexing, copyVerticesWeights, copyEdgesWeights);
 		final int n = verticesNum(graphOrBuilder);
@@ -155,8 +155,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 	private static IndexGraphBuilder.ReIndexedGraph newInstance(
 			Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, boolean copyVerticesWeights,
 			boolean copyEdgesWeights, boolean fastLookup) {
-		GraphCsrBase.BuilderProcessEdgesDirected processEdges =
-				GraphCsrBase.BuilderProcessEdgesDirected.valueOf(graphOrBuilder);
+		GraphCsrBase.ProcessedEdgesDirected processEdges = GraphCsrBase.ProcessedEdgesDirected.valueOf(graphOrBuilder);
 
 		Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing = Optional.empty();
 		if (!graphOrBuilder.contains(IndexGraph.class)

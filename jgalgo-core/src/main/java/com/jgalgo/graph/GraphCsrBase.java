@@ -52,7 +52,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	}
 
 	GraphCsrBase(boolean directed, Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
-			BuilderProcessEdges processEdges, Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing,
+			ProcessedEdges processEdges, Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(graphOrBuilder, false);
 		final int n = verticesNum(graphOrBuilder);
@@ -422,130 +422,91 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 		}
 	}
 
-	static class BuilderProcessEdges {
+	static class ProcessedEdges {
 
 		final int[] edgesOut;
 		final int[] edgesOutBegin;
 
-		BuilderProcessEdges(int[] edgesOut, int[] edgesOutBegin) {
+		ProcessedEdges(int[] edgesOut, int[] edgesOutBegin) {
 			this.edgesOut = edgesOut;
 			this.edgesOutBegin = edgesOutBegin;
 		}
-
 	}
 
-	static class BuilderProcessEdgesUndirected extends BuilderProcessEdges {
+	static class ProcessedEdgesUndirected extends ProcessedEdges {
 
-		private BuilderProcessEdgesUndirected(int[] edgesOut, int[] edgesOutBegin) {
+		private ProcessedEdgesUndirected(int[] edgesOut, int[] edgesOutBegin) {
 			super(edgesOut, edgesOutBegin);
 		}
 
-		static BuilderProcessEdgesUndirected valueOf(IndexGraphBuilderImpl builder) {
-			// return valueOf(Variant2.ofB(builder));
-			// }
-
-			// static BuilderProcessEdgesUndirected valueOf(IndexGraph g) {
-			// return valueOf(Variant2.ofA(g));
-			// }
-
-			// private static BuilderProcessEdgesUndirected valueOf(
-			// Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
+		static ProcessedEdgesUndirected valueOf(IndexGraphBuilderImpl builder) {
+			assert !builder.isDirected();
 			final int n = builder.vertices().size();
 			final int m = builder.edges().size();
-			// final int n = verticesNum(graphOrBuilder);
-			// final int m = edgesNum(graphOrBuilder);
 
-			/* Count how many out/in edges each vertex has */
+			/* Count how many out-edges each vertex has */
 			final int[] edgesOutBegin = new int[n + 1];
-			// if (graphOrBuilder.contains(IndexGraph.class)) {
-			// IndexGraph g = graphOrBuilder.get(IndexGraph.class);
-			// for (int e : range(m)) {
-			// int u = g.edgeSource(e), v = g.edgeTarget(e);
-			// edgesOutBegin[u]++;
-			// if (u != v)
-			// edgesOutBegin[v]++;
-			// }
-			// } else {
-			// IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
+			int selfEdgesNum = 0;
 			for (int e : range(m)) {
 				int u = builder.edgeSource(e), v = builder.edgeTarget(e);
 				edgesOutBegin[u]++;
-				if (u != v)
-					edgesOutBegin[v]++;
-			}
-			// }
-			int outNumSum = 0;
-			for (int v : range(n))
-				outNumSum += edgesOutBegin[v];
-			final int[] edgesOut = new int[outNumSum];
-			if (n == 0)
-				return new BuilderProcessEdgesUndirected(edgesOut, edgesOutBegin);
-
-			/*
-			 * Arrange all the out-edges in a single continues array, where the out- edges of u are
-			 * edgesOutBegin[u]...edgesOutBegin[u+1]-1
-			 */
-			int nextOutNum = edgesOutBegin[0];
-			edgesOutBegin[0] = 0;
-			for (int v : range(1, n)) {
-				int nextOutNum0 = edgesOutBegin[v];
-				edgesOutBegin[v] = edgesOutBegin[v - 1] + nextOutNum;
-				nextOutNum = nextOutNum0;
-			}
-			edgesOutBegin[n] = outNumSum;
-			// if (graphOrBuilder.contains(IndexGraph.class)) {
-			// IndexGraph g = graphOrBuilder.get(IndexGraph.class);
-			// for (int e : range(m)) {
-			// int u = g.edgeSource(e), v = g.edgeTarget(e);
-			// int uOutIdx = edgesOutBegin[u]++;
-			// edgesOut[uOutIdx] = e;
-			// if (u != v) {
-			// int vInIdx = edgesOutBegin[v]++;
-			// edgesOut[vInIdx] = e;
-			// }
-			// }
-			// } else {
-			// IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
-			for (int e : range(m)) {
-				int u = builder.edgeSource(e), v = builder.edgeTarget(e);
-				int uOutIdx = edgesOutBegin[u]++;
-				edgesOut[uOutIdx] = e;
 				if (u != v) {
-					int vInIdx = edgesOutBegin[v]++;
-					edgesOut[vInIdx] = e;
+					edgesOutBegin[v]++;
+				} else {
+					selfEdgesNum++;
 				}
 			}
-			// }
-			assert edgesOutBegin[n - 1] == outNumSum;
+			final int outNumSum = m * 2 - selfEdgesNum;
+			final int[] edgesOut = new int[outNumSum];
+
+			/*
+			 * Arrange all the out-edges in a single continues array, where the out-edges of u are
+			 * edgesOutBegin[u]...edgesOutBegin[u+1]-1
+			 */
+			int outEdgesOffset = 0;
+			for (int v : range(0, n)) {
+				int vOutEdges = edgesOutBegin[v];
+				edgesOutBegin[v] = outEdgesOffset;
+				outEdgesOffset += vOutEdges;
+			}
+			assert outEdgesOffset == outNumSum;
+			edgesOutBegin[n] = outEdgesOffset;
+			for (int e : range(m)) {
+				int u = builder.edgeSource(e), v = builder.edgeTarget(e);
+				edgesOut[edgesOutBegin[u]++] = e;
+				if (u != v)
+					edgesOut[edgesOutBegin[v]++] = e;
+			}
 			for (int v = n - 1; v > 0; v--)
 				edgesOutBegin[v] = edgesOutBegin[v - 1];
 			edgesOutBegin[0] = 0;
 
-			return new BuilderProcessEdgesUndirected(edgesOut, edgesOutBegin);
+			return new ProcessedEdgesUndirected(edgesOut, edgesOutBegin);
 		}
-
 	}
 
-	static class BuilderProcessEdgesDirected extends BuilderProcessEdges {
+	static class ProcessedEdgesDirected extends ProcessedEdges {
 
 		final int[] edgesIn;
 		final int[] edgesInBegin;
 
-		private BuilderProcessEdgesDirected(int[] edgesOut, int[] edgesOutBegin, int[] edgesIn, int[] edgesInBegin) {
+		private ProcessedEdgesDirected(int[] edgesOut, int[] edgesOutBegin, int[] edgesIn, int[] edgesInBegin) {
 			super(edgesOut, edgesOutBegin);
 			this.edgesIn = edgesIn;
 			this.edgesInBegin = edgesInBegin;
 		}
 
-		static BuilderProcessEdgesDirected valueOf(IndexGraphBuilderImpl builder) {
+		static ProcessedEdgesDirected valueOf(IndexGraphBuilderImpl builder) {
 			return valueOf(Variant2.ofB(builder));
 		}
 
-		static BuilderProcessEdgesDirected valueOf(IndexGraph g) {
+		static ProcessedEdgesDirected valueOf(IndexGraph g) {
 			return valueOf(Variant2.ofA(g));
 		}
 
-		static BuilderProcessEdgesDirected valueOf(Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
+		static ProcessedEdgesDirected valueOf(Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
+			assert graphOrBuilder.contains(IndexGraph.class) ? graphOrBuilder.get(IndexGraph.class).isDirected()
+					: graphOrBuilder.get(IndexGraphBuilderImpl.class).isDirected();
 			if (graphOrBuilder.contains(IndexGraph.class)
 					&& graphOrBuilder.get(IndexGraph.class) instanceof GraphCsrDirectedReindexed)
 				return null;
@@ -557,8 +518,6 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			final int[] edgesOutBegin = new int[n + 1];
 			final int[] edgesIn = new int[m];
 			final int[] edgesInBegin = new int[n + 1];
-			if (m == 0)
-				return new BuilderProcessEdgesDirected(edgesOut, edgesOutBegin, edgesIn, edgesInBegin);
 
 			/* Count how many out/in edges each vertex has */
 			if (graphOrBuilder.contains(IndexGraph.class)) {
@@ -581,51 +540,42 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			 * In addition, sort the out-edges of each vertex by target. This is done in linear time by two (stable)
 			 * bucket sorts, first by target and than by source.
 			 */
-			int nextOutNum = edgesOutBegin[0], nextInNum = edgesInBegin[0];
-			edgesOutBegin[0] = edgesInBegin[0] = 0;
-			for (int v : range(1, n)) {
-				int nextOutNum0 = edgesOutBegin[v];
-				int nextInNum0 = edgesInBegin[v];
-				edgesOutBegin[v] = edgesOutBegin[v - 1] + nextOutNum;
-				edgesInBegin[v] = edgesInBegin[v - 1] + nextInNum;
-				nextOutNum = nextOutNum0;
-				nextInNum = nextInNum0;
+			int outEdgesOffset = 0, inEdgesOffset = 0;
+			for (int v : range(0, n)) {
+				int vOutEdges = edgesOutBegin[v];
+				edgesOutBegin[v] = outEdgesOffset;
+				outEdgesOffset += vOutEdges;
+
+				int vInEdges = edgesInBegin[v];
+				edgesInBegin[v] = inEdgesOffset;
+				inEdgesOffset += vInEdges;
 			}
+			assert outEdgesOffset == m && inEdgesOffset == m;
 			edgesOutBegin[n] = edgesInBegin[n] = m;
 			if (graphOrBuilder.contains(IndexGraph.class)) {
 				IndexGraph g = graphOrBuilder.get(IndexGraph.class);
 				/* firsts bucket sort by target */
-				for (int e : range(m)) {
-					int vInIdx = edgesInBegin[g.edgeTarget(e)]++;
-					edgesIn[vInIdx] = e;
-				}
+				for (int e : range(m))
+					edgesIn[edgesInBegin[g.edgeTarget(e)]++] = e;
 				/* than bucket sort by source, stable sorting after the first sort */
-				for (int e : edgesIn) {
-					int uOutIdx = edgesOutBegin[g.edgeSource(e)]++;
-					edgesOut[uOutIdx] = e;
-				}
+				for (int e : edgesIn)
+					edgesOut[edgesOutBegin[g.edgeSource(e)]++] = e;
 			} else {
 				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
 				/* firsts bucket sort by target */
-				for (int e : range(m)) {
-					int vInIdx = edgesInBegin[builder.edgeTarget(e)]++;
-					edgesIn[vInIdx] = e;
-				}
+				for (int e : range(m))
+					edgesIn[edgesInBegin[builder.edgeTarget(e)]++] = e;
 				/* than bucket sort by source, stable sorting after the first sort */
-				for (int e : edgesIn) {
-					int uOutIdx = edgesOutBegin[builder.edgeSource(e)]++;
-					edgesOut[uOutIdx] = e;
-				}
+				for (int e : edgesIn)
+					edgesOut[edgesOutBegin[builder.edgeSource(e)]++] = e;
 			}
-			assert edgesOutBegin[n - 1] == m;
-			assert edgesInBegin[n - 1] == m;
 			for (int v = n - 1; v > 0; v--) {
 				edgesOutBegin[v] = edgesOutBegin[v - 1];
 				edgesInBegin[v] = edgesInBegin[v - 1];
 			}
 			edgesOutBegin[0] = edgesInBegin[0] = 0;
 
-			return new BuilderProcessEdgesDirected(edgesOut, edgesOutBegin, edgesIn, edgesInBegin);
+			return new ProcessedEdgesDirected(edgesOut, edgesOutBegin, edgesIn, edgesInBegin);
 		}
 
 	}

@@ -23,7 +23,7 @@ class GraphCsrDirected extends GraphCsrAbstractUnindexed {
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
-	GraphCsrDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges, boolean fastLookup) {
+	GraphCsrDirected(IndexGraphBuilderImpl builder, ProcessedEdgesDirected processEdges, boolean fastLookup) {
 		super(true, builder, processEdges, fastLookup);
 		assert builder.isDirected();
 

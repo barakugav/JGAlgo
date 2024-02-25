@@ -408,8 +408,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 				@Override
 				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-					GraphCsrBase.BuilderProcessEdgesDirected processEdges =
-							GraphCsrBase.BuilderProcessEdgesDirected.valueOf(builder);
+					GraphCsrBase.ProcessedEdgesDirected processEdges =
+							GraphCsrBase.ProcessedEdgesDirected.valueOf(builder);
 					return new GraphCsrDirected(builder, processEdges, fastLookup);
 				}
 
@@ -439,8 +439,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 				@Override
 				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-					GraphCsrBase.BuilderProcessEdgesUndirected processEdges =
-							GraphCsrBase.BuilderProcessEdgesUndirected.valueOf(builder);
+					GraphCsrBase.ProcessedEdgesUndirected processEdges =
+							GraphCsrBase.ProcessedEdgesUndirected.valueOf(builder);
 					return new GraphCsrUndirected(builder, processEdges, fastLookup);
 				}
 
