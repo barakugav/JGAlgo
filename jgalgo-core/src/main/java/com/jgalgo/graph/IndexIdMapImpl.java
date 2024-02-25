@@ -59,49 +59,57 @@ class IndexIdMapImpl<K> implements IndexIdMap<K> {
 	static <K> IndexIdMapImpl<K> newCopyOf(IndexIdMap<K> orig, Optional<IndexGraphBuilder.ReIndexingMap> reIndexing,
 			IntSet indicesSet, boolean isVertices, boolean immutable) {
 		final int elementsSize = indicesSet.size();
-		Object2IntOpenHashMap<K> idToIndex;
-		Object[] indexToId;
-		if (orig instanceof IndexIdMapImpl && reIndexing.isEmpty()) {
+		final Object2IntOpenHashMap<K> idToIndex = new Object2IntOpenHashMap<>(elementsSize);
+		idToIndex.defaultReturnValue(-1);
+		final Object[] indexToId;
+
+		if (elementsSize == 0) {
+			indexToId = ObjectArrays.DEFAULT_EMPTY_ARRAY;
+
+		} else if (orig instanceof IndexIdMapImpl) {
 			IndexIdMapImpl<K> orig0 = (IndexIdMapImpl<K>) orig;
-			idToIndex = new Object2IntOpenHashMap<>(orig0.idToIndex);
-			idToIndex.defaultReturnValue(-1);
-			indexToId = Arrays.copyOf(orig0.indexToId, elementsSize);
+
+			if (reIndexing.isEmpty()) {
+				idToIndex.putAll(orig0.idToIndex);
+				indexToId = Arrays.copyOf(orig0.indexToId, elementsSize);
+
+			} else {
+				IndexGraphBuilder.ReIndexingMap reIndexing0 = reIndexing.get();
+				Object[] indexToIdOrig = orig0.indexToId;
+				indexToId = new Object[elementsSize];
+				for (int origIdx : range(elementsSize)) {
+					int idx = reIndexing0.map(origIdx);
+					@SuppressWarnings("unchecked")
+					K id = (K) indexToIdOrig[origIdx];
+					indexToId[idx] = id;
+					idToIndex.put(id, idx);
+				}
+			}
 
 		} else {
-			idToIndex = new Object2IntOpenHashMap<>(elementsSize);
-			idToIndex.defaultReturnValue(-1);
-			if (elementsSize == 0) {
-				indexToId = ObjectArrays.DEFAULT_EMPTY_ARRAY;
+			indexToId = new Object[elementsSize];
+			if (reIndexing.isEmpty()) {
+				for (int idx : range(elementsSize)) {
+					K id = orig.indexToId(idx);
+					indexToId[idx] = id;
+					idToIndex.put(id, idx);
+				}
+
 			} else {
-				indexToId = new Object[elementsSize];
-				if (reIndexing.isEmpty()) {
-					for (int idx : range(elementsSize)) {
-						K id = orig.indexToId(idx);
-						if (id == null)
-							throw new NullPointerException("null id");
-						indexToId[idx] = id;
-
-						int oldIdx = idToIndex.put(id, idx);
-						if (oldIdx >= 0)
-							throw new IllegalArgumentException("duplicate id: " + id);
-					}
-
-				} else {
-					IndexGraphBuilder.ReIndexingMap reIndexing0 = reIndexing.get();
-					for (int origIdx : range(elementsSize)) {
-						int idx = reIndexing0.map(origIdx);
-						K id = orig.indexToId(origIdx);
-						if (id == null)
-							throw new NullPointerException("null id");
-						indexToId[idx] = id;
-
-						int oldIdx = idToIndex.put(id, idx);
-						if (oldIdx >= 0)
-							throw new IllegalArgumentException("duplicate id: " + id);
-					}
+				IndexGraphBuilder.ReIndexingMap reIndexing0 = reIndexing.get();
+				for (int origIdx : range(elementsSize)) {
+					int idx = reIndexing0.map(origIdx);
+					K id = orig.indexToId(origIdx);
+					indexToId[idx] = id;
+					idToIndex.put(id, idx);
 				}
 			}
 		}
+
+		if (idToIndex.size() < elementsSize)
+			throw new IllegalArgumentException("IDs are not unique");
+		if (Arrays.stream(indexToId).anyMatch(Objects::isNull))
+			throw new NullPointerException("null id");
 		return new IndexIdMapImpl<>(indicesSet, idToIndex, indexToId, isVertices, immutable);
 	}
 
