@@ -19,6 +19,7 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -36,6 +37,14 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	IndexGraphFactoryImpl.MutableImpl mutableImpl;
 	IndexGraphFactoryImpl.ImmutableImpl immutableImpl;
+
+	private boolean isNewGraphShouldStealInterior;
+	private IndexGraph lastImmutableGraph;
+	private long[] lastImmutableGraphEndpoints;
+	private boolean lastImmutableGraphVerticesReIndexRequest;
+	private boolean lastImmutableGraphEdgesReIndexRequest;
+	private Optional<IndexGraphBuilder.ReIndexingMap> lastImmutableVerticesReIndexingMap;
+	private Optional<IndexGraphBuilder.ReIndexingMap> lastImmutableEdgesReIndexingMap;
 
 	IndexGraphBuilderImpl(boolean directed) {
 		this.directed = directed;
@@ -134,6 +143,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public int addEdge(int source, int target) {
+		copyOnWriteFromLastGraph();
 		checkVertex(source);
 		checkVertex(target);
 		int e = edges.add();
@@ -144,6 +154,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public void addEdges(EdgeSet<? extends Integer, ? extends Integer> edges) {
+		copyOnWriteFromLastGraph();
 		@SuppressWarnings("unchecked")
 		EdgeSet<Integer, Integer> edges0 = (EdgeSet<Integer, Integer>) edges;
 		final Set<Integer> edgesIds;
@@ -219,6 +230,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public IntSet addEdgesReassignIds(IEdgeSet edges) {
+		copyOnWriteFromLastGraph();
 		checkEndpoints(edges);
 
 		final int addedNum = edges.size();
@@ -257,6 +269,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public void ensureEdgeCapacity(int edgesNum) {
+		copyOnWriteFromLastGraph();
 		edgesUserWeights.ensureCapacity(edgesNum);
 		if (edgesNum > endpoints.length)
 			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, edgesNum)));
@@ -268,6 +281,13 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		edges.clear();
 		verticesUserWeights.clearContainers();
 		edgesUserWeights.clearContainers();
+		if (lastImmutableGraph != null) {
+			lastImmutableGraph = null;
+			lastImmutableVerticesReIndexingMap = null;
+			lastImmutableEdgesReIndexingMap = null;
+			lastImmutableGraphEndpoints = null;
+			endpoints = LongArrays.DEFAULT_EMPTY_ARRAY;
+		}
 	}
 
 	@Override
@@ -291,21 +311,82 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public IndexGraph build() {
-		return immutableImpl.newFromBuilder(this);
+		if (lastImmutableGraph != null) {
+			if (lastImmutableVerticesReIndexingMap.isEmpty() && lastImmutableEdgesReIndexingMap.isEmpty())
+				return lastImmutableGraph;
+
+			copyOnWriteFromLastGraph();
+		}
+
+		isNewGraphShouldStealInterior = verticesWeightsKeys().isEmpty() && edgesWeightsKeys().isEmpty();
+		IndexGraph g = immutableImpl.newFromBuilder(this);
+		if (isNewGraphShouldStealInterior) {
+			lastImmutableGraph = g;
+			lastImmutableGraphVerticesReIndexRequest = false;
+			lastImmutableGraphEdgesReIndexRequest = false;
+			lastImmutableVerticesReIndexingMap = Optional.empty();
+			lastImmutableEdgesReIndexingMap = Optional.empty();
+		}
+		return g;
 	}
 
 	@Override
 	public IndexGraph buildMutable() {
+		if (lastImmutableGraph != null) {
+			if (lastImmutableVerticesReIndexingMap.isEmpty() && lastImmutableEdgesReIndexingMap.isEmpty()) {
+				assert verticesWeightsKeys().isEmpty() && edgesWeightsKeys().isEmpty();
+				return mutableImpl.newCopyOf(lastImmutableGraph, false, false);
+			}
+			copyOnWriteFromLastGraph();
+		}
+		isNewGraphShouldStealInterior = false;
 		return mutableImpl.newFromBuilder(this);
 	}
 
 	@Override
 	public IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges) {
-		return immutableImpl.newFromBuilderWithReIndex(this, reIndexVertices, reIndexEdges);
+		if (lastImmutableGraph != null) {
+			boolean sameVIndexing = reIndexVertices == lastImmutableGraphVerticesReIndexRequest
+					|| (!reIndexVertices && lastImmutableVerticesReIndexingMap.isEmpty());
+			boolean sameEIndexing = reIndexEdges == lastImmutableGraphEdgesReIndexRequest
+					|| (!reIndexEdges && lastImmutableEdgesReIndexingMap.isEmpty());
+			if (sameVIndexing && sameEIndexing)
+				return new IndexGraphBuilder.ReIndexedGraph(lastImmutableGraph, lastImmutableVerticesReIndexingMap,
+						lastImmutableEdgesReIndexingMap);
+
+			copyOnWriteFromLastGraph();
+		}
+
+		isNewGraphShouldStealInterior = verticesWeightsKeys().isEmpty() && edgesWeightsKeys().isEmpty();
+		IndexGraphBuilder.ReIndexedGraph g =
+				immutableImpl.newFromBuilderWithReIndex(this, reIndexVertices, reIndexEdges);
+		if (isNewGraphShouldStealInterior) {
+			lastImmutableGraph = g.graph;
+			lastImmutableGraphVerticesReIndexRequest = reIndexVertices;
+			lastImmutableGraphEdgesReIndexRequest = reIndexEdges;
+			lastImmutableVerticesReIndexingMap = g.verticesReIndexing;
+			lastImmutableEdgesReIndexingMap = g.edgesReIndexing;
+		}
+		return g;
 	}
 
 	@Override
 	public IndexGraphBuilder.ReIndexedGraph reIndexAndBuildMutable(boolean reIndexVertices, boolean reIndexEdges) {
+		if (lastImmutableGraph != null) {
+			boolean sameVIndexing = reIndexVertices == lastImmutableGraphVerticesReIndexRequest
+					|| (!reIndexVertices && lastImmutableVerticesReIndexingMap.isEmpty());
+			boolean sameEIndexing = reIndexEdges == lastImmutableGraphEdgesReIndexRequest
+					|| (!reIndexEdges && lastImmutableEdgesReIndexingMap.isEmpty());
+			if (sameVIndexing && sameEIndexing) {
+				assert verticesWeightsKeys().isEmpty() && edgesWeightsKeys().isEmpty();
+				IndexGraph g = mutableImpl.newCopyOf(lastImmutableGraph, false, false);
+				return new IndexGraphBuilder.ReIndexedGraph(g, lastImmutableVerticesReIndexingMap,
+						lastImmutableEdgesReIndexingMap);
+			}
+
+			copyOnWriteFromLastGraph();
+		}
+		isNewGraphShouldStealInterior = false;
 		return mutableImpl.newFromBuilderWithReIndex(this, reIndexVertices, reIndexEdges);
 	}
 
@@ -317,6 +398,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
 			T defVal) {
+		copyOnWriteFromLastGraph();
 		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, true, type, defVal);
 		verticesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
@@ -337,6 +419,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
 			T defVal) {
+		copyOnWriteFromLastGraph();
 		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, false, type, defVal);
 		edgesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
@@ -347,6 +430,44 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	@Override
 	public Set<String> edgesWeightsKeys() {
 		return edgesUserWeights.weightsKeys();
+	}
+
+	long[] stealEndpointsArray() {
+		assert isNewGraphShouldStealInterior && endpoints != null;
+		lastImmutableGraphEndpoints = endpoints;
+		endpoints = null;
+		return lastImmutableGraphEndpoints;
+	}
+
+	boolean isNewGraphShouldStealInterior() {
+		return isNewGraphShouldStealInterior;
+	}
+
+	private void copyOnWriteFromLastGraph() {
+		if (lastImmutableGraph == null)
+			return;
+		if (endpoints == null) {
+			if (lastImmutableEdgesReIndexingMap.isEmpty()) {
+				endpoints = Arrays.copyOf(lastImmutableGraphEndpoints, edges.size);
+			} else {
+				IndexGraphBuilder.ReIndexingMap eReIndexing = lastImmutableEdgesReIndexingMap.get();
+				endpoints = new long[edges.size];
+				for (int e : range(edges.size))
+					endpoints[e] = lastImmutableGraphEndpoints[eReIndexing.map(e)];
+			}
+			if (lastImmutableVerticesReIndexingMap.isPresent()) {
+				IndexGraphBuilder.ReIndexingMap vReIndexingInv = lastImmutableVerticesReIndexingMap.get().inverse();
+				for (int e : range(edges.size)) {
+					int u = vReIndexingInv.map(IntPair.first(endpoints[e]));
+					int v = vReIndexingInv.map(IntPair.second(endpoints[e]));
+					endpoints[e] = IntPair.of(u, v);
+				}
+			}
+		}
+		lastImmutableGraph = null;
+		lastImmutableGraphEndpoints = null;
+		lastImmutableVerticesReIndexingMap = null;
+		lastImmutableEdgesReIndexingMap = null;
 	}
 
 	private void checkVertex(int vertex) {

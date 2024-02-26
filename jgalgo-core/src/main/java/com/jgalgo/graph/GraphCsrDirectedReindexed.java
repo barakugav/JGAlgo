@@ -40,13 +40,13 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		final int n = verticesNum(graphOrBuilder);
 		final int m = edgesNum(graphOrBuilder);
 
-		Optional<GraphCsrDirectedReindexed> csrGraph = graphOrBuilder.contains(IndexGraph.class)
-				&& graphOrBuilder.get(IndexGraph.class) instanceof GraphCsrDirectedReindexed
-						? Optional.of((GraphCsrDirectedReindexed) graphOrBuilder.get(IndexGraph.class))
-						: Optional.empty();
+		Optional<GraphCsrDirectedReindexed> csrGraph = graphOrBuilder
+				.getOptional(IndexGraph.class)
+				.filter(GraphCsrDirectedReindexed.class::isInstance)
+				.map(GraphCsrDirectedReindexed.class::cast);
+		assert csrGraph.isPresent() == edgesReIndexing.isEmpty();
 
 		if (csrGraph.isPresent()) {
-			assert edgesReIndexing.isEmpty();
 			edgesIn = csrGraph.get().edgesIn;
 			edgesInBegin = csrGraph.get().edgesInBegin;
 
@@ -58,29 +58,8 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 			assert edgesInBegin.length == n + 1;
 
 			IndexGraphBuilder.ReIndexingMap edgesReIndexing0 = edgesReIndexing.get();
-			for (int eIdx : range(m)) {
-				int eOrig = edgesIn[eIdx];
-				int eCsr = edgesReIndexing0.map(eOrig);
-				edgesIn[eIdx] = eCsr;
-			}
-
-			if (graphOrBuilder.contains(IndexGraph.class)) {
-				IndexGraph g = graphOrBuilder.get(IndexGraph.class);
-				assert g.isDirected();
-
-				for (int eOrig : range(m)) {
-					int eCsr = edgesReIndexing0.map(eOrig);
-					setEndpoints(eCsr, g.edgeSource(eOrig), g.edgeTarget(eOrig));
-				}
-			} else {
-				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
-				assert builder.isDirected();
-
-				for (int eOrig : range(m)) {
-					int eCsr = edgesReIndexing0.map(eOrig);
-					setEndpoints(eCsr, builder.edgeSource(eOrig), builder.edgeTarget(eOrig));
-				}
-			}
+			for (int eIdx : range(m))
+				edgesIn[eIdx] = edgesReIndexing0.map(edgesIn[eIdx]);
 		}
 
 		this.fastLookup = fastLookup;
@@ -91,7 +70,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 			edgesLookupTable = csrGraph.get().edgesLookupTable;
 
 		} else {
-			edgesLookupTable = new Int2IntMap[vertices().size()];
+			edgesLookupTable = new Int2IntMap[n];
 			initLookupTables();
 		}
 	}

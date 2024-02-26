@@ -37,9 +37,6 @@ abstract class GraphCsrAbstractUnindexed extends GraphCsrBase {
 		super(directed, Variant2.ofB(builder), processEdges, Optional.empty(), true, true);
 		edgesOut = processEdges.edgesOut;
 
-		for (int e : range(builder.edges.size()))
-			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
-
 		this.fastLookup = fastLookup;
 		edgesLookupTable = fastLookup ? new Int2IntMap[vertices().size()] : null;
 		edgesLookupNext = fastLookup && containsParallelEdges() ? new int[edges().size()] : null;

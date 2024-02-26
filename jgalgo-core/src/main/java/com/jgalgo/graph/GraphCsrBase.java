@@ -25,6 +25,7 @@ import java.util.function.Function;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.BitmapSet;
+import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -56,19 +57,78 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(graphOrBuilder, false);
 		final int n = verticesNum(graphOrBuilder);
+		final int m = edgesNum(graphOrBuilder);
 
-		final boolean inputIsGraph = graphOrBuilder.contains(IndexGraph.class);
+		final Optional<IndexGraphBuilderImpl> inputBuilder = graphOrBuilder.getOptional(IndexGraphBuilderImpl.class);
 		final Optional<IndexGraph> inputGraph = graphOrBuilder.getOptional(IndexGraph.class);
-		final Optional<GraphCsrBase> inputCsrGraph = inputGraph.isPresent() && inputGraph.get() instanceof GraphCsrBase
-				? Optional.of((GraphCsrBase) inputGraph.get())
-				: Optional.empty();
+		final Optional<GraphCsrBase> inputCsrGraph =
+				inputGraph.filter(GraphCsrBase.class::isInstance).map(GraphCsrBase.class::cast);
 
 		if (inputCsrGraph.isPresent()) {
 			assert processEdges == null;
 			edgeEndpoints = inputCsrGraph.get().edgeEndpoints;
 			edgesOutBegin = inputCsrGraph.get().edgesOutBegin;
 		} else {
-			edgeEndpoints = new long[edgesNum(graphOrBuilder)];
+			if (inputBuilder.isEmpty() || !inputBuilder.get().isNewGraphShouldStealInterior()) {
+				edgeEndpoints = new long[edgesNum(graphOrBuilder)];
+				if (edgesReIndexing.isEmpty()) {
+					if (inputGraph.isPresent()) {
+						IndexGraph g = inputGraph.get();
+						for (int e : range(m))
+							setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
+					} else {
+						IndexGraphBuilderImpl b = inputBuilder.get();
+						for (int e : range(m))
+							setEndpoints(e, b.edgeSource(e), b.edgeTarget(e));
+					}
+				} else {
+					IndexGraphBuilder.ReIndexingMap eReIndexing = edgesReIndexing.get();
+					if (inputGraph.isPresent()) {
+						IndexGraph g = inputGraph.get();
+						for (int eOrig : range(m))
+							setEndpoints(eReIndexing.map(eOrig), g.edgeSource(eOrig), g.edgeTarget(eOrig));
+					} else {
+						IndexGraphBuilderImpl b = inputBuilder.get();
+						for (int eOrig : range(m))
+							setEndpoints(eReIndexing.map(eOrig), b.edgeSource(eOrig), b.edgeTarget(eOrig));
+					}
+				}
+			} else {
+				/* Steal the builder interior endpoints array */
+				edgeEndpoints = inputBuilder.get().stealEndpointsArray();
+				if (edgesReIndexing.isPresent()) {
+					IndexGraphBuilder.ReIndexingMap eReIndexing = edgesReIndexing.get();
+					/*
+					 * We have an array of endpoints, and we want to re-index the array in place. We do so by iterating
+					 * over the edges in some arbitrary way (0,1,2,...) and for iterated edge e1 that we didn't already
+					 * handled, we move it to its new index e2, and than we move e2 to its new index, and so on, until
+					 * we close the loop and come back to the first edge e1. We mark the edges that we handled by
+					 * setting they source to be -src-1 which is always negative.
+					 */
+					assert range(m).allMatch(e -> IntPair.first(edgeEndpoints[e]) >= 0);
+					for (int eStart : range(m)) {
+						if (IntPair.first(edgeEndpoints[eStart]) < 0)
+							continue;
+						for (int e = eStart, u = IntPair.first(edgeEndpoints[e]),
+								v = IntPair.second(edgeEndpoints[e]);;) {
+							int eNext = eReIndexing.map(e);
+							int uNext = IntPair.first(edgeEndpoints[eNext]);
+							int vNext = IntPair.second(edgeEndpoints[eNext]);
+							assert u >= 0;
+							edgeEndpoints[eNext] = IntPair.of(-u - 1, v);
+							if (eNext == eStart)
+								break;
+							e = eNext;
+							u = uNext;
+							v = vNext;
+						}
+					}
+					assert range(m).allMatch(e -> IntPair.first(edgeEndpoints[e]) < 0);
+					for (int e : range(m))
+						edgeEndpoints[e] =
+								IntPair.of(-IntPair.first(edgeEndpoints[e]) - 1, IntPair.second(edgeEndpoints[e]));
+				}
+			}
 			edgesOutBegin = processEdges.edgesOutBegin;
 		}
 		assert edgesOutBegin.length == n + 1;
@@ -118,10 +178,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			edgesUserWeights = Map.of();
 		}
 
-		if (inputIsGraph) {
-			IndexGraph g = graphOrBuilder.get(IndexGraph.class);
-			updateContainsSelfAndParallelEdgesFromCopiedGraph(g);
-		}
+		inputGraph.ifPresent(this::updateContainsSelfAndParallelEdgesFromCopiedGraph);
 	}
 
 	GraphCsrBase(boolean directed, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {

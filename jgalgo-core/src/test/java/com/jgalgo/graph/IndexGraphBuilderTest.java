@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -843,6 +844,129 @@ public class IndexGraphBuilderTest extends TestBase {
 			assertNotNull(edgeBuilder);
 			assertEquals(b.edges().size(), edgeBuilder.build(b.edges()));
 		});
+	}
+
+	@Test
+	public void immutableGraphStealEndpointsArray() {
+		IndexGraphBuilderImpl b = new IndexGraphBuilderImpl(true);
+		b.addVertexInt();
+		b.addVertexInt();
+		b.addEdge(1, 0);
+		b.addEdge(0, 1);
+		Graph<Integer, Integer> g = b.build();
+
+		assertNull(getBuilderEndpointsArray(b));
+		assertTrue(g == b.build());
+
+		assertEquals(g, b.buildMutable());
+
+		b.addVertexInt();
+		b.addEdge(0, 2);
+		assertNotNull(getBuilderEndpointsArray(b));
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void buildImmutableAndThanAnotherGraph() {
+		foreachBoolConfig((directed, reIndex1, reIndexVs1_, reIndexEs1_) -> {
+			if (!reIndex1)
+				reIndexVs1_ = reIndexEs1_ = false;
+			boolean reIndexVs1 = reIndexVs1_, reIndexEs1 = reIndexEs1_;
+			foreachBoolConfig((mutable2, reIndex2, reIndexVs2, reIndexEs2) -> {
+				if (!reIndex2)
+					reIndexVs2 = reIndexEs2 = false;
+
+				IndexGraphBuilderImpl b = new IndexGraphBuilderImpl(directed);
+				b.addVertexInt();
+				b.addVertexInt();
+				b.addVertexInt();
+				b.addEdge(2, 0);
+				b.addEdge(0, 1);
+
+				IndexGraph g1;
+				boolean vs1ReIndexed, es1ReIndexed;
+				if (!reIndex1) {
+					g1 = b.build();
+					vs1ReIndexed = es1ReIndexed = false;
+				} else {
+					IndexGraphBuilder.ReIndexedGraph reGraph = b.reIndexAndBuild(reIndexVs1, reIndexEs1);
+					g1 = reGraph.graph;
+					vs1ReIndexed = reGraph.verticesReIndexing.isPresent();
+					es1ReIndexed = reGraph.edgesReIndexing.isPresent();
+				}
+				assertNull(getBuilderEndpointsArray(b));
+
+				IndexGraph g2;
+				if (!mutable2) {
+					if (!reIndex2) {
+						g2 = b.build();
+					} else {
+						IndexGraphBuilder.ReIndexedGraph reGraph = b.reIndexAndBuild(reIndexVs2, reIndexEs2);
+						g2 = reGraph.graph;
+					}
+				} else {
+					if (!reIndex2) {
+						g2 = b.buildMutable();
+					} else {
+						IndexGraphBuilder.ReIndexedGraph reGraph = b.reIndexAndBuildMutable(reIndexVs2, reIndexEs2);
+						g2 = reGraph.graph;
+					}
+				}
+
+				boolean sameVsReIndexing = List.of(reIndexVs1, vs1ReIndexed).contains(reIndexVs2);
+				boolean sameEsReIndexing = List.of(reIndexEs1, es1ReIndexed).contains(reIndexEs2);
+				if (!mutable2) {
+					assertEqualsBool(sameVsReIndexing && sameEsReIndexing, g1 == g2);
+					assertNull(getBuilderEndpointsArray(b));
+				} else {
+					if (sameVsReIndexing && sameEsReIndexing) {
+						assertNull(getBuilderEndpointsArray(b));
+						assertEquals(g1, g2);
+					} else {
+						assertNotNull(getBuilderEndpointsArray(b));
+					}
+				}
+			});
+		});
+	}
+
+	@Test
+	public void clearAfterImmutableGraphSteakIdIndexMaps() {
+		IndexGraphBuilderImpl b = new IndexGraphBuilderImpl(true);
+		b.addVertexInt();
+		b.addVertexInt();
+		b.addVertexInt();
+		b.addEdge(2, 0);
+		b.addEdge(0, 1);
+
+		b.build();
+		assertNull(getBuilderEndpointsArray(b));
+
+		b.clear();
+		assertNotNull(getBuilderEndpointsArray(b));
+		assertEquals(Graph.newDirected(), b.build());
+	}
+
+	private static Field builderEndpointsField = null;
+
+	private static long[] getBuilderEndpointsArray(IndexGraphBuilderImpl builder) {
+		synchronized (IndexGraphBuilderTest.class) {
+			if (builderEndpointsField == null) {
+				try {
+					Class<IndexGraphBuilderImpl> clazz = IndexGraphBuilderImpl.class;
+					Field field = clazz.getDeclaredField("endpoints");
+					field.setAccessible(true);
+					builderEndpointsField = field;
+				} catch (NoSuchFieldException | SecurityException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+		try {
+			return (long[]) builderEndpointsField.get(builder);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
