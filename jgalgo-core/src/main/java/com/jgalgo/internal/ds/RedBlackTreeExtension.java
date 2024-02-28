@@ -440,7 +440,7 @@ class RedBlackTreeExtension<K, V> {
 	private abstract static class Obj<K, V, D> extends RedBlackTreeExtension<K, V> {
 
 		Obj() {
-			super(new ExtensionData.Obj<D>());
+			super(new ExtensionData.Obj<>());
 		}
 
 		@SuppressWarnings("unchecked")
