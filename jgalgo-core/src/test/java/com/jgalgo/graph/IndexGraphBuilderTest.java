@@ -35,8 +35,11 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
@@ -492,6 +495,30 @@ public class IndexGraphBuilderTest extends TestBase {
 			g1.addVertices(range(50));
 			g1.addEdge(1, 0, 831564);
 			assertThrows(NoSuchVertexException.class, () -> b.addEdgesReassignIds(IEdgeSet.allOf(g1)));
+		});
+	}
+
+	@Test
+	public void edgeSourceAndTarget() {
+		final Random rand = new Random(0x843e29cab46a15b0L);
+		foreachBoolConfig(directed -> {
+			IndexGraphBuilderImpl b = new IndexGraphBuilderImpl(directed);
+			b.addVertices(range(50));
+			Int2ObjectMap<IntIntPair> edges = new Int2ObjectOpenHashMap<>();
+			for (int i = 0; i < 50; i++) {
+				int u = rand.nextInt(50), v = rand.nextInt(50);
+				int e = b.addEdge(u, v);
+				edges.put(e, IntIntPair.of(u, v));
+			}
+			for (int e : b.edges()) {
+				IntIntPair endpoints = edges.get(e);
+				assertEquals(endpoints.firstInt(), b.edgeSource(e));
+				assertEquals(endpoints.secondInt(), b.edgeTarget(e));
+			}
+			for (int repeat = 0; repeat < 5; repeat++)
+				assertThrows(NoSuchEdgeException.class, () -> b.edgeSource(b.edges().size() + rand.nextInt(10)));
+			for (int repeat = 0; repeat < 5; repeat++)
+				assertThrows(NoSuchEdgeException.class, () -> b.edgeTarget(b.edges().size() + rand.nextInt(10)));
 		});
 	}
 
