@@ -1054,7 +1054,7 @@ public interface Graph<V, E> {
 	 * @return an immutable view of this graph
 	 */
 	default Graph<V, E> immutableView() {
-		return Graphs.immutableView(this);
+		return ImmutableGraphViews.of(this);
 	}
 
 	/**
@@ -1071,7 +1071,7 @@ public interface Graph<V, E> {
 	 * @return a reversed view of this graph
 	 */
 	default Graph<V, E> reverseView() {
-		return Graphs.reverseView(this);
+		return ReverseGraphViews.of(this);
 	}
 
 	/**
@@ -1095,7 +1095,7 @@ public interface Graph<V, E> {
 	 * @return an undirected view of this graph
 	 */
 	default Graph<V, E> undirectedView() {
-		return Graphs.undirectedView(this);
+		return UndirectedGraphViews.of(this);
 	}
 
 	/**
