@@ -158,7 +158,7 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 
 
 		SplayBSTNode KEY_VALUE_GENERIC parent = n.parent;
-		n.clearWithoutUserData();
+		n.clearTreePointers();
 		root = impl.splay(child != null ? child : parent);
 	}
 

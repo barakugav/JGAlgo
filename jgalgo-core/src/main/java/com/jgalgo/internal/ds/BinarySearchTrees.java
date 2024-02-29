@@ -16,6 +16,7 @@
 package com.jgalgo.internal.ds;
 
 import java.util.Iterator;
+import java.util.function.BiConsumer;
 import com.jgalgo.internal.util.Assertions;
 
 class BinarySearchTrees {
@@ -81,9 +82,7 @@ class BinarySearchTrees {
 	private static <NodeT extends Node<NodeT>> NodeT getPredecessorInSubtree(NodeT n, NodeT subtreeRoot) {
 		/* predecessor in left sub tree */
 		if (n.hasLeftChild())
-			for (NodeT p = n.left;; p = p.right)
-				if (!p.hasRightChild())
-					return p;
+			return findMax(n.left);
 
 		/* predecessor is some ancestor */
 		NodeT subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;
@@ -100,9 +99,7 @@ class BinarySearchTrees {
 	private static <NodeT extends Node<NodeT>> NodeT getSuccessorInSubtree(NodeT n, NodeT subtreeRoot) {
 		/* successor in right sub tree */
 		if (n.hasRightChild())
-			for (NodeT p = n.right;; p = p.left)
-				if (!p.hasLeftChild())
-					return p;
+			return findMin(n.right);
 
 		/* successor is some ancestor */
 		NodeT subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;
@@ -113,21 +110,20 @@ class BinarySearchTrees {
 	}
 
 	static <NodeT extends Node<NodeT>> void clear(NodeT root) {
-		for (NodeT p = root; p != null;) {
-			for (;;) {
-				if (p.hasLeftChild()) {
-					p = p.left;
-					continue;
-				}
-				if (p.hasRightChild()) {
-					p = p.right;
-					continue;
-				}
-				break;
+		if (root == null)
+			return;
+		for (NodeT p = root;;) {
+			if (p.hasLeftChild()) {
+				p = p.left;
+			} else if (p.hasRightChild()) {
+				p = p.right;
+			} else {
+				NodeT parent = p.parent;
+				p.clear();
+				if (parent == null)
+					return;
+				p = parent;
 			}
-			NodeT parent = p.parent;
-			p.clear();
-			p = parent;
 		}
 	}
 
@@ -137,41 +133,38 @@ class BinarySearchTrees {
 			n1 = n2;
 			n2 = temp;
 		}
+		if (n1.isLeftChild()) {
+			n1.parent.left = n2;
+		} else if (n1.isRightChild()) {
+			n1.parent.right = n2;
+		}
+		BiConsumer<NodeT, NodeT> setLeft = (parent, child) -> {
+			if ((parent.left = child) != null)
+				child.parent = parent;
+		};
+		BiConsumer<NodeT, NodeT> setRight = (parent, child) -> {
+			if ((parent.right = child) != null)
+				child.parent = parent;
+		};
 		if (n1 == n2.parent) {
-			if (n1.isLeftChild()) {
-				n1.parent.left = n2;
-			} else if (n1.isRightChild()) {
-				n1.parent.right = n2;
-			}
 			if (n1.left == n2) {
 				NodeT right = n1.right;
-				if ((n1.left = n2.left) != null)
-					n1.left.parent = n1;
-				if ((n1.right = n2.right) != null)
-					n1.right.parent = n1;
+				setLeft.accept(n1, n2.left);
+				setRight.accept(n1, n2.right);
 				n2.left = n1;
-				if ((n2.right = right) != null)
-					n2.right.parent = n2;
+				setRight.accept(n2, right);
 			} else {
 				assert n1.right == n2;
 				NodeT left = n1.left;
-				if ((n1.left = n2.left) != null)
-					n1.left.parent = n1;
-				if ((n1.right = n2.right) != null)
-					n1.right.parent = n1;
-				if ((n2.left = left) != null)
-					n2.left.parent = n2;
+				setLeft.accept(n1, n2.left);
+				setRight.accept(n1, n2.right);
+				setLeft.accept(n2, left);
 				n2.right = n1;
 			}
 			n2.parent = n1.parent;
 			n1.parent = n2;
 
 		} else {
-			if (n1.isLeftChild()) {
-				n1.parent.left = n2;
-			} else if (n1.isRightChild()) {
-				n1.parent.right = n2;
-			}
 			if (n2.isLeftChild()) {
 				n2.parent.left = n1;
 			} else if (n2.isRightChild()) {
@@ -182,15 +175,11 @@ class BinarySearchTrees {
 			NodeT left = n1.left;
 			NodeT right = n1.right;
 			n1.parent = n2.parent;
-			if ((n1.left = n2.left) != null)
-				n1.left.parent = n1;
-			if ((n1.right = n2.right) != null)
-				n1.right.parent = n1;
+			setLeft.accept(n1, n2.left);
+			setRight.accept(n1, n2.right);
 			n2.parent = parent;
-			if ((n2.left = left) != null)
-				n2.left.parent = n2;
-			if ((n2.right = right) != null)
-				n2.right.parent = n2;
+			setLeft.accept(n2, left);
+			setRight.accept(n2, right);
 		}
 	}
 
@@ -200,10 +189,10 @@ class BinarySearchTrees {
 		NodeT left;
 
 		void clear() {
-			clearWithoutUserData();
+			clearTreePointers();
 		}
 
-		void clearWithoutUserData() {
+		void clearTreePointers() {
 			parent = left = right = null;
 		}
 
