@@ -60,18 +60,19 @@ class MaximalCliquesEnumeratorTestUtils extends TestUtils {
 		}
 
 		/* assert the returned cliques are actual maximal cliques */
-		for (Collection<V> clique : cliques)
+		for (Set<V> clique : cliques)
 			assertTrue(isMaximalClique(g, new ArrayList<>(clique), edges));
 
 		if (n <= 24) {
 			/* test all possible sub sets of vertices */
 			Set<Set<V>> cliquesExpected = SubSets
 					.stream(g.vertices())
-					.filter(clique -> isClique(clique, edges) && isMaximalClique(g, clique, edges))
+					.filter(clique -> isMaximalClique(g, clique, edges))
 					.map(ObjectOpenHashSet::new)
 					.collect(toSet());
 
-			Set<Set<V>> cliquesActual = cliques.stream().map(ObjectOpenHashSet::new).collect(toSet());
+			Set<Set<V>> cliquesActual = new ObjectOpenHashSet<>(cliques);
+			assertEquals(cliquesActual.size(), cliques.size());
 			assertEquals(cliquesExpected, cliquesActual);
 		}
 	}
