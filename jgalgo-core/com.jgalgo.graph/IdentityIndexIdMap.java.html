@@ -30,16 +30,16 @@ class IdentityIndexIdMap implements IndexIntIdMap {
 	 */
 
 	private final IntSet elementsSet;
-	private final boolean isEdges;
+	private final boolean isVertices;
 
-<span class="fc" id="L35">	IdentityIndexIdMap(IntSet elementsSet, boolean isEdges) {</span>
+<span class="fc" id="L35">	IdentityIndexIdMap(IntSet elementsSet, boolean isVertices) {</span>
 <span class="fc" id="L36">		this.elementsSet = Objects.requireNonNull(elementsSet);</span>
-<span class="fc" id="L37">		this.isEdges = isEdges;</span>
+<span class="fc" id="L37">		this.isVertices = isVertices;</span>
 <span class="fc" id="L38">	}</span>
 
 	@Override
 	public int indexToIdInt(int index) {
-<span class="fc" id="L42">		Assertions.checkGraphId(index, elementsSet.size(), isEdges);</span>
+<span class="fc" id="L42">		Assertions.checkGraphId(index, elementsSet.size(), isVertices);</span>
 <span class="fc" id="L43">		return index;</span>
 	}
 

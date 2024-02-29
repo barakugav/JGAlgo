@@ -27,13 +27,13 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 abstract class GraphElementSet extends AbstractIntSet {
 
 	int size;
-	final boolean isEdges;
+	final boolean isVertices;
 
-<span class="fc" id="L32">	GraphElementSet(int initSize, boolean isEdges) {</span>
+<span class="fc" id="L32">	GraphElementSet(int initSize, boolean isVertices) {</span>
 <span class="pc bpc" id="L33" title="1 of 2 branches missed.">		if (initSize &lt; 0)</span>
 <span class="nc" id="L34">			throw new IllegalArgumentException(&quot;Initial size can not be negative: &quot; + initSize);</span>
 <span class="fc" id="L35">		size = initSize;</span>
-<span class="fc" id="L36">		this.isEdges = isEdges;</span>
+<span class="fc" id="L36">		this.isVertices = isVertices;</span>
 <span class="fc" id="L37">	}</span>
 
 	@Override
@@ -67,88 +67,87 @@ abstract class GraphElementSet extends AbstractIntSet {
 	}
 
 	void checkIdx(int idx) {
-<span class="fc" id="L70">		Assertions.checkGraphId(idx, size, isEdges);</span>
+<span class="fc" id="L70">		Assertions.checkGraphId(idx, size, isVertices);</span>
 <span class="fc" id="L71">	}</span>
 
 	static class Immutable extends GraphElementSet {
 
-		private Immutable(int size, boolean isEdges) {
-<span class="fc" id="L76">			super(size, isEdges);</span>
+		private Immutable(int size, boolean isVertices) {
+<span class="fc" id="L76">			super(size, isVertices);</span>
 <span class="fc" id="L77">		}</span>
 
-		static GraphElementSet.Immutable ofEdges(int size) {
+		static GraphElementSet.Immutable ofVertices(int size) {
 <span class="fc" id="L80">			return new GraphElementSet.Immutable(size, true);</span>
 		}
 
-		static GraphElementSet.Immutable ofVertices(int size) {
+		static GraphElementSet.Immutable ofEdges(int size) {
 <span class="fc" id="L84">			return new GraphElementSet.Immutable(size, false);</span>
 		}
-
 	}
 
-<span class="fc" id="L89">	static class Mutable extends GraphElementSet {</span>
+<span class="fc" id="L88">	static class Mutable extends GraphElementSet {</span>
 
-<span class="fc" id="L91">		private final List&lt;IndexRemoveListener&gt; removeListeners = new CopyOnWriteArrayList&lt;&gt;();</span>
+<span class="fc" id="L90">		private final List&lt;IndexRemoveListener&gt; removeListeners = new CopyOnWriteArrayList&lt;&gt;();</span>
 
-		private Mutable(int initSize, boolean isEdges) {
-<span class="fc" id="L94">			super(initSize, isEdges);</span>
-<span class="fc" id="L95">		}</span>
-
-		static GraphElementSet.Mutable ofEdges(int initSize) {
-<span class="fc" id="L98">			return new GraphElementSet.Mutable(initSize, true);</span>
-		}
+		private Mutable(int initSize, boolean isVertices) {
+<span class="fc" id="L93">			super(initSize, isVertices);</span>
+<span class="fc" id="L94">		}</span>
 
 		static GraphElementSet.Mutable ofVertices(int initSize) {
-<span class="fc" id="L102">			return new GraphElementSet.Mutable(initSize, false);</span>
+<span class="fc" id="L97">			return new GraphElementSet.Mutable(initSize, true);</span>
+		}
+
+		static GraphElementSet.Mutable ofEdges(int initSize) {
+<span class="fc" id="L101">			return new GraphElementSet.Mutable(initSize, false);</span>
 		}
 
 		int add() {
-<span class="fc" id="L106">			int id = size++;</span>
-<span class="fc" id="L107">			return id;</span>
+<span class="fc" id="L105">			int id = size++;</span>
+<span class="fc" id="L106">			return id;</span>
 		}
 
 		void addAll(int count) {
-<span class="pc bpc" id="L111" title="1 of 2 branches missed.">			assert count &gt;= 0;</span>
-<span class="fc" id="L112">			size += count;</span>
-<span class="fc" id="L113">		}</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">			assert count &gt;= 0;</span>
+<span class="fc" id="L111">			size += count;</span>
+<span class="fc" id="L112">		}</span>
 
 		void removeIdx(int idx) {
-<span class="pc bpc" id="L116" title="1 of 2 branches missed.">			assert idx == size - 1;</span>
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">			assert size &gt; 0;</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">			for (IndexRemoveListener listener : removeListeners)</span>
-<span class="fc" id="L119">				listener.removeLast(idx);</span>
-<span class="fc" id="L120">			size--;</span>
-<span class="fc" id="L121">		}</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">			assert idx == size - 1;</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">			assert size &gt; 0;</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">			for (IndexRemoveListener listener : removeListeners)</span>
+<span class="fc" id="L118">				listener.removeLast(idx);</span>
+<span class="fc" id="L119">			size--;</span>
+<span class="fc" id="L120">		}</span>
 
 		/* identical to removeIdx without notifying listeners */
 		void rollBackAdd(int idx) {
-<span class="pc bpc" id="L125" title="1 of 2 branches missed.">			assert idx == size - 1;</span>
-<span class="pc bpc" id="L126" title="1 of 2 branches missed.">			assert size &gt; 0;</span>
-<span class="fc" id="L127">			size--;</span>
-<span class="fc" id="L128">		}</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">			assert idx == size - 1;</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">			assert size &gt; 0;</span>
+<span class="fc" id="L126">			size--;</span>
+<span class="fc" id="L127">		}</span>
 
 		@Override
 		public void clear() {
-<span class="fc" id="L132">			size = 0;</span>
-<span class="fc" id="L133">		}</span>
+<span class="fc" id="L131">			size = 0;</span>
+<span class="fc" id="L132">		}</span>
 
 		void swapAndRemove(int removedIdx, int swappedIdx) {
-<span class="fc" id="L136">			checkIdx(removedIdx);</span>
-<span class="fc" id="L137">			checkIdx(swappedIdx);</span>
-<span class="pc bpc" id="L138" title="1 of 2 branches missed.">			assert swappedIdx == size - 1;</span>
-<span class="pc bpc" id="L139" title="1 of 2 branches missed.">			assert size &gt; 0;</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">			for (IndexRemoveListener listener : removeListeners)</span>
-<span class="fc" id="L141">				listener.swapAndRemove(removedIdx, swappedIdx);</span>
-<span class="fc" id="L142">			size--;</span>
-<span class="fc" id="L143">		}</span>
+<span class="fc" id="L135">			checkIdx(removedIdx);</span>
+<span class="fc" id="L136">			checkIdx(swappedIdx);</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">			assert swappedIdx == size - 1;</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">			assert size &gt; 0;</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">			for (IndexRemoveListener listener : removeListeners)</span>
+<span class="fc" id="L140">				listener.swapAndRemove(removedIdx, swappedIdx);</span>
+<span class="fc" id="L141">			size--;</span>
+<span class="fc" id="L142">		}</span>
 
 		void addRemoveListener(IndexRemoveListener listener) {
-<span class="fc" id="L146">			removeListeners.add(Objects.requireNonNull(listener));</span>
-<span class="fc" id="L147">		}</span>
+<span class="fc" id="L145">			removeListeners.add(Objects.requireNonNull(listener));</span>
+<span class="fc" id="L146">		}</span>
 
 		void removeRemoveListener(IndexRemoveListener listener) {
-<span class="fc" id="L150">			removeListeners.remove(listener);</span>
-<span class="fc" id="L151">		}</span>
+<span class="fc" id="L149">			removeListeners.remove(listener);</span>
+<span class="fc" id="L150">		}</span>
 	}
 
 }

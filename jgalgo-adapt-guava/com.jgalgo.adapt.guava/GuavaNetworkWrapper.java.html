@@ -138,8 +138,8 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L138">		this.network = Objects.requireNonNull(network);</span>
 <span class="fc" id="L139">		this.mutable = mutable;</span>
 
-<span class="fc" id="L141">		indexGraphVerticesMap = new IndexIdMapImpl&lt;&gt;(false);</span>
-<span class="fc" id="L142">		indexGraphEdgesMap = new IndexIdMapImpl&lt;&gt;(true);</span>
+<span class="fc" id="L141">		indexGraphVerticesMap = new IndexIdMapImpl&lt;&gt;(true);</span>
+<span class="fc" id="L142">		indexGraphEdgesMap = new IndexIdMapImpl&lt;&gt;(false);</span>
 <span class="fc bfc" id="L143" title="All 2 branches covered.">		for (V vertex : network.nodes())</span>
 <span class="fc" id="L144">			indexGraphVerticesMap.add(vertex);</span>
 <span class="fc bfc" id="L145" title="All 2 branches covered.">		for (E edge : network.edges())</span>
@@ -693,13 +693,13 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 
 		private final Object2IntMap&lt;K&gt; idToIdx;
 		private final List&lt;K&gt; idxToId;
-		private final boolean isEdges;
+		private final boolean isVertices;
 
-<span class="fc" id="L698">		public IndexIdMapImpl(boolean isEdges) {</span>
+<span class="fc" id="L698">		public IndexIdMapImpl(boolean isVertices) {</span>
 <span class="fc" id="L699">			idToIdx = new Object2IntOpenHashMap&lt;&gt;();</span>
 <span class="fc" id="L700">			idToIdx.defaultReturnValue(-1);</span>
 <span class="fc" id="L701">			idxToId = new ObjectArrayList&lt;&gt;();</span>
-<span class="fc" id="L702">			this.isEdges = isEdges;</span>
+<span class="fc" id="L702">			this.isVertices = isVertices;</span>
 <span class="fc" id="L703">		}</span>
 
 		void add(K id) {
@@ -730,10 +730,10 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 		@Override
 		public K indexToId(int index) {
 <span class="fc bfc" id="L732" title="All 4 branches covered.">			if (!(0 &lt;= index &amp;&amp; index &lt; idxToId.size())) {</span>
-<span class="fc bfc" id="L733" title="All 2 branches covered.">				if (isEdges) {</span>
-<span class="fc" id="L734">					throw NoSuchEdgeException.ofIndex(index);</span>
+<span class="fc bfc" id="L733" title="All 2 branches covered.">				if (isVertices) {</span>
+<span class="fc" id="L734">					throw NoSuchVertexException.ofIndex(index);</span>
 				} else {
-<span class="fc" id="L736">					throw NoSuchVertexException.ofIndex(index);</span>
+<span class="fc" id="L736">					throw NoSuchEdgeException.ofIndex(index);</span>
 				}
 			}
 <span class="fc" id="L739">			return idxToId.get(index);</span>
@@ -750,10 +750,10 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 		public int idToIndex(K id) {
 <span class="fc" id="L751">			int idx = idToIdx.getInt(id);</span>
 <span class="fc bfc" id="L752" title="All 2 branches covered.">			if (idx &lt; 0) {</span>
-<span class="fc bfc" id="L753" title="All 2 branches covered.">				if (isEdges) {</span>
-<span class="fc" id="L754">					throw NoSuchEdgeException.ofEdge(id);</span>
+<span class="fc bfc" id="L753" title="All 2 branches covered.">				if (isVertices) {</span>
+<span class="fc" id="L754">					throw NoSuchVertexException.ofVertex(id);</span>
 				} else {
-<span class="fc" id="L756">					throw NoSuchVertexException.ofVertex(id);</span>
+<span class="fc" id="L756">					throw NoSuchEdgeException.ofEdge(id);</span>
 				}
 			}
 <span class="fc" id="L759">			return idx;</span>

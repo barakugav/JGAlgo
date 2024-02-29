@@ -1423,7 +1423,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 <span class="fc" id="L1423">					IndexGraphBuilder g1 = IndexGraphBuilder.directed();</span>
 <span class="fc" id="L1424">					g1.addVertices(g.vertices());</span>
 <span class="fc" id="L1425">					g1.addEdges(EdgeSet.allOf(g));</span>
-<span class="fc" id="L1426">					IndexGraph g1Graph = g1.reIndexAndBuild(true, true).graph();</span>
+<span class="fc" id="L1426">					IndexGraph g1Graph = g1.reIndexAndBuild(true, true).graph;</span>
 <span class="pc bpc" id="L1427" title="1 of 2 branches missed.">					assert g1Graph.isDirected() == directed;</span>
 <span class="fc" id="L1428">					return g1Graph;</span>
 				}, directed, allowParallelEdges, allowSelfEdges);

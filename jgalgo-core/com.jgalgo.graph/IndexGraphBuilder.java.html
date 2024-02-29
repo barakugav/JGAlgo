@@ -15,7 +15,9 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -69,10 +71,10 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	@Deprecated
 	@Override
 	default void addVertex(int vertex) {
-<span class="fc bfc" id="L72" title="All 2 branches covered.">		if (vertex != vertices().size())</span>
-<span class="fc" id="L73">			throw new IllegalArgumentException(&quot;Only vertex ID &quot; + vertices().size() + &quot; can be added&quot;);</span>
-<span class="fc" id="L74">		addVertexInt();</span>
-<span class="fc" id="L75">	}</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">		if (vertex != vertices().size())</span>
+<span class="fc" id="L75">			throw new IllegalArgumentException(&quot;Only vertex ID &quot; + vertices().size() + &quot; can be added&quot;);</span>
+<span class="fc" id="L76">		addVertexInt();</span>
+<span class="fc" id="L77">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -109,10 +111,10 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	@Deprecated
 	@Override
 	default void addEdge(int source, int target, int edge) {
-<span class="fc bfc" id="L112" title="All 2 branches covered.">		if (edge != edges().size())</span>
-<span class="fc" id="L113">			throw new IllegalArgumentException(&quot;Only edge ID &quot; + edges().size() + &quot; can be added&quot;);</span>
-<span class="fc" id="L114">		addEdge(source, target);</span>
-<span class="fc" id="L115">	}</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">		if (edge != edges().size())</span>
+<span class="fc" id="L115">			throw new IllegalArgumentException(&quot;Only edge ID &quot; + edges().size() + &quot; can be added&quot;);</span>
+<span class="fc" id="L116">		addEdge(source, target);</span>
+<span class="fc" id="L117">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -177,7 +179,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 */
 	@Override
 	default IdBuilderInt vertexBuilder() {
-<span class="fc" id="L180">		return Graphs.IndexGraphIdBuilder;</span>
+<span class="fc" id="L182">		return Graphs.IndexGraphIdBuilder;</span>
 	}
 
 	/**
@@ -191,7 +193,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 */
 	@Override
 	default IdBuilderInt edgeBuilder() {
-<span class="fc" id="L194">		return Graphs.IndexGraphIdBuilder;</span>
+<span class="fc" id="L196">		return Graphs.IndexGraphIdBuilder;</span>
 	}
 
 	@Override
@@ -217,14 +219,14 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * Before the graph is built, the edges are validated. If the graph does not support self or parallel edges and such
 	 * edges were added to the builder, an exception will be thrown.
 	 *
-	 * @param  reIndexVertices if {@code true}, the implementation is allowed to (note that it is not required) to
-	 *                             re-index the vertices of the graph. If {@code false}, the original vertices
-	 *                             identifiers are used. Whether or not re-indexing was performed can be checked via
-	 *                             {@link ReIndexedGraph#verticesReIndexing()}.
-	 * @param  reIndexEdges    if {@code true}, the implementation is allowed to (note that it is not required) to
-	 *                             re-index the edges of the graph. If {@code false}, the original edges identifiers are
-	 *                             used. Whether or not re-indexing was performed can be checked via
-	 *                             {@link ReIndexedGraph#edgesReIndexing()}.
+	 * @param  reIndexVertices if {@code true}, the implementation is allowed (but not required) to re-index the
+	 *                             vertices of the graph. If {@code false}, the original vertices identifiers are used.
+	 *                             Whether or not re-indexing was performed can be checked via
+	 *                             {@link ReIndexedGraph#verticesReIndexing}.
+	 * @param  reIndexEdges    if {@code true}, the implementation is allowed (but not required) to re-index the edges
+	 *                             of the graph. If {@code false}, the original edges identifiers are used. Whether or
+	 *                             not re-indexing was performed can be checked via
+	 *                             {@link ReIndexedGraph#edgesReIndexing}.
 	 * @return                 the re-indexed immutable graph, along with the re-indexing mapping to the original
 	 *                         indices
 	 */
@@ -247,14 +249,14 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * Before the graph is built, the edges are validated. If the graph does not support self or parallel edges and such
 	 * edges were added to the builder, an exception will be thrown.
 	 *
-	 * @param  reIndexVertices if {@code true}, the implementation is allowed to (note that it is not required) to
-	 *                             re-index the vertices of the graph. If {@code false}, the original vertices
-	 *                             identifiers are used. Whether or not re-indexing was performed can be checked via
-	 *                             {@link ReIndexedGraph#verticesReIndexing()}.
-	 * @param  reIndexEdges    if {@code true}, the implementation is allowed to (note that it is not required) to
-	 *                             re-index the edges of the graph. If {@code false}, the original edges identifiers are
-	 *                             used. Whether or not re-indexing was performed can be checked via
-	 *                             {@link ReIndexedGraph#edgesReIndexing()}.
+	 * @param  reIndexVertices if {@code true}, the implementation is allowed (but not required) to re-index the
+	 *                             vertices of the graph. If {@code false}, the original vertices identifiers are used.
+	 *                             Whether or not re-indexing was performed can be checked via
+	 *                             {@link ReIndexedGraph#verticesReIndexing}.
+	 * @param  reIndexEdges    if {@code true}, the implementation is allowed (but not required) to re-index the edges
+	 *                             of the graph. If {@code false}, the original edges identifiers are used. Whether or
+	 *                             not re-indexing was performed can be checked via
+	 *                             {@link ReIndexedGraph#edgesReIndexing}.
 	 * @return                 the re-indexed mutable graph, along with the re-indexing mapping to the original indices
 	 */
 	IndexGraphBuilder.ReIndexedGraph reIndexAndBuildMutable(boolean reIndexVertices, boolean reIndexEdges);
@@ -270,47 +272,48 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * &lt;p&gt;
 	 * During the lifetime of a {@link IndexGraphBuilder}, vertices and edges are added to it, each one of them has a
 	 * unique {@code int} identifier which is also its index (see {@link IndexGraph}). The builder can re-index the
-	 * vertices/edges and build a new graph, resulting in a re-indexed graph {@link #graph()}, the vertices re-indexing
-	 * {@link #verticesReIndexing()} and the edges re-indexing {@link #edgesReIndexing()}.
+	 * vertices/edges and build a new graph, resulting in a re-indexed graph {@link #graph}, the vertices re-indexing
+	 * {@link #verticesReIndexing} and the edges re-indexing {@link #edgesReIndexing}.
 	 *
 	 * @see    IndexGraphBuilder#reIndexAndBuild(boolean, boolean)
 	 * @see    ReIndexingMap
 	 * @author Barak Ugav
 	 */
-	static interface ReIndexedGraph {
+	static final class ReIndexedGraph {
 
 		/**
-		 * Get the newly created re-indexed graph.
-		 *
-		 * @return the actual re-indexed graph
+		 * The newly created re-indexed graph.
 		 */
-		IndexGraph graph();
+		public final IndexGraph graph;
 
 		/**
-		 * Get the re-indexing map of the vertices.
+		 * The re-indexing map of the vertices.
 		 *
 		 * &lt;p&gt;
-		 * The returned object (if present) can map each original vertex index to its new index after re-indexing. If
-		 * the returned is not present, the vertices were no re-indexed.
-		 *
-		 * @return the re-indexing map of the vertices
+		 * The map (if present) can map each original vertex index to its new index after re-indexing. If the map is not
+		 * present, the vertices were not re-indexed.
 		 */
-		Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; verticesReIndexing();
+		public final Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; verticesReIndexing;
 
 		/**
-		 * Get the re-indexing map of the edges.
+		 * The re-indexing map of the edges.
 		 *
 		 * &lt;p&gt;
-		 * The returned object (if present) can map each original edge index to its new index after re-indexing. If the
-		 * returned is not present, the edges were no re-indexed.
-		 *
-		 * @return the re-indexing map of the edges
+		 * The map (if present) can map each original edge index to its new index after re-indexing. If the map is not
+		 * present, the edges were not re-indexed.
 		 */
-		Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing();
+		public final Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing;
+
+		ReIndexedGraph(IndexGraph graph, Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; verticesReIndexing,
+<span class="fc" id="L308">				Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing) {</span>
+<span class="fc" id="L309">			this.graph = Objects.requireNonNull(graph);</span>
+<span class="fc" id="L310">			this.verticesReIndexing = Objects.requireNonNull(verticesReIndexing);</span>
+<span class="fc" id="L311">			this.edgesReIndexing = Objects.requireNonNull(edgesReIndexing);</span>
+<span class="fc" id="L312">		}</span>
 	}
 
 	/**
-	 * A map of indices, mapping an original index to a re-indexed index.
+	 * A map of indices in range \([0, n)\) to indices in range \([0, n)\).
 	 *
 	 * &lt;p&gt;
 	 * &lt;i&gt;Re-indexing&lt;/i&gt; is the operation of assigning new indices to the vertices/edges. By re-indexing the
@@ -324,6 +327,13 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * &lt;i&gt;element&lt;/i&gt; to refer to either vertex or edge.
 	 *
 	 * &lt;p&gt;
+	 * An map (this object) is usually obtained when an {@link IndexGraphBuilder} builds a graph a re-index the indices
+	 * of the vertices/edges, and the returned map maps from original indices to the new indices. The inverse map, from
+	 * the new indices to the original indices may be obtained by {@link ReIndexingMap#inverse()}. Note that the
+	 * direction of mapping, namely whether the map is from original to new indices or the other way around, can not be
+	 * determine from the re-indexing along, and should be concluded from the context of which the map was obtained.
+	 *
+	 * &lt;p&gt;
 	 * Re-indexing of the vertices (or edges) is a mapping from {@code [0,1,2,...,verticesNum-1]} to
 	 * {@code [0,1,2,...,verticesNum-1]}, namely its bijection function.
 	 *
@@ -331,24 +341,50 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @see    ReIndexedGraph
 	 * @author Barak Ugav
 	 */
-	static interface ReIndexingMap {
+	static final class ReIndexingMap {
+
+		private final int[] map;
+		private ReIndexingMap inverse;
+
+<span class="fc" id="L349">		ReIndexingMap(int[] map) {</span>
+<span class="fc" id="L350">			this.map = Objects.requireNonNull(map);</span>
+<span class="fc" id="L351">		}</span>
 
 		/**
-		 * Map an element's original index to its re-indexed index.
+		 * Map an element's index to its re-indexed index.
 		 *
-		 * @param  orig an element's original index
-		 * @return      the element's re-index index
+		 * &lt;p&gt;
+		 * Whether this methods maps original to new indices or the other way around should be determine by the context.
+		 * The re-indexing maps returned by {@link IndexGraphBuilder#reIndexAndBuild(boolean, boolean)} are from
+		 * original to new indices. Maps returned by {@link ReIndexingMap#inverse()} of such maps are the other way
+		 * around.
+		 *
+		 * @param  element an element's index
+		 * @return         the element's re-index index
 		 */
-		int origToReIndexed(int orig);
+		public int map(int element) {
+<span class="fc" id="L366">			return map[element];</span>
+		}
 
 		/**
-		 * Map an element's re-indexed index to its original index.
+		 * Get the inverse map of this map.
 		 *
-		 * @param  reindexed an element's re-indexed index
-		 * @return           the element's original index
+		 * &lt;p&gt;
+		 * If this map maps original to new indices, the inverse map maps new to original indices, and visa verse.
+		 *
+		 * @return the inverse map of this map
 		 */
-		int reIndexedToOrig(int reindexed);
-
+		public ReIndexingMap inverse() {
+<span class="fc bfc" id="L378" title="All 2 branches covered.">			if (inverse == null) {</span>
+<span class="fc" id="L379">				final int n = map.length;</span>
+<span class="fc" id="L380">				int[] invMap = new int[n];</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">				for (int i : range(n))</span>
+<span class="fc" id="L382">					invMap[map[i]] = i;</span>
+<span class="fc" id="L383">				inverse = new ReIndexingMap(invMap);</span>
+<span class="fc" id="L384">				inverse.inverse = this;</span>
+			}
+<span class="fc" id="L386">			return inverse;</span>
+		}
 	}
 
 	/**
@@ -366,7 +402,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IndexGraphBuilder undirected() {
-<span class="fc" id="L369">		return IndexGraphFactory.undirected().newBuilder();</span>
+<span class="fc" id="L405">		return IndexGraphFactory.undirected().newBuilder();</span>
 	}
 
 	/**
@@ -384,7 +420,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return a new empty builder for directed graphs
 	 */
 	static IndexGraphBuilder directed() {
-<span class="fc" id="L387">		return IndexGraphFactory.directed().newBuilder();</span>
+<span class="fc" id="L423">		return IndexGraphFactory.directed().newBuilder();</span>
 	}
 
 	/**
@@ -404,7 +440,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return          a new empty builder for un/directed graphs
 	 */
 	static IndexGraphBuilder newInstance(boolean directed) {
-<span class="fc" id="L407">		return IndexGraphFactory.newInstance(directed).newBuilder();</span>
+<span class="fc" id="L443">		return IndexGraphFactory.newInstance(directed).newBuilder();</span>
 	}
 
 	/**
@@ -422,7 +458,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *           vertices/edges weights.
 	 */
 	static IndexGraphBuilder newCopyOf(IndexGraph g) {
-<span class="fc" id="L425">		return newCopyOf(g, false, false);</span>
+<span class="fc" id="L461">		return newCopyOf(g, false, false);</span>
 	}
 
 	/**
@@ -444,7 +480,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *                             original graph vertices/edges weights.
 	 */
 	static IndexGraphBuilder newCopyOf(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L447">		return IndexGraphFactory.newInstance(g.isDirected()).newBuilderCopyOf(g, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L483">		return IndexGraphFactory.newInstance(g.isDirected()).newBuilderCopyOf(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 }

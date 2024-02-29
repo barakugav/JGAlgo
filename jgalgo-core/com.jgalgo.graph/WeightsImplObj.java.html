@@ -31,8 +31,8 @@ class WeightsImplObj {
 		final T defaultWeight;
 
 
-		IndexImpl(IntSet elements, boolean isEdges, T defVal) {
-<span class="fc" id="L35">			super(elements, isEdges);</span>
+		IndexImpl(IntSet elements, boolean isVertices, T defVal) {
+<span class="fc" id="L35">			super(elements, isVertices);</span>
 
 <span class="fc" id="L37">			defaultWeight = defVal;</span>
 
@@ -43,18 +43,18 @@ class WeightsImplObj {
 			}
 <span class="fc" id="L44">		}</span>
 
-		IndexImpl(WeightsImplObj.IndexImpl &lt;T&gt; orig, IntSet elements, boolean isEdges) {
-<span class="fc" id="L47">			this(elements, isEdges, orig.defaultWeight);</span>
+		IndexImpl(WeightsImplObj.IndexImpl &lt;T&gt; orig, IntSet elements, boolean isVertices) {
+<span class="fc" id="L47">			this(elements, isVertices, orig.defaultWeight);</span>
 <span class="fc" id="L48">			WeightsImpl.checkSameSize(elements, orig.elements);</span>
 <span class="fc" id="L49">			weights = Arrays.copyOf(orig.weights, elements.size());</span>
 <span class="fc" id="L50">		}</span>
 
-		IndexImpl(WeightsImplObj.IndexImpl &lt;T&gt; orig, IntSet elements, boolean isEdges, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-<span class="fc" id="L53">			this(elements, isEdges, orig.defaultWeight);</span>
+		IndexImpl(WeightsImplObj.IndexImpl &lt;T&gt; orig, IntSet elements, boolean isVertices, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+<span class="fc" id="L53">			this(elements, isVertices, orig.defaultWeight);</span>
 <span class="fc" id="L54">			WeightsImpl.checkSameSize(elements, orig.elements);</span>
 <span class="fc" id="L55">			weights = Arrays.copyOf(weights, elements.size());</span>
 <span class="fc bfc" id="L56" title="All 2 branches covered.">			for (int i : range(elements.size()))</span>
-<span class="fc" id="L57">				weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];</span>
+<span class="fc" id="L57">				weights[reIndexMap.map(i)] = orig.weights[i];</span>
 <span class="fc" id="L58">		}</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
@@ -73,12 +73,12 @@ class WeightsImplObj {
 
 	static class IndexImmutable &lt;T&gt; extends WeightsImplObj.IndexImpl &lt;T&gt; implements WeightsImpl.IndexImmutable&lt;T&gt; {
 
-		IndexImmutable(WeightsImplObj.IndexImpl &lt;T&gt; orig, IntSet elements, boolean isEdges) {
-<span class="fc" id="L77">			super(orig, elements, isEdges);</span>
+		IndexImmutable(WeightsImplObj.IndexImpl &lt;T&gt; orig, IntSet elements, boolean isVertices) {
+<span class="fc" id="L77">			super(orig, elements, isVertices);</span>
 <span class="fc" id="L78">		}</span>
 
-		IndexImmutable(WeightsImplObj.IndexImpl &lt;T&gt; orig, IntSet elements, boolean isEdges, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-<span class="fc" id="L81">			super(orig, elements, isEdges, reIndexMap);</span>
+		IndexImmutable(WeightsImplObj.IndexImpl &lt;T&gt; orig, IntSet elements, boolean isVertices, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+<span class="fc" id="L81">			super(orig, elements, isVertices, reIndexMap);</span>
 <span class="fc" id="L82">		}</span>
 
 		@Override
@@ -89,12 +89,12 @@ class WeightsImplObj {
 
 <span class="fc" id="L90">	static class IndexMutable &lt;T&gt; extends WeightsImplObj.IndexImpl &lt;T&gt; implements WeightsImpl.IndexMutable&lt;T&gt; {</span>
 
-		IndexMutable(IntSet elements, boolean isEdges, T defVal) {
-<span class="fc" id="L93">			super(elements, isEdges, defVal);</span>
+		IndexMutable(IntSet elements, boolean isVertices, T defVal) {
+<span class="fc" id="L93">			super(elements, isVertices, defVal);</span>
 <span class="fc" id="L94">		}</span>
 
-		IndexMutable(WeightsImplObj.IndexImpl &lt;T&gt; orig, IntSet elements, boolean isEdges) {
-<span class="fc" id="L97">			super(orig, elements, isEdges);</span>
+		IndexMutable(WeightsImplObj.IndexImpl &lt;T&gt; orig, IntSet elements, boolean isVertices) {
+<span class="fc" id="L97">			super(orig, elements, isVertices);</span>
 <span class="fc" id="L98">		}</span>
 
 		@Override

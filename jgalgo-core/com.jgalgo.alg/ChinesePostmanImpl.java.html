@@ -67,7 +67,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc bfc" id="L67" title="All 2 branches covered.">		for (int v : range(oddVertices.length))</span>
 <span class="fc bfc" id="L68" title="All 2 branches covered.">			for (int u : range(v + 1, oddVertices.length))</span>
 <span class="fc" id="L69">				oddGraph0.addEdge(v, u);</span>
-<span class="fc" id="L70">		IndexGraph oddGraph = oddGraph0.reIndexAndBuild(true, true).graph();</span>
+<span class="fc" id="L70">		IndexGraph oddGraph = oddGraph0.reIndexAndBuild(true, true).graph;</span>
 <span class="fc" id="L71">		ShortestPathAllPairs.IResult allPairsRes = (ShortestPathAllPairs.IResult) shortestPathAllPairsAlgo</span>
 <span class="fc" id="L72">				.computeSubsetShortestPaths(g, oddVerticesList, w);</span>
 <span class="fc" id="L73">		IWeightFunction oddW = e -&gt; {</span>

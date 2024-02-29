@@ -20,7 +20,7 @@ import com.jgalgo.internal.util.Assertions;
 
 <span class="fc" id="L21">class GraphCsrUndirected extends GraphCsrAbstractUnindexed {</span>
 
-	GraphCsrUndirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesUndirected processEdges, boolean fastLookup) {
+	GraphCsrUndirected(IndexGraphBuilderImpl builder, ProcessedEdgesUndirected processEdges, boolean fastLookup) {
 <span class="fc" id="L24">		super(false, builder, processEdges, fastLookup);</span>
 <span class="pc bpc" id="L25" title="1 of 2 branches missed.">		assert !builder.isDirected();</span>
 <span class="fc" id="L26">	}</span>

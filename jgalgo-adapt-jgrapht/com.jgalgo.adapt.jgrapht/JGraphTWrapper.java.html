@@ -144,8 +144,8 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 			};
 		}
 
-<span class="fc" id="L147">		indexGraphVerticesMap = new IndexIdMapImpl&lt;&gt;(false);</span>
-<span class="fc" id="L148">		indexGraphEdgesMap = new IndexIdMapImpl&lt;&gt;(true);</span>
+<span class="fc" id="L147">		indexGraphVerticesMap = new IndexIdMapImpl&lt;&gt;(true);</span>
+<span class="fc" id="L148">		indexGraphEdgesMap = new IndexIdMapImpl&lt;&gt;(false);</span>
 <span class="fc bfc" id="L149" title="All 2 branches covered.">		for (V vertex : graph.vertexSet())</span>
 <span class="fc" id="L150">			indexGraphVerticesMap.add(vertex);</span>
 <span class="fc bfc" id="L151" title="All 2 branches covered.">		for (E edge : graph.edgeSet())</span>
@@ -593,13 +593,13 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 
 		private final Object2IntMap&lt;K&gt; idToIdx;
 		private final List&lt;K&gt; idxToId;
-		private final boolean isEdges;
+		private final boolean isVertices;
 
-<span class="fc" id="L598">		public IndexIdMapImpl(boolean isEdges) {</span>
+<span class="fc" id="L598">		public IndexIdMapImpl(boolean isVertices) {</span>
 <span class="fc" id="L599">			idToIdx = new Object2IntOpenHashMap&lt;&gt;();</span>
 <span class="fc" id="L600">			idToIdx.defaultReturnValue(-1);</span>
 <span class="fc" id="L601">			idxToId = new ObjectArrayList&lt;&gt;();</span>
-<span class="fc" id="L602">			this.isEdges = isEdges;</span>
+<span class="fc" id="L602">			this.isVertices = isVertices;</span>
 <span class="fc" id="L603">		}</span>
 
 		void add(K id) {
@@ -630,10 +630,10 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 		@Override
 		public K indexToId(int index) {
 <span class="fc bfc" id="L632" title="All 4 branches covered.">			if (!(0 &lt;= index &amp;&amp; index &lt; idxToId.size())) {</span>
-<span class="fc bfc" id="L633" title="All 2 branches covered.">				if (isEdges) {</span>
-<span class="fc" id="L634">					throw NoSuchEdgeException.ofIndex(index);</span>
+<span class="fc bfc" id="L633" title="All 2 branches covered.">				if (isVertices) {</span>
+<span class="fc" id="L634">					throw NoSuchVertexException.ofIndex(index);</span>
 				} else {
-<span class="fc" id="L636">					throw NoSuchVertexException.ofIndex(index);</span>
+<span class="fc" id="L636">					throw NoSuchEdgeException.ofIndex(index);</span>
 				}
 			}
 <span class="fc" id="L639">			return idxToId.get(index);</span>
@@ -650,10 +650,10 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 		public int idToIndex(K id) {
 <span class="fc" id="L651">			int idx = idToIdx.getInt(id);</span>
 <span class="fc bfc" id="L652" title="All 2 branches covered.">			if (idx &lt; 0) {</span>
-<span class="fc bfc" id="L653" title="All 2 branches covered.">				if (isEdges) {</span>
-<span class="fc" id="L654">					throw NoSuchEdgeException.ofEdge(id);</span>
+<span class="fc bfc" id="L653" title="All 2 branches covered.">				if (isVertices) {</span>
+<span class="fc" id="L654">					throw NoSuchVertexException.ofVertex(id);</span>
 				} else {
-<span class="fc" id="L656">					throw NoSuchVertexException.ofVertex(id);</span>
+<span class="fc" id="L656">					throw NoSuchEdgeException.ofEdge(id);</span>
 				}
 			}
 <span class="fc" id="L659">			return idx;</span>

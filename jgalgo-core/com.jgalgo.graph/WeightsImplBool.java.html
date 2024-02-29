@@ -32,8 +32,8 @@ class WeightsImplBool {
 
 		static final int WordSize = Long.SIZE;
 
-		IndexImpl(IntSet elements, boolean isEdges, boolean defVal) {
-<span class="fc" id="L36">			super(elements, isEdges);</span>
+		IndexImpl(IntSet elements, boolean isVertices, boolean defVal) {
+<span class="fc" id="L36">			super(elements, isVertices);</span>
 
 <span class="fc" id="L38">			defaultWeight = defVal;</span>
 
@@ -45,20 +45,20 @@ class WeightsImplBool {
 			}
 <span class="fc" id="L46">		}</span>
 
-		IndexImpl(WeightsImplBool.IndexImpl  orig, IntSet elements, boolean isEdges) {
-<span class="fc" id="L49">			this(elements, isEdges, orig.defaultWeight);</span>
+		IndexImpl(WeightsImplBool.IndexImpl  orig, IntSet elements, boolean isVertices) {
+<span class="fc" id="L49">			this(elements, isVertices, orig.defaultWeight);</span>
 <span class="fc" id="L50">			WeightsImpl.checkSameSize(elements, orig.elements);</span>
 <span class="fc" id="L51">			weights = Arrays.copyOf(orig.weights, wordsNum(elements.size()));</span>
 <span class="fc" id="L52">		}</span>
 
-		IndexImpl(WeightsImplBool.IndexImpl  orig, IntSet elements, boolean isEdges, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-<span class="fc" id="L55">			this(elements, isEdges, orig.defaultWeight);</span>
+		IndexImpl(WeightsImplBool.IndexImpl  orig, IntSet elements, boolean isVertices, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+<span class="fc" id="L55">			this(elements, isVertices, orig.defaultWeight);</span>
 <span class="fc" id="L56">			WeightsImpl.checkSameSize(elements, orig.elements);</span>
 <span class="fc bfc" id="L57" title="All 2 branches covered.">			if (defaultWeight) {</span>
 <span class="fc" id="L58">				Arrays.fill(weights, ~0L);</span>
 <span class="fc bfc" id="L59" title="All 2 branches covered.">				for (int oldIdx : range(elements.size())) {</span>
 <span class="fc bfc" id="L60" title="All 2 branches covered.">					if ((orig.weights[word(oldIdx)] &amp; bit(oldIdx)) == 0) {</span>
-<span class="fc" id="L61">						int newIdx = reIndexMap.origToReIndexed(oldIdx);</span>
+<span class="fc" id="L61">						int newIdx = reIndexMap.map(oldIdx);</span>
 <span class="fc" id="L62">						weights[word(newIdx)] &amp;= ~bit(newIdx);</span>
 					}
 <span class="fc" id="L64">				}</span>
@@ -66,7 +66,7 @@ class WeightsImplBool {
 <span class="fc" id="L66">				Arrays.fill(weights, 0);</span>
 <span class="fc bfc" id="L67" title="All 2 branches covered.">				for (int oldIdx : range(elements.size())) {</span>
 <span class="fc bfc" id="L68" title="All 2 branches covered.">					if ((orig.weights[word(oldIdx)] &amp; bit(oldIdx)) != 0) {</span>
-<span class="fc" id="L69">						int newIdx = reIndexMap.origToReIndexed(oldIdx);</span>
+<span class="fc" id="L69">						int newIdx = reIndexMap.map(oldIdx);</span>
 <span class="fc" id="L70">						weights[word(newIdx)] |= bit(newIdx);</span>
 					}
 <span class="fc" id="L72">				}</span>
@@ -100,12 +100,12 @@ class WeightsImplBool {
 
 	static class IndexImmutable  extends WeightsImplBool.IndexImpl  implements WeightsImpl.IndexImmutable&lt;Boolean&gt; {
 
-		IndexImmutable(WeightsImplBool.IndexImpl  orig, IntSet elements, boolean isEdges) {
-<span class="fc" id="L104">			super(orig, elements, isEdges);</span>
+		IndexImmutable(WeightsImplBool.IndexImpl  orig, IntSet elements, boolean isVertices) {
+<span class="fc" id="L104">			super(orig, elements, isVertices);</span>
 <span class="fc" id="L105">		}</span>
 
-		IndexImmutable(WeightsImplBool.IndexImpl  orig, IntSet elements, boolean isEdges, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-<span class="fc" id="L108">			super(orig, elements, isEdges, reIndexMap);</span>
+		IndexImmutable(WeightsImplBool.IndexImpl  orig, IntSet elements, boolean isVertices, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+<span class="fc" id="L108">			super(orig, elements, isVertices, reIndexMap);</span>
 <span class="fc" id="L109">		}</span>
 
 		@Override
@@ -116,12 +116,12 @@ class WeightsImplBool {
 
 	static class IndexMutable  extends WeightsImplBool.IndexImpl  implements WeightsImpl.IndexMutable&lt;Boolean&gt; {
 
-		IndexMutable(IntSet elements, boolean isEdges, boolean defVal) {
-<span class="fc" id="L120">			super(elements, isEdges, defVal);</span>
+		IndexMutable(IntSet elements, boolean isVertices, boolean defVal) {
+<span class="fc" id="L120">			super(elements, isVertices, defVal);</span>
 <span class="fc" id="L121">		}</span>
 
-		IndexMutable(WeightsImplBool.IndexImpl  orig, IntSet elements, boolean isEdges) {
-<span class="fc" id="L124">			super(orig, elements, isEdges);</span>
+		IndexMutable(WeightsImplBool.IndexImpl  orig, IntSet elements, boolean isVertices) {
+<span class="fc" id="L124">			super(orig, elements, isVertices);</span>
 <span class="fc" id="L125">		}</span>
 
 		@Override

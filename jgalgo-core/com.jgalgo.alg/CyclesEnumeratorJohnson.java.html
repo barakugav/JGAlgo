@@ -194,7 +194,7 @@ class CyclesEnumeratorJohnson implements CyclesEnumeratorBase {
 <span class="fc" id="L194">							gSubBuilder.addEdge(uSub, vSub);</span>
 <span class="fc" id="L195">					}</span>
 <span class="fc" id="L196">				}</span>
-<span class="fc" id="L197">				IndexGraph gSub = gSubBuilder.reIndexAndBuild(false, true).graph();</span>
+<span class="fc" id="L197">				IndexGraph gSub = gSubBuilder.reIndexAndBuild(false, true).graph;</span>
 
 <span class="fc" id="L199">				IVertexPartition connectivityResult = (IVertexPartition) ccAlg.findStronglyConnectedComponents(gSub);</span>
 

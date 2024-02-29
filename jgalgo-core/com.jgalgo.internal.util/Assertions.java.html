@@ -134,13 +134,13 @@ public class Assertions {
 		}
 <span class="fc" id="L135">	}</span>
 
-	public static void checkGraphId(int elementIdx, int length, boolean isEdge) {
+	public static void checkGraphId(int elementIdx, int length, boolean isVertices) {
 <span class="pc bpc" id="L138" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphIdCheck) {</span>
 <span class="fc bfc" id="L139" title="All 4 branches covered.">			if (elementIdx &lt; 0 || elementIdx &gt;= length) {</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">				if (isEdge) {</span>
-<span class="fc" id="L141">					throw NoSuchEdgeException.ofIndex(elementIdx);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">				if (isVertices) {</span>
+<span class="fc" id="L141">					throw NoSuchVertexException.ofIndex(elementIdx);</span>
 				} else {
-<span class="fc" id="L143">					throw NoSuchVertexException.ofIndex(elementIdx);</span>
+<span class="fc" id="L143">					throw NoSuchEdgeException.ofIndex(elementIdx);</span>
 				}
 			}
 		}

@@ -167,7 +167,7 @@ public interface Weights&lt;K, T&gt; {
 	public static &lt;V, T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT createExternalVerticesWeights(Graph&lt;V, ?&gt; g,
 			Class&lt;? super T&gt; type, T defVal) {
 <span class="fc" id="L169">		IntSet vertices = g.indexGraph().vertices();</span>
-<span class="fc" id="L170">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, false, type, defVal);</span>
+<span class="fc" id="L170">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, true, type, defVal);</span>
 <span class="fc bfc" id="L171" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
 <span class="fc" id="L172">			return (WeightsT) weights;</span>
 <span class="fc bfc" id="L173" title="All 2 branches covered.">		} else if (g instanceof IntGraph) {</span>
@@ -221,7 +221,7 @@ public interface Weights&lt;K, T&gt; {
 	public static &lt;E, T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT createExternalEdgesWeights(Graph&lt;?, E&gt; g,
 			Class&lt;? super T&gt; type, T defVal) {
 <span class="fc" id="L223">		IntSet edges = g.indexGraph().edges();</span>
-<span class="fc" id="L224">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, true, type, defVal);</span>
+<span class="fc" id="L224">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, false, type, defVal);</span>
 <span class="fc bfc" id="L225" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
 <span class="fc" id="L226">			return (WeightsT) weights;</span>
 <span class="fc bfc" id="L227" title="All 2 branches covered.">		} else if (g instanceof IntGraph) {</span>

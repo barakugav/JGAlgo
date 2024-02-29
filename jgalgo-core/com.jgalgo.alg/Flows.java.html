@@ -247,25 +247,27 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 			ResidualGraph build() {
 <span class="fc" id="L249">				IndexGraphBuilder.ReIndexedGraph reindexedGraph = gBuilder.reIndexAndBuild(false, true);</span>
-<span class="fc" id="L250">				IndexGraph g = reindexedGraph.graph();</span>
+<span class="fc" id="L250">				IndexGraph g = reindexedGraph.graph;</span>
 <span class="fc" id="L251">				final int m = g.edges().size();</span>
 <span class="fc" id="L252">				int[] edgeRefTemp = edgeRef.elements();</span>
 <span class="fc" id="L253">				int[] twinTemp = twin.elements();</span>
 <span class="fc" id="L254">				int[] edgeRef = new int[m];</span>
 <span class="fc" id="L255">				int[] twin = new int[m];</span>
-<span class="pc bpc" id="L256" title="1 of 2 branches missed.">				if (reindexedGraph.edgesReIndexing().isPresent()) {</span>
-<span class="fc" id="L257">					IndexGraphBuilder.ReIndexingMap eIdxMap = reindexedGraph.edgesReIndexing().get();</span>
-<span class="fc bfc" id="L258" title="All 2 branches covered.">					for (int eBuilder : range(m)) {</span>
-<span class="fc" id="L259">						edgeRef[eBuilder] = edgeRefTemp[eIdxMap.reIndexedToOrig(eBuilder)];</span>
-<span class="fc" id="L260">						twin[eBuilder] = eIdxMap.origToReIndexed(twinTemp[eIdxMap.reIndexedToOrig(eBuilder)]);</span>
-<span class="fc" id="L261">					}</span>
-<span class="fc" id="L262">				} else {</span>
-<span class="nc bnc" id="L263" title="All 2 branches missed.">					for (int eBuilder : range(m)) {</span>
-<span class="nc" id="L264">						edgeRef[eBuilder] = edgeRefTemp[eBuilder];</span>
-<span class="nc" id="L265">						twin[eBuilder] = twinTemp[eBuilder];</span>
-<span class="nc" id="L266">					}</span>
+<span class="pc bpc" id="L256" title="1 of 2 branches missed.">				if (reindexedGraph.edgesReIndexing.isPresent()) {</span>
+<span class="fc" id="L257">					IndexGraphBuilder.ReIndexingMap eIdxMap = reindexedGraph.edgesReIndexing.get();</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">					for (int eOrig : range(m)) {</span>
+<span class="fc" id="L259">						int eBuilder = eIdxMap.map(eOrig);</span>
+<span class="fc" id="L260">						edgeRef[eBuilder] = edgeRefTemp[eOrig];</span>
+<span class="fc" id="L261">						twin[eBuilder] = eIdxMap.map(twinTemp[eOrig]);</span>
+
+<span class="fc" id="L263">					}</span>
+<span class="fc" id="L264">				} else {</span>
+<span class="nc bnc" id="L265" title="All 2 branches missed.">					for (int eBuilder : range(m)) {</span>
+<span class="nc" id="L266">						edgeRef[eBuilder] = edgeRefTemp[eBuilder];</span>
+<span class="nc" id="L267">						twin[eBuilder] = twinTemp[eBuilder];</span>
+<span class="nc" id="L268">					}</span>
 				}
-<span class="fc" id="L268">				return new ResidualGraph(gOrig, g, edgeRef, twin);</span>
+<span class="fc" id="L270">				return new ResidualGraph(gOrig, g, edgeRef, twin);</span>
 			}
 
 		}
@@ -273,79 +275,79 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	}
 
 	static double hugeCapacity(IndexGraph g, IWeightFunction capacity, IntCollection sources, IntCollection sinks) {
-<span class="pc bpc" id="L276" title="1 of 2 branches missed.">		if (WeightFunction.isInteger(capacity))</span>
-<span class="fc" id="L277">			return hugeCapacityLong(g, (IWeightFunctionInt) capacity, sources, sinks);</span>
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">		if (WeightFunction.isInteger(capacity))</span>
+<span class="fc" id="L279">			return hugeCapacityLong(g, (IWeightFunctionInt) capacity, sources, sinks);</span>
 
-<span class="nc" id="L279">		double sourcesOutCapacity = 0;</span>
-<span class="nc" id="L280">		double sinksOutCapacity = 0;</span>
-<span class="nc bnc" id="L281" title="All 2 branches missed.">		for (int s : sources)</span>
-<span class="nc bnc" id="L282" title="All 2 branches missed.">			for (int e : g.outEdges(s))</span>
-<span class="nc" id="L283">				sourcesOutCapacity += capacity.weight(e);</span>
-<span class="nc bnc" id="L284" title="All 2 branches missed.">		for (int s : sinks)</span>
-<span class="nc bnc" id="L285" title="All 2 branches missed.">			for (int e : g.inEdges(s))</span>
-<span class="nc" id="L286">				sinksOutCapacity += capacity.weight(e);</span>
-<span class="nc" id="L287">		return Math.max(sourcesOutCapacity, sinksOutCapacity) + 1;</span>
+<span class="nc" id="L281">		double sourcesOutCapacity = 0;</span>
+<span class="nc" id="L282">		double sinksOutCapacity = 0;</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">		for (int s : sources)</span>
+<span class="nc bnc" id="L284" title="All 2 branches missed.">			for (int e : g.outEdges(s))</span>
+<span class="nc" id="L285">				sourcesOutCapacity += capacity.weight(e);</span>
+<span class="nc bnc" id="L286" title="All 2 branches missed.">		for (int s : sinks)</span>
+<span class="nc bnc" id="L287" title="All 2 branches missed.">			for (int e : g.inEdges(s))</span>
+<span class="nc" id="L288">				sinksOutCapacity += capacity.weight(e);</span>
+<span class="nc" id="L289">		return Math.max(sourcesOutCapacity, sinksOutCapacity) + 1;</span>
 	}
 
 	static int hugeCapacity(IndexGraph g, IWeightFunctionInt capacity, IntCollection sources, IntCollection sinks) {
-<span class="nc" id="L291">		long hugeCapacity = hugeCapacityLong(g, capacity, sources, sinks);</span>
-<span class="nc" id="L292">		int hugeCapacityInt = (int) hugeCapacity;</span>
-<span class="nc bnc" id="L293" title="All 2 branches missed.">		if (hugeCapacityInt != hugeCapacity)</span>
-<span class="nc" id="L294">			throw new AssertionError(&quot;integer overflow, huge capacity can't fit in 32bit int&quot;);</span>
-<span class="nc" id="L295">		return hugeCapacityInt;</span>
+<span class="nc" id="L293">		long hugeCapacity = hugeCapacityLong(g, capacity, sources, sinks);</span>
+<span class="nc" id="L294">		int hugeCapacityInt = (int) hugeCapacity;</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">		if (hugeCapacityInt != hugeCapacity)</span>
+<span class="nc" id="L296">			throw new AssertionError(&quot;integer overflow, huge capacity can't fit in 32bit int&quot;);</span>
+<span class="nc" id="L297">		return hugeCapacityInt;</span>
 	}
 
 	static long hugeCapacityLong(IndexGraph g, IWeightFunctionInt capacity, IntCollection sources,
 			IntCollection sinks) {
-<span class="fc" id="L300">		long sourcesOutCapacity = 0;</span>
-<span class="fc" id="L301">		long sinksOutCapacity = 0;</span>
-<span class="fc bfc" id="L302" title="All 2 branches covered.">		for (int s : sources)</span>
-<span class="fc bfc" id="L303" title="All 2 branches covered.">			for (int e : g.outEdges(s))</span>
-<span class="fc" id="L304">				sourcesOutCapacity += capacity.weightInt(e);</span>
-<span class="fc bfc" id="L305" title="All 2 branches covered.">		for (int s : sinks)</span>
-<span class="fc bfc" id="L306" title="All 2 branches covered.">			for (int e : g.inEdges(s))</span>
-<span class="fc" id="L307">				sinksOutCapacity += capacity.weightInt(e);</span>
-<span class="fc" id="L308">		return Math.max(sourcesOutCapacity, sinksOutCapacity) + 1;</span>
+<span class="fc" id="L302">		long sourcesOutCapacity = 0;</span>
+<span class="fc" id="L303">		long sinksOutCapacity = 0;</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">		for (int s : sources)</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">			for (int e : g.outEdges(s))</span>
+<span class="fc" id="L306">				sourcesOutCapacity += capacity.weightInt(e);</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">		for (int s : sinks)</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">			for (int e : g.inEdges(s))</span>
+<span class="fc" id="L309">				sinksOutCapacity += capacity.weightInt(e);</span>
+<span class="fc" id="L310">		return Math.max(sourcesOutCapacity, sinksOutCapacity) + 1;</span>
 	}
 
 	static double vertexMaxSupply(IndexGraph g, IWeightFunction capacity, int v) {
-<span class="pc bpc" id="L312" title="1 of 2 branches missed.">		if (WeightFunction.isInteger(capacity))</span>
-<span class="nc" id="L313">			return vertexMaxSupply(g, (IWeightFunctionInt) capacity, v);</span>
+<span class="pc bpc" id="L314" title="1 of 2 branches missed.">		if (WeightFunction.isInteger(capacity))</span>
+<span class="nc" id="L315">			return vertexMaxSupply(g, (IWeightFunctionInt) capacity, v);</span>
 
-<span class="fc" id="L315">		double maxSupply = 0;</span>
-<span class="fc bfc" id="L316" title="All 2 branches covered.">		for (int e : g.outEdges(v))</span>
-<span class="fc" id="L317">			maxSupply += capacity.weight(e);</span>
-<span class="fc" id="L318">		return maxSupply;</span>
+<span class="fc" id="L317">		double maxSupply = 0;</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">		for (int e : g.outEdges(v))</span>
+<span class="fc" id="L319">			maxSupply += capacity.weight(e);</span>
+<span class="fc" id="L320">		return maxSupply;</span>
 	}
 
 	static int vertexMaxSupply(IndexGraph g, IWeightFunctionInt capacity, int v) {
-<span class="fc" id="L322">		long maxSupply = 0;</span>
-<span class="fc bfc" id="L323" title="All 2 branches covered.">		for (int e : g.outEdges(v))</span>
-<span class="fc" id="L324">			maxSupply += capacity.weightInt(e);</span>
-<span class="fc" id="L325">		int maxSupplyInt = (int) maxSupply;</span>
-<span class="pc bpc" id="L326" title="1 of 2 branches missed.">		if (maxSupplyInt != maxSupply)</span>
-<span class="nc" id="L327">			throw new AssertionError(&quot;integer overflow, vertex max supply can't fit in 32bit int&quot;);</span>
-<span class="fc" id="L328">		return maxSupplyInt;</span>
+<span class="fc" id="L324">		long maxSupply = 0;</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">		for (int e : g.outEdges(v))</span>
+<span class="fc" id="L326">			maxSupply += capacity.weightInt(e);</span>
+<span class="fc" id="L327">		int maxSupplyInt = (int) maxSupply;</span>
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">		if (maxSupplyInt != maxSupply)</span>
+<span class="nc" id="L329">			throw new AssertionError(&quot;integer overflow, vertex max supply can't fit in 32bit int&quot;);</span>
+<span class="fc" id="L330">		return maxSupplyInt;</span>
 	}
 
 	static double vertexMaxDemand(IndexGraph g, IWeightFunction capacity, int v) {
-<span class="pc bpc" id="L332" title="1 of 2 branches missed.">		if (WeightFunction.isInteger(capacity))</span>
-<span class="nc" id="L333">			return vertexMaxDemand(g, (IWeightFunctionInt) capacity, v);</span>
+<span class="pc bpc" id="L334" title="1 of 2 branches missed.">		if (WeightFunction.isInteger(capacity))</span>
+<span class="nc" id="L335">			return vertexMaxDemand(g, (IWeightFunctionInt) capacity, v);</span>
 
-<span class="fc" id="L335">		double maxDemand = 0;</span>
-<span class="fc bfc" id="L336" title="All 2 branches covered.">		for (int e : g.inEdges(v))</span>
-<span class="fc" id="L337">			maxDemand += capacity.weight(e);</span>
-<span class="fc" id="L338">		return maxDemand;</span>
+<span class="fc" id="L337">		double maxDemand = 0;</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">		for (int e : g.inEdges(v))</span>
+<span class="fc" id="L339">			maxDemand += capacity.weight(e);</span>
+<span class="fc" id="L340">		return maxDemand;</span>
 	}
 
 	static int vertexMaxDemand(IndexGraph g, IWeightFunctionInt capacity, int v) {
-<span class="fc" id="L342">		long maxDemand = 0;</span>
-<span class="fc bfc" id="L343" title="All 2 branches covered.">		for (int e : g.inEdges(v))</span>
-<span class="fc" id="L344">			maxDemand += capacity.weightInt(e);</span>
-<span class="fc" id="L345">		int maxDemandInt = (int) maxDemand;</span>
-<span class="pc bpc" id="L346" title="1 of 2 branches missed.">		if (maxDemandInt != maxDemand)</span>
-<span class="nc" id="L347">			throw new AssertionError(&quot;integer overflow, vertex max supply can't fit in 32bit int&quot;);</span>
-<span class="fc" id="L348">		return maxDemandInt;</span>
+<span class="fc" id="L344">		long maxDemand = 0;</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">		for (int e : g.inEdges(v))</span>
+<span class="fc" id="L346">			maxDemand += capacity.weightInt(e);</span>
+<span class="fc" id="L347">		int maxDemandInt = (int) maxDemand;</span>
+<span class="pc bpc" id="L348" title="1 of 2 branches missed.">		if (maxDemandInt != maxDemand)</span>
+<span class="nc" id="L349">			throw new AssertionError(&quot;integer overflow, vertex max supply can't fit in 32bit int&quot;);</span>
+<span class="fc" id="L350">		return maxDemandInt;</span>
 	}
 
 }

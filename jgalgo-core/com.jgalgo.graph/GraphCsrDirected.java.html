@@ -23,7 +23,7 @@ import com.jgalgo.internal.util.Assertions;
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
-	GraphCsrDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges, boolean fastLookup) {
+	GraphCsrDirected(IndexGraphBuilderImpl builder, ProcessedEdgesDirected processEdges, boolean fastLookup) {
 <span class="fc" id="L27">		super(true, builder, processEdges, fastLookup);</span>
 <span class="pc bpc" id="L28" title="1 of 2 branches missed.">		assert builder.isDirected();</span>
 

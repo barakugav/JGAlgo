@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
@@ -23,270 +24,281 @@ import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.AbstractObjectSet;
+import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
-<span class="fc" id="L31">class IndexIdMapImpl&lt;K&gt; implements IndexIdMap&lt;K&gt; {</span>
+<span class="fc" id="L33">class IndexIdMapImpl&lt;K&gt; implements IndexIdMap&lt;K&gt; {</span>
 
 	private final IntSet indicesSet;
-<span class="fc" id="L34">	private final Set&lt;K&gt; idsSet = new IdSet();</span>
+<span class="fc" id="L36">	private final Set&lt;K&gt; idsSet = new IdSet();</span>
 	private final Object2IntOpenHashMap&lt;K&gt; idToIndex;
 	private Object[] indexToId;
-	private final boolean isEdges;
+	private final boolean isVertices;
 	private final boolean immutable;
 
-<span class="fc" id="L40">	private IndexIdMapImpl(IntSet indicesSet, boolean isEdges, int expectedSize) {</span>
-<span class="pc bpc" id="L41" title="1 of 2 branches missed.">		assert indicesSet.isEmpty();</span>
-<span class="fc" id="L42">		this.indicesSet = indicesSet;</span>
-<span class="fc" id="L43">		idToIndex = new Object2IntOpenHashMap&lt;&gt;(expectedSize);</span>
-<span class="fc" id="L44">		idToIndex.defaultReturnValue(-1);</span>
-<span class="fc bfc" id="L45" title="All 2 branches covered.">		indexToId = expectedSize == 0 ? ObjectArrays.DEFAULT_EMPTY_ARRAY : new Object[expectedSize];</span>
-<span class="fc" id="L46">		this.isEdges = isEdges;</span>
-<span class="fc" id="L47">		immutable = false;</span>
-<span class="fc" id="L48">	}</span>
+	private IndexIdMapImpl(IntSet indicesSet, Object2IntOpenHashMap&lt;K&gt; idToIndex, Object[] indexToId,
+<span class="fc" id="L43">			boolean isVertices, boolean immutable) {</span>
+<span class="fc" id="L44">		this.indicesSet = indicesSet;</span>
+<span class="fc" id="L45">		this.idToIndex = idToIndex;</span>
+<span class="fc" id="L46">		this.indexToId = indexToId;</span>
+<span class="fc" id="L47">		this.isVertices = isVertices;</span>
+<span class="fc" id="L48">		this.immutable = immutable;</span>
+<span class="fc" id="L49">	}</span>
 
-	private IndexIdMapImpl(IndexIdMap&lt;K&gt; orig, Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; reIndexing, IntSet indicesSet,
-<span class="fc" id="L51">			boolean isEdges, boolean immutable) {</span>
-<span class="fc" id="L52">		this.indicesSet = indicesSet;</span>
-<span class="fc" id="L53">		int elementsSize = this.indicesSet.size();</span>
-<span class="fc bfc" id="L54" title="All 4 branches covered.">		if (orig instanceof IndexIdMapImpl &amp;&amp; reIndexing.isEmpty()) {</span>
-<span class="fc" id="L55">			IndexIdMapImpl&lt;K&gt; orig0 = (IndexIdMapImpl&lt;K&gt;) orig;</span>
-<span class="fc" id="L56">			idToIndex = new Object2IntOpenHashMap&lt;&gt;(orig0.idToIndex);</span>
-<span class="fc" id="L57">			idToIndex.defaultReturnValue(-1);</span>
-<span class="fc" id="L58">			indexToId = Arrays.copyOf(orig0.indexToId, elementsSize);</span>
-
-<span class="fc" id="L60">		} else {</span>
-<span class="fc" id="L61">			idToIndex = new Object2IntOpenHashMap&lt;&gt;(elementsSize);</span>
-<span class="fc" id="L62">			idToIndex.defaultReturnValue(-1);</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">			if (this.indicesSet.isEmpty()) {</span>
-<span class="fc" id="L64">				indexToId = ObjectArrays.DEFAULT_EMPTY_ARRAY;</span>
-			} else {
-<span class="fc" id="L66">				indexToId = new Object[elementsSize];</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">				if (reIndexing.isEmpty()) {</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">					for (int idx : this.indicesSet) {</span>
-<span class="fc" id="L69">						K id = orig.indexToId(idx);</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">						if (id == null)</span>
-<span class="fc" id="L71">							throw new NullPointerException(&quot;null id&quot;);</span>
-<span class="fc" id="L72">						indexToId[idx] = id;</span>
-
-<span class="fc" id="L74">						int oldIdx = idToIndex.put(id, idx);</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">						if (oldIdx &gt;= 0)</span>
-<span class="fc" id="L76">							throw new IllegalArgumentException(&quot;duplicate id: &quot; + id);</span>
-<span class="fc" id="L77">					}</span>
-
-				} else {
-<span class="fc" id="L80">					IndexGraphBuilder.ReIndexingMap reIndexing0 = reIndexing.get();</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">					for (int idx : this.indicesSet) {</span>
-<span class="fc" id="L82">						K id = orig.indexToId(reIndexing0.reIndexedToOrig(idx));</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">						if (id == null)</span>
-<span class="fc" id="L84">							throw new NullPointerException(&quot;null id&quot;);</span>
-<span class="fc" id="L85">						indexToId[idx] = id;</span>
-
-<span class="fc" id="L87">						int oldIdx = idToIndex.put(id, idx);</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">						if (oldIdx &gt;= 0)</span>
-<span class="fc" id="L89">							throw new IllegalArgumentException(&quot;duplicate id: &quot; + id);</span>
-<span class="fc" id="L90">					}</span>
-				}
-			}
-		}
-<span class="fc" id="L94">		this.isEdges = isEdges;</span>
-<span class="fc" id="L95">		this.immutable = immutable;</span>
-<span class="fc" id="L96">	}</span>
-
-	static &lt;K&gt; IndexIdMapImpl&lt;K&gt; newEmpty(IntSet indicesSet, boolean isEdges, int expectedSize) {
-<span class="fc" id="L99">		return new IndexIdMapImpl&lt;&gt;(indicesSet, isEdges, expectedSize);</span>
+	static &lt;K&gt; IndexIdMapImpl&lt;K&gt; newEmpty(IntSet indicesSet, boolean isVertices, int expectedSize) {
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">		assert indicesSet.isEmpty();</span>
+<span class="fc" id="L53">		Object2IntOpenHashMap&lt;K&gt; idToIndex = new Object2IntOpenHashMap&lt;&gt;(expectedSize);</span>
+<span class="fc" id="L54">		idToIndex.defaultReturnValue(-1);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		Object[] indexToId = expectedSize == 0 ? ObjectArrays.DEFAULT_EMPTY_ARRAY : new Object[expectedSize];</span>
+<span class="fc" id="L56">		return new IndexIdMapImpl&lt;&gt;(indicesSet, idToIndex, indexToId, isVertices, false);</span>
 	}
 
 	static &lt;K&gt; IndexIdMapImpl&lt;K&gt; newCopyOf(IndexIdMap&lt;K&gt; orig, Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; reIndexing,
-			IntSet indicesSet, boolean isEdges, boolean immutable) {
-<span class="fc" id="L104">		return new IndexIdMapImpl&lt;&gt;(orig, reIndexing, indicesSet, isEdges, immutable);</span>
+			IntSet indicesSet, boolean isVertices, boolean immutable) {
+<span class="fc" id="L61">		final int elementsSize = indicesSet.size();</span>
+<span class="fc" id="L62">		final Object2IntOpenHashMap&lt;K&gt; idToIndex = new Object2IntOpenHashMap&lt;&gt;(elementsSize);</span>
+<span class="fc" id="L63">		idToIndex.defaultReturnValue(-1);</span>
+		final Object[] indexToId;
+
+<span class="fc bfc" id="L66" title="All 2 branches covered.">		if (elementsSize == 0) {</span>
+<span class="fc" id="L67">			indexToId = ObjectArrays.DEFAULT_EMPTY_ARRAY;</span>
+
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		} else if (orig instanceof IndexIdMapImpl) {</span>
+<span class="fc" id="L70">			IndexIdMapImpl&lt;K&gt; orig0 = (IndexIdMapImpl&lt;K&gt;) orig;</span>
+
+<span class="fc bfc" id="L72" title="All 2 branches covered.">			if (reIndexing.isEmpty()) {</span>
+<span class="fc" id="L73">				idToIndex.putAll(orig0.idToIndex);</span>
+<span class="fc" id="L74">				indexToId = Arrays.copyOf(orig0.indexToId, elementsSize);</span>
+
+			} else {
+<span class="fc" id="L77">				IndexGraphBuilder.ReIndexingMap reIndexing0 = reIndexing.get();</span>
+<span class="fc" id="L78">				Object[] indexToIdOrig = orig0.indexToId;</span>
+<span class="fc" id="L79">				indexToId = new Object[elementsSize];</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">				for (int origIdx : range(elementsSize)) {</span>
+<span class="fc" id="L81">					int idx = reIndexing0.map(origIdx);</span>
+					@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L83">					K id = (K) indexToIdOrig[origIdx];</span>
+<span class="fc" id="L84">					indexToId[idx] = id;</span>
+<span class="fc" id="L85">					idToIndex.put(id, idx);</span>
+<span class="fc" id="L86">				}</span>
+			}
+
+<span class="fc" id="L89">		} else {</span>
+<span class="fc" id="L90">			indexToId = new Object[elementsSize];</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">			if (reIndexing.isEmpty()) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">				for (int idx : range(elementsSize)) {</span>
+<span class="fc" id="L93">					K id = orig.indexToId(idx);</span>
+<span class="fc" id="L94">					indexToId[idx] = id;</span>
+<span class="fc" id="L95">					idToIndex.put(id, idx);</span>
+<span class="fc" id="L96">				}</span>
+
+			} else {
+<span class="fc" id="L99">				IndexGraphBuilder.ReIndexingMap reIndexing0 = reIndexing.get();</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">				for (int origIdx : range(elementsSize)) {</span>
+<span class="fc" id="L101">					int idx = reIndexing0.map(origIdx);</span>
+<span class="fc" id="L102">					K id = orig.indexToId(origIdx);</span>
+<span class="fc" id="L103">					indexToId[idx] = id;</span>
+<span class="fc" id="L104">					idToIndex.put(id, idx);</span>
+<span class="fc" id="L105">				}</span>
+			}
+		}
+
+<span class="fc bfc" id="L109" title="All 2 branches covered.">		if (idToIndex.size() &lt; elementsSize)</span>
+<span class="fc" id="L110">			throw new IllegalArgumentException(&quot;IDs are not unique&quot;);</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">		if (Arrays.stream(indexToId).anyMatch(Objects::isNull))</span>
+<span class="fc" id="L112">			throw new NullPointerException(&quot;null id&quot;);</span>
+<span class="fc" id="L113">		return new IndexIdMapImpl&lt;&gt;(indicesSet, idToIndex, indexToId, isVertices, immutable);</span>
+	}
+
+	/* This object should not be used again. Responsibility of the user (of this class). */
+	IndexIdMapImpl&lt;K&gt; intoImmutable(Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; reIndexing) {
+<span class="fc bfc" id="L118" title="All 2 branches covered.">		if (reIndexing.isPresent()) {</span>
+<span class="fc" id="L119">			IndexGraphBuilder.ReIndexingMap reIndexing0 = reIndexing.get();</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">			for (var entry : Object2IntMaps.fastIterable(idToIndex)) {</span>
+<span class="fc" id="L121">				int origIdx = entry.getIntValue();</span>
+<span class="fc" id="L122">				int newIdx = reIndexing0.map(origIdx);</span>
+<span class="fc" id="L123">				entry.setValue(newIdx);</span>
+<span class="fc" id="L124">				indexToId[newIdx] = entry.getKey();</span>
+<span class="fc" id="L125">			}</span>
+		}
+<span class="fc" id="L127">		return new IndexIdMapImpl&lt;&gt;(indicesSet, idToIndex, indexToId, isVertices, true);</span>
 	}
 
 	void addId(K id, int idx) {
-<span class="fc" id="L108">		boolean added = addIdIfNotDuplicate(id, idx);</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">		if (!added) {</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">			if (isEdges) {</span>
-<span class="fc" id="L111">				throw new IllegalArgumentException(&quot;Graph already contain such an edge: &quot; + id);</span>
-			} else {
-<span class="fc" id="L113">				throw new IllegalArgumentException(&quot;Graph already contain such a vertex: &quot; + id);</span>
-			}
-		}
-<span class="fc" id="L116">	}</span>
+<span class="fc" id="L131">		boolean added = addIdIfNotDuplicate(id, idx);</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">		if (!added)</span>
+<span class="fc" id="L133">			throw new IllegalArgumentException(</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">					&quot;Graph already contain such &quot; + (isVertices ? &quot;vertex: &quot; : &quot;edge: &quot;) + id);</span>
+<span class="fc" id="L135">	}</span>
 
 	boolean addIdIfNotDuplicate(K id, int idx) {
-<span class="pc bpc" id="L119" title="1 of 2 branches missed.">		assert idx == idToIndex.size();</span>
-<span class="fc" id="L120">		int oldIdx = idToIndex.putIfAbsent(id, idx);</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		if (oldIdx &gt;= 0)</span>
-<span class="fc" id="L122">			return false;</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">		assert idx == idToIndex.size();</span>
+<span class="fc" id="L139">		int oldIdx = idToIndex.putIfAbsent(id, idx);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">		if (oldIdx &gt;= 0)</span>
+<span class="fc" id="L141">			return false;</span>
 
-<span class="fc bfc" id="L124" title="All 2 branches covered.">		if (idx == indexToId.length)</span>
-<span class="fc" id="L125">			indexToId = Arrays.copyOf(indexToId, Math.max(2, 2 * indexToId.length));</span>
-<span class="fc" id="L126">		indexToId[idx] = id;</span>
-<span class="fc" id="L127">		return true;</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">		if (idx == indexToId.length)</span>
+<span class="fc" id="L144">			indexToId = Arrays.copyOf(indexToId, Math.max(2, 2 * indexToId.length));</span>
+<span class="fc" id="L145">		indexToId[idx] = id;</span>
+<span class="fc" id="L146">		return true;</span>
 	}
 
 	void rollBackRemove(int index) {
-<span class="pc bpc" id="L131" title="1 of 2 branches missed.">		assert index == idToIndex.size() - 1;</span>
-<span class="fc" id="L132">		removeLast(index);</span>
-<span class="fc" id="L133">	}</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">		assert index == idToIndex.size() - 1;</span>
+<span class="fc" id="L151">		removeLast(index);</span>
+<span class="fc" id="L152">	}</span>
 
 	private void swapAndRemove(int removedIdx, int swappedIdx) {
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L137">		K id1 = (K) indexToId[removedIdx];</span>
+<span class="fc" id="L156">		K id1 = (K) indexToId[removedIdx];</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L139">		K id2 = (K) indexToId[swappedIdx];</span>
-<span class="fc" id="L140">		indexToId[removedIdx] = id2;</span>
-<span class="fc" id="L141">		indexToId[swappedIdx] = null;</span>
-<span class="fc" id="L142">		int oldIdx1 = idToIndex.removeInt(id1);</span>
-<span class="fc" id="L143">		int oldIdx2 = idToIndex.put(id2, removedIdx);</span>
-<span class="pc bpc" id="L144" title="1 of 2 branches missed.">		assert removedIdx == oldIdx1;</span>
-<span class="pc bpc" id="L145" title="1 of 2 branches missed.">		assert swappedIdx == oldIdx2;</span>
-<span class="fc" id="L146">	}</span>
+<span class="fc" id="L158">		K id2 = (K) indexToId[swappedIdx];</span>
+<span class="fc" id="L159">		indexToId[removedIdx] = id2;</span>
+<span class="fc" id="L160">		indexToId[swappedIdx] = null;</span>
+<span class="fc" id="L161">		int oldIdx1 = idToIndex.removeInt(id1);</span>
+<span class="fc" id="L162">		int oldIdx2 = idToIndex.put(id2, removedIdx);</span>
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">		assert removedIdx == oldIdx1;</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">		assert swappedIdx == oldIdx2;</span>
+<span class="fc" id="L165">	}</span>
 
 	private void removeLast(int removedIdx) {
-<span class="fc" id="L149">		Object id = indexToId[removedIdx];</span>
-<span class="fc" id="L150">		indexToId[removedIdx] = null;</span>
-<span class="fc" id="L151">		idToIndex.removeInt(id);</span>
-<span class="fc" id="L152">	}</span>
+<span class="fc" id="L168">		Object id = indexToId[removedIdx];</span>
+<span class="fc" id="L169">		indexToId[removedIdx] = null;</span>
+<span class="fc" id="L170">		idToIndex.removeInt(id);</span>
+<span class="fc" id="L171">	}</span>
 
 	void initListeners(IndexGraph g) {
-<span class="fc" id="L155">		IndexRemoveListener listener = new IndexRemoveListener() {</span>
+<span class="fc" id="L174">		IndexRemoveListener listener = new IndexRemoveListener() {</span>
 
 			@Override
 			public void swapAndRemove(int removedIdx, int swappedIdx) {
-<span class="fc" id="L159">				IndexIdMapImpl.this.swapAndRemove(removedIdx, swappedIdx);</span>
-<span class="fc" id="L160">			}</span>
+<span class="fc" id="L178">				IndexIdMapImpl.this.swapAndRemove(removedIdx, swappedIdx);</span>
+<span class="fc" id="L179">			}</span>
 
 			@Override
 			public void removeLast(int removedIdx) {
-<span class="fc" id="L164">				IndexIdMapImpl.this.removeLast(removedIdx);</span>
-<span class="fc" id="L165">			}</span>
+<span class="fc" id="L183">				IndexIdMapImpl.this.removeLast(removedIdx);</span>
+<span class="fc" id="L184">			}</span>
 		};
-<span class="fc bfc" id="L167" title="All 2 branches covered.">		if (isEdges) {</span>
-<span class="fc" id="L168">			g.addEdgeRemoveListener(listener);</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">		if (isVertices) {</span>
+<span class="fc" id="L187">			g.addVertexRemoveListener(listener);</span>
 		} else {
-<span class="fc" id="L170">			g.addVertexRemoveListener(listener);</span>
+<span class="fc" id="L189">			g.addEdgeRemoveListener(listener);</span>
 		}
-<span class="fc" id="L172">	}</span>
+<span class="fc" id="L191">	}</span>
 
 	void idsClear() {
-<span class="fc" id="L175">		Arrays.fill(indexToId, 0, idToIndex.size(), null);</span>
-<span class="fc" id="L176">		idToIndex.clear();</span>
-<span class="fc" id="L177">	}</span>
+<span class="fc" id="L194">		Arrays.fill(indexToId, 0, idToIndex.size(), null);</span>
+<span class="fc" id="L195">		idToIndex.clear();</span>
+<span class="fc" id="L196">	}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public K indexToId(int index) {
-<span class="fc" id="L182">		Assertions.checkGraphId(index, indicesSet.size(), isEdges);</span>
-<span class="fc" id="L183">		return (K) indexToId[index];</span>
+<span class="fc" id="L201">		Assertions.checkGraphId(index, indicesSet.size(), isVertices);</span>
+<span class="fc" id="L202">		return (K) indexToId[index];</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public K indexToIdIfExist(int index) {
-<span class="fc bfc" id="L189" title="All 4 branches covered.">		if (!(0 &lt;= index &amp;&amp; index &lt; indicesSet.size()))</span>
-<span class="fc" id="L190">			return null;</span>
-<span class="fc" id="L191">		return (K) indexToId[index];</span>
+<span class="fc bfc" id="L208" title="All 4 branches covered.">		if (!(0 &lt;= index &amp;&amp; index &lt; indicesSet.size()))</span>
+<span class="fc" id="L209">			return null;</span>
+<span class="fc" id="L210">		return (K) indexToId[index];</span>
 	}
 
 	@Override
 	public int idToIndex(K id) {
-<span class="fc" id="L196">		int idx = idToIndex.getInt(id);</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">		if (idx &lt; 0) {</span>
-<span class="fc" id="L198">			Objects.requireNonNull(id);</span>
-<span class="fc bfc" id="L199" title="All 2 branches covered.">			if (isEdges) {</span>
-<span class="fc" id="L200">				throw NoSuchEdgeException.ofEdge(id);</span>
+<span class="fc" id="L215">		int idx = idToIndex.getInt(id);</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">		if (idx &lt; 0) {</span>
+<span class="fc" id="L217">			Objects.requireNonNull(id);</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">			if (isVertices) {</span>
+<span class="fc" id="L219">				throw NoSuchVertexException.ofVertex(id);</span>
 			} else {
-<span class="fc" id="L202">				throw NoSuchVertexException.ofVertex(id);</span>
+<span class="fc" id="L221">				throw NoSuchEdgeException.ofEdge(id);</span>
 			}
 		}
-<span class="fc" id="L205">		return idx;</span>
+<span class="fc" id="L224">		return idx;</span>
 	}
 
 	@Override
 	public int idToIndexIfExist(K id) {
-<span class="fc" id="L210">		return idToIndex.getInt(Objects.requireNonNull(id));</span>
+<span class="fc" id="L229">		return idToIndex.getInt(Objects.requireNonNull(id));</span>
 	}
 
 	void renameId(K oldId, K newId) {
-<span class="fc bfc" id="L214" title="All 2 branches covered.">		if (immutable) {</span>
-<span class="fc bfc" id="L215" title="All 2 branches covered.">			if (isEdges) {</span>
-<span class="fc" id="L216">				throw new UnsupportedOperationException(&quot;graph is immutable, cannot rename vertices&quot;);</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">		if (immutable)</span>
+<span class="fc" id="L234">			throw new UnsupportedOperationException(</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">					&quot;graph is immutable, cannot rename &quot; + (isVertices ? &quot;vertices&quot; : &quot;edges&quot;));</span>
+<span class="fc" id="L236">		int idx = idToIndex.removeInt(oldId);</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">		if (idx &lt; 0) {</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">			if (isVertices) {</span>
+<span class="fc" id="L239">				throw NoSuchVertexException.ofVertex(oldId);</span>
 			} else {
-<span class="fc" id="L218">				throw new UnsupportedOperationException(&quot;graph is immutable, cannot rename edges&quot;);</span>
+<span class="fc" id="L241">				throw NoSuchEdgeException.ofEdge(oldId);</span>
 			}
 		}
-<span class="fc" id="L221">		int idx = idToIndex.removeInt(oldId);</span>
-<span class="fc bfc" id="L222" title="All 2 branches covered.">		if (idx &lt; 0) {</span>
-<span class="fc bfc" id="L223" title="All 2 branches covered.">			if (isEdges) {</span>
-<span class="fc" id="L224">				throw NoSuchEdgeException.ofEdge(oldId);</span>
-			} else {
-<span class="fc" id="L226">				throw NoSuchVertexException.ofVertex(oldId);</span>
-			}
+<span class="fc" id="L244">		int oldIdx = idToIndex.putIfAbsent(newId, idx);</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">		if (oldIdx &gt;= 0) {</span>
+<span class="fc" id="L246">			idToIndex.put(oldId, idx); /* roll back */</span>
+<span class="fc" id="L247">			throw new IllegalArgumentException(</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">					&quot;Graph already contain such &quot; + (isVertices ? &quot;vertex: &quot; : &quot;edge: &quot;) + newId);</span>
 		}
-<span class="fc" id="L229">		int oldIdx = idToIndex.putIfAbsent(newId, idx);</span>
-<span class="fc bfc" id="L230" title="All 2 branches covered.">		if (oldIdx &gt;= 0) {</span>
-<span class="fc" id="L231">			idToIndex.put(oldId, idx); /* roll back */</span>
-<span class="fc bfc" id="L232" title="All 2 branches covered.">			if (isEdges) {</span>
-<span class="fc" id="L233">				throw new IllegalArgumentException(&quot;Graph already contain such an edge: &quot; + newId);</span>
-			} else {
-<span class="fc" id="L235">				throw new IllegalArgumentException(&quot;Graph already contain such a vertex: &quot; + newId);</span>
-			}
-		}
-<span class="fc" id="L238">		indexToId[idx] = newId;</span>
-<span class="fc" id="L239">	}</span>
+<span class="fc" id="L250">		indexToId[idx] = newId;</span>
+<span class="fc" id="L251">	}</span>
 
 	Set&lt;K&gt; idSet() {
-<span class="fc" id="L242">		return idsSet;</span>
+<span class="fc" id="L254">		return idsSet;</span>
 	}
 
-<span class="fc" id="L245">	private class IdSet extends AbstractObjectSet&lt;K&gt; {</span>
+<span class="fc" id="L257">	private class IdSet extends AbstractObjectSet&lt;K&gt; {</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L249">			return indicesSet.size();</span>
+<span class="fc" id="L261">			return indicesSet.size();</span>
 		}
 
 		@Override
 		public boolean contains(Object o) {
-<span class="fc" id="L254">			return idToIndex.containsKey(o);</span>
+<span class="fc" id="L266">			return idToIndex.containsKey(o);</span>
 		}
 
 		@Override
 		public boolean containsAll(Collection&lt;?&gt; c) {
-<span class="fc" id="L259">			return idToIndex.keySet().containsAll(c);</span>
+<span class="fc" id="L271">			return idToIndex.keySet().containsAll(c);</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public ObjectIterator&lt;K&gt; iterator() {
-<span class="fc" id="L265">			return ObjectIterators.wrap((K[]) indexToId, 0, indicesSet.size());</span>
+<span class="fc" id="L277">			return ObjectIterators.wrap((K[]) indexToId, 0, indicesSet.size());</span>
 		}
 
 		@Override
 		public Object[] toArray() {
-<span class="fc" id="L270">			return Arrays.copyOf(indexToId, indicesSet.size());</span>
+<span class="fc" id="L282">			return Arrays.copyOf(indexToId, indicesSet.size());</span>
 		}
 
 		@Override
 		public &lt;T&gt; T[] toArray(T[] a) {
-<span class="fc" id="L275">			int size = indicesSet.size();</span>
-<span class="fc bfc" id="L276" title="All 2 branches covered.">			if (a.length &lt; size)</span>
-<span class="fc" id="L277">				a = java.util.Arrays.copyOf(a, size);</span>
-<span class="fc" id="L278">			System.arraycopy(indexToId, 0, a, 0, size);</span>
-<span class="fc bfc" id="L279" title="All 2 branches covered.">			if (a.length &gt; size)</span>
-<span class="fc" id="L280">				a[size] = null;</span>
-<span class="fc" id="L281">			return a;</span>
+<span class="fc" id="L287">			int size = indicesSet.size();</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">			if (a.length &lt; size)</span>
+<span class="fc" id="L289">				a = java.util.Arrays.copyOf(a, size);</span>
+<span class="fc" id="L290">			System.arraycopy(indexToId, 0, a, 0, size);</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">			if (a.length &gt; size)</span>
+<span class="fc" id="L292">				a[size] = null;</span>
+<span class="fc" id="L293">			return a;</span>
 		}
 	}
 
 	void ensureCapacity(int capacity) {
-<span class="fc" id="L286">		idToIndex.ensureCapacity(capacity);</span>
-<span class="fc bfc" id="L287" title="All 2 branches covered.">		if (capacity &gt; indexToId.length)</span>
-<span class="fc" id="L288">			indexToId = Arrays.copyOf(indexToId, Math.max(2, Math.max(2 * indexToId.length, capacity)));</span>
-<span class="fc" id="L289">	}</span>
+<span class="fc" id="L298">		idToIndex.ensureCapacity(capacity);</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">		if (capacity &gt; indexToId.length)</span>
+<span class="fc" id="L300">			indexToId = Arrays.copyOf(indexToId, Math.max(2, Math.max(2 * indexToId.length, capacity)));</span>
+<span class="fc" id="L301">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

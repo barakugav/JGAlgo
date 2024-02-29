@@ -50,9 +50,9 @@ class IntGraphFactoryImpl implements IntGraphFactory {
 <span class="fc" id="L50">				.newCopyOfWithReIndex(g.indexGraph(), true, true, copyVerticesWeights, copyEdgesWeights);</span>
 <span class="fc" id="L51">		IndexIdMap&lt;Integer&gt; viMap = g.indexGraphVerticesMap();</span>
 <span class="fc" id="L52">		IndexIdMap&lt;Integer&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L53">		IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="fc" id="L54">		Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="fc" id="L55">		Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="fc" id="L53">		IndexGraph iGraph = reIndexedGraph.graph;</span>
+<span class="fc" id="L54">		Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing;</span>
+<span class="fc" id="L55">		Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing;</span>
 <span class="fc" id="L56">		return new IntGraphImpl(this, iGraph, viMap, eiMap, vReIndexing, eReIndexing);</span>
 	}
 

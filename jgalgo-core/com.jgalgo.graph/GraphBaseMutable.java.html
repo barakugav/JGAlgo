@@ -50,8 +50,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L50">		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;</span>
 <span class="fc" id="L51">		verticesInternalContainers = new DataContainer.Manager(expectedVerticesNum);</span>
 <span class="fc" id="L52">		edgesInternalContainers = new DataContainer.Manager(expectedEdgesNum);</span>
-<span class="fc" id="L53">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedVerticesNum, false);</span>
-<span class="fc" id="L54">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum, true);</span>
+<span class="fc" id="L53">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedVerticesNum, true);</span>
+<span class="fc" id="L54">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum, false);</span>
 
 <span class="fc" id="L56">		edgeEndpointsContainer = newEdgesLongContainer(DefaultEndpoints, newArr -&gt; edgeEndpoints = newArr);</span>
 <span class="fc" id="L57">	}</span>
@@ -67,16 +67,16 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L67">			Assertions.onlyUndirected(g);</span>
 		}
 
-<span class="fc" id="L70">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), false);</span>
-<span class="fc" id="L71">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), true);</span>
+<span class="fc" id="L70">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), true);</span>
+<span class="fc" id="L71">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), false);</span>
 <span class="fc bfc" id="L72" title="All 2 branches covered.">		if (copyVerticesWeights) {</span>
 <span class="fc bfc" id="L73" title="All 2 branches covered.">			for (String key : g.verticesWeightsKeys())</span>
 <span class="fc" id="L74">				verticesUserWeights</span>
-<span class="fc" id="L75">						.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.verticesWeights(key), vertices, false));</span>
+<span class="fc" id="L75">						.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.verticesWeights(key), vertices, true));</span>
 		}
 <span class="fc bfc" id="L77" title="All 2 branches covered.">		if (copyEdgesWeights) {</span>
 <span class="fc bfc" id="L78" title="All 2 branches covered.">			for (String key : g.edgesWeightsKeys())</span>
-<span class="fc" id="L79">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.edgesWeights(key), edges, true));</span>
+<span class="fc" id="L79">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.edgesWeights(key), edges, false));</span>
 		}
 
 		/* internal data containers should be copied manually */
@@ -672,7 +672,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
-<span class="fc" id="L675">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, false, type, defVal);</span>
+<span class="fc" id="L675">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, true, type, defVal);</span>
 <span class="fc" id="L676">		verticesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L678">		WeightsT weights0 = (WeightsT) weights;</span>
@@ -682,7 +682,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
-<span class="fc" id="L685">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, true, type, defVal);</span>
+<span class="fc" id="L685">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, false, type, defVal);</span>
 <span class="fc" id="L686">		edgesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L688">		WeightsT weights0 = (WeightsT) weights;</span>
