@@ -16,12 +16,10 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Algorithm for enumerating over all maximal cliques in a graph.
@@ -39,10 +37,11 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * Graph<String, Integer> g = ...;
  * MaximalCliquesEnumerator maxCliquesAlgo = MaximalCliquesEnumerator.newInstance();
  *
- * for (Set<String> clique : maxCliquesAlgo.allMaximalCliques(g)) {
- * 	System.out.println("Clique in the graph:");
- * 	for (String v : clique)
- * 		System.out.println("\t" + v);
+ * for (Iterator<Set<String>> it = maxCliquesAlgo.maximalCliquesIter(g); it.hasNext();) {
+ *	Set<String> clique = it.next();
+ *	System.out.println("Clique in the graph:");
+ *	for (String v : clique)
+ *		System.out.println("\t" + v);
  * }
  * }</pre>
  *
@@ -54,10 +53,6 @@ public interface MaximalCliquesEnumerator {
 	 * Iterate over all maximal cliques in a graph.
 	 *
 	 * <p>
-	 * In contrast to {@link #allMaximalCliques(Graph)}, this method may iterate the cliques one at a time and can be
-	 * used to avoid storing all the cliques in memory at the the time.
-	 *
-	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned iterator will be iterate over {@link IntSet}.
 	 *
 	 * @param  <V> the vertices type
@@ -66,26 +61,6 @@ public interface MaximalCliquesEnumerator {
 	 * @return     an iterator that iterates over all maximal cliques in the graph
 	 */
 	<V, E> Iterator<Set<V>> maximalCliquesIter(Graph<V, E> g);
-
-	/**
-	 * Finds all the maximal cliques in a graph.
-	 *
-	 * <p>
-	 * The number of maximal cliques can be exponential in the number of vertices in the graph. If the graph is large,
-	 * consider using the {@link #maximalCliquesIter(Graph)} method instead, which may iterate the cliques one at a time
-	 * without storing all them at the same time in memory.
-	 *
-	 * <p>
-	 * If {@code g} is {@link IntGraph}, the returned object will be a list of {@link IntSet}.
-	 *
-	 * @param  <V> the vertices type
-	 * @param  <E> the edges type
-	 * @param  g   a graph
-	 * @return     a list containing all maximal cliques in the graph
-	 */
-	default <V, E> List<Set<V>> allMaximalCliques(Graph<V, E> g) {
-		return new ObjectArrayList<>(maximalCliquesIter(g));
-	}
 
 	/**
 	 * Create a new maximal cliques algorithm object.
