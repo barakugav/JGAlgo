@@ -349,7 +349,7 @@ public class RED_BLACK_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_
 		}
 		if (replace != null)
 			replace.parent = parent;
-		n.clearWithoutUserData();
+		n.clearTreePointers();
 	}
 
 	void removeNode(Node KEY_VALUE_GENERIC n) {
