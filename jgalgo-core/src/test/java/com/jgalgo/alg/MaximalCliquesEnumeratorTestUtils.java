@@ -29,6 +29,7 @@ import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class MaximalCliquesEnumeratorTestUtils extends TestUtils {
@@ -48,7 +49,7 @@ class MaximalCliquesEnumeratorTestUtils extends TestUtils {
 
 	private static <V, E> void testAlgo(Graph<V, E> g, MaximalCliquesEnumerator algo) {
 		final int n = g.vertices().size();
-		Collection<Set<V>> cliques = algo.allMaximalCliques(g);
+		Collection<Set<V>> cliques = new ObjectArrayList<>(algo.maximalCliquesIter(g));
 
 		Set<Pair<V, V>> edges = new HashSet<>();
 		for (E e : g.edges()) {
