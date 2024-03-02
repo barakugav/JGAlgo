@@ -30,15 +30,17 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 	VoronoiAlgo.IResult computeVoronoiCells(IndexGraph g, IntCollection sites, IWeightFunction w) {
 		if (sites.isEmpty())
 			throw new IllegalArgumentException("no sites provided");
+		w = IWeightFunction.replaceNullWeightFunc(w);
+		
 		final int n = g.vertices().size();
 		DoubleIntReferenceableHeap heap = DoubleIntReferenceableHeap.newInstance();
 		DoubleIntReferenceableHeap.Ref[] heapVPtrs = new DoubleIntReferenceableHeap.Ref[n];
 
 		double[] distance = new double[n];
-		Arrays.fill(distance, Double.POSITIVE_INFINITY);
 		int[] backtrack = new int[n];
-		Arrays.fill(backtrack, -1);
 		int[] cell = new int[n];
+		Arrays.fill(distance, Double.POSITIVE_INFINITY);
+		Arrays.fill(backtrack, -1);
 		Arrays.fill(cell, -1);
 
 		int[] sitesArr = sites.toIntArray();

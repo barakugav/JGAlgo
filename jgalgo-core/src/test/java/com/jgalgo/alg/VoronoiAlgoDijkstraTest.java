@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -27,8 +28,12 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IndexGraphFactory;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -107,7 +112,21 @@ class VoronoiAlgoDijkstraTest extends TestBase {
 				assertNull(ssspResults.get(site).getPath(unreachable));
 			}
 		}
+	}
 
+	@Test
+	public void nullWeightFunc() {
+		VoronoiAlgo algo = new VoronoiAlgoDijkstra();
+		foreachBoolConfig((indexGraph, directed) -> {
+			IntGraphFactory factory =
+					indexGraph ? IndexGraphFactory.newInstance(directed) : IntGraphFactory.newInstance(directed);
+			IntGraph g = factory.newGraph();
+			g.addVertices(range(3));
+			g.addEdge(0, 1, 0);
+			g.addEdge(2, 1, 1);
+			Object res = algo.computeVoronoiCells(g, IntList.of(0, 2), null);
+			assertNotNull(res);
+		});
 	}
 
 }
