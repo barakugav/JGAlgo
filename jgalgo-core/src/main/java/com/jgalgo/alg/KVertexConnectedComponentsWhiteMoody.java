@@ -56,12 +56,11 @@ class KVertexConnectedComponentsWhiteMoody extends KVertexConnectedComponentsUti
 	private final MinimumVertexCutAllGlobalKanevsky allGlobalConnectivityAlgo = new MinimumVertexCutAllGlobalKanevsky();
 
 	@Override
-	KVertexConnectedComponentsAlgo.IResult findKVertexConnectedComponents(IndexGraph g, int k) {
+	List<IntSet> findKVertexConnectedComponents(IndexGraph g, int k) {
 		if (k < 0)
 			throw new IllegalArgumentException("k must be non negative");
 		List<List<IntSet>> hierarchy = findVertexConnectedComponentsHierarchy(g);
-		List<IntSet> components = k >= hierarchy.size() ? List.of() : hierarchy.get(k);
-		return new KVertexConnectedComponentsUtils.ResultImpl(g, components);
+		return k >= hierarchy.size() ? List.of() : hierarchy.get(k);
 	}
 
 	List<List<IntSet>> findVertexConnectedComponentsHierarchy(IndexGraph g) {

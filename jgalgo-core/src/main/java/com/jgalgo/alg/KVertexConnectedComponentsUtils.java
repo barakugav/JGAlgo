@@ -15,14 +15,13 @@
  */
 package com.jgalgo.alg;
 
-import static com.jgalgo.internal.util.Range.range;
+import static java.util.stream.Collectors.toList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class KVertexConnectedComponentsUtils {
@@ -31,129 +30,20 @@ class KVertexConnectedComponentsUtils {
 
 	abstract static class AbstractImpl implements KVertexConnectedComponentsAlgo {
 
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
-		public <V, E> KVertexConnectedComponentsAlgo.Result<V, E> findKVertexConnectedComponents(Graph<V, E> g, int k) {
+		public <V, E> List<Set<V>> findKVertexConnectedComponents(Graph<V, E> g, int k) {
 			if (g instanceof IndexGraph) {
-				return (KVertexConnectedComponentsAlgo.Result<V, E>) findKVertexConnectedComponents((IndexGraph) g, k);
+				return (List) findKVertexConnectedComponents((IndexGraph) g, k);
 			} else {
 				IndexGraph ig = g.indexGraph();
-				KVertexConnectedComponentsAlgo.IResult indexRes = findKVertexConnectedComponents(ig, k);
-				return resultFromIndexResult(g, indexRes);
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				List<IntSet> indexRes = findKVertexConnectedComponents(ig, k);
+				return indexRes.stream().map(cc -> IndexIdMaps.indexToIdSet(cc, viMap)).collect(toList());
 			}
 		}
 
-		abstract KVertexConnectedComponentsAlgo.IResult findKVertexConnectedComponents(IndexGraph g, int k);
-	}
-
-	static class ResultImpl implements KVertexConnectedComponentsAlgo.IResult {
-
-		private final IndexGraph g;
-		private final List<IntSet> components;
-
-		ResultImpl(IndexGraph g, List<IntSet> components) {
-			this.g = g;
-			this.components = components;
-		}
-
-		@Override
-		public int componentsNum() {
-			return components.size();
-		}
-
-		@Override
-		public IntSet componentVertices(int compIndex) {
-			return components.get(compIndex);
-		}
-
-		@Override
-		public IntGraph graph() {
-			return g;
-		}
-
-		@Override
-		public String toString() {
-			return components.toString();
-		}
-	}
-
-	private static class ObjResultFromIndexResult<V, E> implements KVertexConnectedComponentsAlgo.Result<V, E> {
-
-		private final Graph<V, E> g;
-		private final KVertexConnectedComponentsAlgo.IResult indexRes;
-
-		ObjResultFromIndexResult(Graph<V, E> g, KVertexConnectedComponentsAlgo.IResult indexRes) {
-			this.g = g;
-			this.indexRes = indexRes;
-		}
-
-		@Override
-		public int componentsNum() {
-			return indexRes.componentsNum();
-		}
-
-		@Override
-		public Set<V> componentVertices(int compIndex) {
-			return IndexIdMaps.indexToIdSet(indexRes.componentVertices(compIndex), g.indexGraphVerticesMap());
-		}
-
-		@Override
-		public Graph<V, E> graph() {
-			return g;
-		}
-
-		@Override
-		public String toString() {
-			return range(componentsNum())
-					.mapToObj(this::componentVertices)
-					.map(Object::toString)
-					.collect(Collectors.joining(", ", "[", "]"));
-		}
-	}
-
-	private static class IntResultFromIndexResult implements KVertexConnectedComponentsAlgo.IResult {
-
-		private final IntGraph g;
-		private final KVertexConnectedComponentsAlgo.IResult indexRes;
-
-		IntResultFromIndexResult(IntGraph g, KVertexConnectedComponentsAlgo.IResult indexRes) {
-			this.g = g;
-			this.indexRes = indexRes;
-		}
-
-		@Override
-		public int componentsNum() {
-			return indexRes.componentsNum();
-		}
-
-		@Override
-		public IntSet componentVertices(int compIndex) {
-			return IndexIdMaps.indexToIdSet(indexRes.componentVertices(compIndex), g.indexGraphVerticesMap());
-		}
-
-		@Override
-		public IntGraph graph() {
-			return g;
-		}
-
-		@Override
-		public String toString() {
-			return range(componentsNum())
-					.mapToObj(this::componentVertices)
-					.map(Object::toString)
-					.collect(Collectors.joining(", ", "[", "]"));
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	static <V, E> KVertexConnectedComponentsAlgo.Result<V, E> resultFromIndexResult(Graph<V, E> g,
-			KVertexConnectedComponentsAlgo.IResult indexRes) {
-		assert !(g instanceof IndexGraph);
-		if (g instanceof IntGraph) {
-			return (KVertexConnectedComponentsAlgo.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexRes);
-		} else {
-			return new ObjResultFromIndexResult<>(g, indexRes);
-		}
+		abstract List<IntSet> findKVertexConnectedComponents(IndexGraph g, int k);
 	}
 
 }
