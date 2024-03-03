@@ -15,37 +15,30 @@
  */
 package com.jgalgo.alg;
 
+import static java.util.stream.Collectors.toList;
+import java.util.List;
+import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 interface KVertexConnectedComponentsAlgoBase extends KVertexConnectedComponentsAlgo {
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	default <V, E> KVertexConnectedComponentsAlgo.Result<V, E> findKVertexConnectedComponents(Graph<V, E> g, int k) {
+	default <V, E> List<Set<V>> findKVertexConnectedComponents(Graph<V, E> g, int k) {
 		if (g instanceof IndexGraph) {
-			return (KVertexConnectedComponentsAlgo.Result<V, E>) findKVertexConnectedComponents((IndexGraph) g, k);
+			return (List) findKVertexConnectedComponents((IndexGraph) g, k);
 		} else {
 			IndexGraph ig = g.indexGraph();
-			KVertexConnectedComponentsAlgo.IResult indexRes = findKVertexConnectedComponents(ig, k);
-			return resultFromIndexResult(g, indexRes);
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			List<IntSet> indexRes = findKVertexConnectedComponents(ig, k);
+			return indexRes.stream().map(cc -> IndexIdMaps.indexToIdSet(cc, viMap)).collect(toList());
 		}
 	}
 
-	KVertexConnectedComponentsAlgo.IResult findKVertexConnectedComponents(IndexGraph g, int k);
-
-	@SuppressWarnings("unchecked")
-	static <V, E> KVertexConnectedComponentsAlgo.Result<V, E> resultFromIndexResult(Graph<V, E> g,
-			KVertexConnectedComponentsAlgo.IResult indexRes) {
-		assert !(g instanceof IndexGraph);
-		if (g instanceof IntGraph) {
-			KVertexConnectedComponentsAlgo.IResult res =
-					new KVertexConnectedComponentsAlgos.IntResultFromIndexResult((IntGraph) g, indexRes);
-			return (KVertexConnectedComponentsAlgo.Result<V, E>) res;
-		} else {
-			return new KVertexConnectedComponentsAlgos.ObjResultFromIndexResult<>(g, indexRes);
-		}
-	}
+	List<IntSet> findKVertexConnectedComponents(IndexGraph g, int k);
 
 }

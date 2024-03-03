@@ -22,7 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
@@ -51,31 +53,23 @@ public class KVertexConnectedComponentsWhiteMoodyTest extends TestBase {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
-
 			final int k = vertexConnectivity(g) + rand.nextInt(5);
-
 			testKConnectedComponents(g, k, algo);
 		});
 	}
 
 	private static <V, E> void testKConnectedComponents(Graph<V, E> g, int k, KVertexConnectedComponentsAlgo algo) {
-		KVertexConnectedComponentsAlgo.Result<V, E> result = algo.findKVertexConnectedComponents(g, k);
+		List<Set<V>> result = algo.findKVertexConnectedComponents(g, k);
 
-		for (int c : range(result.componentsNum())) {
-			assertEquals(result.componentVertices(c).size(), new HashSet<>(result.componentVertices(c)).size(),
-					() -> "duplicate vertices in component: " + result.componentVertices(c));
-		}
+		for (Set<V> c : result)
+			assertEquals(c.size(), new HashSet<>(c).size(), () -> "duplicate vertices in component: " + c);
 
-		assertEquals(result.componentsNum(),
-				range(result.componentsNum()).mapToObj(result::componentVertices).distinct().count(),
-				() -> "duplicate components: " + result);
+		assertEquals(result.size(), new HashSet<>(result).size(), () -> "duplicate components: " + result);
 
-		for (int c : range(result.componentsNum())) {
-			Graph<V, E> comp = result.componentSubGraph(c);
-			assertTrue(vertexConnectivity(comp) >= k);
-		}
+		for (Set<V> c : result)
+			assertTrue(vertexConnectivity(g.subGraphCopy(c, null)) >= k);
 
-		int N = result.componentsNum();
+		int N = result.size();
 		if (N <= 10 && g.vertices().size() <= 64) {
 			SubSets
 					.stream(range(N))
@@ -83,7 +77,7 @@ public class KVertexConnectedComponentsWhiteMoodyTest extends TestBase {
 					.map(comps -> comps
 							.intStream()
 							.boxed()
-							.flatMap(c -> result.componentVertices(c.intValue()).stream())
+							.flatMap(c -> result.get(c.intValue()).stream())
 							.collect(toSet()))
 					.forEach(comp -> assertFalse(vertexConnectivity(g.subGraphCopy(comp, null)) >= k));
 		}
