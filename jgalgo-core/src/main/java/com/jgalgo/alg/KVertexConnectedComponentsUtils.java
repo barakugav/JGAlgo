@@ -25,16 +25,33 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-class KVertexConnectedComponentsAlgos {
+class KVertexConnectedComponentsUtils {
 
-	private KVertexConnectedComponentsAlgos() {}
+	private KVertexConnectedComponentsUtils() {}
 
-	static class IndexResult implements KVertexConnectedComponentsAlgo.IResult {
+	abstract static class AbstractImpl implements KVertexConnectedComponentsAlgo {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <V, E> KVertexConnectedComponentsAlgo.Result<V, E> findKVertexConnectedComponents(Graph<V, E> g, int k) {
+			if (g instanceof IndexGraph) {
+				return (KVertexConnectedComponentsAlgo.Result<V, E>) findKVertexConnectedComponents((IndexGraph) g, k);
+			} else {
+				IndexGraph ig = g.indexGraph();
+				KVertexConnectedComponentsAlgo.IResult indexRes = findKVertexConnectedComponents(ig, k);
+				return resultFromIndexResult(g, indexRes);
+			}
+		}
+
+		abstract KVertexConnectedComponentsAlgo.IResult findKVertexConnectedComponents(IndexGraph g, int k);
+	}
+
+	static class ResultImpl implements KVertexConnectedComponentsAlgo.IResult {
 
 		private final IndexGraph g;
 		private final List<IntSet> components;
 
-		IndexResult(IndexGraph g, List<IntSet> components) {
+		ResultImpl(IndexGraph g, List<IntSet> components) {
 			this.g = g;
 			this.components = components;
 		}
@@ -60,7 +77,7 @@ class KVertexConnectedComponentsAlgos {
 		}
 	}
 
-	static class ObjResultFromIndexResult<V, E> implements KVertexConnectedComponentsAlgo.Result<V, E> {
+	private static class ObjResultFromIndexResult<V, E> implements KVertexConnectedComponentsAlgo.Result<V, E> {
 
 		private final Graph<V, E> g;
 		private final KVertexConnectedComponentsAlgo.IResult indexRes;
@@ -94,7 +111,7 @@ class KVertexConnectedComponentsAlgos {
 		}
 	}
 
-	static class IntResultFromIndexResult implements KVertexConnectedComponentsAlgo.IResult {
+	private static class IntResultFromIndexResult implements KVertexConnectedComponentsAlgo.IResult {
 
 		private final IntGraph g;
 		private final KVertexConnectedComponentsAlgo.IResult indexRes;
@@ -125,6 +142,17 @@ class KVertexConnectedComponentsAlgos {
 					.mapToObj(this::componentVertices)
 					.map(Object::toString)
 					.collect(Collectors.joining(", ", "[", "]"));
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	static <V, E> KVertexConnectedComponentsAlgo.Result<V, E> resultFromIndexResult(Graph<V, E> g,
+			KVertexConnectedComponentsAlgo.IResult indexRes) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (KVertexConnectedComponentsAlgo.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexRes);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexRes);
 		}
 	}
 
