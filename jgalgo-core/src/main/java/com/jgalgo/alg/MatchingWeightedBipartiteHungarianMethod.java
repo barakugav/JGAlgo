@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  *
  * @author Barak Ugav
  */
-class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.MaximumBased {
+class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximumMatchingImpl {
 
 	/**
 	 * Create a new maximum weighted matching object.
@@ -56,7 +56,7 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
+	IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 		IWeightsBool partition = Assertions.onlyBipartite(g);
 		return new Worker(g, partition, w).computeMaxMatching(false);
@@ -70,7 +70,7 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
+	IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 		IWeightsBool partition = Assertions.onlyBipartite(g);
 		return new Worker(g, partition, w).computeMaxMatching(true);
@@ -211,7 +211,7 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 				nextTightEdgeHeap.clear();
 			}
 
-			return new Matchings.IndexMatching(g, matched);
+			return new Matchings.MatchingImpl(g, matched);
 		}
 
 		private void nextTightEdgeAdd(int e, int v) {

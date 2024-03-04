@@ -50,12 +50,12 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
  *
  * @author Barak Ugav
  */
-class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
+class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 
 	private static final Tree BfsProcessed = new Tree(null);
 
 	@Override
-	public IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
+	IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		/*
 		 * The BlossomV algorithm support perfect matching only, and assume such matching always exists. To support
 		 * non-perfect matching, we perform a reduction: we create a new graph containing two identical copies of the
@@ -116,11 +116,11 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 			int e = eDup < dummyEdgesThreshold ? eDup / 2 : -1;
 			matched[v] = e;
 		}
-		return new Matchings.IndexMatching(g, matched);
+		return new Matchings.MatchingImpl(g, matched);
 	}
 
 	@Override
-	public IMatching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
+	IMatching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		return new Worker(g, w).solve();
@@ -1584,7 +1584,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 				assert singletonNodes[u].isMatched();
 				matched[u] = singletonNodes[u].match.id;
 			}
-			return new Matchings.IndexMatching(g, matched);
+			return new Matchings.MatchingImpl(g, matched);
 		}
 
 		private boolean updateDuals() {

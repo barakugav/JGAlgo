@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MatchingCardinalityBipartiteHopcroftKarp implements MatchingAlgoBase.Cardinality {
+class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardinalityMatchingImpl {
 
 	/**
 	 * Create a new maximum matching object.
@@ -53,7 +53,7 @@ class MatchingCardinalityBipartiteHopcroftKarp implements MatchingAlgoBase.Cardi
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public IMatching computeMaximumCardinalityMatching(IndexGraph g) {
+	IMatching computeMaximumCardinalityMatching(IndexGraph g) {
 		Assertions.onlyUndirected(g);
 		int n = g.vertices().size();
 
@@ -159,7 +159,7 @@ class MatchingCardinalityBipartiteHopcroftKarp implements MatchingAlgoBase.Cardi
 			es.clear();
 		}
 		Arrays.fill(edges, null);
-		return new Matchings.IndexMatching(g, matched);
+		return new Matchings.MatchingImpl(g, matched);
 	}
 
 }
