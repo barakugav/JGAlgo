@@ -30,12 +30,17 @@ import com.jgalgo.gen.CompleteGraphGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IdBuilderInt;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphFactory;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class ShortestPathSingleSourceTestUtils extends TestBase {
 
@@ -89,7 +94,76 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 			WeightFunction<Integer> w = GraphsTestUtils.assignRandWeights(g, seedGen.nextSeed());
 			Integer source = Graphs.randVertex(g, rand);
 
-			ShortestPathSingleSource validationAlgo = new ShortestPathSingleSourceDijkstra();
+			ShortestPathSingleSource validationAlgo;
+			if (!(algo instanceof ShortestPathSingleSourceDijkstra)) {
+				validationAlgo = new ShortestPathSingleSourceDijkstra();
+			} else {
+				validationAlgo = new ShortestPathSingleSource() {
+					ShortestPathSingleSource bellmanFord = new ShortestPathSingleSourceBellmanFord();
+
+					@Override
+					public <V, E> ShortestPathSingleSource.Result<V, E> computeShortestPaths(Graph<V, E> g,
+							WeightFunction<E> w, V source) {
+						if (g.isDirected())
+							return bellmanFord.computeShortestPaths(g, w, source);
+
+						IndexGraph ig = g.indexGraph();
+						IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+						IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+						IndexGraphFactory g2Factory = IndexGraphFactory.directed();
+						if (ig.isAllowSelfEdges())
+							g2Factory.allowSelfEdges();
+						if (ig.isAllowParallelEdges())
+							g2Factory.allowParallelEdges();
+						IndexGraph g2 = g2Factory.newGraph();
+						g2.addVertices(range(g.vertices().size()));
+						IWeightsDouble w2 = g2.addEdgesWeights("weight", double.class);
+						for (int eIdx : range(g.edges().size())) {
+							int uIdx = ig.edgeSource(eIdx);
+							int vIdx = ig.edgeTarget(eIdx);
+							double weight = w.weight(eiMap.indexToId(eIdx));
+							int e1 = g2.addEdge(uIdx, vIdx);
+							int e2 = g2.addEdge(vIdx, uIdx);
+							w2.set(e1, weight);
+							w2.set(e2, weight);
+						}
+
+						ShortestPathSingleSource.IResult res = (ShortestPathSingleSource.IResult) bellmanFord
+								.computeShortestPaths(g2, w2, Integer.valueOf(viMap.idToIndex(source)));
+						return new ShortestPathSingleSource.Result<>() {
+
+							@Override
+							public double distance(V target) {
+								return res.distance(viMap.idToIndex(target));
+							}
+
+							@Override
+							public Path<V, E> getPath(V target) {
+								IntList edges = res.getPath(viMap.idToIndex(target)).edges();
+								if (edges == null)
+									return null;
+								return Path.valueOf(g, source, target, IndexIdMaps.indexToIdList(edges, eiMap));
+							}
+
+							@Override
+							public E backtrackEdge(V target) {
+								int eIdx = res.backtrackEdge(viMap.idToIndex(target));
+								return eIdx == -1 ? null : eiMap.indexToId(eIdx / 2);
+							}
+
+							@Override
+							public V source() {
+								return source;
+							}
+
+							@Override
+							public Graph<V, E> graph() {
+								return g;
+							}
+						};
+					}
+				};
+			}
 			testAlgo(g, w, source, algo, validationAlgo);
 		});
 	}

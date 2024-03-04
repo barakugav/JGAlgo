@@ -66,13 +66,14 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.targetInt();
-				if (heap.key(v) != Double.POSITIVE_INFINITY)
+				boolean vInHeap = heap.isInserted(v);
+				if (!vInHeap && res.distances[v] != Double.POSITIVE_INFINITY)
 					continue;
 				double ew = w.weight(e);
 				Assertions.onlyPositiveWeight(ew);
 				double distance = uDistance + ew;
 
-				if (!heap.isInserted(v)) {
+				if (!vInHeap) {
 					heap.insert(v, distance);
 					res.backtrack[v] = e;
 				} else if (distance < heap.key(v)) {
