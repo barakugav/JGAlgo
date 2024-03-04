@@ -214,15 +214,13 @@ public class RED_BLACK_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_
 
 	@Override
 	public HEAP_REFERENCE KEY_VALUE_GENERIC findMin() {
-		if (root == null)
-			throw new IllegalStateException();
+		Assertions.notEmpty(this);
 		return BinarySearchTrees.findMin(root);
 	}
 
 	@Override
 	public HEAP_REFERENCE KEY_VALUE_GENERIC findMax() {
-		if (root == null)
-			throw new IllegalStateException();
+		Assertions.notEmpty(this);
 		return BinarySearchTrees.findMax(root);
 	}
 
@@ -391,8 +389,6 @@ public class RED_BLACK_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_
 
 	@Override
 	public void remove(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
-		if (root == null)
-			throw new IllegalArgumentException("ref is not valid");
 		removeNode((Node KEY_VALUE_GENERIC) ref);
 	}
 
