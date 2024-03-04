@@ -24,22 +24,28 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-interface MaximalCliquesEnumeratorBase extends MaximalCliquesEnumerator {
+class MaximalCliquesEnumerators {
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	default <V, E> Iterator<Set<V>> maximalCliquesIter(Graph<V, E> g) {
-		if (g instanceof IndexGraph) {
-			return (Iterator) maximalCliquesIter((IndexGraph) g);
+	private MaximalCliquesEnumerators() {}
 
-		} else {
-			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-			Iterator<IntSet> indexResult = maximalCliquesIter(iGraph);
-			return IterTools.map(indexResult, iSet -> IndexIdMaps.indexToIdSet(iSet, viMap));
+	abstract static class AbstractImpl implements MaximalCliquesEnumerator {
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public <V, E> Iterator<Set<V>> maximalCliquesIter(Graph<V, E> g) {
+			if (g instanceof IndexGraph) {
+				return (Iterator) maximalCliquesIter((IndexGraph) g);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				Iterator<IntSet> indexResult = maximalCliquesIter(iGraph);
+				return IterTools.map(indexResult, iSet -> IndexIdMaps.indexToIdSet(iSet, viMap));
+			}
 		}
-	}
 
-	Iterator<IntSet> maximalCliquesIter(IndexGraph g);
+		abstract Iterator<IntSet> maximalCliquesIter(IndexGraph g);
+
+	}
 
 }
