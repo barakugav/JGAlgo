@@ -20,7 +20,7 @@ import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.internal.ds.DoubleIntReferenceableHeap;
+import com.jgalgo.internal.ds.IndexHeapDouble;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -31,14 +31,11 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 		if (sites.isEmpty())
 			throw new IllegalArgumentException("no sites provided");
 		w = IWeightFunction.replaceNullWeightFunc(w);
-		
 		final int n = g.vertices().size();
-		DoubleIntReferenceableHeap heap = DoubleIntReferenceableHeap.newInstance();
-		DoubleIntReferenceableHeap.Ref[] heapVPtrs = new DoubleIntReferenceableHeap.Ref[n];
-
 		double[] distance = new double[n];
 		int[] backtrack = new int[n];
 		int[] cell = new int[n];
+		IndexHeapDouble heap = IndexHeapDouble.newInstance(distance);
 		Arrays.fill(distance, Double.POSITIVE_INFINITY);
 		Arrays.fill(backtrack, -1);
 		Arrays.fill(cell, -1);
@@ -49,33 +46,30 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 			if (cell[site] >= 0)
 				throw new IllegalArgumentException("Duplicate site: " + site);
 			cell[site] = siteIdx;
-			distance[site] = 0;
-			heapVPtrs[site] = heap.insert(0.0, site);
+			heap.insert(site, 0.0);
 		}
 
 		while (heap.isNotEmpty()) {
-			DoubleIntReferenceableHeap.Ref min = heap.extractMin();
-			int u = min.value();
-			double uDistance = distance[u] = min.key();
+			int u = heap.extractMin();
+			double uDistance = distance[u];
 			int uCell = cell[u];
-			heapVPtrs[u] = null;
 
 			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.targetInt();
-				if (distance[v] != Double.POSITIVE_INFINITY)
+				boolean vInHeap = heap.isInserted(v);
+				if (!vInHeap && distance[v] != Double.POSITIVE_INFINITY)
 					continue;
 				double ew = w.weight(e);
 				Assertions.onlyPositiveWeight(ew);
 				double vDistance = uDistance + ew;
 
-				DoubleIntReferenceableHeap.Ref vPtr = heapVPtrs[v];
-				if (vPtr == null) {
-					heapVPtrs[v] = heap.insert(vDistance, v);
+				if (!vInHeap) {
+					heap.insert(v, vDistance);
 					backtrack[v] = e;
 					cell[v] = uCell;
-				} else if (vDistance < vPtr.key()) {
-					heap.decreaseKey(vPtr, vDistance);
+				} else if (vDistance < heap.key(v)) {
+					heap.decreaseKey(v, vDistance);
 					backtrack[v] = e;
 					cell[v] = uCell;
 				}

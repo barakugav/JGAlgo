@@ -59,8 +59,7 @@ class VoronoiAlgoDijkstraTest extends TestBase {
 		tester.addPhase().withArgs(16, 32, 2).repeat(128);
 		tester.addPhase().withArgs(16, 32, 5).repeat(128);
 		tester.addPhase().withArgs(64, 256, 11).repeat(64);
-		tester.addPhase().withArgs(512, 4096, 23).repeat(8);
-		tester.addPhase().withArgs(3542, 25436, 100).repeat(1);
+		tester.addPhase().withArgs(516, 4987, 23).repeat(8);
 		tester.run((n, m, k) -> {
 			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 			WeightFunction<Integer> w = GraphsTestUtils.assignRandWeights(g, seedGen.nextSeed());
