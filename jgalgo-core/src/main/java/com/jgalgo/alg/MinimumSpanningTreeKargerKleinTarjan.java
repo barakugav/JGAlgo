@@ -26,6 +26,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.MemoryReuse;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
@@ -209,11 +210,11 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTreeBase, R
 	private static class AllocatedMemory {
 		IntList edgeList;
 
-		IndexGraph[] trees = MemoryReuse.EmptyGraphArr;
+		IndexGraph[] trees = new IndexGraph[0];
 		int[] vToVnew = IntArrays.EMPTY_ARRAY;
 
-		TreePathMaxima.IQueries[] tpmQueries = MemoryReuse.EmptyTpmQueriesArr;
-		TreePathMaxima.IResult[] tpmResults = MemoryReuse.EmptyTpmResultArr;
+		TreePathMaxima.IQueries[] tpmQueries = new TreePathMaxima.IQueries[0];
+		TreePathMaxima.IResult[] tpmResults = new TreePathMaxima.IResult[0];
 
 		void allocateForRandSubGraph() {
 			edgeList = MemoryReuse.ensureAllocated(edgeList, IntArrayList::new);
