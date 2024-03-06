@@ -17,46 +17,47 @@
 package com.jgalgo.alg;
 
 import static com.jgalgo.internal.util.Range.range;
-import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.Fastutil;
+import com.jgalgo.internal.util.MemoryReuse;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
+
+	private final MemoryReuse.IntArr intDegreeAllocator = new MemoryReuse.IntArr();
+	private final MemoryReuse.IntArr queueAllocator = new MemoryReuse.IntArr();
 
 	@Override
 	TopologicalOrderAlgo.IResult computeTopologicalSorting(IndexGraph g) {
 		Assertions.onlyDirected(g);
 		int n = g.vertices().size();
-		int[] inDegree = new int[n];
-		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
+		int[] inDegree = intDegreeAllocator.alloc(n);
+		int[] queue = queueAllocator.alloc(n);
+		int queueSize = 0;
 		int[] topolSort = new int[n];
 		int topolSortSize = 0;
 
 		// calc in degree of all vertices
 		// Find vertices with zero in degree and insert them to the queue
-		Arrays.fill(inDegree, 0);
 		for (int v : range(n)) {
 			inDegree[v] = g.inEdges(v).size();
 			if (inDegree[v] == 0)
-				queue.enqueue(v);
+				queue[queueSize++] = v;
 		}
 
 		// Poll vertices from the queue and "remove" each one from the tree and add new
 		// zero in degree vertices to the queue
-		while (!queue.isEmpty()) {
-			int u = queue.dequeueInt();
+		while (queueSize > 0) {
+			int u = queue[--queueSize];
 			topolSort[topolSortSize++] = u;
 			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.targetInt();
 				if (--inDegree[v] == 0)
-					queue.enqueue(v);
+					queue[queueSize++] = v;
 			}
 		}
 
