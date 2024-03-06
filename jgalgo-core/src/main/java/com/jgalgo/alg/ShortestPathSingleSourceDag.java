@@ -23,6 +23,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Linear Single Source Shortest Path (SSSP) algorithm for directed acyclic graphs (DAG).
@@ -52,17 +53,21 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 	ShortestPathSingleSourceDag.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.onlyDirected(g);
 		w = IWeightFunction.replaceNullWeightFunc(w);
-		return WeightFunction.isInteger(w) ? computeSsspInt(g, (IWeightFunctionInt) w, source)
-				: computeSsspDouble(g, w, source);
+		if (WeightFunction.isInteger(w)) {
+			return computeSsspInt(g, (IWeightFunctionInt) w, source);
+		} else {
+			return computeSsspDouble(g, w, source);
+		}
 	}
 
 	private ShortestPathSingleSourceDag.IResult computeSsspDouble(IndexGraph g, IWeightFunction w, int source) {
 		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);
 		res.distances[source] = 0;
 
-		TopologicalOrderAlgo.IResult topoOrder = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);
-		for (IntIterator uit = topoOrder.orderedVertices().listIterator(topoOrder.vertexOrderIndex(source)); uit
-				.hasNext();) {
+		TopologicalOrderAlgo.IResult topoOrderRes = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);
+		IntList topoOrder = topoOrderRes.orderedVertices();
+		int sourceTopoIndex = topoOrder.indexOf(source);
+		for (IntIterator uit = topoOrder.listIterator(sourceTopoIndex); uit.hasNext();) {
 			int u = uit.nextInt();
 			double uDistance = res.distances[u];
 			if (uDistance == Double.POSITIVE_INFINITY)
@@ -84,9 +89,10 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);
 		res.distances[source] = 0;
 
-		TopologicalOrderAlgo.IResult topoOrder = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);
-		for (IntIterator uit = topoOrder.orderedVertices().listIterator(topoOrder.vertexOrderIndex(source)); uit
-				.hasNext();) {
+		TopologicalOrderAlgo.IResult topoOrderRes = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);
+		IntList topoOrder = topoOrderRes.orderedVertices();
+		int sourceTopoIndex = topoOrder.indexOf(source);
+		for (IntIterator uit = topoOrder.listIterator(sourceTopoIndex); uit.hasNext();) {
 			int u = uit.nextInt();
 			if (res.distances[u] == Double.POSITIVE_INFINITY)
 				continue;
