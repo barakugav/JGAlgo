@@ -19,8 +19,7 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntStack;
+import com.jgalgo.internal.util.MemoryReuse;
 
 /**
  * Tarjan's strongly connected components algorithm.
@@ -35,23 +34,29 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 class StronglyConnectedComponentsTarjan extends ConnectedComponentsUtils.AbstractStronglyConnectedComponentsAlgo {
 
+	private final MemoryReuse.IntArr visitIdxAllocator = new MemoryReuse.IntArr();
+	private final MemoryReuse.IntArr lowLinkAllocator = new MemoryReuse.IntArr();
+	private final MemoryReuse.IntArr stackAllocator = new MemoryReuse.IntArr();
+	private final MemoryReuse.ObjArr<IEdgeIter> edgesAllocator = new MemoryReuse.ObjArr<>(new IEdgeIter[0]);
+
 	@Override
 	IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g) {
 		return findStronglyConnectedComponentsDirected(g, false);
 	}
 
-	private static IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g, boolean stopAfterOneBlock) {
+	private IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g, boolean stopAfterOneBlock) {
 		final int n = g.vertices().size();
 
-		int[] visitIdx = new int[n];
-		int[] lowLink = new int[n];
-		IntStack s = new IntArrayList();
+		int[] visitIdx = visitIdxAllocator.alloc(n, 0);
+		int[] lowLink = lowLinkAllocator.alloc(n, 0);
+		int[] stack = stackAllocator.alloc(n);
+		int stackSize = 0;
 
 		int compNum = 0;
 		int[] comp = new int[n];
 		Arrays.fill(comp, -1);
 
-		IEdgeIter[] edges = new IEdgeIter[n];
+		IEdgeIter[] edges = edgesAllocator.alloc(n);
 
 		/* start a DFS from each root */
 		int nextVisitIdx = 1;
@@ -61,7 +66,7 @@ class StronglyConnectedComponentsTarjan extends ConnectedComponentsUtils.Abstrac
 			int depth = 0;
 			visitIdx[root] = nextVisitIdx++;
 			lowLink[root] = visitIdx[root]; /* smallest reachable visit index */
-			s.push(root);
+			stack[stackSize++] = root;
 			edges[depth] = g.outEdges(root).iterator();
 
 			/* perform DFS from root */
@@ -73,7 +78,7 @@ class StronglyConnectedComponentsTarjan extends ConnectedComponentsUtils.Abstrac
 					if (visitIdx[v] == 0) { /* unvisited, tree edge */
 						visitIdx[v] = nextVisitIdx++;
 						lowLink[v] = visitIdx[v];
-						s.push(v);
+						stack[stackSize++] = v;
 						edges[++depth] = g.outEdges(v).iterator();
 						u = v;
 						continue dfs;
@@ -87,7 +92,7 @@ class StronglyConnectedComponentsTarjan extends ConnectedComponentsUtils.Abstrac
 				if (lowLink[u] == visitIdx[u]) {
 					int c = compNum++;
 					for (;;) {
-						int v = s.popInt();
+						int v = stack[--stackSize];
 						comp[v] = c;
 						if (v == u)
 							break;
