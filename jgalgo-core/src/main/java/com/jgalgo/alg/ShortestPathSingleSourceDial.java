@@ -26,6 +26,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.MemoryReuse;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
 /**
@@ -48,6 +49,8 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @author Barak Ugav
  */
 class ShortestPathSingleSourceDial implements ShortestPathSingleSourceBase {
+
+	private final DialHeap heap = new DialHeap();
 
 	/**
 	 * Construct a new SSSP algorithm.
@@ -85,7 +88,7 @@ class ShortestPathSingleSourceDial implements ShortestPathSingleSourceBase {
 	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunctionInt w, int source,
 			int maxDistance) {
 		w = IWeightFunction.replaceNullWeightFunc(w);
-		DialHeap heap = new DialHeap(g.vertices().size(), maxDistance);
+		heap.init(g.vertices().size(), maxDistance);
 		heap.distances[source] = 0;
 		int[] backtrack = new int[g.vertices().size()];
 		Arrays.fill(backtrack, -1);
@@ -127,37 +130,37 @@ class ShortestPathSingleSourceDial implements ShortestPathSingleSourceBase {
 
 	private static class DialHeap {
 
-		private final LinkedListFixedSize.Doubly heapBucketsNodes;
-		private int[] heapBucketsHead;
-		final int[] distances;
-		private int heapScanIdx;
+		private final LinkedListFixedSize.Doubly heapBucketsNodes = new LinkedListFixedSize.Doubly();
+		private int[] bucketsHead = IntArrays.DEFAULT_EMPTY_ARRAY;
+		int[] distances = IntArrays.DEFAULT_EMPTY_ARRAY;
+		private int scanIdx;
 		private int maxDistance;
 
-		DialHeap(int n, int initialSize) {
-			heapBucketsHead = initialSize <= 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[initialSize];
-			Arrays.fill(heapBucketsHead, LinkedListFixedSize.None);
-			heapBucketsNodes = new LinkedListFixedSize.Doubly(n);
-			distances = new int[n];
+		void init(int n, int initialSize) {
+			if (initialSize > 0)
+				bucketsHead = MemoryReuse.alloc(bucketsHead, initialSize);
+			heapBucketsNodes.init(n);
+			distances = MemoryReuse.alloc(distances, n);
 			Arrays.fill(distances, 0, n, Integer.MAX_VALUE);
 
 			maxDistance = -1;
-			heapScanIdx = 0;
+			scanIdx = 0;
 		}
 
 		void insert(int v, int distance) {
 			distances[v] = distance;
-			if (distance >= heapBucketsHead.length) {
-				int oldLength = heapBucketsHead.length;
-				int newLength = Math.max(distance + 1, oldLength * 2);
-				heapBucketsHead = Arrays.copyOf(heapBucketsHead, newLength);
-				Arrays.fill(heapBucketsHead, oldLength, newLength, LinkedListFixedSize.None);
-				maxDistance = distance;
-			} else if (distance > maxDistance) {
+
+			if (distance > maxDistance) {
+				if (distance >= bucketsHead.length) {
+					int newLength = Math.max(distance + 1, bucketsHead.length * 2);
+					bucketsHead = Arrays.copyOf(bucketsHead, newLength);
+				}
+				Arrays.fill(bucketsHead, maxDistance + 1, bucketsHead.length, LinkedListFixedSize.None);
 				maxDistance = distance;
 			}
 
-			int h = heapBucketsHead[distance];
-			heapBucketsHead[distance] = v;
+			int h = bucketsHead[distance];
+			bucketsHead[distance] = v;
 			if (h != LinkedListFixedSize.None)
 				heapBucketsNodes.connect(v, h);
 		}
@@ -165,24 +168,24 @@ class ShortestPathSingleSourceDial implements ShortestPathSingleSourceBase {
 		void decreaseKey(int v, int distance) {
 			int oldDistance = distances[v];
 			assert distance < oldDistance;
-			if (v == heapBucketsHead[oldDistance])
-				heapBucketsHead[oldDistance] = heapBucketsNodes.next(v);
+			if (v == bucketsHead[oldDistance])
+				bucketsHead[oldDistance] = heapBucketsNodes.next(v);
 			heapBucketsNodes.disconnect(v);
 
 			insert(v, distance);
 		}
 
 		int extractMin() {
-			for (int distance = heapScanIdx; distance <= maxDistance; distance++) {
-				int v = heapBucketsHead[distance];
+			for (int distance = scanIdx; distance <= maxDistance; distance++) {
+				int v = bucketsHead[distance];
 				if (v != LinkedListFixedSize.None) {
-					heapBucketsHead[distance] = heapBucketsNodes.next(v);
+					bucketsHead[distance] = heapBucketsNodes.next(v);
 					heapBucketsNodes.disconnect(v);
-					heapScanIdx = distance;
+					scanIdx = distance;
 					return v;
 				}
 			}
-			heapScanIdx = maxDistance;
+			scanIdx = maxDistance;
 			return -1;
 		}
 
