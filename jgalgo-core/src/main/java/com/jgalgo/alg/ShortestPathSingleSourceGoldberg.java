@@ -30,9 +30,9 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -131,6 +131,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase {
 		Bitmap connected = new Bitmap(n);
 		int[] layerSize = new int[n + 1];
 
+		int[] maskedWeights = new int[m];
 		/* updated weight function including the potential */
 		int[] w = new int[m];
 
@@ -140,8 +141,13 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase {
 		int[] gNegEdgeRefs = new int[m];
 
 		/* G is the graph of strong connected components of gNeg, each vertex is a super vertex of gNeg */
-		IndexGraph G = IndexGraphFactory.directed().allowParallelEdges().expectedVerticesNum(n + 2).newGraph();
 		/* Two fake vertices used to add 0-edges and (r-i)-edges to all other (super) vertices */
+		IndexGraph G = IndexGraphFactory
+				.directed()
+				.allowParallelEdges()
+				.expectedVerticesNum(n + 2)
+				.expectedEdgesNum(m + 2 * n)
+				.newGraph();
 
 		/*
 		 * In sparse (random) graphs, the running time seems very slow, as the algorithm require a lot of iterations to
@@ -159,22 +165,21 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase {
 					potential[v] *= 2;
 			diagnostics.scalingIteration();
 
+			for (int e : range(m))
+				maskedWeights[e] = maskedWeight(e, w0, weightMask);
+
 			/* updated potential function until there are no more negative vertices with current weight function */
 			/* we do at most \sqrt{n} such iterations */
 			for (;;) {
 				diagnostics.potentialIteration();
 				/* update current weight function according to latest potential */
-				for (int e : range(m))
-					w[e] = calcWeightWithPotential(g, e, w0, potential, weightMask);
-
-				/* populate gNeg with all 0,-1 edges */
+				/* and populate gNeg with all 0,-1 edges */
 				gNeg.clearEdges();
 				for (int e : range(m)) {
-					if (w[e] <= 0) {
-						int u = g.edgeSource(e), v = g.edgeTarget(e);
-						if (u != v)
-							gNegEdgeRefs[gNeg.addEdge(u, v)] = e;
-					}
+					int u = g.edgeSource(e), v = g.edgeTarget(e);
+					w[e] = maskedWeights[e] + potential[u] - potential[v];
+					if (w[e] <= 0 && u != v)
+						gNegEdgeRefs[gNeg.addEdge(u, v)] = e;
 				}
 
 				/* Find all strong connected components in the graph */
@@ -233,9 +238,9 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase {
 					break; // no negative vertices, done
 
 				// Find biggest layer
-				int biggestLayer = -1;
-				for (int l = layerNum - 1; l > 0; l--)
-					if (biggestLayer < 0 || layerSize[l] > layerSize[biggestLayer])
+				int biggestLayer = layerNum - 1;
+				for (int l = layerNum - 2; l > 0; l--)
+					if (layerSize[l] > layerSize[biggestLayer])
 						biggestLayer = l;
 				if (layerSize[biggestLayer] >= Math.sqrt(N) * alpha) {
 					diagnostics.bigLayer();
@@ -255,11 +260,10 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase {
 					int fakeS2 = G.addVertexInt();
 					connected.clear();
 					int assignedWeight = layerNum - 2;
-					for (IEdgeIter it = ssspRes.getPath(vertexInMaxLayer).edgeIter(); it.hasNext();) {
-						int e = it.nextInt();
+					for (int e : ssspRes.getPath(vertexInMaxLayer).edges()) {
 						int ew = GWeights.weightInt(e);
 						if (ew < 0) {
-							int V = it.targetInt();
+							int V = G.edgeTarget(e);
 							GWeights.set(G.addEdge(fakeS2, V), assignedWeight--);
 							connected.set(V);
 						}
@@ -293,8 +297,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase {
 		return potential;
 	}
 
-	private static int calcWeightWithPotential(IndexGraph g, int e, IWeightFunctionInt w, int[] potential,
-			int weightMask) {
+	private static int maskedWeight(int e, IWeightFunctionInt w, int weightMask) {
 		int weight = w.weightInt(e);
 		// weight = ceil(weight / 2^weightMask)
 		if (weightMask != 0) {
@@ -307,7 +310,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase {
 					weight = 1;
 			}
 		}
-		return weight + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
+		return weight;
 	}
 
 	private static ShortestPathSingleSource.IResult createResults(int[] potential,
