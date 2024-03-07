@@ -19,6 +19,8 @@ package com.jgalgo.internal.ds;
 import java.util.Arrays;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IterTools;
+import com.jgalgo.internal.util.MemoryReuse;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 
 public class LinkedListFixedSize {
 	private LinkedListFixedSize() {}
@@ -85,11 +87,21 @@ public class LinkedListFixedSize {
 
 	public static class Doubly {
 
-		private final int[] arr;
+		private int[] arr;
+		private int size;
+
+		public Doubly() {
+			arr = IntArrays.DEFAULT_EMPTY_ARRAY;
+		}
 
 		public Doubly(int n) {
-			arr = new int[n * 2];
-			Arrays.fill(arr, None);
+			this();
+			init(n);
+		}
+
+		public void init(int n) {
+			arr = MemoryReuse.alloc(arr, n * 2, None);
+			size = n;
 		}
 
 		private static int idxOfNext(int id) {
@@ -101,7 +113,7 @@ public class LinkedListFixedSize {
 		}
 
 		public int size() {
-			return arr.length / 2;
+			return size;
 		}
 
 		public int next(int id) {
