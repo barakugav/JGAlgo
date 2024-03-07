@@ -27,20 +27,37 @@ public class MemoryReuse {
 
 	private MemoryReuse() {}
 
+	public static int[] alloc(int[] a, int size) {
+		return a.length >= size ? a : new int[newLength(a.length, size)];
+	}
+
+	public static int[] alloc(int[] a, int size, int initVal) {
+		a = alloc(a, size);
+		Arrays.fill(a, 0, size, initVal);
+		return a;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T[] alloc(T[] a, int size) {
+		return a.length >= size ? a
+				: (T[]) Array.newInstance(a.getClass().getComponentType(), newLength(a.length, size));
+	}
+
+	public static <T> T[] alloc(T[] a, int size, T initVal) {
+		a = alloc(a, size);
+		Arrays.fill(a, 0, size, initVal);
+		return a;
+	}
+
 	public static class IntArr {
 		private int[] arr = IntArrays.DEFAULT_EMPTY_ARRAY;
 
-		public int[] alloc(int size, int initVal) {
-			boolean newAllocation = size > arr.length;
-			if (newAllocation)
-				arr = new int[size];
-			if (!newAllocation || initVal != 0)
-				Arrays.fill(arr, 0, size, initVal);
-			return arr;
+		public int[] alloc(int size) {
+			return arr = MemoryReuse.alloc(arr, size);
 		}
 
-		public int[] alloc(int size) {
-			return alloc(size, 0);
+		public int[] alloc(int size, int initVal) {
+			return arr = MemoryReuse.alloc(arr, size, initVal);
 		}
 	}
 
@@ -51,79 +68,53 @@ public class MemoryReuse {
 			arr = emptyArr;
 		}
 
-		@SuppressWarnings("unchecked")
 		public T[] alloc(int size, T initVal) {
-			boolean newAllocation = size > arr.length;
-			if (newAllocation)
-				arr = (T[]) Array.newInstance(arr.getClass().getComponentType(), size);
-			if (!newAllocation || initVal != null)
-				Arrays.fill(arr, 0, size, initVal);
-			return arr;
+			return arr = MemoryReuse.alloc(arr, size, initVal);
 		}
 
 		public T[] alloc(int size) {
-			return alloc(size, null);
+			return arr = MemoryReuse.alloc(arr, size);
 		}
-	}
-
-	public static int[] ensureLength(int[] a, int len) {
-		return a.length >= len ? a : new int[newLength(a, len)];
 	}
 
 	public static int[][] ensureLength(int[][] a, int rows, int columns) {
 		if (a.length < rows) {
 			int oldLen = a.length;
-			a = Arrays.copyOf(a, newLength(a, rows));
+			a = Arrays.copyOf(a, newLength(a.length, rows));
 			Arrays.fill(a, oldLen, a.length, IntArrays.EMPTY_ARRAY);
 		}
 		for (int r : range(rows))
 			if (a[r].length < columns)
-				a[r] = Arrays.copyOf(a[r], newLength(a[r], columns));
+				a[r] = Arrays.copyOf(a[r], newLength(a[r].length, columns));
 		return a;
 	}
 
-	public static double[] ensureLength(double[] a, int len) {
-		return a.length >= len ? a : new double[newLength(a, len)];
+	public static double[] ensureLength(double[] a, int size) {
+		return a.length >= size ? a : new double[newLength(a.length, size)];
 	}
 
 	public static double[][] ensureLength(double[][] a, int rows, int columns) {
 		if (a.length < rows) {
 			int oldLen = a.length;
-			a = Arrays.copyOf(a, newLength(a, rows));
+			a = Arrays.copyOf(a, newLength(a.length, rows));
 			Arrays.fill(a, oldLen, a.length, DoubleArrays.EMPTY_ARRAY);
 		}
 		for (int r : range(rows))
 			if (a[r].length < columns)
-				a[r] = Arrays.copyOf(a[r], newLength(a[r], columns));
+				a[r] = Arrays.copyOf(a[r], newLength(a[r].length, columns));
 		return a;
 	}
 
-	public static boolean[] ensureLength(boolean[] a, int len) {
-		return a.length >= len ? a : new boolean[newLength(a, len)];
-	}
-
-	public static <T> T[] ensureLength(T[] a, int len) {
-		return a.length >= len ? a : Arrays.copyOf(a, newLength(a, len));
+	public static boolean[] ensureLength(boolean[] a, int size) {
+		return a.length >= size ? a : new boolean[newLength(a.length, size)];
 	}
 
 	public static <T> T ensureAllocated(T a, Supplier<? extends T> builder) {
 		return a != null ? a : builder.get();
 	}
 
-	private static int newLength(int[] a, int len) {
-		return Math.max(a.length * 2, len);
-	}
-
-	private static int newLength(double[] a, int len) {
-		return Math.max(a.length * 2, len);
-	}
-
-	private static int newLength(boolean[] a, int len) {
-		return Math.max(a.length * 2, len);
-	}
-
-	private static <T> int newLength(T[] a, int len) {
-		return Math.max(a.length * 2, len);
+	private static <T> int newLength(int arrLen, int size) {
+		return Math.max(arrLen * 2, size);
 	}
 
 }

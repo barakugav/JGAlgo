@@ -223,11 +223,11 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTreeBase, R
 		void allocateForLightEdges(int n, int treeCount) {
 			edgeList = MemoryReuse.ensureAllocated(edgeList, IntArrayList::new);
 
-			trees = MemoryReuse.ensureLength(trees, treeCount);
-			vToVnew = MemoryReuse.ensureLength(vToVnew, n);
+			trees = MemoryReuse.alloc(trees, treeCount);
+			vToVnew = MemoryReuse.alloc(vToVnew, n);
 
-			tpmQueries = MemoryReuse.ensureLength(tpmQueries, treeCount);
-			tpmResults = MemoryReuse.ensureLength(tpmResults, treeCount);
+			tpmQueries = MemoryReuse.alloc(tpmQueries, treeCount);
+			tpmResults = MemoryReuse.alloc(tpmResults, treeCount);
 
 			for (int tIdx : range(treeCount)) {
 				trees[tIdx] = MemoryReuse.ensureAllocated(trees[tIdx], () -> IndexGraph.newUndirected());
