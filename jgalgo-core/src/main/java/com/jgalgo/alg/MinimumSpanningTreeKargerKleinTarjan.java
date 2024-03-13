@@ -210,30 +210,38 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTrees.Abstract
 	private static class AllocatedMemory {
 		IntList edgeList;
 
-		IndexGraph[] trees = MemoryReuse.EmptyGraphArr;
+		IndexGraph[] trees = new IndexGraph[0];
 		int[] vToVnew = IntArrays.EMPTY_ARRAY;
 
-		TreePathMaxima.IQueries[] tpmQueries = MemoryReuse.EmptyTpmQueriesArr;
-		TreePathMaxima.IResult[] tpmResults = MemoryReuse.EmptyTpmResultArr;
+		TreePathMaxima.IQueries[] tpmQueries = new TreePathMaxima.IQueries[0];
+		TreePathMaxima.IResult[] tpmResults = new TreePathMaxima.IResult[0];
 
 		void allocateForRandSubGraph() {
-			edgeList = MemoryReuse.ensureAllocated(edgeList, IntArrayList::new);
+			if (edgeList == null)
+				edgeList = new IntArrayList();
 		}
 
 		void allocateForLightEdges(int n, int treeCount) {
-			edgeList = MemoryReuse.ensureAllocated(edgeList, IntArrayList::new);
+			if (edgeList == null)
+				edgeList = new IntArrayList();
 
-			trees = MemoryReuse.ensureLength(trees, treeCount);
-			vToVnew = MemoryReuse.ensureLength(vToVnew, n);
-
-			tpmQueries = MemoryReuse.ensureLength(tpmQueries, treeCount);
-			tpmResults = MemoryReuse.ensureLength(tpmResults, treeCount);
-
-			for (int tIdx : range(treeCount)) {
-				trees[tIdx] = MemoryReuse.ensureAllocated(trees[tIdx], () -> IndexGraph.newUndirected());
-				tpmQueries[tIdx] =
-						MemoryReuse.ensureAllocated(tpmQueries[tIdx], () -> TreePathMaxima.IQueries.newInstance());
+			if (trees.length < treeCount) {
+				int oldLen = trees.length;
+				trees = Arrays.copyOf(trees, treeCount);
+				for (int tIdx : range(oldLen, treeCount))
+					trees[tIdx] = IndexGraph.newUndirected();
 			}
+			if (vToVnew.length < n)
+				vToVnew = new int[n];
+
+			if (tpmQueries.length < treeCount) {
+				int oldLen = tpmQueries.length;
+				tpmQueries = Arrays.copyOf(tpmQueries, treeCount);
+				for (int tIdx : range(oldLen, treeCount))
+					tpmQueries[tIdx] = TreePathMaxima.IQueries.newInstance();
+			}
+			if (tpmResults.length < treeCount)
+				tpmResults = Arrays.copyOf(tpmResults, treeCount);
 		}
 	}
 
