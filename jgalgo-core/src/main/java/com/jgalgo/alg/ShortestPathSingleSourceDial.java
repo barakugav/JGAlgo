@@ -127,62 +127,62 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 
 	private static class DialHeap {
 
-		private final LinkedListFixedSize.Doubly heapBucketsNodes;
-		private int[] heapBucketsHead;
+		private final LinkedListFixedSize.Doubly bucketsNodes;
+		private int[] bucketsHead;
 		final int[] distances;
-		private int heapScanIdx;
+		private int scanIdx;
 		private int maxDistance;
 
 		DialHeap(int n, int initialSize) {
-			heapBucketsHead = initialSize <= 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[initialSize];
-			Arrays.fill(heapBucketsHead, LinkedListFixedSize.None);
-			heapBucketsNodes = new LinkedListFixedSize.Doubly(n);
+			bucketsHead = initialSize <= 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[initialSize];
+			Arrays.fill(bucketsHead, LinkedListFixedSize.None);
+			bucketsNodes = new LinkedListFixedSize.Doubly(n);
 			distances = new int[n];
 			Arrays.fill(distances, 0, n, Integer.MAX_VALUE);
 
 			maxDistance = -1;
-			heapScanIdx = 0;
+			scanIdx = 0;
 		}
 
 		void insert(int v, int distance) {
 			distances[v] = distance;
-			if (distance >= heapBucketsHead.length) {
-				int oldLength = heapBucketsHead.length;
+			if (distance >= bucketsHead.length) {
+				int oldLength = bucketsHead.length;
 				int newLength = Math.max(distance + 1, oldLength * 2);
-				heapBucketsHead = Arrays.copyOf(heapBucketsHead, newLength);
-				Arrays.fill(heapBucketsHead, oldLength, newLength, LinkedListFixedSize.None);
+				bucketsHead = Arrays.copyOf(bucketsHead, newLength);
+				Arrays.fill(bucketsHead, oldLength, newLength, LinkedListFixedSize.None);
 				maxDistance = distance;
 			} else if (distance > maxDistance) {
 				maxDistance = distance;
 			}
 
-			int h = heapBucketsHead[distance];
-			heapBucketsHead[distance] = v;
+			int h = bucketsHead[distance];
+			bucketsHead[distance] = v;
 			if (h != LinkedListFixedSize.None)
-				heapBucketsNodes.connect(v, h);
+				bucketsNodes.connect(v, h);
 		}
 
 		void decreaseKey(int v, int distance) {
 			int oldDistance = distances[v];
 			assert distance < oldDistance;
-			if (v == heapBucketsHead[oldDistance])
-				heapBucketsHead[oldDistance] = heapBucketsNodes.next(v);
-			heapBucketsNodes.disconnect(v);
+			if (v == bucketsHead[oldDistance])
+				bucketsHead[oldDistance] = bucketsNodes.next(v);
+			bucketsNodes.disconnect(v);
 
 			insert(v, distance);
 		}
 
 		int extractMin() {
-			for (int distance = heapScanIdx; distance <= maxDistance; distance++) {
-				int v = heapBucketsHead[distance];
+			for (int distance = scanIdx; distance <= maxDistance; distance++) {
+				int v = bucketsHead[distance];
 				if (v != LinkedListFixedSize.None) {
-					heapBucketsHead[distance] = heapBucketsNodes.next(v);
-					heapBucketsNodes.disconnect(v);
-					heapScanIdx = distance;
+					bucketsHead[distance] = bucketsNodes.next(v);
+					bucketsNodes.disconnect(v);
+					scanIdx = distance;
 					return v;
 				}
 			}
-			heapScanIdx = maxDistance;
+			scanIdx = maxDistance;
 			return -1;
 		}
 
