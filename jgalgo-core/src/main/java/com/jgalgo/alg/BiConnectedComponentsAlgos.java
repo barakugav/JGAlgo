@@ -40,6 +40,33 @@ class BiConnectedComponentsAlgos {
 
 	private BiConnectedComponentsAlgos() {}
 
+	abstract static class AbstractImpl implements BiConnectedComponentsAlgo {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <V, E> BiConnectedComponentsAlgo.Result<V, E> findBiConnectedComponents(Graph<V, E> g) {
+			if (g instanceof IndexGraph)
+				return (BiConnectedComponentsAlgo.Result<V, E>) findBiConnectedComponents((IndexGraph) g);
+
+			IndexGraph iGraph = g.indexGraph();
+			BiConnectedComponentsAlgo.IResult indexResult = findBiConnectedComponents(iGraph);
+			return resultFromIndexResult(g, indexResult);
+		}
+
+		abstract BiConnectedComponentsAlgo.IResult findBiConnectedComponents(IndexGraph g);
+
+		@SuppressWarnings("unchecked")
+		private static <V, E> BiConnectedComponentsAlgo.Result<V, E> resultFromIndexResult(Graph<V, E> g,
+				BiConnectedComponentsAlgo.IResult indexRes) {
+			if (g instanceof IntGraph) {
+				return (BiConnectedComponentsAlgo.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexRes);
+			} else {
+				return new ObjResultFromIndexResult<>(g, indexRes);
+			}
+		}
+
+	}
+
 	static class IndexResult implements BiConnectedComponentsAlgo.IResult {
 
 		private final IndexGraph g;
