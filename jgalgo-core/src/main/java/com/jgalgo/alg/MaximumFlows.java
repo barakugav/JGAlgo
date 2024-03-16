@@ -37,7 +37,7 @@ class MaximumFlows {
 
 	private MaximumFlows() {}
 
-	abstract static class AbstractImplBase implements MaximumFlow, MinimumEdgeCutSTBase {
+	abstract static class AbstractImplBase extends MinimumEdgeCutUtils.AbstractImplST implements MaximumFlow {
 
 		@SuppressWarnings("unchecked")
 		@Override
