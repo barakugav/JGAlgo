@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    <a href="https://en.wikipedia.org/wiki/Greedy_coloring">Wikipedia</a>
  * @author Barak Ugav
  */
-class ColoringGreedy implements ColoringAlgoBase, RandomizedAlgorithm {
+class ColoringGreedy extends ColoringUtils.AbstractImpl implements RandomizedAlgorithm {
 
 	private final Random rand = new Random();
 
@@ -52,7 +52,7 @@ class ColoringGreedy implements ColoringAlgoBase, RandomizedAlgorithm {
 	}
 
 	@Override
-	public IVertexPartition computeColoring(IndexGraph g) {
+	IVertexPartition computeColoring(IndexGraph g) {
 		Assertions.onlyUndirected(g);
 		Assertions.noSelfEdges(g, "no valid coloring in graphs with self edges");
 

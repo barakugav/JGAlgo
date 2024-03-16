@@ -45,7 +45,7 @@ import com.jgalgo.internal.util.Assertions;
  * @see    <a href="https://en.wikipedia.org/wiki/DSatur">Wikipedia</a>
  * @author Barak Ugav
  */
-class ColoringDSatur implements ColoringAlgoBase {
+class ColoringDSatur extends ColoringUtils.AbstractImpl {
 
 	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 
@@ -64,7 +64,7 @@ class ColoringDSatur implements ColoringAlgoBase {
 	}
 
 	@Override
-	public IVertexPartition computeColoring(IndexGraph g) {
+	IVertexPartition computeColoring(IndexGraph g) {
 		Assertions.onlyUndirected(g);
 		Assertions.noSelfEdges(g, "no valid coloring in graphs with self edges");
 
