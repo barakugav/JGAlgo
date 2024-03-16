@@ -40,10 +40,10 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
  *
  * @author Barak Ugav
  */
-class IsomorphismTesterVf2 implements IsomorphismTesterBase {
+class IsomorphismTesterVf2 extends IsomorphismTesters.AbstractImpl {
 
 	@Override
-	public Iterator<IsomorphismIMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2, boolean induced,
+	Iterator<IsomorphismIMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2, boolean induced,
 			IntBinaryOperator vertexMatcher, IntBinaryOperator edgeMatcher) {
 		Assertions.noParallelEdges(g1, "parallel edges are not supported");
 		Assertions.noParallelEdges(g2, "parallel edges are not supported");
