@@ -25,24 +25,28 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-interface DominatingSetAlgoBase extends DominatingSetAlgo {
+class DominatingSetAlgos {
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default <V, E> Set<V> computeMinimumDominationSet(Graph<V, E> g, WeightFunction<V> w,
-			EdgeDirection dominanceDirection) {
-		if (g instanceof IndexGraph) {
-			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-			return (Set<V>) computeMinimumDominationSet((IndexGraph) g, w0, dominanceDirection);
-		} else {
-			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-			IWeightFunction w0 = IndexIdMaps.idToIndexWeightFunc(w, viMap);
-			IntSet indexRes = computeMinimumDominationSet(iGraph, w0, dominanceDirection);
-			return IndexIdMaps.indexToIdSet(indexRes, viMap);
+	abstract static class AbstractImpl implements DominatingSetAlgo {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <V, E> Set<V> computeMinimumDominationSet(Graph<V, E> g, WeightFunction<V> w,
+				EdgeDirection dominanceDirection) {
+			if (g instanceof IndexGraph) {
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				return (Set<V>) computeMinimumDominationSet((IndexGraph) g, w0, dominanceDirection);
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IWeightFunction w0 = IndexIdMaps.idToIndexWeightFunc(w, viMap);
+				IntSet indexRes = computeMinimumDominationSet(iGraph, w0, dominanceDirection);
+				return IndexIdMaps.indexToIdSet(indexRes, viMap);
+			}
 		}
-	}
 
-	IntSet computeMinimumDominationSet(IndexGraph g, IWeightFunction w, EdgeDirection dominanceDirection);
+		abstract IntSet computeMinimumDominationSet(IndexGraph g, IWeightFunction w, EdgeDirection dominanceDirection);
+
+	}
 
 }

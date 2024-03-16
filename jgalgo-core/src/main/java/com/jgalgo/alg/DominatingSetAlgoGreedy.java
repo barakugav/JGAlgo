@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class DominatingSetAlgoGreedy implements DominatingSetAlgoBase, RandomizedAlgorithm {
+class DominatingSetAlgoGreedy extends DominatingSetAlgos.AbstractImpl implements RandomizedAlgorithm {
 
 	private final Random rand = new Random();
 
@@ -48,8 +48,7 @@ class DominatingSetAlgoGreedy implements DominatingSetAlgoBase, RandomizedAlgori
 	}
 
 	@Override
-	public IntSet computeMinimumDominationSet(IndexGraph g, IWeightFunction weightFunc,
-			EdgeDirection dominanceDirection) {
+	IntSet computeMinimumDominationSet(IndexGraph g, IWeightFunction weightFunc, EdgeDirection dominanceDirection) {
 		Assertions.onlyCardinality(weightFunc);
 		Objects.requireNonNull(dominanceDirection);
 		final int n = g.vertices().size();
