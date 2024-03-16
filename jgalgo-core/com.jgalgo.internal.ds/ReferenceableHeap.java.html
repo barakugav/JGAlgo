@@ -82,8 +82,8 @@ public interface ReferenceableHeap {
 			public ReferenceableHeap build(Class&lt;?&gt; keyType, Class&lt;?&gt; valueType, Comparator&lt;?&gt; comparator) {
 <span class="fc" id="L83">				Objects.requireNonNull(keyType);</span>
 <span class="fc" id="L84">				Objects.requireNonNull(valueType);</span>
-<span class="fc bfc" id="L85" title="All 4 branches covered.">				if (keyType == int.class &amp;&amp; valueType == int.class)</span>
-<span class="fc" id="L86">					return IntIntReferenceableHeap.newInstance((IntComparator) comparator);</span>
+<span class="pc bpc" id="L85" title="1 of 4 branches missed.">				if (keyType == int.class &amp;&amp; valueType == int.class)</span>
+<span class="nc" id="L86">					return IntIntReferenceableHeap.newInstance((IntComparator) comparator);</span>
 <span class="pc bpc" id="L87" title="1 of 4 branches missed.">				if (keyType == int.class &amp;&amp; valueType == void.class)</span>
 <span class="fc" id="L88">					return IntReferenceableHeap.newInstance((IntComparator) comparator);</span>
 <span class="pc bpc" id="L89" title="1 of 4 branches missed.">				if (keyType == long.class &amp;&amp; valueType == int.class)</span>

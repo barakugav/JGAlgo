@@ -47,7 +47,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L50">class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponentsAlgoBase {</span>
+<span class="fc" id="L50">class KVertexConnectedComponentsWhiteMoody extends KVertexConnectedComponentsUtils.AbstractImpl {</span>
 
 <span class="fc" id="L52">	private final WeaklyConnectedComponentsAlgo unaryConnectedComponentsAlgo =</span>
 <span class="fc" id="L53">			WeaklyConnectedComponentsAlgo.newInstance();</span>
@@ -56,12 +56,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L56">	private final MinimumVertexCutAllGlobalKanevsky allGlobalConnectivityAlgo = new MinimumVertexCutAllGlobalKanevsky();</span>
 
 	@Override
-	public KVertexConnectedComponentsAlgo.IResult findKVertexConnectedComponents(IndexGraph g, int k) {
+	KVertexConnectedComponentsAlgo.IResult findKVertexConnectedComponents(IndexGraph g, int k) {
 <span class="fc bfc" id="L60" title="All 2 branches covered.">		if (k &lt; 0)</span>
 <span class="fc" id="L61">			throw new IllegalArgumentException(&quot;k must be non negative&quot;);</span>
 <span class="fc" id="L62">		List&lt;List&lt;IntSet&gt;&gt; hierarchy = findVertexConnectedComponentsHierarchy(g);</span>
 <span class="fc bfc" id="L63" title="All 2 branches covered.">		List&lt;IntSet&gt; components = k &gt;= hierarchy.size() ? List.of() : hierarchy.get(k);</span>
-<span class="fc" id="L64">		return new KVertexConnectedComponentsAlgos.IndexResult(g, components);</span>
+<span class="fc" id="L64">		return new KVertexConnectedComponentsUtils.ResultImpl(g, components);</span>
 	}
 
 	List&lt;List&lt;IntSet&gt;&gt; findVertexConnectedComponentsHierarchy(IndexGraph g) {

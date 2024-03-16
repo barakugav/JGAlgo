@@ -48,13 +48,13 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L51">class SteinerTreeMehlhorn implements SteinerTreeAlgoBase {</span>
+<span class="fc" id="L51">class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {</span>
 
 <span class="fc" id="L53">	private final VoronoiAlgo voronoiAlgo = VoronoiAlgo.newInstance();</span>
 <span class="fc" id="L54">	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();</span>
 
 	@Override
-	public SteinerTreeAlgo.IResult computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals) {
+	SteinerTreeAlgo.IResult computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals) {
 <span class="fc" id="L58">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L59">		final int n = g.vertices().size();</span>
 <span class="fc bfc" id="L60" title="All 2 branches covered.">		if (terminals.isEmpty())</span>

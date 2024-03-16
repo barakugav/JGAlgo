@@ -42,10 +42,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L45">class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAlgoBase {</span>
+<span class="fc" id="L45">class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgos.AbstractImpl {</span>
 
 	@Override
-	public BiConnectedComponentsAlgo.IResult findBiConnectedComponents(IndexGraph g) {
+	BiConnectedComponentsAlgo.IResult findBiConnectedComponents(IndexGraph g) {
 <span class="fc" id="L49">		Assertions.onlyUndirected(g);</span>
 
 <span class="fc" id="L51">		final int n = g.vertices().size();</span>

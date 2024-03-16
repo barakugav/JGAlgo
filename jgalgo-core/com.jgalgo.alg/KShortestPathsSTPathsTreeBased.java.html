@@ -61,7 +61,7 @@ import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L64">abstract class KShortestPathsSTPathsTreeBased implements KShortestPathsSTBase {</span>
+<span class="fc" id="L64">abstract class KShortestPathsSTPathsTreeBased extends KShortestPathsSTs.AbstractImpl {</span>
 
 	@Override
 	public List&lt;IPath&gt; computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {

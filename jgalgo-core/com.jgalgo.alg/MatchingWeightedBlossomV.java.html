@@ -50,12 +50,12 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L53">class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {</span>
+<span class="fc" id="L53">class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {</span>
 
 <span class="fc" id="L55">	private static final Tree BfsProcessed = new Tree(null);</span>
 
 	@Override
-	public IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
+	IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		/*
 		 * The BlossomV algorithm support perfect matching only, and assume such matching always exists. To support
 		 * non-perfect matching, we perform a reduction: we create a new graph containing two identical copies of the
@@ -116,11 +116,11 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 <span class="fc bfc" id="L116" title="All 2 branches covered.">			int e = eDup &lt; dummyEdgesThreshold ? eDup / 2 : -1;</span>
 <span class="fc" id="L117">			matched[v] = e;</span>
 <span class="fc" id="L118">		}</span>
-<span class="fc" id="L119">		return new Matchings.IndexMatching(g, matched);</span>
+<span class="fc" id="L119">		return new Matchings.MatchingImpl(g, matched);</span>
 	}
 
 	@Override
-	public IMatching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
+	IMatching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L124">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L125">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
 <span class="fc" id="L126">		return new Worker(g, w).solve();</span>
@@ -1584,7 +1584,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 <span class="pc bpc" id="L1584" title="1 of 2 branches missed.">				assert singletonNodes[u].isMatched();</span>
 <span class="fc" id="L1585">				matched[u] = singletonNodes[u].match.id;</span>
 <span class="fc" id="L1586">			}</span>
-<span class="fc" id="L1587">			return new Matchings.IndexMatching(g, matched);</span>
+<span class="fc" id="L1587">			return new Matchings.MatchingImpl(g, matched);</span>
 		}
 
 		private boolean updateDuals() {

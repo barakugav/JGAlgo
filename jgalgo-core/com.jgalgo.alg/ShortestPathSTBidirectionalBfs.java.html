@@ -30,112 +30,111 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 
-<span class="fc" id="L33">class ShortestPathSTBidirectionalBfs implements ShortestPathSTBase {</span>
+<span class="fc" id="L33">class ShortestPathSTBidirectionalBfs extends ShortestPathSTs.AbstractImpl {</span>
 
 	@Override
-	public ObjectDoublePair&lt;IPath&gt; computeShortestPathAndWeight(IndexGraph g, IWeightFunction w, int source,
-			int target) {
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		if (!g.vertices().contains(source))</span>
-<span class="nc" id="L39">			throw NoSuchVertexException.ofIndex(source);</span>
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">		if (!g.vertices().contains(target))</span>
-<span class="nc" id="L41">			throw NoSuchVertexException.ofIndex(target);</span>
-<span class="fc bfc" id="L42" title="All 2 branches covered.">		if (source == target)</span>
-<span class="fc" id="L43">			return ObjectDoublePair.of(IPath.valueOf(g, source, target, IntLists.emptyList()), 0);</span>
-<span class="fc" id="L44">		Assertions.onlyCardinality(w);</span>
+	ObjectDoublePair&lt;IPath&gt; computeShortestPathAndWeight(IndexGraph g, IWeightFunction w, int source, int target) {
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">		if (!g.vertices().contains(source))</span>
+<span class="nc" id="L38">			throw NoSuchVertexException.ofIndex(source);</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">		if (!g.vertices().contains(target))</span>
+<span class="nc" id="L40">			throw NoSuchVertexException.ofIndex(target);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">		if (source == target)</span>
+<span class="fc" id="L42">			return ObjectDoublePair.of(IPath.valueOf(g, source, target, IntLists.emptyList()), 0);</span>
+<span class="fc" id="L43">		Assertions.onlyCardinality(w);</span>
 
-<span class="fc" id="L46">		final long InfoNone = info(-2, -1);</span>
-<span class="fc" id="L47">		Int2LongMap infoS = new Int2LongOpenHashMap();</span>
-<span class="fc" id="L48">		Int2LongMap infoT = new Int2LongOpenHashMap();</span>
-<span class="fc" id="L49">		infoS.defaultReturnValue(InfoNone);</span>
-<span class="fc" id="L50">		infoT.defaultReturnValue(InfoNone);</span>
-<span class="fc" id="L51">		infoS.put(source, info(-1, 0));</span>
-<span class="fc" id="L52">		infoT.put(target, info(-1, 0));</span>
-<span class="fc" id="L53">		IntPriorityQueue queueS = new FIFOQueueIntNoReduce();</span>
-<span class="fc" id="L54">		IntPriorityQueue queueT = new FIFOQueueIntNoReduce();</span>
-<span class="fc" id="L55">		queueS.enqueue(source);</span>
-<span class="fc" id="L56">		queueT.enqueue(target);</span>
+<span class="fc" id="L45">		final long InfoNone = info(-2, -1);</span>
+<span class="fc" id="L46">		Int2LongMap infoS = new Int2LongOpenHashMap();</span>
+<span class="fc" id="L47">		Int2LongMap infoT = new Int2LongOpenHashMap();</span>
+<span class="fc" id="L48">		infoS.defaultReturnValue(InfoNone);</span>
+<span class="fc" id="L49">		infoT.defaultReturnValue(InfoNone);</span>
+<span class="fc" id="L50">		infoS.put(source, info(-1, 0));</span>
+<span class="fc" id="L51">		infoT.put(target, info(-1, 0));</span>
+<span class="fc" id="L52">		IntPriorityQueue queueS = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L53">		IntPriorityQueue queueT = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L54">		queueS.enqueue(source);</span>
+<span class="fc" id="L55">		queueT.enqueue(target);</span>
 
-<span class="fc" id="L58">		int mu = Integer.MAX_VALUE;</span>
-<span class="fc" id="L59">		int middle = -1;</span>
-<span class="fc bfc" id="L60" title="All 4 branches covered.">		while (!queueS.isEmpty() &amp;&amp; !queueT.isEmpty()) {</span>
+<span class="fc" id="L57">		int mu = Integer.MAX_VALUE;</span>
+<span class="fc" id="L58">		int middle = -1;</span>
+<span class="fc bfc" id="L59" title="All 4 branches covered.">		while (!queueS.isEmpty() &amp;&amp; !queueT.isEmpty()) {</span>
 
-<span class="fc" id="L62">			int uS = queueS.dequeueInt();</span>
-<span class="fc" id="L63">			int uT = queueT.dequeueInt();</span>
-<span class="fc" id="L64">			int uDistanceS = distance(infoS.get(uS));</span>
-<span class="fc" id="L65">			int uDistanceT = distance(infoT.get(uT));</span>
+<span class="fc" id="L61">			int uS = queueS.dequeueInt();</span>
+<span class="fc" id="L62">			int uT = queueT.dequeueInt();</span>
+<span class="fc" id="L63">			int uDistanceS = distance(infoS.get(uS));</span>
+<span class="fc" id="L64">			int uDistanceT = distance(infoT.get(uT));</span>
 
-<span class="fc bfc" id="L67" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L68">				int e = eit.nextInt();</span>
-<span class="fc" id="L69">				int v = eit.targetInt();</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">				if (infoS.containsKey(v))</span>
-<span class="fc" id="L71">					continue;</span>
-<span class="fc" id="L72">				int vDistanceS = uDistanceS + 1;</span>
-<span class="fc" id="L73">				long vInfoT = infoT.get(v);</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">				if (vInfoT != InfoNone) {</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">					if (mu &gt; vDistanceS + distance(vInfoT)) {</span>
-<span class="fc" id="L76">						mu = vDistanceS + distance(vInfoT);</span>
-<span class="fc" id="L77">						middle = v;</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L67">				int e = eit.nextInt();</span>
+<span class="fc" id="L68">				int v = eit.targetInt();</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">				if (infoS.containsKey(v))</span>
+<span class="fc" id="L70">					continue;</span>
+<span class="fc" id="L71">				int vDistanceS = uDistanceS + 1;</span>
+<span class="fc" id="L72">				long vInfoT = infoT.get(v);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">				if (vInfoT != InfoNone) {</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">					if (mu &gt; vDistanceS + distance(vInfoT)) {</span>
+<span class="fc" id="L75">						mu = vDistanceS + distance(vInfoT);</span>
+<span class="fc" id="L76">						middle = v;</span>
 					}
 				}
-<span class="fc" id="L80">				infoS.put(v, info(e, vDistanceS));</span>
-<span class="fc" id="L81">				queueS.enqueue(v);</span>
-<span class="fc" id="L82">			}</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(uT).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L84">				int e = eit.nextInt();</span>
-<span class="fc" id="L85">				int v = eit.sourceInt();</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">				if (infoT.containsKey(v))</span>
-<span class="fc" id="L87">					continue;</span>
-<span class="fc" id="L88">				int vDistanceT = uDistanceT + 1;</span>
-<span class="fc" id="L89">				long vInfoS = infoS.get(v);</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">				if (vInfoS != InfoNone) {</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">					if (mu &gt; distance(vInfoS) + vDistanceT) {</span>
-<span class="fc" id="L92">						mu = distance(vInfoS) + vDistanceT;</span>
-<span class="fc" id="L93">						middle = v;</span>
+<span class="fc" id="L79">				infoS.put(v, info(e, vDistanceS));</span>
+<span class="fc" id="L80">				queueS.enqueue(v);</span>
+<span class="fc" id="L81">			}</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(uT).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L83">				int e = eit.nextInt();</span>
+<span class="fc" id="L84">				int v = eit.sourceInt();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">				if (infoT.containsKey(v))</span>
+<span class="fc" id="L86">					continue;</span>
+<span class="fc" id="L87">				int vDistanceT = uDistanceT + 1;</span>
+<span class="fc" id="L88">				long vInfoS = infoS.get(v);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">				if (vInfoS != InfoNone) {</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">					if (mu &gt; distance(vInfoS) + vDistanceT) {</span>
+<span class="fc" id="L91">						mu = distance(vInfoS) + vDistanceT;</span>
+<span class="fc" id="L92">						middle = v;</span>
 					}
 				}
-<span class="fc" id="L96">				infoT.put(v, info(e, vDistanceT));</span>
-<span class="fc" id="L97">				queueT.enqueue(v);</span>
-<span class="fc" id="L98">			}</span>
+<span class="fc" id="L95">				infoT.put(v, info(e, vDistanceT));</span>
+<span class="fc" id="L96">				queueT.enqueue(v);</span>
+<span class="fc" id="L97">			}</span>
 
-<span class="fc bfc" id="L100" title="All 2 branches covered.">			if (uDistanceS + uDistanceT &gt;= mu)</span>
-<span class="fc" id="L101">				break;</span>
-<span class="fc" id="L102">		}</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">			if (uDistanceS + uDistanceT &gt;= mu)</span>
+<span class="fc" id="L100">				break;</span>
+<span class="fc" id="L101">		}</span>
 
-<span class="fc bfc" id="L104" title="All 2 branches covered.">		if (middle &lt; 0)</span>
-<span class="fc" id="L105">			return null;</span>
-<span class="fc" id="L106">		IntArrayList path = new IntArrayList();</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		if (middle &lt; 0)</span>
+<span class="fc" id="L104">			return null;</span>
+<span class="fc" id="L105">		IntArrayList path = new IntArrayList();</span>
 
 		/* add edges from source to middle */
-<span class="fc bfc" id="L109" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">			for (int u = middle, e; u != source; u = g.edgeSource(e))</span>
-<span class="fc" id="L111">				path.add(e = backtrack(infoS.get(u)));</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">			for (int u = middle, e; u != source; u = g.edgeSource(e))</span>
+<span class="fc" id="L110">				path.add(e = backtrack(infoS.get(u)));</span>
 		} else {
-<span class="fc bfc" id="L113" title="All 2 branches covered.">			for (int u = middle, e; u != source; u = g.edgeEndpoint(e, u))</span>
-<span class="fc" id="L114">				path.add(e = backtrack(infoS.get(u)));</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			for (int u = middle, e; u != source; u = g.edgeEndpoint(e, u))</span>
+<span class="fc" id="L113">				path.add(e = backtrack(infoS.get(u)));</span>
 		}
-<span class="fc" id="L116">		IntArrays.reverse(path.elements(), 0, path.size());</span>
+<span class="fc" id="L115">		IntArrays.reverse(path.elements(), 0, path.size());</span>
 
 		/* add edges from middle to target */
-<span class="fc bfc" id="L119" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc bfc" id="L120" title="All 2 branches covered.">			for (int u = middle, e; u != target; u = g.edgeTarget(e))</span>
-<span class="fc" id="L121">				path.add(e = backtrack(infoT.get(u)));</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">			for (int u = middle, e; u != target; u = g.edgeTarget(e))</span>
+<span class="fc" id="L120">				path.add(e = backtrack(infoT.get(u)));</span>
 		} else {
-<span class="fc bfc" id="L123" title="All 2 branches covered.">			for (int u = middle, e; u != target; u = g.edgeEndpoint(e, u))</span>
-<span class="fc" id="L124">				path.add(e = backtrack(infoT.get(u)));</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">			for (int u = middle, e; u != target; u = g.edgeEndpoint(e, u))</span>
+<span class="fc" id="L123">				path.add(e = backtrack(infoT.get(u)));</span>
 		}
-<span class="fc" id="L126">		return ObjectDoublePair.of(IPath.valueOf(g, source, target, path), mu);</span>
+<span class="fc" id="L125">		return ObjectDoublePair.of(IPath.valueOf(g, source, target, path), mu);</span>
 	}
 
 	static long info(int backtrack, int distance) {
-<span class="fc" id="L130">		return IntPair.of(backtrack, distance);</span>
+<span class="fc" id="L129">		return IntPair.of(backtrack, distance);</span>
 	}
 
 	static int backtrack(long info) {
-<span class="fc" id="L134">		return IntPair.first(info);</span>
+<span class="fc" id="L133">		return IntPair.first(info);</span>
 	}
 
 	static int distance(long info) {
-<span class="fc" id="L138">		return IntPair.second(info);</span>
+<span class="fc" id="L137">		return IntPair.second(info);</span>
 	}
 
 }

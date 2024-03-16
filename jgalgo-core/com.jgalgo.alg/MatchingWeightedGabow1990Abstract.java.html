@@ -46,19 +46,19 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 
-<span class="fc" id="L49">abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.MaximumBased {</span>
+<span class="fc" id="L49">abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaximumMatchingImpl {</span>
 
 <span class="fc" id="L51">	final DebugPrinter debugPrintManager = new DebugPrinter(false);</span>
 
 	@Override
-	public IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
+	IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L55">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L56">		return newWorker(g, w, debugPrintManager).computeMaxMatching(false);</span>
 
 	}
 
 	@Override
-	public IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
+	IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 <span class="fc bfc" id="L62" title="All 2 branches covered.">		if (WeightFunction.isCardinality(w)) {</span>
 <span class="fc" id="L63">			return computeMaximumWeightedMatching(g, null);</span>
 		} else {
@@ -679,7 +679,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc bfc" id="L679" title="All 2 branches covered.">				if (u &gt; v)</span>
 <span class="fc" id="L680">					matched[u] = matched[v] = edgeVal.get(e).e;</span>
 <span class="fc" id="L681">			}</span>
-<span class="fc" id="L682">			return new Matchings.IndexMatching(gOrig, matched);</span>
+<span class="fc" id="L682">			return new Matchings.MatchingImpl(gOrig, matched);</span>
 		}
 
 		abstract void makeEven(Blossom V);

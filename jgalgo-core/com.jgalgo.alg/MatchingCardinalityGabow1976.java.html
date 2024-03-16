@@ -43,7 +43,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-class MatchingCardinalityGabow1976 implements MatchingAlgoBase.Cardinality {
+class MatchingCardinalityGabow1976 extends Matchings.AbstractCardinalityMatchingImpl {
 
 	/**
 	 * Create a new maximum matching object.
@@ -51,7 +51,7 @@ class MatchingCardinalityGabow1976 implements MatchingAlgoBase.Cardinality {
 <span class="fc" id="L51">	MatchingCardinalityGabow1976() {}</span>
 
 	@Override
-	public IMatching computeMaximumCardinalityMatching(IndexGraph g) {
+	IMatching computeMaximumCardinalityMatching(IndexGraph g) {
 <span class="fc" id="L55">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L56">		int n = g.vertices().size();</span>
 
@@ -199,7 +199,7 @@ class MatchingCardinalityGabow1976 implements MatchingAlgoBase.Cardinality {
 <span class="fc" id="L199">			uf.clear();</span>
 <span class="fc" id="L200">		}</span>
 
-<span class="fc" id="L202">		return new Matchings.IndexMatching(g, matched);</span>
+<span class="fc" id="L202">		return new Matchings.MatchingImpl(g, matched);</span>
 	}
 
 	private static int findPath(IndexGraph g, int s, int t, Bitmap isEven, int[] match, int[] parent, int[] bridge,

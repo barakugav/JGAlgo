@@ -25,10 +25,10 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 
-<span class="fc" id="L28">class FlowCirculationPushRelabel implements FlowCirculationBase {</span>
+<span class="fc" id="L28">class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {</span>
 
 	@Override
-	public IFlow computeCirculation(IndexGraph g, IWeightFunction capacity, IWeightFunction supply) {
+	IFlow computeCirculation(IndexGraph g, IWeightFunction capacity, IWeightFunction supply) {
 <span class="pc bpc" id="L32" title="1 of 4 branches missed.">		if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(supply)) {</span>
 <span class="fc" id="L33">			return new WorkerInt(g, (IWeightFunctionInt) capacity, (IWeightFunctionInt) supply).computeCirculation();</span>
 		} else {

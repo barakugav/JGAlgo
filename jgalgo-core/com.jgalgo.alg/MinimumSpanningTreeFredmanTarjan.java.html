@@ -50,7 +50,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
+class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTrees.AbstractUndirected {
 
 <span class="fc" id="L55">	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();</span>
 
@@ -74,7 +74,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L78">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L79">		int n = g.vertices().size(), m = g.edges().size();</span>
 <span class="pc bpc" id="L80" title="1 of 2 branches missed.">		if (n == 0)</span>

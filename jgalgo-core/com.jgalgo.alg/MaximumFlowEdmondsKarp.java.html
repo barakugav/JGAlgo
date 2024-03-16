@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Edmonds%E2%80%93Karp_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-class MaximumFlowEdmondsKarp extends MaximumFlows.WithoutResidualGraph {
+class MaximumFlowEdmondsKarp extends MaximumFlows.AbstractImplWithoutResidualGraph {
 
 	/**
 	 * Create a new maximum flow algorithm object.
@@ -50,7 +50,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlows.WithoutResidualGraph {
 <span class="fc" id="L50">	MaximumFlowEdmondsKarp() {}</span>
 
 	@Override
-	public IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
+	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
 <span class="fc bfc" id="L54" title="All 2 branches covered.">		if (WeightFunction.isInteger(capacity)) {</span>
 <span class="fc" id="L55">			return new WorkerInt(g, (IWeightFunctionInt) capacity, source, sink).computeMaxFlow();</span>
 		} else {
@@ -58,7 +58,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlows.WithoutResidualGraph {
 		}
 	}
 
-<span class="fc" id="L61">	private abstract class Worker extends MaximumFlows.WithoutResidualGraph.Worker {</span>
+<span class="fc" id="L61">	private abstract class Worker extends MaximumFlows.AbstractImplWithoutResidualGraph.Worker {</span>
 
 <span class="fc" id="L63">		Worker(IndexGraph gOrig, IWeightFunction capacity, int source, int sink) {</span>
 <span class="fc" id="L64">			super(gOrig, capacity, source, sink);</span>

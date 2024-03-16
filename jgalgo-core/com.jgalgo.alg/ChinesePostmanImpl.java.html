@@ -25,7 +25,7 @@ import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-<span class="fc" id="L28">class ChinesePostmanImpl implements ChinesePostmanBase {</span>
+<span class="fc" id="L28">class ChinesePostmanImpl extends ChinesePostmanUtils.AbstractImpl {</span>
 
 	// private final WeaklyConnectedComponentsAlgo connectedComponentsAlgo =
 	// WeaklyConnectedComponentsAlgo.newInstance();
@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	}
 
 	@Override
-	public IPath computeShortestEdgeVisitorCircle(IndexGraph g, IWeightFunction w) {
+	IPath computeShortestEdgeVisitorCircle(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L46">		Assertions.onlyUndirected(g);</span>
 		// if (!connectedComponentsAlgo.isWeaklyConnected(g))
 		// throw new IllegalArgumentException(&quot;Graph is not connected, cannot compute shortest edge visitor circle&quot;);

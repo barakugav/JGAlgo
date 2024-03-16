@@ -35,10 +35,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L38">class MaximalCliquesEnumeratorBronKerbosch implements MaximalCliquesEnumeratorBase {</span>
+<span class="fc" id="L38">class MaximalCliquesEnumeratorBronKerbosch extends MaximalCliquesEnumerators.AbstractImpl {</span>
 
 	@Override
-	public Iterator&lt;IntSet&gt; maximalCliquesIter(IndexGraph g) {
+	Iterator&lt;IntSet&gt; maximalCliquesIter(IndexGraph g) {
 <span class="fc" id="L42">		Assertions.onlyUndirected(g);</span>
 
 <span class="fc" id="L44">		return new Iterator&lt;&gt;() {</span>

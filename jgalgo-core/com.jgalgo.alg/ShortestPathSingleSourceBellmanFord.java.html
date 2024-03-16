@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSourceBase {
+class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.AbstractImpl {
 
 <span class="fc" id="L46">	ShortestPathSingleSourceBellmanFord() {}</span>
 
@@ -51,7 +51,7 @@ class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSourceBas
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 <span class="fc" id="L55">		Assertions.onlyDirected(g);</span>
 
 <span class="fc" id="L57">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>

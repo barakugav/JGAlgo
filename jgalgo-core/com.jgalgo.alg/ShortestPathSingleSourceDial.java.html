@@ -47,7 +47,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  *
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceDial implements ShortestPathSingleSourceBase {
+class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.AbstractImpl {
 
 	/**
 	 * Construct a new SSSP algorithm.
@@ -61,7 +61,7 @@ class ShortestPathSingleSourceDial implements ShortestPathSingleSourceBase {
 	 *                                      {@link IWeightFunctionInt}
 	 */
 	@Override
-	public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 <span class="fc" id="L65">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
 <span class="pc bpc" id="L66" title="1 of 2 branches missed.">		if (!WeightFunction.isInteger(w))</span>
 <span class="nc" id="L67">			throw new IllegalArgumentException(&quot;only int weights are supported&quot;);</span>

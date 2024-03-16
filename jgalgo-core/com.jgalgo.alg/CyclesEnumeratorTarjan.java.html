@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-class CyclesEnumeratorTarjan implements CyclesEnumeratorBase {
+class CyclesEnumeratorTarjan extends CyclesEnumeratorAbstract {
 
 	/**
 	 * Create a new cycles enumeration algorithm object.
@@ -45,7 +45,7 @@ class CyclesEnumeratorTarjan implements CyclesEnumeratorBase {
 <span class="fc" id="L45">	CyclesEnumeratorTarjan() {}</span>
 
 	@Override
-	public Iterator&lt;IPath&gt; cyclesIter(IndexGraph g) {
+	Iterator&lt;IPath&gt; cyclesIter(IndexGraph g) {
 <span class="fc" id="L49">		Assertions.onlyDirected(g);</span>
 <span class="fc" id="L50">		return new Iterator&lt;&gt;() {</span>
 

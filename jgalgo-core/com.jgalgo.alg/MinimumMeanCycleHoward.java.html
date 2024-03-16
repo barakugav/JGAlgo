@@ -26,8 +26,8 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import com.jgalgo.internal.util.Fastutil;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -47,7 +47,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L50">class MinimumMeanCycleHoward implements MinimumMeanCycleBase {</span>
+<span class="fc" id="L50">class MinimumMeanCycleHoward extends MinimumMeanCycles.AbstractImpl {</span>
 
 <span class="fc" id="L52">	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();</span>
 
@@ -62,7 +62,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
+	IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L66">		Assertions.onlyDirected(g);</span>
 <span class="fc" id="L67">		final int n = g.vertices().size();</span>
 <span class="fc" id="L68">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>

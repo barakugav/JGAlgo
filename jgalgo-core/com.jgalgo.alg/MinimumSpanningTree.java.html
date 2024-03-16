@@ -27,7 +27,6 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -58,7 +57,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
  * @see    MinimumDirectedSpanningTree
  * @author Barak Ugav
  */
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">public interface MinimumSpanningTree {</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">public interface MinimumSpanningTree {</span>
 
 	/**
 	 * Compute the minimum spanning tree (MST) of a given graph.
@@ -126,54 +125,54 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; boolean isSpanningTree(Graph&lt;V, E&gt; g, Collection&lt;E&gt; edges) {
-<span class="fc" id="L129">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L128">		Assertions.onlyUndirected(g);</span>
 		IndexGraph ig;
 		IntCollection edges0;
-<span class="pc bpc" id="L132" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L133">			ig = (IndexGraph) g;</span>
-<span class="nc" id="L134">			edges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) edges);</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L132">			ig = (IndexGraph) g;</span>
+<span class="nc" id="L133">			edges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) edges);</span>
 		} else {
-<span class="fc" id="L136">			ig = g.indexGraph();</span>
-<span class="fc" id="L137">			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>
+<span class="fc" id="L135">			ig = g.indexGraph();</span>
+<span class="fc" id="L136">			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>
 		}
-<span class="fc" id="L139">		final int m = ig.edges().size();</span>
-<span class="fc" id="L140">		final int n = ig.vertices().size();</span>
-<span class="pc bpc" id="L141" title="1 of 2 branches missed.">		if (n == 0) {</span>
-<span class="nc bnc" id="L142" title="All 4 branches missed.">			assert m == 0;</span>
-<span class="nc" id="L143">			return edges0.isEmpty();</span>
+<span class="fc" id="L138">		final int m = ig.edges().size();</span>
+<span class="fc" id="L139">		final int n = ig.vertices().size();</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">		if (n == 0) {</span>
+<span class="nc bnc" id="L141" title="All 4 branches missed.">			assert m == 0;</span>
+<span class="nc" id="L142">			return edges0.isEmpty();</span>
 		}
-<span class="pc bpc" id="L145" title="1 of 2 branches missed.">		if (edges0.size() != n - 1)</span>
-<span class="nc" id="L146">			return false;</span>
-<span class="fc" id="L147">		Bitmap edgesBitmap = new Bitmap(m);</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">		for (int e : edges0) {</span>
-<span class="pc bpc" id="L149" title="1 of 2 branches missed.">			if (!ig.edges().contains(e))</span>
-<span class="nc" id="L150">				throw new IllegalArgumentException(&quot;invalid edge index &quot; + e);</span>
-<span class="pc bpc" id="L151" title="1 of 2 branches missed.">			if (edgesBitmap.get(e))</span>
-<span class="nc" id="L152">				throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">		if (edges0.size() != n - 1)</span>
+<span class="nc" id="L145">			return false;</span>
+<span class="fc" id="L146">		Bitmap edgesBitmap = new Bitmap(m);</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">		for (int e : edges0) {</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">			if (!ig.edges().contains(e))</span>
+<span class="nc" id="L149">				throw new IllegalArgumentException(&quot;invalid edge index &quot; + e);</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">			if (edgesBitmap.get(e))</span>
+<span class="nc" id="L151">				throw new IllegalArgumentException(</span>
 						&quot;edge with index &quot; + e + &quot; is included more than once in the spanning tree&quot;);
-<span class="fc" id="L154">			edgesBitmap.set(e);</span>
-<span class="fc" id="L155">		}</span>
+<span class="fc" id="L153">			edgesBitmap.set(e);</span>
+<span class="fc" id="L154">		}</span>
 
 		/* perform a BFS from some vertex using only the spanning tree edges */
-<span class="fc" id="L158">		Bitmap visited = new Bitmap(n);</span>
-<span class="fc" id="L159">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
-<span class="fc" id="L160">		visited.set(0);</span>
-<span class="fc" id="L161">		queue.enqueue(0);</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
-<span class="fc" id="L163">			int u = queue.dequeueInt();</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L165">				int e = eit.nextInt();</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">				if (!edgesBitmap.get(e))</span>
-<span class="fc" id="L167">					continue;</span>
-<span class="fc" id="L168">				int v = eit.targetInt();</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">				if (visited.get(v))</span>
-<span class="fc" id="L170">					continue;</span>
-<span class="fc" id="L171">				visited.set(v);</span>
-<span class="fc" id="L172">				queue.enqueue(v);</span>
-<span class="fc" id="L173">			}</span>
-<span class="fc" id="L174">		}</span>
+<span class="fc" id="L157">		Bitmap visited = new Bitmap(n);</span>
+<span class="fc" id="L158">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L159">		visited.set(0);</span>
+<span class="fc" id="L160">		queue.enqueue(0);</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
+<span class="fc" id="L162">			int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L164">				int e = eit.nextInt();</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">				if (!edgesBitmap.get(e))</span>
+<span class="fc" id="L166">					continue;</span>
+<span class="fc" id="L167">				int v = eit.targetInt();</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">				if (visited.get(v))</span>
+<span class="fc" id="L169">					continue;</span>
+<span class="fc" id="L170">				visited.set(v);</span>
+<span class="fc" id="L171">				queue.enqueue(v);</span>
+<span class="fc" id="L172">			}</span>
+<span class="fc" id="L173">		}</span>
 		/* make sure we reached all vertices */
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">		return visited.nextClearBit(0) == n;</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">		return visited.nextClearBit(0) == n;</span>
 	}
 
 	/**
@@ -195,60 +194,60 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; boolean isSpanningForest(Graph&lt;V, E&gt; g, Collection&lt;E&gt; edges) {
-<span class="fc" id="L198">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L197">		Assertions.onlyUndirected(g);</span>
 		IndexGraph ig;
 		IntCollection edges0;
-<span class="pc bpc" id="L201" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L202">			ig = (IndexGraph) g;</span>
-<span class="nc" id="L203">			edges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) edges);</span>
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L201">			ig = (IndexGraph) g;</span>
+<span class="nc" id="L202">			edges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) edges);</span>
 		} else {
-<span class="fc" id="L205">			ig = g.indexGraph();</span>
-<span class="fc" id="L206">			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>
+<span class="fc" id="L204">			ig = g.indexGraph();</span>
+<span class="fc" id="L205">			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>
 		}
-<span class="fc" id="L208">		final int m = ig.edges().size();</span>
-<span class="fc" id="L209">		final int n = ig.vertices().size();</span>
-<span class="pc bpc" id="L210" title="1 of 2 branches missed.">		if (n == 0) {</span>
-<span class="nc bnc" id="L211" title="All 4 branches missed.">			assert m == 0;</span>
-<span class="nc" id="L212">			return edges0.isEmpty();</span>
+<span class="fc" id="L207">		final int m = ig.edges().size();</span>
+<span class="fc" id="L208">		final int n = ig.vertices().size();</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">		if (n == 0) {</span>
+<span class="nc bnc" id="L210" title="All 4 branches missed.">			assert m == 0;</span>
+<span class="nc" id="L211">			return edges0.isEmpty();</span>
 		}
-<span class="fc" id="L214">		Bitmap edgesBitmap = new Bitmap(m);</span>
-<span class="fc bfc" id="L215" title="All 2 branches covered.">		for (int e : edges0) {</span>
-<span class="pc bpc" id="L216" title="1 of 2 branches missed.">			if (!ig.edges().contains(e))</span>
-<span class="nc" id="L217">				throw new IllegalArgumentException(&quot;invalid edge index &quot; + e);</span>
-<span class="pc bpc" id="L218" title="1 of 2 branches missed.">			if (edgesBitmap.get(e))</span>
-<span class="nc" id="L219">				throw new IllegalArgumentException(</span>
+<span class="fc" id="L213">		Bitmap edgesBitmap = new Bitmap(m);</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">		for (int e : edges0) {</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">			if (!ig.edges().contains(e))</span>
+<span class="nc" id="L216">				throw new IllegalArgumentException(&quot;invalid edge index &quot; + e);</span>
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">			if (edgesBitmap.get(e))</span>
+<span class="nc" id="L218">				throw new IllegalArgumentException(</span>
 						&quot;edge with index &quot; + e + &quot; is included more than once in the spanning tree&quot;);
-<span class="fc" id="L221">			edgesBitmap.set(e);</span>
-<span class="fc" id="L222">		}</span>
+<span class="fc" id="L220">			edgesBitmap.set(e);</span>
+<span class="fc" id="L221">		}</span>
 
-<span class="fc" id="L224">		int[] root = new int[n];</span>
-<span class="fc" id="L225">		Arrays.fill(root, -1);</span>
-<span class="fc" id="L226">		LongPriorityQueue queue = new FIFOQueueLongNoReduce();</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">		for (int r : range(n)) {</span>
-<span class="fc bfc" id="L228" title="All 2 branches covered.">			if (root[r] &gt;= 0)</span>
-<span class="fc" id="L229">				continue;</span>
-<span class="fc" id="L230">			root[r] = r;</span>
-<span class="fc" id="L231">			queue.enqueue(IntPair.of(r, -1));</span>
-<span class="fc bfc" id="L232" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
-<span class="fc" id="L233">				long l = queue.dequeueLong();</span>
-<span class="fc" id="L234">				int u = IntPair.first(l);</span>
-<span class="fc" id="L235">				int parentEdge = IntPair.second(l);</span>
-<span class="fc bfc" id="L236" title="All 2 branches covered.">				for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L237">					int e = eit.nextInt();</span>
-<span class="fc bfc" id="L238" title="All 4 branches covered.">					if (!edgesBitmap.get(e) || e == parentEdge)</span>
-<span class="fc" id="L239">						continue;</span>
-<span class="fc" id="L240">					int v = eit.targetInt();</span>
-<span class="pc bpc" id="L241" title="1 of 2 branches missed.">					if (root[v] == r)</span>
-<span class="nc" id="L242">						return false; /* cycle */</span>
-<span class="fc" id="L243">					root[v] = r;</span>
-<span class="fc" id="L244">					queue.enqueue(IntPair.of(v, e));</span>
-<span class="fc" id="L245">				}</span>
-<span class="fc" id="L246">			}</span>
-<span class="fc" id="L247">		}</span>
-<span class="fc bfc" id="L248" title="All 2 branches covered.">		for (int e : range(m))</span>
-<span class="pc bpc" id="L249" title="1 of 4 branches missed.">			if (!edgesBitmap.get(e) &amp;&amp; root[ig.edgeSource(e)] != root[ig.edgeTarget(e)])</span>
-<span class="nc" id="L250">				return false; /* two connected components of the given forest could have been connected */</span>
-<span class="fc" id="L251">		return true;</span>
+<span class="fc" id="L223">		int[] root = new int[n];</span>
+<span class="fc" id="L224">		Arrays.fill(root, -1);</span>
+<span class="fc" id="L225">		LongPriorityQueue queue = new FIFOQueueLongNoReduce();</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">		for (int r : range(n)) {</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">			if (root[r] &gt;= 0)</span>
+<span class="fc" id="L228">				continue;</span>
+<span class="fc" id="L229">			root[r] = r;</span>
+<span class="fc" id="L230">			queue.enqueue(IntPair.of(r, -1));</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
+<span class="fc" id="L232">				long l = queue.dequeueLong();</span>
+<span class="fc" id="L233">				int u = IntPair.first(l);</span>
+<span class="fc" id="L234">				int parentEdge = IntPair.second(l);</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">				for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L236">					int e = eit.nextInt();</span>
+<span class="fc bfc" id="L237" title="All 4 branches covered.">					if (!edgesBitmap.get(e) || e == parentEdge)</span>
+<span class="fc" id="L238">						continue;</span>
+<span class="fc" id="L239">					int v = eit.targetInt();</span>
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">					if (root[v] == r)</span>
+<span class="nc" id="L241">						return false; /* cycle */</span>
+<span class="fc" id="L242">					root[v] = r;</span>
+<span class="fc" id="L243">					queue.enqueue(IntPair.of(v, e));</span>
+<span class="fc" id="L244">				}</span>
+<span class="fc" id="L245">			}</span>
+<span class="fc" id="L246">		}</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">		for (int e : range(m))</span>
+<span class="pc bpc" id="L248" title="1 of 4 branches missed.">			if (!edgesBitmap.get(e) &amp;&amp; root[ig.edgeSource(e)] != root[ig.edgeTarget(e)])</span>
+<span class="nc" id="L249">				return false; /* two connected components of the given forest could have been connected */</span>
+<span class="fc" id="L250">		return true;</span>
 	}
 
 	/**
@@ -261,7 +260,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 	 * @return a default implementation of {@link MinimumSpanningTree}
 	 */
 	static MinimumSpanningTree newInstance() {
-<span class="fc" id="L264">		return builder().build();</span>
+<span class="fc" id="L263">		return builder().build();</span>
 	}
 
 	/**
@@ -273,51 +272,44 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 	 * @return a new builder that can build {@link MinimumSpanningTree} objects
 	 */
 	static MinimumSpanningTree.Builder builder() {
-<span class="fc" id="L276">		return new MinimumSpanningTree.Builder() {</span>
+<span class="fc" id="L275">		return new MinimumSpanningTree.Builder() {</span>
 			String impl;
-			private ReferenceableHeap.Builder heapBuilder;
 
 			@Override
 			public MinimumSpanningTree build() {
-<span class="pc bpc" id="L282" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L283" title="All 7 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L281" title="All 7 branches missed.">					switch (impl) {</span>
 						case &quot;kruskal&quot;:
-<span class="nc" id="L285">							return new MinimumSpanningTreeKruskal();</span>
+<span class="nc" id="L283">							return new MinimumSpanningTreeKruskal();</span>
 						case &quot;prim&quot;:
-<span class="nc" id="L287">							return new MinimumSpanningTreePrim();</span>
+<span class="nc" id="L285">							return new MinimumSpanningTreePrim();</span>
 						case &quot;boruvka&quot;:
-<span class="nc" id="L289">							return new MinimumSpanningTreeBoruvka();</span>
+<span class="nc" id="L287">							return new MinimumSpanningTreeBoruvka();</span>
 						case &quot;yao&quot;:
-<span class="nc" id="L291">							return new MinimumSpanningTreeYao();</span>
+<span class="nc" id="L289">							return new MinimumSpanningTreeYao();</span>
 						case &quot;fredman-tarjan&quot;:
-<span class="nc" id="L293">							return new MinimumSpanningTreeFredmanTarjan();</span>
+<span class="nc" id="L291">							return new MinimumSpanningTreeFredmanTarjan();</span>
 						case &quot;karger-klein-tarjan&quot;:
-<span class="nc" id="L295">							return new MinimumSpanningTreeKargerKleinTarjan();</span>
+<span class="nc" id="L293">							return new MinimumSpanningTreeKargerKleinTarjan();</span>
 						default:
-<span class="nc" id="L297">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L295">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
 
 				// TODO check for which graphs sizes Kruskal is faster
-<span class="fc" id="L302">				MinimumSpanningTreePrim algo = new MinimumSpanningTreePrim();</span>
-<span class="pc bpc" id="L303" title="1 of 2 branches missed.">				if (heapBuilder != null)</span>
-<span class="nc" id="L304">					algo.setHeapBuilder(heapBuilder);</span>
-<span class="fc" id="L305">				return algo;</span>
+<span class="fc" id="L300">				return new MinimumSpanningTreePrim();</span>
 			}
 
 			@Override
 			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L310" title="All 3 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L312">						impl = (String) value;</span>
-<span class="nc" id="L313">						break;</span>
-					case &quot;heap-builder&quot;:
-<span class="nc" id="L315">						heapBuilder = (ReferenceableHeap.Builder) value;</span>
-<span class="nc" id="L316">						break;</span>
+<span class="nc" id="L307">						impl = (String) value;</span>
+<span class="nc" id="L308">						break;</span>
 					default:
-<span class="nc" id="L318">						MinimumSpanningTree.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L310">						MinimumSpanningTree.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L320">			}</span>
+<span class="nc" id="L312">			}</span>
 		};
 	}
 

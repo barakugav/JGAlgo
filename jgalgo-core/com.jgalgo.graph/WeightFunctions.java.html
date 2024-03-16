@@ -33,14 +33,14 @@ public class WeightFunctions {
 	 * @return   a weight function that returns the negative of the given weight function
 	 */
 	public static IWeightFunction negate(IWeightFunction w) {
-<span class="fc" id="L36">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
-<span class="fc bfc" id="L37" title="All 2 branches covered.">		if (WeightFunction.isInteger(w)) {</span>
-<span class="fc" id="L38">			IWeightFunctionInt w0 = (IWeightFunctionInt) w;</span>
-<span class="fc" id="L39">			IWeightFunctionInt w1 = e -&gt; -w0.weightInt(e);</span>
-<span class="fc" id="L40">			return w1;</span>
+<span class="nc" id="L36">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">		if (WeightFunction.isInteger(w)) {</span>
+<span class="nc" id="L38">			IWeightFunctionInt w0 = (IWeightFunctionInt) w;</span>
+<span class="nc" id="L39">			IWeightFunctionInt w1 = e -&gt; -w0.weightInt(e);</span>
+<span class="nc" id="L40">			return w1;</span>
 		} else {
-<span class="fc" id="L42">			IWeightFunction w0 = w;</span>
-<span class="fc" id="L43">			return e -&gt; -w0.weight(e);</span>
+<span class="nc" id="L42">			IWeightFunction w0 = w;</span>
+<span class="nc" id="L43">			return e -&gt; -w0.weight(e);</span>
 		}
 	}
 
