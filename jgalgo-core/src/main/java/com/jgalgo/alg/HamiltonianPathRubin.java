@@ -49,10 +49,10 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
  *
  * @author Barak Ugav
  */
-class HamiltonianPathRubin implements HamiltonianPathAlgoBase.CycleBased {
+class HamiltonianPathRubin extends HamiltonianPathAlgos.CycleBasedAbstractImpl {
 
 	@Override
-	public Iterator<IPath> hamiltonianCyclesIter(IndexGraph g) {
+	Iterator<IPath> hamiltonianCyclesIter(IndexGraph g) {
 		final int n = g.vertices().size();
 		if (n == 0)
 			return Collections.emptyIterator();

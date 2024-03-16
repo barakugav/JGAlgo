@@ -31,57 +31,62 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
-interface HamiltonianPathAlgoBase extends HamiltonianPathAlgo {
+class HamiltonianPathAlgos {
+	private HamiltonianPathAlgos() {}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	default <V, E> Iterator<Path<V, E>> hamiltonianPathsIter(Graph<V, E> g) {
-		if (g instanceof IndexGraph) {
-			return (Iterator) hamiltonianPathsIter((IndexGraph) g);
-		} else {
-			IndexGraph ig = g.indexGraph();
-			Iterator<IPath> indexIter = hamiltonianPathsIter(ig);
-			return IterTools.map(indexIter, iPath -> Paths.pathFromIndexPath(g, iPath));
+	abstract static class AbstractImpl implements HamiltonianPathAlgo {
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public <V, E> Iterator<Path<V, E>> hamiltonianPathsIter(Graph<V, E> g) {
+			if (g instanceof IndexGraph) {
+				return (Iterator) hamiltonianPathsIter((IndexGraph) g);
+			} else {
+				IndexGraph ig = g.indexGraph();
+				Iterator<IPath> indexIter = hamiltonianPathsIter(ig);
+				return IterTools.map(indexIter, iPath -> Paths.pathFromIndexPath(g, iPath));
+			}
 		}
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public <V, E> Iterator<Path<V, E>> hamiltonianPathsIter(Graph<V, E> g, V source, V target) {
+			if (g instanceof IndexGraph) {
+				int src = ((Integer) source).intValue(), trg = ((Integer) target).intValue();
+				return (Iterator) hamiltonianPathsIter((IndexGraph) g, src, trg);
+			} else {
+				IndexGraph ig = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				int src = viMap.idToIndex(source), trg = viMap.idToIndex(target);
+				Iterator<IPath> indexIter = hamiltonianPathsIter(ig, src, trg);
+				return IterTools.map(indexIter, iPath -> Paths.pathFromIndexPath(g, iPath));
+			}
+		}
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public <V, E> Iterator<Path<V, E>> hamiltonianCyclesIter(Graph<V, E> g) {
+			if (g instanceof IndexGraph) {
+				return (Iterator) hamiltonianCyclesIter((IndexGraph) g);
+			} else {
+				IndexGraph ig = g.indexGraph();
+				Iterator<IPath> indexIter = hamiltonianCyclesIter(ig);
+				return IterTools.map(indexIter, iPath -> Paths.pathFromIndexPath(g, iPath));
+			}
+		}
+
+		abstract Iterator<IPath> hamiltonianPathsIter(IndexGraph g);
+
+		abstract Iterator<IPath> hamiltonianPathsIter(IndexGraph g, int source, int target);
+
+		abstract Iterator<IPath> hamiltonianCyclesIter(IndexGraph g);
+
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	default <V, E> Iterator<Path<V, E>> hamiltonianPathsIter(Graph<V, E> g, V source, V target) {
-		if (g instanceof IndexGraph) {
-			int src = ((Integer) source).intValue(), trg = ((Integer) target).intValue();
-			return (Iterator) hamiltonianPathsIter((IndexGraph) g, src, trg);
-		} else {
-			IndexGraph ig = g.indexGraph();
-			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-			int src = viMap.idToIndex(source), trg = viMap.idToIndex(target);
-			Iterator<IPath> indexIter = hamiltonianPathsIter(ig, src, trg);
-			return IterTools.map(indexIter, iPath -> Paths.pathFromIndexPath(g, iPath));
-		}
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	default <V, E> Iterator<Path<V, E>> hamiltonianCyclesIter(Graph<V, E> g) {
-		if (g instanceof IndexGraph) {
-			return (Iterator) hamiltonianCyclesIter((IndexGraph) g);
-		} else {
-			IndexGraph ig = g.indexGraph();
-			Iterator<IPath> indexIter = hamiltonianCyclesIter(ig);
-			return IterTools.map(indexIter, iPath -> Paths.pathFromIndexPath(g, iPath));
-		}
-	}
-
-	Iterator<IPath> hamiltonianPathsIter(IndexGraph g);
-
-	Iterator<IPath> hamiltonianPathsIter(IndexGraph g, int source, int target);
-
-	Iterator<IPath> hamiltonianCyclesIter(IndexGraph g);
-
-	static interface CycleBased extends HamiltonianPathAlgoBase {
+	abstract static class CycleBasedAbstractImpl extends HamiltonianPathAlgos.AbstractImpl {
 
 		@Override
-		default Iterator<IPath> hamiltonianPathsIter(IndexGraph g) {
+		public Iterator<IPath> hamiltonianPathsIter(IndexGraph g) {
 			final int n = g.vertices().size();
 			final int m = g.edges().size();
 			if (n == 0)
@@ -134,7 +139,7 @@ interface HamiltonianPathAlgoBase extends HamiltonianPathAlgo {
 		}
 
 		@Override
-		default Iterator<IPath> hamiltonianPathsIter(IndexGraph g, int source, int target) {
+		public Iterator<IPath> hamiltonianPathsIter(IndexGraph g, int source, int target) {
 			final int n = g.vertices().size();
 			final int m = g.edges().size();
 			Assertions.checkVertex(source, n);
