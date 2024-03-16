@@ -36,10 +36,10 @@ import com.jgalgo.graph.IndexGraph;
  *
  * @author Barak Ugav
  */
-class CoresAlgoImpl implements CoresAlgoBase {
+class CoresAlgoImpl extends CoresAlgos.AbstractImpl {
 
 	@Override
-	public CoresAlgo.IResult computeCores(IndexGraph g, EdgeDirection degreeType) {
+	CoresAlgo.IResult computeCores(IndexGraph g, EdgeDirection degreeType) {
 		Objects.requireNonNull(degreeType);
 
 		final int n = g.vertices().size();
