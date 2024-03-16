@@ -26,12 +26,12 @@ import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-class EdgeCoverWeighted implements EdgeCoverBase {
+class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 
 	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();
 
 	@Override
-	public IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
+	IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
