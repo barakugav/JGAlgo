@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  *
  * @author Barak Ugav
  */
-class KEdgeConnectedComponentsWang implements KEdgeConnectedComponentsAlgoBase, RandomizedAlgorithm {
+class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.AbstractImpl implements RandomizedAlgorithm {
 
 	private final Random rand = new Random();
 	private final WeaklyConnectedComponentsAlgo wccAlgo = WeaklyConnectedComponentsAlgo.newInstance();
@@ -46,7 +46,7 @@ class KEdgeConnectedComponentsWang implements KEdgeConnectedComponentsAlgoBase, 
 	}
 
 	@Override
-	public IVertexPartition computeKEdgeConnectedComponents(IndexGraph g, int k) {
+	IVertexPartition computeKEdgeConnectedComponents(IndexGraph g, int k) {
 		final int n = g.vertices().size();
 		if (n == 0)
 			return new VertexPartitions.Impl(g, 0, IntArrays.DEFAULT_EMPTY_ARRAY);
