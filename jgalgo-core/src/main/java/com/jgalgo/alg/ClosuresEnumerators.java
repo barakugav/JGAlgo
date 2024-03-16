@@ -24,21 +24,27 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-interface ClosuresEnumeratorBase extends ClosuresEnumerator {
+class ClosuresEnumerators {
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	default <V, E> Iterator<Set<V>> closuresIter(Graph<V, E> g) {
-		if (g instanceof IndexGraph) {
-			return (Iterator) closuresIter((IndexGraph) g);
-		} else {
-			IndexGraph ig = g.indexGraph();
-			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-			Iterator<IntSet> indexIter = closuresIter(ig);
-			return IterTools.map(indexIter, s -> IndexIdMaps.indexToIdSet(s, viMap));
+	private ClosuresEnumerators() {}
+
+	abstract static class AbstractImpl implements ClosuresEnumerator {
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public <V, E> Iterator<Set<V>> closuresIter(Graph<V, E> g) {
+			if (g instanceof IndexGraph) {
+				return (Iterator) closuresIter((IndexGraph) g);
+			} else {
+				IndexGraph ig = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				Iterator<IntSet> indexIter = closuresIter(ig);
+				return IterTools.map(indexIter, s -> IndexIdMaps.indexToIdSet(s, viMap));
+			}
 		}
-	}
 
-	Iterator<IntSet> closuresIter(IndexGraph g);
+		abstract Iterator<IntSet> closuresIter(IndexGraph g);
+
+	}
 
 }
