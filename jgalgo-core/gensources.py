@@ -1,12 +1,11 @@
+import argparse
+import json
+import logging
 import os
-import sys
 import shutil
 import subprocess
+import sys
 import xml.etree.ElementTree
-import json
-import argparse
-import logging
-
 
 TOP_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(TOP_DIR, "template")

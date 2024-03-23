@@ -1,16 +1,19 @@
 # breaking grequests breaks requests (https://github.com/spyoungtech/grequests/issues/103), workaround:
 from gevent import monkey
+
+
 def stub(*args, **kwargs): # pylint: disable=unused-argument
 	pass
 monkey.patch_all = stub
-import grequests
-
-import requests
 import json
 import os
-import zipfile
-import tarfile
 import shutil
+import tarfile
+import zipfile
+
+import grequests
+import requests
+
 
 def get_artifacts_description_all():
 	url = 'https://api.github.com/repos/barakugav/JGAlgo/actions/artifacts'

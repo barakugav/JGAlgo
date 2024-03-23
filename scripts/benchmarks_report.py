@@ -1,16 +1,17 @@
-import requests
-import json
-import tempfile
-import os
-import numpy as np
 import argparse
-import datetime
-from datetime import datetime
 import csv
-import matplotlib
-from matplotlib import pyplot as plt
+import datetime
+import json
+import os
+import tempfile
+from datetime import datetime
 
 import artifacts_utils
+import matplotlib
+import numpy as np
+import requests
+from matplotlib import pyplot as plt
+
 
 def read_results_file(path):
 	results = []
