@@ -112,7 +112,12 @@ public interface MinimumEdgeCutST {
 	 * @return a default implementation of {@link MinimumEdgeCutST}
 	 */
 	static MinimumEdgeCutST newInstance() {
-		return MaximumFlowPushRelabel.newInstanceHighestFirst();
+		MaximumFlow maxFlowAlg = MaximumFlow.newInstance();
+		if (maxFlowAlg instanceof MinimumEdgeCutST) {
+			return (MinimumEdgeCutST) maxFlowAlg;
+		} else {
+			return newFromMaximumFlow(maxFlowAlg);
+		}
 	}
 
 	/**
