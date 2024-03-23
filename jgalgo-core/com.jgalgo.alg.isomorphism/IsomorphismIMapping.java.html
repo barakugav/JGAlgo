@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsomorphismIMapping.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.isomorphism</a> &gt; <span class="el_source">IsomorphismIMapping.java</span></div><h1>IsomorphismIMapping.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.isomorphism;
+
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchEdgeException;
+import com.jgalgo.graph.NoSuchVertexException;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+/**
+ * A mapping between two graphs that preserves the structure of the graphs for {@link IntGraph}.
+ *
+ * &lt;p&gt;
+ * This is a specialization of {@link IsomorphismMapping} for {@link IntGraph}. See the generic interface for more
+ * details.
+ *
+ * @author Barak Ugav
+ */
+public interface IsomorphismIMapping extends IsomorphismMapping&lt;Integer, Integer, Integer, Integer&gt; {
+
+	/**
+	 * Map a vertex from the first graph to a vertex of the second graph.
+	 *
+	 * @param  vertex                the vertex to map
+	 * @return                       the mapped vertex, or {@code -1} if {@code v1} is not mapped
+	 * @throws NoSuchVertexException if the vertex does not exist in the first graph
+	 */
+	int mapVertex(int vertex);
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #mapVertex(int)} instead to avoid un/boxing.
+	 */
+	@Deprecated
+	@Override
+	default Integer mapVertex(Integer vertex) {
+<span class="fc" id="L51">		int v2 = mapVertex(vertex.intValue());</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		return v2 &lt; 0 ? null : Integer.valueOf(v2);</span>
+	}
+
+	/**
+	 * Map an edge from the first graph to an edge of the second graph.
+	 *
+	 * @param  edge                the edge to map
+	 * @return                     the mapped edge, or {@code -1} if {@code e1} is not mapped
+	 * @throws NoSuchEdgeException if the edge does not exist in the first graph
+	 */
+	int mapEdge(int edge);
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #mapEdge(int)} instead to avoid un/boxing.
+	 */
+	@Deprecated
+	@Override
+	default Integer mapEdge(Integer edge) {
+<span class="fc" id="L72">		int e2 = mapEdge(edge.intValue());</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		return e2 &lt; 0 ? null : Integer.valueOf(e2);</span>
+	}
+
+	@Override
+	IsomorphismIMapping inverse();
+
+	@Override
+	IntGraph sourceGraph();
+
+	@Override
+	IntGraph targetGraph();
+
+	@Override
+	IntSet mappedVertices();
+
+	@Override
+	IntSet mappedEdges();
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

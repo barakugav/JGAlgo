@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumSpanningTreeFredmanTarjan.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.span</a> &gt; <span class="el_source">MinimumSpanningTreeFredmanTarjan.java</span></div><h1>MinimumSpanningTreeFredmanTarjan.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg.span;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Arrays;
+import java.util.Objects;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.ds.IntReferenceableHeap;
+import com.jgalgo.internal.ds.ReferenceableHeap;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+/**
+ * Fredman and Tarjan’s minimum spanning tree algorithm.
+ *
+ * &lt;p&gt;
+ * The algorithm runs in iterations. In each iteration, multiple runs of the {@link MinimumSpanningTreePrim} algorithm
+ * will be run (sequently) on the vertices: instead of growing the tree of Prim's algorithm until it connect all
+ * vertices, we grow the heap that is used to order the out going edges until it reaches a certain size limit. Once the
+ * heap reached the limit, we start Prim's algorithm from another vertex until the new heap reaches the limit, and
+ * repeat that until we have a spanning forest. Than, we &lt;i&gt;contract&lt;/i&gt; each tree to a single super vertex, and we
+ * advance to the next iteration.
+ *
+ * &lt;p&gt;
+ * The algorithm runs in \(O(m \log^* n)\) time and uses linear space. In practice, {@link MinimumSpanningTreePrim}
+ * usually out-preform this algorithm. Note that only undirected graphs are supported.
+ *
+ * &lt;p&gt;
+ * Based on &quot;Fibonacci Heaps and Their Uses in Improved Network Optimization Algorithms&quot; by M.L. Fredman and R.E.
+ * Tarjan.
+ *
+ * @author Barak Ugav
+ */
+class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTrees.AbstractUndirected {
+
+<span class="fc" id="L55">	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();</span>
+
+	/**
+	 * Construct a new MST algorithm object.
+	 */
+<span class="fc" id="L60">	MinimumSpanningTreeFredmanTarjan() {}</span>
+
+	/**
+	 * Set the implementation of the heap used by this algorithm.
+	 *
+	 * @param heapBuilder a builder for heaps used by this algorithm
+	 */
+	void setHeapBuilder(ReferenceableHeap.Builder heapBuilder) {
+<span class="nc" id="L68">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
+<span class="nc" id="L69">	}</span>
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not undirected
+	 */
+	@Override
+	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L78">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L79">		int n = g.vertices().size(), m = g.edges().size();</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		if (n == 0)</span>
+<span class="nc" id="L81">			return MinimumSpanningTrees.IndexResult.Empty;</span>
+
+		// following variables are used to maintain the super vertices
+
+<span class="fc" id="L85">		int[] V = new int[n]; // (vertex -&gt; super vertex) of the current iteration</span>
+<span class="fc" id="L86">		int[] VNext = new int[n]; // (super vertex -&gt; super vertex next) new labels for next iteration</span>
+<span class="fc" id="L87">		int ni = n; // number of super vertices in the current iteration</span>
+
+		// to be able to iterate over all edges of a super vertex, we maintain for each
+		// super vertex a list of the vertices that were contracted to create it. The
+		// list is stored as 3 arrays:
+<span class="fc" id="L92">		int[] vListBegin = new int[n]; // (super vertex -&gt; first vertex in the list) of the current iteration</span>
+<span class="fc" id="L93">		int[] vListEnd = new int[n]; // (super vertex -&gt; last vertex in the list) of the current iteration</span>
+<span class="fc" id="L94">		int[] vListNext = new int[n]; // (vertex -&gt; next vertex in the list)</span>
+<span class="fc" id="L95">		int[] vListBeginNext = new int[n]; // vListBegin of the next iteration</span>
+<span class="fc" id="L96">		int[] vListEndNext = new int[n]; // vListEnd of the next iteration</span>
+
+		// init each vertex to be its own super vertex
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int v : range(n)) {</span>
+<span class="fc" id="L100">			V[v] = vListBegin[v] = vListEnd[v] = v;</span>
+<span class="fc" id="L101">			vListNext[v] = -1;</span>
+<span class="fc" id="L102">		}</span>
+
+		// following variables are used for the Prim algorithm on the super vertices
+
+<span class="fc" id="L106">		int[] vTree = new int[n]; // (super vertex -&gt; tree index)</span>
+<span class="fc" id="L107">		int[] treeVertices = new int[n]; // stack of super vertices in current built tree</span>
+
+		// heap of edges going out of the current tree, one edge in per super vertex
+<span class="fc" id="L110">		IntReferenceableHeap heap = (IntReferenceableHeap) heapBuilder.build(int.class, void.class, w);</span>
+<span class="fc" id="L111">		int heapSize = 0;</span>
+		// (super vertex -&gt; heap element) for fast decreaseKey
+<span class="fc" id="L113">		IntReferenceableHeap.Ref[] vHeapElm = new IntReferenceableHeap.Ref[n];</span>
+
+<span class="fc" id="L115">		IntArrayList mst = new IntArrayList(n - 1);</span>
+<span class="fc" id="L116">		for (int niNext;; ni = niNext) {</span>
+<span class="fc" id="L117">			int kExp = 2 * m / ni;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">			int k = kExp &lt; Integer.SIZE ? 1 &lt;&lt; kExp : Integer.MAX_VALUE;</span>
+<span class="fc" id="L119">			niNext = 0;</span>
+
+<span class="fc" id="L121">			Arrays.fill(vTree, 0, ni, -1);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">			for (int r : range(ni)) {</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">				if (vTree[r] &gt;= 0)</span>
+<span class="fc" id="L124">					continue;</span>
+
+<span class="fc" id="L126">				int treeSize = 0;</span>
+<span class="fc" id="L127">				int connectedTree = -1;</span>
+
+<span class="fc" id="L129">				treeLoop: for (int U = r;;) {</span>
+<span class="fc" id="L130">					vTree[U] = r;</span>
+<span class="fc" id="L131">					treeVertices[treeSize++] = U;</span>
+<span class="fc" id="L132">					vHeapElm[U] = null;</span>
+
+					// decrease edges keys if a better one is found
+<span class="fc bfc" id="L135" title="All 2 branches covered.">					for (int u = vListBegin[U]; u &gt;= 0; u = vListNext[u]) {</span>
+						// for each vertex in the super vertex, iterate over all edges
+<span class="fc bfc" id="L137" title="All 2 branches covered.">						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L138">							int e = eit.nextInt();</span>
+<span class="fc" id="L139">							int v = V[eit.targetInt()];</span>
+
+							// edge from current tree to itself
+<span class="fc bfc" id="L142" title="All 2 branches covered.">							if (vTree[v] == r)</span>
+<span class="fc" id="L143">								continue;</span>
+
+<span class="fc" id="L145">							IntReferenceableHeap.Ref heapElm = vHeapElm[v];</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">							if (heapElm == null) {</span>
+<span class="fc" id="L147">								heapElm = vHeapElm[v] = heap.insert(e);</span>
+<span class="fc" id="L148">								heapSize++;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">								if (heapSize &gt; k)</span>
+<span class="fc" id="L150">									break treeLoop;</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">							} else if (w.compare(e, heapElm.key()) &lt; 0)</span>
+<span class="fc" id="L152">								heap.decreaseKey(heapElm, e);</span>
+<span class="fc" id="L153">						}</span>
+					}
+
+					// find next lightest edge
+					int e, v, vt;
+					for (;;) {
+<span class="fc bfc" id="L159" title="All 2 branches covered.">						if (heap.isEmpty())</span>
+							// reached all vertices from current root, continue to next tree
+<span class="fc" id="L161">							break treeLoop;</span>
+<span class="fc" id="L162">						e = heap.extractMin().key();</span>
+<span class="fc" id="L163">						heapSize--;</span>
+
+<span class="fc" id="L165">						v = V[g.edgeSource(e)];</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">						if ((vt = vTree[v]) != r)</span>
+<span class="fc" id="L167">							break;</span>
+<span class="fc" id="L168">						v = V[g.edgeTarget(e)];</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">						if ((vt = vTree[v]) != r)</span>
+<span class="fc" id="L170">							break;</span>
+					}
+
+					// add lightest edge to MST
+<span class="fc" id="L174">					mst.add(e);</span>
+<span class="fc" id="L175">					U = v;</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">					if (vt &gt;= 0) {</span>
+						// connected to an existing tree, take it's super vertex label for next iter
+<span class="fc" id="L178">						connectedTree = VNext[vt];</span>
+<span class="fc" id="L179">						break;</span>
+					}
+<span class="fc" id="L181">				}</span>
+
+				int newV; // super vertex label for next iteration for all vertices in tree
+				int listEnd; // last vertex in super vertex vertices list
+<span class="fc bfc" id="L185" title="All 2 branches covered.">				if (connectedTree &gt;= 0) {</span>
+<span class="fc" id="L186">					newV = connectedTree;</span>
+<span class="fc" id="L187">					listEnd = vListEndNext[connectedTree];</span>
+				} else {
+<span class="fc" id="L189">					newV = niNext++;</span>
+<span class="fc" id="L190">					listEnd = -1;</span>
+				}
+
+				// contract tree to super vertex, assign new label and concatenate vertices list
+<span class="fc bfc" id="L194" title="All 2 branches covered.">				for (int v; treeSize-- &gt; 0; listEnd = vListEnd[v]) {</span>
+<span class="fc" id="L195">					v = treeVertices[treeSize];</span>
+<span class="fc" id="L196">					VNext[v] = newV;</span>
+
+<span class="fc bfc" id="L198" title="All 2 branches covered.">					if (listEnd &lt; 0) {</span>
+						// set new super vertex vertices list begin
+<span class="fc" id="L200">						vListBeginNext[newV] = vListBegin[v];</span>
+					} else {
+						// concatenate current vertex vertices list with the prev one
+<span class="fc" id="L203">						vListNext[listEnd] = vListBegin[v];</span>
+					}
+				}
+				// set new super vertex vertices list end
+<span class="fc" id="L207">				vListEndNext[newV] = listEnd;</span>
+
+<span class="fc" id="L209">				Arrays.fill(vHeapElm, 0, ni, null);</span>
+<span class="fc" id="L210">				heap.clear();</span>
+<span class="fc" id="L211">				heapSize = 0;</span>
+<span class="fc" id="L212">			}</span>
+
+			// assign new super vertices' vertices list
+<span class="fc" id="L215">			int[] temp = vListBegin;</span>
+<span class="fc" id="L216">			vListBegin = vListBeginNext;</span>
+<span class="fc" id="L217">			vListBeginNext = temp;</span>
+<span class="fc" id="L218">			temp = vListEnd;</span>
+<span class="fc" id="L219">			vListEnd = vListEndNext;</span>
+<span class="fc" id="L220">			vListEndNext = temp;</span>
+
+			// If we failed to contract the graph, we are done
+<span class="fc bfc" id="L223" title="All 2 branches covered.">			if (ni == niNext)</span>
+<span class="fc" id="L224">				break;</span>
+
+			// update super vertex labels for all vertices
+<span class="fc bfc" id="L227" title="All 2 branches covered.">			for (int v : range(n))</span>
+<span class="fc" id="L228">				V[v] = VNext[V[v]];</span>
+
+		}
+
+<span class="fc" id="L232">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
+<span class="fc" id="L233">		return new MinimumSpanningTrees.IndexResult(mstSet);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

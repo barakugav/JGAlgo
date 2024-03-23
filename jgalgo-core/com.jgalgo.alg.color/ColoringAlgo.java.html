@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ColoringAlgo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.color</a> &gt; <span class="el_source">ColoringAlgo.java</span></div><h1>ColoringAlgo.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg.color;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.function.IntUnaryOperator;
+import java.util.function.ToIntFunction;
+import com.jgalgo.alg.AlgorithmBuilderBase;
+import com.jgalgo.alg.IVertexPartition;
+import com.jgalgo.alg.VertexPartition;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.IntAdapters;
+
+/**
+ * An algorithm that assign a color to each vertex in a graph while avoiding identical color for any pair of adjacent
+ * vertices.
+ *
+ * &lt;p&gt;
+ * Given a graph \(G=(V,E)\) a valid coloring is a function \(C:v \rightarrow c\) for any vertex \(v\) in \(V\) where
+ * each edge \((u,v)\) in \(E\) satisfy \(C(u) \neq C(v)\). The objective is to minimize the total number of different
+ * colors. The problem is NP-hard, but various heuristics exists which give decent results for general graphs and
+ * optimal results for special cases.
+ *
+ * &lt;p&gt;
+ * Each color is represented as an integer in range \([0, \textit{colorsNum})\).
+ *
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #builder()} may support different options to obtain different implementations.
+ *
+ * &lt;pre&gt; {@code
+ * Graph&lt;String, Integer&gt; g = Graph.newUndirected();
+ * g.addVertex(&quot;Alice&quot;);
+ * g.addVertex(&quot;Bob&quot;);
+ * g.addVertex(&quot;Charlie&quot;);
+ * g.addVertex(&quot;David&quot;);
+ * g.addEdge(&quot;Alice&quot;, &quot;Bob&quot;);
+ * g.addEdge(&quot;Bob&quot;, &quot;Charlie&quot;);
+ * g.addEdge(&quot;Charlie&quot;, &quot;Alice&quot;);
+ * g.addEdge(&quot;Charlie&quot;, &quot;David&quot;);
+ *
+ * Coloring coloringAlg = Coloring.newInstance();
+ * VertexPartition&lt;String, Integer&gt; colors = coloringAlg.computeColoring(g);
+ * System.out.println(&quot;A valid coloring with &quot; + colors.numberOfBlocks() + &quot; colors was found&quot;);
+ * for (String u : g.vertices()) {
+ * 	System.out.println(&quot;The color of vertex &quot; + u + &quot; is &quot; + colors.vertexBlock(u));
+ * 	for (EdgeIter&lt;String, Integer&gt; eit = g.outEdges(u).iterator(); eit.hasNext();) {
+ * 		eit.next();
+ * 		String v = eit.target();
+ * 		assert colors.vertexBlock(u) != colors.vertexBlock(v);
+ * 	}
+ * }
+ * }&lt;/pre&gt;
+ *
+ * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Graph_coloring&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+public interface ColoringAlgo {
+
+	/**
+	 * Assign a color to each vertex of the given graph, resulting in a valid coloring.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IVertexPartition}.
+	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
+	 * @param  g                        a graph
+	 * @return                          a valid coloring with (hopefully) small number of different colors
+	 * @throws IllegalArgumentException if {@code g} is directed
+	 */
+	&lt;V, E&gt; VertexPartition&lt;V, E&gt; computeColoring(Graph&lt;V, E&gt; g);
+
+	/**
+	 * Check whether a given mapping is a valid coloring of a graph.
+	 *
+	 * &lt;p&gt;
+	 * A valid coloring is first of all a valid {@link VertexPartition}, but also for each edge \((u,v)\) in the graph
+	 * the color of \(u\) is different than the color of \(v\).
+	 *
+	 * @param  &lt;V&gt;     the vertices type
+	 * @param  &lt;E&gt;     the edges type
+	 * @param  g       a graph
+	 * @param  mapping a mapping from the vertices of {@code g} to colors in range \([0, \textit{colorsNum})\)
+	 * @return         {@code true} if {@code mapping} is a valid coloring of {@code g}, {@code false} otherwise
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; boolean isColoring(Graph&lt;V, E&gt; g, ToIntFunction&lt;V&gt; mapping) {
+<span class="fc" id="L108">		final int n = g.vertices().size();</span>
+		IndexGraph ig;
+<span class="fc" id="L110">		int[] vertexToColor = new int[n];</span>
+<span class="fc" id="L111">		int maxColor = -1;</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L113">			ig = (IndexGraph) g;</span>
+<span class="nc" id="L114">			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction&lt;Integer&gt;) mapping);</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">			for (int v : range(n)) {</span>
+<span class="nc" id="L116">				vertexToColor[v] = mapping0.applyAsInt(v);</span>
+<span class="nc" id="L117">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
+<span class="nc" id="L118">			}</span>
+
+<span class="pc bfc" id="L120" title="All 2 branches covered.">		} else if (g instanceof IntGraph) {</span>
+<span class="fc" id="L121">			ig = g.indexGraph();</span>
+<span class="fc" id="L122">			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction&lt;Integer&gt;) mapping);</span>
+<span class="fc" id="L123">			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc" id="L125">				vertexToColor[v] = mapping0.applyAsInt(viMap.indexToIdInt(v));</span>
+<span class="fc" id="L126">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
+<span class="fc" id="L127">			}</span>
+
+<span class="fc" id="L129">		} else {</span>
+<span class="fc" id="L130">			ig = g.indexGraph();</span>
+<span class="fc" id="L131">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc" id="L133">				vertexToColor[v] = mapping.applyAsInt(viMap.indexToId(v));</span>
+<span class="fc" id="L134">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
+<span class="fc" id="L135">			}</span>
+		}
+<span class="fc" id="L137">		final int colorNum = maxColor + 1;</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">		if (maxColor &gt; n)</span>
+<span class="nc" id="L139">			return false;</span>
+<span class="fc" id="L140">		Bitmap seenColors = new Bitmap(colorNum);</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">		for (int b : vertexToColor) {</span>
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">			if (b &lt; 0)</span>
+<span class="nc" id="L143">				return false;</span>
+<span class="fc" id="L144">			seenColors.set(b);</span>
+		}
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">		if (seenColors.nextClearBit(0) != colorNum)</span>
+<span class="nc" id="L147">			return false;</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		for (int e : range(ig.edges().size()))</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">			if (vertexToColor[ig.edgeSource(e)] == vertexToColor[ig.edgeTarget(e)])</span>
+<span class="nc" id="L150">				return false;</span>
+<span class="fc" id="L151">		return true;</span>
+	}
+
+	/**
+	 * Create a new coloring algorithm object.
+	 *
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link ColoringAlgo} object. The {@link ColoringAlgo.Builder}
+	 * might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link ColoringAlgo}
+	 */
+	static ColoringAlgo newInstance() {
+<span class="nc" id="L164">		return builder().build();</span>
+	}
+
+	/**
+	 * Create a new coloring algorithm builder.
+	 *
+	 * &lt;p&gt;
+	 * Use {@link #newInstance()} for a default implementation.
+	 *
+	 * @return a new builder that can build {@link ColoringAlgo} objects
+	 */
+	static ColoringAlgo.Builder builder() {
+<span class="nc" id="L176">		return new ColoringAlgo.Builder() {</span>
+			String impl;
+
+			@Override
+			public ColoringAlgo build() {
+<span class="nc bnc" id="L181" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L182" title="All 4 branches missed.">					switch (impl) {</span>
+						case &quot;greedy&quot;:
+<span class="nc" id="L184">							return new ColoringGreedy();</span>
+						case &quot;dsatur&quot;:
+<span class="nc" id="L186">							return new ColoringDSatur();</span>
+						case &quot;rlf&quot;:
+<span class="nc" id="L188">							return new ColoringRecursiveLargestFirst();</span>
+						default:
+<span class="nc" id="L190">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+					}
+				}
+<span class="nc" id="L193">				return new ColoringDSatur();</span>
+			}
+
+			@Override
+			public void setOption(String key, Object value) {
+<span class="nc bnc" id="L198" title="All 2 branches missed.">				switch (key) {</span>
+					case &quot;impl&quot;:
+<span class="nc" id="L200">						impl = (String) value;</span>
+<span class="nc" id="L201">						break;</span>
+					default:
+<span class="nc" id="L203">						ColoringAlgo.Builder.super.setOption(key, value);</span>
+				}
+<span class="nc" id="L205">			}</span>
+		};
+	}
+
+	/**
+	 * A builder for {@link ColoringAlgo} objects.
+	 *
+	 * @see    ColoringAlgo#builder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends AlgorithmBuilderBase {
+
+		/**
+		 * Create a new algorithm object for coloring computation.
+		 *
+		 * @return a new coloring algorithm
+		 */
+		ColoringAlgo build();
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

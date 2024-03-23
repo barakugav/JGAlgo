@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaximalCliquesEnumeratorBronKerboschPivot.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.clique</a> &gt; <span class="el_source">MaximalCliquesEnumeratorBronKerboschPivot.java</span></div><h1>MaximalCliquesEnumeratorBronKerboschPivot.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.clique;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Iterator;
+import java.util.List;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.Stack;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+/**
+ * The Bron-Kerbosch algorithm for Maximal cliques with the pivot heuristic.
+ *
+ * &lt;p&gt;
+ * Based on 'Algorithm 457: finding all cliques of an undirected graph' by Coen Bron and Joep Kerbosch.
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L40">class MaximalCliquesEnumeratorBronKerboschPivot extends MaximalCliquesEnumerators.AbstractImpl {</span>
+
+	@Override
+	Iterator&lt;IntSet&gt; maximalCliquesIter(IndexGraph g) {
+<span class="fc" id="L44">		Assertions.onlyUndirected(g);</span>
+
+<span class="fc" id="L46">		return new Iterator&lt;&gt;() {</span>
+
+<span class="fc" id="L48">			final int n = g.vertices().size();</span>
+			final Bitmap edges;
+
+<span class="fc" id="L51">			final IntList currentClique = new IntArrayList();</span>
+<span class="fc" id="L52">			final Stack&lt;IntList&gt; potentialStack = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L53">			final Stack&lt;IntList&gt; potentialToIterStack = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L54">			final Stack&lt;IntList&gt; excludedStack = new ObjectArrayList&lt;&gt;();</span>
+			boolean hasNextClique;
+
+			{
+<span class="fc" id="L58">				edges = new Bitmap(n * n);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">				for (int e : range(g.edges().size())) {</span>
+<span class="fc" id="L60">					int u = g.edgeSource(e);</span>
+<span class="fc" id="L61">					int v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">					if (u == v)</span>
+<span class="fc" id="L63">						continue;</span>
+<span class="fc" id="L64">					edges.set(u * n + v);</span>
+<span class="fc" id="L65">					edges.set(v * n + u);</span>
+<span class="fc" id="L66">				}</span>
+
+<span class="fc" id="L68">				IntArrayList potential = new IntArrayList(g.vertices());</span>
+<span class="fc" id="L69">				IntList excluded = new IntArrayList();</span>
+<span class="fc" id="L70">				IntList potentialFiltered = filterPotential(potential, excluded);</span>
+<span class="fc" id="L71">				potentialStack.push(potential);</span>
+<span class="fc" id="L72">				potentialToIterStack.push(potentialFiltered);</span>
+<span class="fc" id="L73">				excludedStack.push(excluded);</span>
+
+<span class="fc" id="L75">				findNextClique();</span>
+<span class="fc" id="L76">			}</span>
+
+			private boolean containsEdge(int u, int v) {
+<span class="fc" id="L79">				return edges.get(u * n + v);</span>
+			}
+
+			@Override
+			public boolean hasNext() {
+<span class="fc" id="L84">				return hasNextClique;</span>
+			}
+
+			@Override
+			public IntSet next() {
+<span class="fc" id="L89">				Assertions.hasNext(this);</span>
+<span class="fc" id="L90">				IntSet ret = ImmutableIntArraySet.withNaiveContains(currentClique.toIntArray());</span>
+<span class="fc" id="L91">				removeLastInsertedVertex(potentialStack.top(), potentialToIterStack.top(), excludedStack.top());</span>
+<span class="fc" id="L92">				findNextClique();</span>
+<span class="fc" id="L93">				return ret;</span>
+			}
+
+			private void findNextClique() {
+<span class="fc" id="L97">				IntList potential = potentialStack.top();</span>
+<span class="fc" id="L98">				IntList potentialToIter = potentialToIterStack.top();</span>
+<span class="fc" id="L99">				IntList excluded = excludedStack.top();</span>
+
+				recursionLoop: for (;;) {
+<span class="pc bpc" id="L102" title="1 of 4 branches missed.">					assert !potential.isEmpty() || !excluded.isEmpty();</span>
+
+<span class="fc bfc" id="L104" title="All 2 branches covered.">					while (!potentialToIter.isEmpty()) { /* for each v in P \ N(pivot) */</span>
+<span class="fc" id="L105">						int v = potentialToIter.getInt(potentialToIter.size() - 1);</span>
+
+<span class="fc" id="L107">						currentClique.add(v);</span>
+<span class="fc" id="L108">						IntArrayList nextPotential = new IntArrayList();</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">						for (int u : potential)</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">							if (containsEdge(u, v))</span>
+<span class="fc" id="L111">								nextPotential.add(u);</span>
+<span class="fc" id="L112">						IntList nextExcluded = new IntArrayList();</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">						for (int u : excluded)</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">							if (containsEdge(u, v))</span>
+<span class="fc" id="L115">								nextExcluded.add(u);</span>
+<span class="fc bfc" id="L116" title="All 4 branches covered.">						if (nextPotential.isEmpty() &amp;&amp; nextExcluded.isEmpty()) {</span>
+<span class="fc" id="L117">							hasNextClique = true;</span>
+<span class="fc" id="L118">							return;</span>
+						}
+
+<span class="fc" id="L121">						boolean skip = false;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">						excludedLoop: for (int w : excluded) {</span>
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">							for (int u : potential)</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">								if (!containsEdge(u, w))</span>
+<span class="fc" id="L125">									continue excludedLoop;</span>
+<span class="nc" id="L126">							skip = true;</span>
+<span class="nc" id="L127">							break;</span>
+						}
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">						if (!skip) {</span>
+<span class="fc" id="L130">							potentialStack.push(potential = nextPotential);</span>
+<span class="fc" id="L131">							potentialToIterStack.push(potentialToIter = filterPotential(nextPotential, nextExcluded));</span>
+<span class="fc" id="L132">							excludedStack.push(excluded = nextExcluded);</span>
+<span class="fc" id="L133">							continue recursionLoop;</span>
+						}
+<span class="nc" id="L135">						removeLastInsertedVertex(potential, potentialToIter, excluded);</span>
+<span class="nc" id="L136">					}</span>
+
+<span class="fc" id="L138">					potentialStack.pop();</span>
+<span class="fc" id="L139">					potentialToIterStack.pop();</span>
+<span class="fc" id="L140">					excludedStack.pop();</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">					if (potentialStack.isEmpty()) {</span>
+<span class="fc" id="L142">						hasNextClique = false;</span>
+<span class="fc" id="L143">						return;</span>
+					}
+<span class="fc" id="L145">					potential = potentialStack.top();</span>
+<span class="fc" id="L146">					potentialToIter = potentialToIterStack.top();</span>
+<span class="fc" id="L147">					excluded = excludedStack.top();</span>
+<span class="fc" id="L148">					removeLastInsertedVertex(potential, potentialToIter, excluded);</span>
+				}
+			}
+
+			private void removeLastInsertedVertex(IntList potential, IntList potentialToIter, IntList excluded) {
+<span class="fc" id="L153">				int v = currentClique.removeInt(currentClique.size() - 1); /* R.remove(v); */</span>
+<span class="fc" id="L154">				int lastPotential1 = potential.removeInt(potential.size() - 1); /* P.remove(v); */</span>
+<span class="fc" id="L155">				int lastPotential2 = potentialToIter.removeInt(potentialToIter.size() - 1); /* P.remove(v); */</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">				assert lastPotential1 == v;</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">				assert lastPotential2 == v;</span>
+<span class="fc" id="L158">				excluded.add(v);</span>
+<span class="fc" id="L159">			}</span>
+
+			private IntList filterPotential(IntArrayList potential, IntList excluded) {
+<span class="fc" id="L162">				int pivot = choosePivot(potential, excluded);</span>
+<span class="fc" id="L163">				int[] potentialArr = potential.elements();</span>
+<span class="fc" id="L164">				for (int left = 0, right = potential.size() - 1;;) {</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">					if (left &gt; right) {</span>
+<span class="fc" id="L166">						IntList potentialFiltered =</span>
+<span class="fc" id="L167">								new IntArrayList(potentialArr, right + 1, potential.size() - right - 1);</span>
+<span class="pc bpc" id="L168" title="2 of 4 branches missed.">						assert potentialFiltered.intStream().allMatch(u -&gt; !containsEdge(pivot, u));</span>
+<span class="pc" id="L169">						assert new IntArrayList(potentialArr, 0, left)</span>
+<span class="fc" id="L170">								.intStream()</span>
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">								.allMatch(u -&gt; containsEdge(pivot, u));</span>
+<span class="fc" id="L172">						return potentialFiltered;</span>
+					}
+
+<span class="fc bfc" id="L175" title="All 2 branches covered.">					if (!containsEdge(pivot, potentialArr[right])) {</span>
+<span class="fc" id="L176">						right--;</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">					} else if (containsEdge(pivot, potentialArr[left])) {</span>
+<span class="fc" id="L178">						left++;</span>
+					} else {
+<span class="fc" id="L180">						IntArrays.swap(potentialArr, left, right);</span>
+<span class="fc" id="L181">						left++;</span>
+<span class="fc" id="L182">						right--;</span>
+					}
+				}
+			}
+
+			private int choosePivot(IntList potential, IntList excluded) {
+<span class="fc" id="L188">				int pivot = -1;</span>
+<span class="fc" id="L189">				int maxPotentialNeighbors = -1;</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">				for (IntList l : List.of(potential, excluded))</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">					for (int u : l) {</span>
+<span class="fc" id="L192">						int potentialNeighbors = 0;</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">						for (int v : potential)</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">							if (containsEdge(u, v))</span>
+<span class="fc" id="L195">								potentialNeighbors++;</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">						if (potentialNeighbors &gt; maxPotentialNeighbors) {</span>
+<span class="fc" id="L197">							maxPotentialNeighbors = potentialNeighbors;</span>
+<span class="fc" id="L198">							pivot = u;</span>
+						}
+<span class="fc" id="L200">					}</span>
+
+<span class="fc" id="L202">				return pivot;</span>
+			}
+
+		};
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

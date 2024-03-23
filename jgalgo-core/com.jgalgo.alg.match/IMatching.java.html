@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IMatching.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.match</a> &gt; <span class="el_source">IMatching.java</span></div><h1>IMatching.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.match;
+
+import com.jgalgo.graph.IntGraph;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+/**
+ * A matching in a {@link IntGraph}.
+ *
+ * &lt;p&gt;
+ * This interface is a specific version of {@link Matching} for {@link IntGraph}. For the full documentation see
+ * {@link Matching}.
+ *
+ * @see    MatchingAlgo
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Matching_(graph_theory)&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+public interface IMatching extends Matching&lt;Integer, Integer&gt; {
+
+	/**
+	 * Check whether a vertex is matched by the matching.
+	 *
+	 * &lt;p&gt;
+	 * A vertex \(v\) is said to be &lt;i&gt;matched&lt;/i&gt; if the matching contains an edge \((v,w)\) for some other vertex
+	 * \(w\).
+	 *
+	 * @param  vertex a vertex
+	 * @return        {@code true} if {@code vertex} has an adjacent edge in the matching, else {@code false}
+	 */
+	boolean isVertexMatched(int vertex);
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #isVertexMatched(int)} instead to avoid un/boxing.
+	 */
+	@Deprecated
+	@Override
+	default boolean isVertexMatched(Integer vertex) {
+<span class="fc" id="L54">		return isVertexMatched(vertex.intValue());</span>
+	}
+
+	/**
+	 * Get the only matched edge adjacent to a given vertex.
+	 *
+	 * @param  vertex a vertex
+	 * @return        the edge adjacent to {@code vertex} in the matching, or {@code -1} if {@code vertex} is not
+	 *                matched
+	 */
+	int getMatchedEdge(int vertex);
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #getMatchedEdge(int)} instead to avoid un/boxing.
+	 */
+	@Deprecated
+	@Override
+	default Integer getMatchedEdge(Integer vertex) {
+<span class="fc" id="L74">		int e = getMatchedEdge(vertex.intValue());</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">		return e &lt; 0 ? null : Integer.valueOf(e);</span>
+	}
+
+	@Override
+	IntSet matchedVertices();
+
+	@Override
+	IntSet unmatchedVertices();
+
+	/**
+	 * Check whether an edge is part of the matching.
+	 *
+	 * &lt;p&gt;
+	 * A matching \(M\) is a sub set of \(E\), the edge set of the graph. This method check whether a given edge is in
+	 * \(M\).
+	 *
+	 * @param  edge an edge
+	 * @return      {@code true} if the edge is part of the matching, else {@code false}
+	 */
+	boolean containsEdge(int edge);
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #containsEdge(int)} instead to avoid un/boxing.
+	 */
+	@Deprecated
+	@Override
+	default boolean containsEdge(Integer edge) {
+<span class="fc" id="L104">		return containsEdge(edge.intValue());</span>
+	}
+
+	@Override
+	IntSet edges();
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

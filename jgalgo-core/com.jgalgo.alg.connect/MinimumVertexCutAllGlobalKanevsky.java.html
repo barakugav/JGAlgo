@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumVertexCutAllGlobalKanevsky.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.connect</a> &gt; <span class="el_source">MinimumVertexCutAllGlobalKanevsky.java</span></div><h1>MinimumVertexCutAllGlobalKanevsky.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.connect;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Set;
+import com.jgalgo.alg.IVertexBiPartition;
+import com.jgalgo.alg.connect.MinimumVertexCutUtils.AuxiliaryGraph;
+import com.jgalgo.alg.flow.IFlow;
+import com.jgalgo.alg.flow.MaximumFlow;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.ArraysUtils;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.IterTools;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.IntIterators;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
+/**
+ * Kanevsky algorithm for computing all minimum unweighted vertex cuts in a graph.
+ *
+ * &lt;p&gt;
+ * Based on 'Finding all minimum-size separating vertex sets in a graph' by A. Kanevsky (1993).
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L46">class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutUtils.AbstractImplAllGlobal {</span>
+
+<span class="fc" id="L48">	private final MinimumVertexCutGlobal globalConnectivityAlgo = MinimumVertexCutGlobal.newInstance();</span>
+<span class="fc" id="L49">	private final MaximumFlow maxFlowAlgo = MaximumFlow.newInstance();</span>
+<span class="fc" id="L50">	private final MinimumEdgeCutAllSTPicardQueyranne minEdgeCutAllStAlgo = new MinimumEdgeCutAllSTPicardQueyranne();</span>
+
+	@Override
+	Iterator&lt;IntSet&gt; minimumCutsIter(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L54">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L55">		Assertions.onlyCardinality(w);</span>
+
+		/* Find k, the (global) connectivity of the graph */
+<span class="fc" id="L58">		final int k = globalConnectivityAlgo.computeMinimumCut(g, null).size();</span>
+
+<span class="fc" id="L60">		return minimumCutsIter(g, k);</span>
+	}
+
+	Iterator&lt;IntSet&gt; minimumCutsIter(IndexGraph g, int k) {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		if (k == 0)</span>
+<span class="fc" id="L65">			return Collections.emptyIterator();</span>
+
+<span class="fc" id="L67">		g = g.copy(); /* copy, we add edges to g */</span>
+<span class="fc" id="L68">		final int n = g.vertices().size();</span>
+
+		/* Find k vertices with highest degree */
+<span class="fc" id="L71">		int[] vertices = g.vertices().toIntArray();</span>
+		/* Get (n-k)-th element in-place. After the computation the last k elements have the highest degrees */
+<span class="fc" id="L73">		IndexGraph g0 = g;</span>
+<span class="fc" id="L74">		ArraysUtils</span>
+<span class="fc" id="L75">				.kthElement(vertices, 0, n, n - k,</span>
+<span class="fc" id="L76">						(v1, v2) -&gt; Integer.compare(g0.outEdges(v1).size(), g0.outEdges(v2).size()), true);</span>
+<span class="fc" id="L77">		IntSet kVertices = ImmutableIntArraySet.withBitmap(Bitmap.fromOnes(n, IntIterators.wrap(vertices, n - k, k)));</span>
+
+		/*
+		 * Unfortunately, we must check for duplicates cuts during the iteration. This require us to maintain a set of
+		 * cuts. If we already use space proportional to the number of cuts, its simpler to implement the algorithm as a
+		 * single run over all cuts instead of implementing the Iterator interface.
+		 */
+<span class="fc" id="L84">		Set&lt;IntSet&gt; cuts = new ObjectOpenHashSet&lt;&gt;();</span>
+
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		if (MinimumVertexCutGlobal.isCut(g0, kVertices)) {</span>
+<span class="fc" id="L87">			int[] cut = kVertices.toIntArray();</span>
+<span class="fc" id="L88">			cuts.add(ImmutableIntArraySet.withNaiveContains(cut));</span>
+		}
+
+<span class="fc" id="L91">		AuxiliaryGraph auxGraph = new AuxiliaryGraph(g, null, true);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int x : kVertices) {</span>
+<span class="fc" id="L93">			Bitmap nonAdjacent = new Bitmap(n);</span>
+<span class="fc" id="L94">			nonAdjacent.setAll();</span>
+<span class="fc" id="L95">			nonAdjacent.clear(x);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(x).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L97">				eit.nextInt();</span>
+<span class="fc" id="L98">				nonAdjacent.clear(eit.targetInt());</span>
+			}
+
+<span class="fc bfc" id="L101" title="All 2 branches covered.">			for (int v : nonAdjacent) {</span>
+<span class="fc" id="L102">				int xAux = x * 2 + 1, vAux = v * 2 + 0;</span>
+<span class="fc" id="L103">				IFlow maxFlow = (IFlow) maxFlowAlgo</span>
+<span class="fc" id="L104">						.computeMaximumFlow(auxGraph.graph, null, Integer.valueOf(xAux), Integer.valueOf(vAux));</span>
+<span class="fc" id="L105">				int xvConnectivity = (int) maxFlow.getSupply(xAux);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">				if (xvConnectivity == k) {</span>
+<span class="fc" id="L107">					Iterator&lt;IVertexBiPartition&gt; minEdgeCuts =</span>
+<span class="fc" id="L108">							minEdgeCutAllStAlgo.minimumCutsIter(auxGraph.graph, null, xAux, vAux, maxFlow);</span>
+
+<span class="fc bfc" id="L110" title="All 2 branches covered.">					for (IVertexBiPartition minEdgeCut : IterTools.foreach(minEdgeCuts)) {</span>
+<span class="fc" id="L111">						int[] cut = minEdgeCut.crossEdges().toIntArray();</span>
+<span class="fc" id="L112">						auxGraph.edgeCutToVertexCut(cut);</span>
+<span class="fc" id="L113">						cuts.add(ImmutableIntArraySet.withNaiveContains(cut));</span>
+<span class="fc" id="L114">					}</span>
+
+					/* add edge (x,v) to g */
+<span class="fc" id="L117">					g.addEdge(x, v);</span>
+<span class="fc" id="L118">					auxGraph.graph.addEdge(x * 2 + 1, v * 2 + 0);</span>
+<span class="fc" id="L119">					auxGraph.graph.addEdge(x * 2 + 1, v * 2 + 0);</span>
+<span class="fc" id="L120">					auxGraph.graph.addEdge(v * 2 + 1, x * 2 + 0);</span>
+<span class="fc" id="L121">					auxGraph.graph.addEdge(v * 2 + 1, x * 2 + 0);</span>
+				}
+
+<span class="fc" id="L124">			}</span>
+<span class="fc" id="L125">		}</span>
+
+		/* The queue iterator stores the cuts and use less and less memory as the elements are consumed */
+<span class="fc" id="L128">		Iterator&lt;IntSet&gt; cutsIter = JGAlgoUtils.queueIter(cuts);</span>
+<span class="fc" id="L129">		cuts.clear();</span>
+<span class="fc" id="L130">		return IterTools.map(cutsIter, cut -&gt; ImmutableIntArraySet.withBitmap(cut, n));</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

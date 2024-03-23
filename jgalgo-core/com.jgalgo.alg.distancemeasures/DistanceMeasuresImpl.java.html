@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DistanceMeasuresImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.distancemeasures</a> &gt; <span class="el_source">DistanceMeasuresImpl.java</span></div><h1>DistanceMeasuresImpl.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.distancemeasures;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.IntToDoubleFunction;
+import java.util.stream.IntStream;
+import com.jgalgo.alg.path.ShortestPathAllPairs;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.JGAlgoConfigImpl;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+<span class="fc" id="L36">class DistanceMeasuresImpl {</span>
+
+	private DistanceMeasuresImpl() {}
+
+	static class IndexImpl implements IDistanceMeasures {
+
+		private final IndexGraph g;
+		private final ShortestPathAllPairs.IResult sp;
+
+		private double radius;
+		private boolean radiusComputed;
+		private double diameter;
+		private boolean diameterComputed;
+		private double[] eccentricity;
+		private IntSet center;
+		private IntSet periphery;
+
+<span class="fc" id="L53">		IndexImpl(IndexGraph g, ShortestPathAllPairs.IResult sp) {</span>
+<span class="fc" id="L54">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L55">			this.sp = Objects.requireNonNull(sp);</span>
+<span class="fc" id="L56">		}</span>
+
+		@Override
+		public double radius() {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">			if (!radiusComputed) {</span>
+<span class="fc" id="L61">				computeEccentricity();</span>
+<span class="fc" id="L62">				radius = Arrays.stream(eccentricity).min().orElse(Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L63">				radiusComputed = true;</span>
+			}
+<span class="fc" id="L65">			return radius;</span>
+		}
+
+		@Override
+		public double diameter() {
+<span class="fc bfc" id="L70" title="All 2 branches covered.">			if (!diameterComputed) {</span>
+<span class="fc" id="L71">				computeEccentricity();</span>
+<span class="fc" id="L72">				diameter = Arrays.stream(eccentricity).max().orElse(Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L73">				diameterComputed = true;</span>
+			}
+<span class="fc" id="L75">			return diameter;</span>
+		}
+
+		@Override
+		public double eccentricity(int v) {
+<span class="fc" id="L80">			computeEccentricity();</span>
+<span class="fc" id="L81">			Assertions.checkVertex(v, g.vertices().size());</span>
+<span class="fc" id="L82">			return eccentricity[v];</span>
+		}
+
+		@Override
+		public IntSet center() {
+<span class="fc bfc" id="L87" title="All 2 branches covered.">			if (center == null) {</span>
+<span class="fc" id="L88">				double radius = radius();</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">				double eps = Double.isFinite(radius) ? radius * 1e-8 : 0;</span>
+<span class="fc" id="L90">				final int n = g.vertices().size();</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">				int[] centerArr = range(n).filter(v -&gt; eccentricity[v] &lt;= radius + eps).toArray();</span>
+<span class="fc" id="L92">				center = ImmutableIntArraySet.withBitmap(centerArr, n);</span>
+			}
+<span class="fc" id="L94">			return center;</span>
+		}
+
+		@Override
+		public IntSet periphery() {
+<span class="fc bfc" id="L99" title="All 2 branches covered.">			if (periphery == null) {</span>
+<span class="fc" id="L100">				double diameter = diameter();</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">				double eps = Double.isFinite(diameter) ? diameter * 1e-8 : 0;</span>
+<span class="fc" id="L102">				final int n = g.vertices().size();</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">				int[] peripheryArr = range(n).filter(v -&gt; eccentricity[v] &gt;= diameter - eps).toArray();</span>
+<span class="fc" id="L104">				periphery = ImmutableIntArraySet.withBitmap(peripheryArr, n);</span>
+			}
+<span class="fc" id="L106">			return periphery;</span>
+		}
+
+		private void computeEccentricity() {
+<span class="fc bfc" id="L110" title="All 2 branches covered.">			if (eccentricity != null)</span>
+<span class="fc" id="L111">				return;</span>
+<span class="fc" id="L112">			final int n = g.vertices().size();</span>
+<span class="fc" id="L113">			IntToDoubleFunction uEccentricity =</span>
+<span class="fc" id="L114">					u -&gt; range(n).mapToDouble(v -&gt; sp.distance(u, v)).max().orElse(Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L115">			IntStream stream = range(n).intStream();</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.ParallelByDefault)</span>
+<span class="fc" id="L117">				stream = stream.parallel();</span>
+<span class="fc" id="L118">			eccentricity = stream.mapToDouble(uEccentricity).toArray();</span>
+<span class="fc" id="L119">		}</span>
+	}
+
+	private static class ObjMeasuresFromIndexMeasures&lt;V, E&gt; implements DistanceMeasures&lt;V, E&gt; {
+
+		private final IDistanceMeasures indexMeasures;
+		private final IndexIdMap&lt;V&gt; viMap;
+
+<span class="fc" id="L127">		ObjMeasuresFromIndexMeasures(Graph&lt;V, E&gt; g, IDistanceMeasures indexMeasures) {</span>
+<span class="fc" id="L128">			this.indexMeasures = Objects.requireNonNull(indexMeasures);</span>
+<span class="fc" id="L129">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L130">		}</span>
+
+		@Override
+		public double radius() {
+<span class="fc" id="L134">			return indexMeasures.radius();</span>
+		}
+
+		@Override
+		public double diameter() {
+<span class="fc" id="L139">			return indexMeasures.diameter();</span>
+		}
+
+		@Override
+		public double eccentricity(V v) {
+<span class="fc" id="L144">			return indexMeasures.eccentricity(viMap.idToIndex(v));</span>
+		}
+
+		@Override
+		public Set&lt;V&gt; center() {
+<span class="fc" id="L149">			return IndexIdMaps.indexToIdSet(indexMeasures.center(), viMap);</span>
+		}
+
+		@Override
+		public Set&lt;V&gt; periphery() {
+<span class="fc" id="L154">			return IndexIdMaps.indexToIdSet(indexMeasures.periphery(), viMap);</span>
+		}
+	}
+
+	private static class IntMeasuresFromIndexMeasures implements IDistanceMeasures {
+
+		private final IDistanceMeasures indexMeasures;
+		private final IndexIntIdMap viMap;
+
+<span class="fc" id="L163">		IntMeasuresFromIndexMeasures(IntGraph g, IDistanceMeasures indexMeasures) {</span>
+<span class="fc" id="L164">			this.indexMeasures = Objects.requireNonNull(indexMeasures);</span>
+<span class="fc" id="L165">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L166">		}</span>
+
+		@Override
+		public double radius() {
+<span class="fc" id="L170">			return indexMeasures.radius();</span>
+		}
+
+		@Override
+		public double diameter() {
+<span class="fc" id="L175">			return indexMeasures.diameter();</span>
+		}
+
+		@Override
+		public double eccentricity(int v) {
+<span class="fc" id="L180">			return indexMeasures.eccentricity(viMap.idToIndex(v));</span>
+		}
+
+		@Override
+		public IntSet center() {
+<span class="fc" id="L185">			return IndexIdMaps.indexToIdSet(indexMeasures.center(), viMap);</span>
+		}
+
+		@Override
+		public IntSet periphery() {
+<span class="fc" id="L190">			return IndexIdMaps.indexToIdSet(indexMeasures.periphery(), viMap);</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; DistanceMeasures&lt;V, E&gt; measuresFromIndexMeasures(Graph&lt;V, E&gt; g, IDistanceMeasures indexMeasures) {
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L198">			return (DistanceMeasures&lt;V, E&gt;) new IntMeasuresFromIndexMeasures((IntGraph) g, indexMeasures);</span>
+		} else {
+<span class="fc" id="L200">			return new ObjMeasuresFromIndexMeasures&lt;&gt;(g, indexMeasures);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

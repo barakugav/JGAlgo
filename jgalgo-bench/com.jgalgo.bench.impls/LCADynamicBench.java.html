@@ -36,7 +36,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.alg.LowestCommonAncestorDynamic;
+import com.jgalgo.alg.tree.LowestCommonAncestorDynamic;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import it.unimi.dsi.fastutil.ints.IntArrays;

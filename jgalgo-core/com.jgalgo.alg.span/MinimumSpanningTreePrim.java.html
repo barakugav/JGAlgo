@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumSpanningTreePrim.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.span</a> &gt; <span class="el_source">MinimumSpanningTreePrim.java</span></div><h1>MinimumSpanningTreePrim.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg.span;
+
+import static com.jgalgo.internal.util.Range.range;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.ds.IndexHeapDouble;
+import com.jgalgo.internal.ds.IndexHeapInt;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+/**
+ * Prim's minimum spanning tree algorithm.
+ *
+ * &lt;p&gt;
+ * The algorithm maintain a tree and repeatedly adds the lightest edge that connect a vertex from tree to the reset of
+ * the vertices. The algorithm is similar to Dijkstra shortest paths algorithm in its idea, and it also uses a heap that
+ * is updated using {@code decreaseKey()}.
+ *
+ * &lt;p&gt;
+ * The running time of Prim's algorithm is \(O(m + n \log n)\) and it uses linear space. It's running time is very good
+ * it practice and can be used as a first choice for {@link MinimumSpanningTree} algorithm. Note that only undirected
+ * graphs are supported.
+ *
+ * &lt;p&gt;
+ * Based on &quot;Shortest connection networks And some generalizations&quot; by Prim, R. C. (1957).
+ *
+ * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Prim%27s_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+<span class="fc" id="L52">class MinimumSpanningTreePrim extends MinimumSpanningTrees.AbstractUndirected {</span>
+
+	/**
+	 * Construct a new MST algorithm object.
+	 */
+<span class="fc" id="L57">	MinimumSpanningTreePrim() {}</span>
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not undirected
+	 */
+	@Override
+	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L66">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L67">		int n = g.vertices().size();</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">		if (n == 0)</span>
+<span class="nc" id="L69">			return MinimumSpanningTrees.IndexResult.Empty;</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		if (WeightFunction.isInteger(w)) {</span>
+<span class="fc" id="L71">			return computeMSTInt(g, (IWeightFunctionInt) w);</span>
+		} else {
+<span class="fc" id="L73">			return computeMSTDouble(g, w);</span>
+		}
+	}
+
+	private static MinimumSpanningTree.IResult computeMSTDouble(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L78">		final int n = g.vertices().size();</span>
+<span class="fc" id="L79">		IndexHeapDouble heap = IndexHeapDouble.newInstance(n);</span>
+<span class="fc" id="L80">		int[] edgeToV = new int[n];</span>
+<span class="fc" id="L81">		Bitmap visited = new Bitmap(n);</span>
+
+<span class="fc" id="L83">		IntArrayList mst = new IntArrayList(n - 1);</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		for (int root : range(n)) {</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (visited.get(root))</span>
+<span class="fc" id="L86">				continue;</span>
+
+<span class="fc" id="L88">			treeLoop: for (int u = root;;) {</span>
+<span class="fc" id="L89">				visited.set(u);</span>
+
+				/* decrease edges keys if a better one is found */
+<span class="fc bfc" id="L92" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L93">					int e = eit.nextInt();</span>
+<span class="fc" id="L94">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L96">						continue;</span>
+
+<span class="fc" id="L98">					double ew = w.weight(e);</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">					if (!heap.isInserted(v)) {</span>
+<span class="fc" id="L100">						heap.insert(v, ew);</span>
+<span class="fc" id="L101">						edgeToV[v] = e;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">					} else if (ew &lt; heap.key(v)) {</span>
+<span class="fc" id="L103">						heap.decreaseKey(v, ew);</span>
+<span class="fc" id="L104">						edgeToV[v] = e;</span>
+					}
+<span class="fc" id="L106">				}</span>
+
+				/* find next lightest edge */
+<span class="fc bfc" id="L109" title="All 2 branches covered.">				if (heap.isEmpty())</span>
+					/* reached all vertices from current root, continue to next tree */
+<span class="fc" id="L111">					break treeLoop;</span>
+<span class="fc" id="L112">				int v = heap.extractMin();</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">				assert !visited.get(v);</span>
+<span class="fc" id="L114">				int e = edgeToV[v];</span>
+
+				/* add lightest edge to MST */
+<span class="fc" id="L117">				mst.add(e);</span>
+<span class="fc" id="L118">				u = v;</span>
+<span class="fc" id="L119">			}</span>
+<span class="fc" id="L120">		}</span>
+<span class="fc" id="L121">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
+<span class="fc" id="L122">		return new MinimumSpanningTrees.IndexResult(mstSet);</span>
+	}
+
+	private static MinimumSpanningTree.IResult computeMSTInt(IndexGraph g, IWeightFunctionInt w) {
+<span class="fc" id="L126">		final int n = g.vertices().size();</span>
+<span class="fc" id="L127">		IndexHeapInt heap = IndexHeapInt.newInstance(n);</span>
+<span class="fc" id="L128">		int[] edgeToV = new int[n];</span>
+<span class="fc" id="L129">		Bitmap visited = new Bitmap(n);</span>
+
+<span class="fc" id="L131">		IntArrayList mst = new IntArrayList(n - 1);</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">		for (int root : range(n)) {</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">			if (visited.get(root))</span>
+<span class="fc" id="L134">				continue;</span>
+
+<span class="fc" id="L136">			treeLoop: for (int u = root;;) {</span>
+<span class="fc" id="L137">				visited.set(u);</span>
+
+				/* decrease edges keys if a better one is found */
+<span class="fc bfc" id="L140" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L141">					int e = eit.nextInt();</span>
+<span class="fc" id="L142">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L144">						continue;</span>
+
+<span class="fc" id="L146">					int ew = w.weightInt(e);</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">					if (!heap.isInserted(v)) {</span>
+<span class="fc" id="L148">						heap.insert(v, ew);</span>
+<span class="fc" id="L149">						edgeToV[v] = e;</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">					} else if (ew &lt; heap.key(v)) {</span>
+<span class="fc" id="L151">						heap.decreaseKey(v, ew);</span>
+<span class="fc" id="L152">						edgeToV[v] = e;</span>
+					}
+<span class="fc" id="L154">				}</span>
+
+				/* find next lightest edge */
+<span class="fc bfc" id="L157" title="All 2 branches covered.">				if (heap.isEmpty())</span>
+					/* reached all vertices from current root, continue to next tree */
+<span class="fc" id="L159">					break treeLoop;</span>
+<span class="fc" id="L160">				int v = heap.extractMin();</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">				assert !visited.get(v);</span>
+<span class="fc" id="L162">				int e = edgeToV[v];</span>
+
+				/* add lightest edge to MST */
+<span class="fc" id="L165">				mst.add(e);</span>
+<span class="fc" id="L166">				u = v;</span>
+<span class="fc" id="L167">			}</span>
+<span class="fc" id="L168">		}</span>
+<span class="fc" id="L169">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
+<span class="fc" id="L170">		return new MinimumSpanningTrees.IndexResult(mstSet);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EdgeCoverWeighted.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.cover</a> &gt; <span class="el_source">EdgeCoverWeighted.java</span></div><h1>EdgeCoverWeighted.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.cover;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Arrays;
+import com.jgalgo.alg.match.IMatching;
+import com.jgalgo.alg.match.MatchingAlgo;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+<span class="fc" id="L31">class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {</span>
+
+<span class="fc" id="L33">	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();</span>
+
+	@Override
+	IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L37">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
+<span class="fc" id="L38">		final int n = g.vertices().size();</span>
+<span class="fc" id="L39">		final int m = g.edges().size();</span>
+
+<span class="fc" id="L41">		IndexGraphBuilder gb = IndexGraphBuilder.undirected();</span>
+<span class="fc" id="L42">		gb.addVertices(range(n * 2));</span>
+<span class="fc" id="L43">		gb.ensureEdgeCapacity(m * 2 + n);</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		for (int e : range(m)) {</span>
+<span class="fc" id="L45">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L46">			gb.addEdge(u * 2 + 0, v * 2 + 0);</span>
+<span class="fc" id="L47">			gb.addEdge(u * 2 + 1, v * 2 + 1);</span>
+<span class="fc" id="L48">		}</span>
+<span class="fc" id="L49">		final int vvEdgeThreshold = gb.edges().size();</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		for (int v : range(n))</span>
+<span class="fc" id="L51">			gb.addEdge(v * 2 + 0, v * 2 + 1);</span>
+<span class="fc" id="L52">		IndexGraph g2 = gb.build();</span>
+
+		IWeightFunction w2;
+<span class="fc" id="L55">		int[] minAdjacentEdge = new int[n];</span>
+<span class="fc" id="L56">		Arrays.fill(minAdjacentEdge, -1);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		if (WeightFunction.isInteger(w)) {</span>
+<span class="fc" id="L58">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
+<span class="fc" id="L59">			int[] minAdjacentWeight = new int[n];</span>
+<span class="fc" id="L60">			Arrays.fill(minAdjacentWeight, Integer.MAX_VALUE);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">			for (int e : range(m)) {</span>
+<span class="fc" id="L62">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L63">				int ew = wInt.weightInt(e);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">				if (minAdjacentWeight[u] &gt; ew) {</span>
+<span class="fc" id="L65">					minAdjacentWeight[u] = ew;</span>
+<span class="fc" id="L66">					minAdjacentEdge[u] = e;</span>
+				}
+<span class="fc bfc" id="L68" title="All 2 branches covered.">				if (minAdjacentWeight[v] &gt; ew) {</span>
+<span class="fc" id="L69">					minAdjacentWeight[v] = ew;</span>
+<span class="fc" id="L70">					minAdjacentEdge[v] = e;</span>
+				}
+<span class="fc" id="L72">			}</span>
+<span class="fc" id="L73">			IWeightFunctionInt w2Int =</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">					e -&gt; e &lt; vvEdgeThreshold ? wInt.weightInt(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];</span>
+<span class="fc" id="L75">			w2 = w2Int;</span>
+
+<span class="fc" id="L77">		} else {</span>
+<span class="fc" id="L78">			double[] minAdjacentWeight = new double[n];</span>
+<span class="fc" id="L79">			Arrays.fill(minAdjacentWeight, Double.POSITIVE_INFINITY);</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			for (int e : range(m)) {</span>
+<span class="fc" id="L81">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L82">				double ew = w.weight(e);</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">				if (minAdjacentWeight[u] &gt; ew) {</span>
+<span class="fc" id="L84">					minAdjacentWeight[u] = ew;</span>
+<span class="fc" id="L85">					minAdjacentEdge[u] = e;</span>
+				}
+<span class="fc bfc" id="L87" title="All 2 branches covered.">				if (minAdjacentWeight[v] &gt; ew) {</span>
+<span class="fc" id="L88">					minAdjacentWeight[v] = ew;</span>
+<span class="fc" id="L89">					minAdjacentEdge[v] = e;</span>
+				}
+<span class="fc" id="L91">			}</span>
+<span class="fc" id="L92">			IWeightFunction w0 = w;</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			w2 = e -&gt; e &lt; vvEdgeThreshold ? w0.weight(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];</span>
+		}
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		for (int v : range(n))</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			if (minAdjacentEdge[v] &lt; 0)</span>
+<span class="fc" id="L97">				throw new IllegalArgumentException(&quot;no edge cover exists, vertex with index &quot; + v + &quot; has no edges&quot;);</span>
+
+<span class="fc" id="L99">		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(g2, w2);</span>
+<span class="fc" id="L100">		Bitmap cover = new Bitmap(m);</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">		for (int e : range(m))</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">			if (matching.containsEdge(e * 2 + 0))</span>
+<span class="fc" id="L103">				cover.set(e);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">		for (int v : range(n))</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			if (matching.containsEdge(vvEdgeThreshold + v))</span>
+<span class="fc" id="L106">				cover.set(minAdjacentEdge[v]);</span>
+<span class="fc" id="L107">		return ImmutableIntArraySet.withBitmap(cover);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

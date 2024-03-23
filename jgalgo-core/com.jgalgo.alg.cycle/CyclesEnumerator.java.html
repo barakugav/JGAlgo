@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CyclesEnumerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.cycle</a> &gt; <span class="el_source">CyclesEnumerator.java</span></div><h1>CyclesEnumerator.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg.cycle;
+
+import java.util.Iterator;
+import java.util.List;
+import com.jgalgo.alg.AlgorithmBuilderBase;
+import com.jgalgo.alg.path.IPath;
+import com.jgalgo.alg.path.Path;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+/**
+ * An algorithm that enumerate all cycles in a graph.
+ *
+ * &lt;p&gt;
+ * Given a graph \(G = (V, E)\), a cycle is a path \(P = (v_1, v_2, \ldots, v_k), v_i \in V, (v_i,v_{i+1}) \in E\) such
+ * that \(v_1 = v_k\). There might be exponentially many cycles in a graph, and algorithms implementing this interface
+ * enumerate over all of them (use an {@link Iterator} avoiding storing all of them in memory).
+ *
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #builder()} may support different options to obtain different implementations.
+ *
+ * @author Barak Ugav
+ */
+public interface CyclesEnumerator {
+
+	/**
+	 * Iterate over all cycles in the given graph.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned iterator will iterate over {@link IPath} objects.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @return     an iterator that iteration over all cycles in the graph
+	 */
+	public &lt;V, E&gt; Iterator&lt;Path&lt;V, E&gt;&gt; cyclesIter(Graph&lt;V, E&gt; g);
+
+	/**
+	 * Find all cycles in the given graph.
+	 *
+	 * &lt;p&gt;
+	 * The number of cycles may be large, and its recommend to use {@link #cyclesIter(Graph)} to avoid storing all the
+	 * cycles in memory at once.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned list will contain {@link IPath} objects.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @return     a list of all cycles in the graph
+	 */
+	default &lt;V, E&gt; List&lt;Path&lt;V, E&gt;&gt; allCycles(Graph&lt;V, E&gt; g) {
+<span class="fc" id="L73">		return new ObjectArrayList&lt;&gt;(cyclesIter(g));</span>
+	}
+
+	/**
+	 * Create a new algorithm for cycles enumerating.
+	 *
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link CyclesEnumerator} object. The
+	 * {@link CyclesEnumerator.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link CyclesEnumerator}
+	 */
+	static CyclesEnumerator newInstance() {
+<span class="nc" id="L86">		return builder().build();</span>
+	}
+
+	/**
+	 * Create a new cycles enumeration algorithm builder.
+	 *
+	 * &lt;p&gt;
+	 * Use {@link #newInstance()} for a default implementation.
+	 *
+	 * @return a new builder that can build {@link CyclesEnumerator} objects
+	 */
+	static CyclesEnumerator.Builder builder() {
+<span class="nc" id="L98">		return new CyclesEnumerator.Builder() {</span>
+			String impl;
+
+			@Override
+			public CyclesEnumerator build() {
+<span class="nc bnc" id="L103" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L104" title="All 3 branches missed.">					switch (impl) {</span>
+						case &quot;johnson&quot;:
+<span class="nc" id="L106">							return new CyclesEnumeratorJohnson();</span>
+						case &quot;tarjan&quot;:
+<span class="nc" id="L108">							return new CyclesEnumeratorTarjan();</span>
+						default:
+<span class="nc" id="L110">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+					}
+				}
+<span class="nc" id="L113">				return new CyclesEnumeratorTarjan();</span>
+			}
+
+			@Override
+			public void setOption(String key, Object value) {
+<span class="nc bnc" id="L118" title="All 2 branches missed.">				switch (key) {</span>
+					case &quot;impl&quot;:
+<span class="nc" id="L120">						impl = (String) value;</span>
+<span class="nc" id="L121">						break;</span>
+					default:
+<span class="nc" id="L123">						CyclesEnumerator.Builder.super.setOption(key, value);</span>
+				}
+<span class="nc" id="L125">			}</span>
+		};
+	}
+
+	/**
+	 * A builder for {@link CyclesEnumerator} objects.
+	 *
+	 * @see    CyclesEnumerator#builder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends AlgorithmBuilderBase {
+
+		/**
+		 * Create a new algorithm object for cycles computation.
+		 *
+		 * @return a new cycles enumeration algorithm
+		 */
+		CyclesEnumerator build();
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

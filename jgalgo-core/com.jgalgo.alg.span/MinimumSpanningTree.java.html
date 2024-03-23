@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumSpanningTree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.span</a> &gt; <span class="el_source">MinimumSpanningTree.java</span></div><h1>MinimumSpanningTree.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg.span;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
+import com.jgalgo.alg.AlgorithmBuilderBase;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
+import com.jgalgo.internal.util.IntAdapters;
+import com.jgalgo.internal.util.IntPair;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
+
+/**
+ * Minimum spanning tree algorithm.
+ *
+ * &lt;p&gt;
+ * A spanning tree is an edge sub set of the graph edges which form a tree and connect (span) all the vertices of the
+ * graph. A minimum spanning tree (MST) is a spanning tree with the minimum edge weights sum over all spanning trees.
+ *
+ * &lt;p&gt;
+ * If a &lt;b&gt;maximum&lt;/b&gt; spanning tree is needed, the edge weights can be negated and the MST algorithm can be used to
+ * compute the maximum spanning tree.
+ *
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #builder()} may support different options to obtain different implementations.
+ *
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Minimum_spanning_tree&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see    MinimumDirectedSpanningTree
+ * @author Barak Ugav
+ */
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">public interface MinimumSpanningTree {</span>
+
+	/**
+	 * Compute the minimum spanning tree (MST) of a given graph.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, a {@link MinimumSpanningTree.IResult} object will be returned. In that case,
+	 * its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @param  w   an edge weight function
+	 * @return     a result object containing all the edges of the computed spanning tree, which there are \(n-1\) of
+	 *             them (or less, forming a forest if the graph is not connected)
+	 */
+	&lt;V, E&gt; MinimumSpanningTree.Result&lt;V, E&gt; computeMinimumSpanningTree(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w);
+
+	/**
+	 * A result object for {@link MinimumSpanningTree} computation.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @author     Barak Ugav
+	 */
+	@SuppressWarnings(&quot;unused&quot;)
+	static interface Result&lt;V, E&gt; {
+
+		/**
+		 * Get all the edges that form the spanning tree.
+		 *
+		 * @return the set of MST edges.
+		 */
+		Set&lt;E&gt; edges();
+	}
+
+	/**
+	 * A result object for {@link MinimumSpanningTree} computation for {@link IntGraph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface IResult extends Result&lt;Integer, Integer&gt; {
+
+		@Override
+		IntSet edges();
+	}
+
+	/**
+	 * Check whether a given set of edges is a spanning tree of a given graph.
+	 *
+	 * &lt;p&gt;
+	 * A set of edges is spanning tree if it is a tree and connects all the vertices of the graph. Specifically, if the
+	 * graph is not empty, the number of edges must be \(n-1\) where \(n\) denote the number of vertices in the graph.
+	 * The edge set should not contain any duplicate edges.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IntCollection} as {@code edges} to avoid
+	 * boxing/unboxing.
+	 *
+	 * @param  &lt;V&gt;   the vertices type
+	 * @param  &lt;E&gt;   the edges type
+	 * @param  g     a graph
+	 * @param  edges a set of edges that should form a spanning tree
+	 * @return       {@code true} if the given set of edges is a spanning tree of the given graph, {@code false}
+	 *               otherwise
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; boolean isSpanningTree(Graph&lt;V, E&gt; g, Collection&lt;E&gt; edges) {
+<span class="fc" id="L129">		Assertions.onlyUndirected(g);</span>
+		IndexGraph ig;
+		IntCollection edges0;
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L133">			ig = (IndexGraph) g;</span>
+<span class="nc" id="L134">			edges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) edges);</span>
+		} else {
+<span class="fc" id="L136">			ig = g.indexGraph();</span>
+<span class="fc" id="L137">			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>
+		}
+<span class="fc" id="L139">		final int m = ig.edges().size();</span>
+<span class="fc" id="L140">		final int n = ig.vertices().size();</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">		if (n == 0) {</span>
+<span class="nc bnc" id="L142" title="All 4 branches missed.">			assert m == 0;</span>
+<span class="nc" id="L143">			return edges0.isEmpty();</span>
+		}
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">		if (edges0.size() != n - 1)</span>
+<span class="nc" id="L146">			return false;</span>
+<span class="fc" id="L147">		Bitmap edgesBitmap = new Bitmap(m);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		for (int e : edges0) {</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">			if (!ig.edges().contains(e))</span>
+<span class="nc" id="L150">				throw new IllegalArgumentException(&quot;invalid edge index &quot; + e);</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">			if (edgesBitmap.get(e))</span>
+<span class="nc" id="L152">				throw new IllegalArgumentException(</span>
+						&quot;edge with index &quot; + e + &quot; is included more than once in the spanning tree&quot;);
+<span class="fc" id="L154">			edgesBitmap.set(e);</span>
+<span class="fc" id="L155">		}</span>
+
+		/* perform a BFS from some vertex using only the spanning tree edges */
+<span class="fc" id="L158">		Bitmap visited = new Bitmap(n);</span>
+<span class="fc" id="L159">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L160">		visited.set(0);</span>
+<span class="fc" id="L161">		queue.enqueue(0);</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
+<span class="fc" id="L163">			int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L165">				int e = eit.nextInt();</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">				if (!edgesBitmap.get(e))</span>
+<span class="fc" id="L167">					continue;</span>
+<span class="fc" id="L168">				int v = eit.targetInt();</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">				if (visited.get(v))</span>
+<span class="fc" id="L170">					continue;</span>
+<span class="fc" id="L171">				visited.set(v);</span>
+<span class="fc" id="L172">				queue.enqueue(v);</span>
+<span class="fc" id="L173">			}</span>
+<span class="fc" id="L174">		}</span>
+		/* make sure we reached all vertices */
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">		return visited.nextClearBit(0) == n;</span>
+	}
+
+	/**
+	 * Check whether a given set of edges is a spanning forest of a given graph.
+	 *
+	 * &lt;p&gt;
+	 * A set of edges is spanning forest if it is a forest (do not contains cycles) which connected any pair of vertices
+	 * that are connected in the original graph, namely its connected components are identical to the connected
+	 * components of the original graph. Specifically, the number of edges must be \(n-c\) where \(n\) denote the number
+	 * of vertices in the graph and \(c\) denote the number of connected components in the graph. The edge set should
+	 * not contain any duplicate edges.
+	 *
+	 * @param  &lt;V&gt;   the vertices type
+	 * @param  &lt;E&gt;   the edges type
+	 * @param  g     a graph
+	 * @param  edges a set of edges that should form a spanning forest
+	 * @return       {@code true} if the given set of edges is a spanning forest of the given graph, {@code false}
+	 *               otherwise
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; boolean isSpanningForest(Graph&lt;V, E&gt; g, Collection&lt;E&gt; edges) {
+<span class="fc" id="L198">		Assertions.onlyUndirected(g);</span>
+		IndexGraph ig;
+		IntCollection edges0;
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L202">			ig = (IndexGraph) g;</span>
+<span class="nc" id="L203">			edges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) edges);</span>
+		} else {
+<span class="fc" id="L205">			ig = g.indexGraph();</span>
+<span class="fc" id="L206">			edges0 = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>
+		}
+<span class="fc" id="L208">		final int m = ig.edges().size();</span>
+<span class="fc" id="L209">		final int n = ig.vertices().size();</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">		if (n == 0) {</span>
+<span class="nc bnc" id="L211" title="All 4 branches missed.">			assert m == 0;</span>
+<span class="nc" id="L212">			return edges0.isEmpty();</span>
+		}
+<span class="fc" id="L214">		Bitmap edgesBitmap = new Bitmap(m);</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">		for (int e : edges0) {</span>
+<span class="pc bpc" id="L216" title="1 of 2 branches missed.">			if (!ig.edges().contains(e))</span>
+<span class="nc" id="L217">				throw new IllegalArgumentException(&quot;invalid edge index &quot; + e);</span>
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">			if (edgesBitmap.get(e))</span>
+<span class="nc" id="L219">				throw new IllegalArgumentException(</span>
+						&quot;edge with index &quot; + e + &quot; is included more than once in the spanning tree&quot;);
+<span class="fc" id="L221">			edgesBitmap.set(e);</span>
+<span class="fc" id="L222">		}</span>
+
+<span class="fc" id="L224">		int[] root = new int[n];</span>
+<span class="fc" id="L225">		Arrays.fill(root, -1);</span>
+<span class="fc" id="L226">		LongPriorityQueue queue = new FIFOQueueLongNoReduce();</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">		for (int r : range(n)) {</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">			if (root[r] &gt;= 0)</span>
+<span class="fc" id="L229">				continue;</span>
+<span class="fc" id="L230">			root[r] = r;</span>
+<span class="fc" id="L231">			queue.enqueue(IntPair.of(r, -1));</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
+<span class="fc" id="L233">				long l = queue.dequeueLong();</span>
+<span class="fc" id="L234">				int u = IntPair.first(l);</span>
+<span class="fc" id="L235">				int parentEdge = IntPair.second(l);</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">				for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L237">					int e = eit.nextInt();</span>
+<span class="fc bfc" id="L238" title="All 4 branches covered.">					if (!edgesBitmap.get(e) || e == parentEdge)</span>
+<span class="fc" id="L239">						continue;</span>
+<span class="fc" id="L240">					int v = eit.targetInt();</span>
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">					if (root[v] == r)</span>
+<span class="nc" id="L242">						return false; /* cycle */</span>
+<span class="fc" id="L243">					root[v] = r;</span>
+<span class="fc" id="L244">					queue.enqueue(IntPair.of(v, e));</span>
+<span class="fc" id="L245">				}</span>
+<span class="fc" id="L246">			}</span>
+<span class="fc" id="L247">		}</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">		for (int e : range(m))</span>
+<span class="pc bpc" id="L249" title="1 of 4 branches missed.">			if (!edgesBitmap.get(e) &amp;&amp; root[ig.edgeSource(e)] != root[ig.edgeTarget(e)])</span>
+<span class="nc" id="L250">				return false; /* two connected components of the given forest could have been connected */</span>
+<span class="fc" id="L251">		return true;</span>
+	}
+
+	/**
+	 * Create a new MST algorithm object.
+	 *
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MinimumSpanningTree} object. The
+	 * {@link MinimumSpanningTree.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MinimumSpanningTree}
+	 */
+	static MinimumSpanningTree newInstance() {
+<span class="fc" id="L264">		return builder().build();</span>
+	}
+
+	/**
+	 * Create a new minimum spanning tree algorithm builder.
+	 *
+	 * &lt;p&gt;
+	 * Use {@link #newInstance()} for a default implementation.
+	 *
+	 * @return a new builder that can build {@link MinimumSpanningTree} objects
+	 */
+	static MinimumSpanningTree.Builder builder() {
+<span class="fc" id="L276">		return new MinimumSpanningTree.Builder() {</span>
+			String impl;
+
+			@Override
+			public MinimumSpanningTree build() {
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L282" title="All 7 branches missed.">					switch (impl) {</span>
+						case &quot;kruskal&quot;:
+<span class="nc" id="L284">							return new MinimumSpanningTreeKruskal();</span>
+						case &quot;prim&quot;:
+<span class="nc" id="L286">							return new MinimumSpanningTreePrim();</span>
+						case &quot;boruvka&quot;:
+<span class="nc" id="L288">							return new MinimumSpanningTreeBoruvka();</span>
+						case &quot;yao&quot;:
+<span class="nc" id="L290">							return new MinimumSpanningTreeYao();</span>
+						case &quot;fredman-tarjan&quot;:
+<span class="nc" id="L292">							return new MinimumSpanningTreeFredmanTarjan();</span>
+						case &quot;karger-klein-tarjan&quot;:
+<span class="nc" id="L294">							return new MinimumSpanningTreeKargerKleinTarjan();</span>
+						default:
+<span class="nc" id="L296">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+					}
+				}
+
+				// TODO check for which graphs sizes Kruskal is faster
+<span class="fc" id="L301">				return new MinimumSpanningTreePrim();</span>
+			}
+
+			@Override
+			public void setOption(String key, Object value) {
+<span class="nc bnc" id="L306" title="All 2 branches missed.">				switch (key) {</span>
+					case &quot;impl&quot;:
+<span class="nc" id="L308">						impl = (String) value;</span>
+<span class="nc" id="L309">						break;</span>
+					default:
+<span class="nc" id="L311">						MinimumSpanningTree.Builder.super.setOption(key, value);</span>
+				}
+<span class="nc" id="L313">			}</span>
+		};
+	}
+
+	/**
+	 * A builder for {@link MinimumSpanningTree} objects.
+	 *
+	 * @see    MinimumSpanningTree#builder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends AlgorithmBuilderBase {
+
+		/**
+		 * Create a new algorithm object for minimum spanning tree computation.
+		 *
+		 * @return a new minimum spanning tree algorithm
+		 */
+		MinimumSpanningTree build();
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

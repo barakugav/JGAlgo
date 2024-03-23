@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChinesePostmanImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.cycle</a> &gt; <span class="el_source">ChinesePostmanImpl.java</span></div><h1>ChinesePostmanImpl.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.cycle;
+
+import static com.jgalgo.internal.util.Range.range;
+import com.jgalgo.alg.euler.EulerianTourAlgo;
+import com.jgalgo.alg.match.IMatching;
+import com.jgalgo.alg.match.MatchingAlgo;
+import com.jgalgo.alg.path.IPath;
+import com.jgalgo.alg.path.ShortestPathAllPairs;
+import com.jgalgo.graph.EdgeSet;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+
+<span class="fc" id="L33">class ChinesePostmanImpl extends ChinesePostmanUtils.AbstractImpl {</span>
+
+	// private final WeaklyConnectedComponentsAlgo connectedComponentsAlgo =
+	// WeaklyConnectedComponentsAlgo.newInstance();
+<span class="fc" id="L37">	private final EulerianTourAlgo eulerianTourAlgo = EulerianTourAlgo.newInstance();</span>
+<span class="fc" id="L38">	private final ShortestPathAllPairs shortestPathAllPairsAlgo = ShortestPathAllPairs.newInstance();</span>
+<span class="fc" id="L39">	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();</span>
+
+	private static int nonSelfEdgesDegree(IndexGraph g, int v) {
+<span class="fc" id="L42">		int nonSelfEdgesCount = 0;</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">		for (int e : g.outEdges(v))</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">			if (g.edgeSource(e) != g.edgeTarget(e))</span>
+<span class="fc" id="L45">				nonSelfEdgesCount++;</span>
+<span class="fc" id="L46">		return nonSelfEdgesCount;</span>
+	}
+
+	@Override
+	IPath computeShortestEdgeVisitorCircle(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L51">		Assertions.onlyUndirected(g);</span>
+		// if (!connectedComponentsAlgo.isWeaklyConnected(g))
+		// throw new IllegalArgumentException(&quot;Graph is not connected, cannot compute shortest edge visitor circle&quot;);
+		// If the graph is not connected, we will fail to find an Eulerian tour, so we just fail later
+
+		/* Find all vertices with odd degree */
+<span class="fc" id="L57">		IntList oddVerticesList = new IntArrayList();</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		for (int v : range(g.vertices().size()))</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">			if (nonSelfEdgesDegree(g, v) % 2 != 0)</span>
+<span class="fc" id="L60">				oddVerticesList.add(v);</span>
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">		if (oddVerticesList.isEmpty())</span>
+			/* all vertices have even degree, an Eulerian tour should exists (if the graph is connected) */
+<span class="nc" id="L63">			return (IPath) eulerianTourAlgo.computeEulerianTour(g);</span>
+<span class="fc" id="L64">		int[] oddVertices = oddVerticesList.toIntArray();</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">		assert oddVertices.length % 2 == 0;</span>
+
+		/* Create a complete graph of the odd vertices, with edges weighted by the shortest paths between each pair */
+<span class="fc" id="L68">		IndexGraphBuilder oddGraph0 = IndexGraphBuilder.undirected();</span>
+<span class="fc" id="L69">		oddGraph0.ensureVertexCapacity(oddVertices.length);</span>
+<span class="fc" id="L70">		oddGraph0.ensureEdgeCapacity(oddVertices.length * (oddVertices.length - 1) / 2);</span>
+<span class="fc" id="L71">		oddGraph0.addVertices(range(oddVertices.length));</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int v : range(oddVertices.length))</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">			for (int u : range(v + 1, oddVertices.length))</span>
+<span class="fc" id="L74">				oddGraph0.addEdge(v, u);</span>
+<span class="fc" id="L75">		IndexGraph oddGraph = oddGraph0.reIndexAndBuild(true, true).graph;</span>
+<span class="fc" id="L76">		ShortestPathAllPairs.IResult allPairsRes = (ShortestPathAllPairs.IResult) shortestPathAllPairsAlgo</span>
+<span class="fc" id="L77">				.computeSubsetShortestPaths(g, oddVerticesList, w);</span>
+<span class="fc" id="L78">		IWeightFunction oddW = e -&gt; {</span>
+<span class="fc" id="L79">			int u = oddVertices[oddGraph.edgeSource(e)];</span>
+<span class="fc" id="L80">			int v = oddVertices[oddGraph.edgeTarget(e)];</span>
+<span class="fc" id="L81">			return allPairsRes.distance(u, v);</span>
+		};
+		/* Compute a minimum weighted perfected matching between the odd vertices */
+<span class="fc" id="L84">		IMatching oddMatching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(oddGraph, oddW);</span>
+
+		/* Create a graph with the original vertices and edges, and add edges resulted from the perfect matching */
+<span class="fc" id="L87">		IndexGraphBuilder b = IndexGraphBuilder.undirected();</span>
+<span class="fc" id="L88">		b.ensureEdgeCapacity(g.edges().size() + oddMatching.edges().size());</span>
+<span class="fc" id="L89">		b.addVertices(g.vertices());</span>
+<span class="fc" id="L90">		b.addEdges(EdgeSet.allOf(g));</span>
+<span class="fc" id="L91">		final int originalEdgesThreshold = b.edges().size();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int e : oddMatching.edges()) {</span>
+<span class="fc" id="L93">			int u = oddVertices[oddGraph.edgeSource(e)];</span>
+<span class="fc" id="L94">			int v = oddVertices[oddGraph.edgeTarget(e)];</span>
+<span class="fc" id="L95">			b.addEdge(u, v);</span>
+<span class="fc" id="L96">		}</span>
+		/* The new graph is Eulerian */
+<span class="fc" id="L98">		IndexGraph eulerianGraph = b.build();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int v : range(eulerianGraph.vertices().size()))</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">			assert nonSelfEdgesDegree(eulerianGraph, v) % 2 == 0;</span>
+
+		/* Compute an Eulerian tour in the new graph */
+<span class="fc" id="L103">		IPath eulerianTour = (IPath) eulerianTourAlgo.computeEulerianTour(eulerianGraph);</span>
+		/* Replace each artificial edge connecting two odd vertices with the shortest path between them */
+<span class="fc" id="L105">		IntList path = new IntArrayList(eulerianTour.edges().size());</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">		for (IEdgeIter eit = eulerianTour.edgeIter(); eit.hasNext();) {</span>
+<span class="fc" id="L107">			int e = eit.nextInt();</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (e &lt; originalEdgesThreshold) {</span>
+				/* an original edge */
+<span class="fc" id="L110">				path.add(e);</span>
+			} else {
+				/* artificial edge connecting two odd vertices */
+<span class="fc" id="L113">				path.addAll(allPairsRes.getPath(eit.sourceInt(), eit.targetInt()).edges());</span>
+			}
+<span class="fc" id="L115">		}</span>
+
+<span class="fc" id="L117">		int pathSource = eulerianTour.sourceInt();</span>
+<span class="fc" id="L118">		return IPath.valueOf(g, pathSource, pathSource, path);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

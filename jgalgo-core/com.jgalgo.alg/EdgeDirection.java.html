@@ -15,6 +15,8 @@
  */
 package com.jgalgo.alg;
 
+import com.jgalgo.alg.cores.CoresAlgo;
+
 /**
  * The direction type of an edge with respect to a vertex.
  *
@@ -26,25 +28,25 @@ package com.jgalgo.alg;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L29">public enum EdgeDirection {</span>
+<span class="fc" id="L31">public enum EdgeDirection {</span>
 
 	/**
 	 * The 'Out' direction include all the edges with the vertex as the source, in case of a directed graph, or as the
 	 * source or the target, in case of an undirected graph.
 	 */
-<span class="fc" id="L35">	Out,</span>
+<span class="fc" id="L37">	Out,</span>
 
 	/**
 	 * The 'In' direction include all the edges with the vertex as the target, in case of a directed graph, or as the
 	 * source or the target, in case of an undirected graph.
 	 */
-<span class="fc" id="L41">	In,</span>
+<span class="fc" id="L43">	In,</span>
 
 	/**
 	 * The 'All' direction include all the edges with the vertex as the source or the target. Note that self edges are
 	 * count only once.
 	 */
-<span class="fc" id="L47">	All;</span>
+<span class="fc" id="L49">	All;</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

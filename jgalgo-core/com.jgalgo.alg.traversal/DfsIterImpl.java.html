@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DfsIterImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.traversal</a> &gt; <span class="el_source">DfsIterImpl.java</span></div><h1>DfsIterImpl.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.traversal;
+
+import java.util.List;
+import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
+import it.unimi.dsi.fastutil.Stack;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+<span class="fc" id="L35">class DfsIterImpl implements DfsIter.Int {</span>
+
+	private final IndexGraph g;
+	private final Bitmap visited;
+	private final Stack&lt;IEdgeIter&gt; edgeIters;
+	private final IntArrayList nextEdgePath;
+	private final IntArrayList edgePath;
+	private final IntList edgePathView;
+<span class="fc" id="L43">	private int nextV = -1;</span>
+<span class="fc" id="L44">	private int edgePathAndNextEdgePathCommonElmsNum = 0;</span>
+
+	/**
+	 * Create a DFS iterator rooted at some source vertex.
+	 *
+	 * @param g      a graph
+	 * @param source a vertex in the graph from which the search will start from
+	 */
+<span class="fc" id="L52">	public DfsIterImpl(IndexGraph g, int source) {</span>
+<span class="fc" id="L53">		final int n = g.vertices().size();</span>
+<span class="fc" id="L54">		Assertions.checkVertex(source, n);</span>
+
+<span class="fc" id="L56">		this.g = g;</span>
+<span class="fc" id="L57">		visited = new Bitmap(n);</span>
+<span class="fc" id="L58">		edgeIters = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L59">		nextEdgePath = new IntArrayList();</span>
+<span class="fc" id="L60">		edgePath = new IntArrayList();</span>
+<span class="fc" id="L61">		edgePathView = IntLists.unmodifiable(edgePath);</span>
+
+<span class="fc" id="L63">		visited.set(source);</span>
+<span class="fc" id="L64">		edgeIters.push(g.outEdges(source).iterator());</span>
+<span class="fc" id="L65">		nextV = source;</span>
+<span class="fc" id="L66">	}</span>
+
+	@Override
+	public boolean hasNext() {
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		return nextV &gt;= 0;</span>
+	}
+
+	@Override
+	public int nextInt() {
+<span class="fc" id="L75">		Assertions.hasNext(this);</span>
+
+<span class="fc" id="L77">		final int ret = nextV;</span>
+		/* sync edgePath to naxEdgePath */
+<span class="fc" id="L79">		edgePath.removeElements(edgePathAndNextEdgePathCommonElmsNum, edgePath.size());</span>
+<span class="fc" id="L80">		edgePath</span>
+<span class="fc" id="L81">				.addElements(edgePath.size(), nextEdgePath.elements(), edgePathAndNextEdgePathCommonElmsNum,</span>
+<span class="fc" id="L82">						nextEdgePath.size() - edgePathAndNextEdgePathCommonElmsNum);</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">		assert edgePath.equals(nextEdgePath);</span>
+<span class="fc" id="L84">		edgePathAndNextEdgePathCommonElmsNum = edgePath.size();</span>
+
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">		if (edgeIters.isEmpty()) {</span>
+<span class="nc" id="L87">			nextV = -1;</span>
+		} else {
+			advance: for (;;) {
+<span class="fc bfc" id="L90" title="All 2 branches covered.">				for (IEdgeIter eit = edgeIters.top(); eit.hasNext();) {</span>
+<span class="fc" id="L91">					final int e = eit.nextInt();</span>
+<span class="fc" id="L92">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L94">						continue;</span>
+<span class="fc" id="L95">					visited.set(v);</span>
+<span class="fc" id="L96">					edgeIters.push(g.outEdges(v).iterator());</span>
+<span class="fc" id="L97">					nextEdgePath.add(e);</span>
+<span class="fc" id="L98">					nextV = v;</span>
+<span class="fc" id="L99">					break advance;</span>
+				}
+<span class="fc" id="L101">				edgeIters.pop();</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">				if (edgeIters.isEmpty()) {</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">					assert nextEdgePath.isEmpty();</span>
+<span class="fc" id="L104">					nextV = -1;</span>
+<span class="fc" id="L105">					break advance;</span>
+				}
+<span class="fc" id="L107">				nextEdgePath.popInt();</span>
+<span class="fc" id="L108">				edgePathAndNextEdgePathCommonElmsNum =</span>
+<span class="fc" id="L109">						Math.min(edgePathAndNextEdgePathCommonElmsNum, nextEdgePath.size());</span>
+			}
+		}
+
+<span class="fc" id="L113">		return ret;</span>
+	}
+
+	@Override
+	public IntList edgePath() {
+<span class="fc" id="L118">		return edgePathView;</span>
+	}
+
+	static class IntDfsFromIndexDfs implements DfsIter.Int {
+
+		private final DfsIter.Int indexIter;
+		private final IndexIntIdMap viMap;
+		private final IndexIntIdMap eiMap;
+
+<span class="fc" id="L127">		IntDfsFromIndexDfs(IntGraph g, DfsIter.Int indexIter) {</span>
+<span class="fc" id="L128">			this.indexIter = Objects.requireNonNull(indexIter);</span>
+<span class="fc" id="L129">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L130">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L131">		}</span>
+
+		@Override
+		public boolean hasNext() {
+<span class="fc" id="L135">			return indexIter.hasNext();</span>
+		}
+
+		@Override
+		public int nextInt() {
+<span class="fc" id="L140">			return viMap.indexToIdInt(indexIter.nextInt());</span>
+		}
+
+		@Override
+		public IntList edgePath() {
+<span class="fc" id="L145">			return IndexIdMaps.indexToIdList(indexIter.edgePath(), eiMap);</span>
+		}
+	}
+
+	static class ObjDfsFromIndexDfs&lt;V, E&gt; implements DfsIter&lt;V, E&gt; {
+
+		private final DfsIter.Int indexIter;
+		private final IndexIdMap&lt;V&gt; viMap;
+		private final IndexIdMap&lt;E&gt; eiMap;
+
+<span class="fc" id="L155">		ObjDfsFromIndexDfs(Graph&lt;V, E&gt; g, DfsIter.Int indexIter) {</span>
+<span class="fc" id="L156">			this.indexIter = Objects.requireNonNull(indexIter);</span>
+<span class="fc" id="L157">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L158">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L159">		}</span>
+
+		@Override
+		public boolean hasNext() {
+<span class="fc" id="L163">			return indexIter.hasNext();</span>
+		}
+
+		@Override
+		public V next() {
+<span class="fc" id="L168">			return viMap.indexToId(indexIter.nextInt());</span>
+		}
+
+		@Override
+		public List&lt;E&gt; edgePath() {
+<span class="fc" id="L173">			return IndexIdMaps.indexToIdList(indexIter.edgePath(), eiMap);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

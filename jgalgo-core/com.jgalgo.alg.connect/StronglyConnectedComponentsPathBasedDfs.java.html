@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StronglyConnectedComponentsPathBasedDfs.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.connect</a> &gt; <span class="el_source">StronglyConnectedComponentsPathBasedDfs.java</span></div><h1>StronglyConnectedComponentsPathBasedDfs.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.connect;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Arrays;
+import com.jgalgo.alg.IVertexPartition;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntStack;
+
+/**
+ * Path based DFS implementation of Dijkstra's strongly connected components algorithm.
+ *
+ * &lt;p&gt;
+ * The algorithm run in linear time and use linear space.
+ *
+ * &lt;p&gt;
+ * Based on 'A Discipline of Programming' by Edsger W. Dijkstra, 1976.
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L37">class StronglyConnectedComponentsPathBasedDfs extends ConnectedComponentsUtils.AbstractStronglyConnectedComponentsAlgo {</span>
+
+	@Override
+	IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g) {
+<span class="fc" id="L41">		return findStronglyConnectedComponentsDirected(g, false);</span>
+	}
+
+	private static IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g, boolean stopAfterOneBlock) {
+<span class="fc" id="L45">		final int n = g.vertices().size();</span>
+<span class="fc" id="L46">		IntStack s = new IntArrayList();</span>
+<span class="fc" id="L47">		IntStack p = new IntArrayList();</span>
+<span class="fc" id="L48">		int[] dfsPath = new int[n];</span>
+<span class="fc" id="L49">		IEdgeIter[] edges = new IEdgeIter[n];</span>
+		// TODO DFS stack class
+
+<span class="fc" id="L52">		int[] comp = new int[n];</span>
+<span class="fc" id="L53">		Arrays.fill(comp, -1);</span>
+<span class="fc" id="L54">		int compNum = 0;</span>
+
+<span class="fc" id="L56">		int[] c = new int[n];</span>
+<span class="fc" id="L57">		int cNext = 1;</span>
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		for (int root : range(n)) {</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">			if (comp[root] &gt;= 0)</span>
+<span class="fc" id="L61">				continue;</span>
+<span class="fc" id="L62">			dfsPath[0] = root;</span>
+<span class="fc" id="L63">			edges[0] = g.outEdges(root).iterator();</span>
+<span class="fc" id="L64">			c[root] = cNext++;</span>
+<span class="fc" id="L65">			s.push(root);</span>
+<span class="fc" id="L66">			p.push(root);</span>
+
+<span class="fc" id="L68">			dfs: for (int depth = 0;;) {</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">				for (IEdgeIter eit = edges[depth]; eit.hasNext();) {</span>
+<span class="fc" id="L70">					eit.nextInt();</span>
+<span class="fc" id="L71">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">					if (c[v] == 0) {</span>
+<span class="fc" id="L73">						c[v] = cNext++;</span>
+<span class="fc" id="L74">						s.push(v);</span>
+<span class="fc" id="L75">						p.push(v);</span>
+
+<span class="fc" id="L77">						dfsPath[++depth] = v;</span>
+<span class="fc" id="L78">						edges[depth] = g.outEdges(v).iterator();</span>
+<span class="fc" id="L79">						continue dfs;</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">					} else if (comp[v] &lt; 0)</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">						while (c[p.topInt()] &gt; c[v])</span>
+<span class="fc" id="L82">							p.popInt();</span>
+<span class="fc" id="L83">				}</span>
+<span class="fc" id="L84">				int u = dfsPath[depth];</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">				if (p.topInt() == u) {</span>
+					int v;
+					do {
+<span class="fc" id="L88">						v = s.popInt();</span>
+<span class="fc" id="L89">						comp[v] = compNum;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">					} while (v != u);</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">					if (stopAfterOneBlock) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">						for (int w : range(n))</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">							if (comp[w] &lt; 0)</span>
+<span class="fc" id="L94">								return null;</span>
+<span class="fc" id="L95">						return IVertexPartition.fromArray(g, comp, compNum);</span>
+					}
+<span class="fc" id="L97">					compNum++;</span>
+<span class="fc" id="L98">					p.popInt();</span>
+				}
+
+<span class="fc" id="L101">				edges[depth] = null;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">				if (depth-- == 0)</span>
+<span class="fc" id="L103">					break;</span>
+<span class="fc" id="L104">			}</span>
+<span class="fc" id="L105">		}</span>
+<span class="fc" id="L106">		return IVertexPartition.fromArray(g, comp, compNum);</span>
+	}
+
+	@Override
+	boolean isStronglyConnected(IndexGraph g) {
+<span class="fc bfc" id="L111" title="All 2 branches covered.">		return findStronglyConnectedComponentsDirected(g, true) != null;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

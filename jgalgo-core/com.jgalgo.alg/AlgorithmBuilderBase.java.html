@@ -15,6 +15,8 @@
  */
 package com.jgalgo.alg;
 
+import com.jgalgo.alg.path.ShortestPathSingleSource;
+
 /**
  * A base interface for all algorithm builders.
  *
@@ -43,7 +45,7 @@ public interface AlgorithmBuilderBase {
 	 * @param value the option value
 	 */
 	default void setOption(String key, Object value) {
-<span class="fc" id="L46">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="fc" id="L48">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 	}
 
 }

@@ -18,7 +18,9 @@ package com.jgalgo.alg;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Map;
 import java.util.function.IntPredicate;
+import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Bitmap;
@@ -51,7 +53,7 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition&
 	@Deprecated
 	@Override
 	default boolean isLeft(Integer vertex) {
-<span class="fc" id="L54">		return isLeft(vertex.intValue());</span>
+<span class="fc" id="L56">		return isLeft(vertex.intValue());</span>
 	}
 
 	/**
@@ -61,7 +63,7 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition&
 	 * @return        {@code true} if the vertex is contained in the right block, {@code false} otherwise
 	 */
 	default boolean isRight(int vertex) {
-<span class="fc bfc" id="L64" title="All 2 branches covered.">		return !isLeft(vertex);</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">		return !isLeft(vertex);</span>
 	}
 
 	/**
@@ -72,12 +74,12 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition&
 	@Deprecated
 	@Override
 	default boolean isRight(Integer vertex) {
-<span class="fc bfc" id="L75" title="All 2 branches covered.">		return !isLeft(vertex.intValue());</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">		return !isLeft(vertex.intValue());</span>
 	}
 
 	@Override
 	default int vertexBlock(int vertex) {
-<span class="fc bfc" id="L80" title="All 2 branches covered.">		return isLeft(vertex) ? 0 : 1;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		return isLeft(vertex) ? 0 : 1;</span>
 	}
 
 	/**
@@ -88,32 +90,32 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition&
 	@Deprecated
 	@Override
 	default int vertexBlock(Integer vertex) {
-<span class="nc bnc" id="L91" title="All 2 branches missed.">		return isLeft(vertex) ? 0 : 1;</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">		return isLeft(vertex) ? 0 : 1;</span>
 	}
 
 	@Override
 	default IntSet leftVertices() {
-<span class="fc" id="L96">		return (IntSet) VertexBiPartition.super.leftVertices();</span>
+<span class="fc" id="L98">		return (IntSet) VertexBiPartition.super.leftVertices();</span>
 	}
 
 	@Override
 	default IntSet rightVertices() {
-<span class="fc" id="L101">		return (IntSet) VertexBiPartition.super.rightVertices();</span>
+<span class="fc" id="L103">		return (IntSet) VertexBiPartition.super.rightVertices();</span>
 	}
 
 	@Override
 	default IntSet leftEdges() {
-<span class="fc" id="L106">		return (IntSet) VertexBiPartition.super.leftEdges();</span>
+<span class="fc" id="L108">		return (IntSet) VertexBiPartition.super.leftEdges();</span>
 	}
 
 	@Override
 	default IntSet rightEdges() {
-<span class="fc" id="L111">		return (IntSet) VertexBiPartition.super.rightEdges();</span>
+<span class="fc" id="L113">		return (IntSet) VertexBiPartition.super.rightEdges();</span>
 	}
 
 	@Override
 	default IntSet crossEdges() {
-<span class="fc" id="L116">		return (IntSet) VertexBiPartition.super.crossEdges();</span>
+<span class="fc" id="L118">		return (IntSet) VertexBiPartition.super.crossEdges();</span>
 	}
 
 	/**
@@ -127,7 +129,7 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition&
 	 * @return     a new vertex bi-partition
 	 */
 	static IVertexBiPartition fromMap(IntGraph g, Map&lt;Integer, Boolean&gt; map) {
-<span class="nc" id="L130">		return fromMapping(g, map::get);</span>
+<span class="nc" id="L132">		return fromMapping(g, map::get);</span>
 	}
 
 	/**
@@ -137,19 +139,57 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition&
 	 * Note that this function does not validate the input. For that, see {@link #isPartition(IntGraph, IntPredicate)}.
 	 *
 	 * @param  g       the graph
-	 * @param  mapping a mapping function that maps from a vertex to either {@code true} or {@code false}
+	 * @param  mapping a mapping function that maps from a vertex to either {@code true} or {@code false}, where
+	 *                     {@code true} means the vertex is contained in the left block and {@code false} means the
+	 *                     vertex is contained in the right block
 	 * @return         a new vertex bi-partition
 	 */
 	static IVertexBiPartition fromMapping(IntGraph g, IntPredicate mapping) {
-<span class="fc" id="L144">		final int n = g.vertices().size();</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L146">			return new VertexBiPartitions.FromBitmap((IndexGraph) g, Bitmap.fromPredicate(n, mapping));</span>
+<span class="fc" id="L148">		final int n = g.vertices().size();</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L150">			return new VertexBiPartitions.IndexImpl((IndexGraph) g, Bitmap.fromPredicate(n, mapping)::get);</span>
 		} else {
-<span class="fc" id="L148">			IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L149">			Bitmap vertexToBlock = Bitmap.fromPredicate(n, vIdx -&gt; mapping.test(viMap.indexToIdInt(vIdx)));</span>
-<span class="fc" id="L150">			IVertexBiPartition indexPartition = new VertexBiPartitions.FromBitmap(g.indexGraph(), vertexToBlock);</span>
-<span class="fc" id="L151">			return new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, indexPartition);</span>
+<span class="fc" id="L152">			IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L153">			Bitmap vertexToBlock = Bitmap.fromPredicate(n, vIdx -&gt; mapping.test(viMap.indexToIdInt(vIdx)));</span>
+<span class="fc" id="L154">			IVertexBiPartition indexPartition = new VertexBiPartitions.IndexImpl(g.indexGraph(), vertexToBlock::get);</span>
+<span class="fc" id="L155">			return new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, indexPartition);</span>
 		}
+	}
+
+	/**
+	 * Create a new vertex bi-partition from a vertex-side weights container.
+	 *
+	 * @param  g       the graph
+	 * @param  weights a weights container that maps from a vertex to either {@code true} or {@code false}, where
+	 *                     {@code true} means the vertex is contained in the left block and {@code false} means the
+	 *                     vertex is contained in the right block
+	 * @return         a new vertex bi-partition
+	 */
+	static IVertexBiPartition fromWeights(IntGraph g, IWeightsBool weights) {
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L170">			return new VertexBiPartitions.IndexImpl((IndexGraph) g, weights::get);</span>
+		} else {
+<span class="nc" id="L172">			IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L173">			IWeightsBool indexWeights = IndexIdMaps.idToIndexWeights(weights, viMap);</span>
+<span class="nc" id="L174">			IVertexBiPartition indexPartition = new VertexBiPartitions.IndexImpl(g.indexGraph(), indexWeights::get);</span>
+<span class="nc" id="L175">			return new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, indexPartition);</span>
+		}
+	}
+
+	/**
+	 * Create a new vertex bi-partition from a bitmap.
+	 *
+	 * &lt;p&gt;
+	 * This function can be used only for index graphs.
+	 *
+	 * @param  g      the index graph
+	 * @param  bitmap a bitmap where {@code true} means the vertex is contained in the left block and {@code false}
+	 *                    means the vertex is contained in the right block. The bitmap is not copied, and it is assumed
+	 *                    the user of this function will not modify the bitmap after calling this function
+	 * @return        a new vertex bi-partition
+	 */
+	static IVertexBiPartition fromBitmap(IndexGraph g, Bitmap bitmap) {
+<span class="fc" id="L192">		return new VertexBiPartitions.IndexImpl(g, bitmap::get);</span>
 	}
 
 	/**
@@ -166,26 +206,26 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition&
 	 *                 otherwise
 	 */
 	static boolean isPartition(IntGraph g, IntPredicate mapping) {
-<span class="fc" id="L169">		final int n = g.vertices().size();</span>
-<span class="pc bpc" id="L170" title="1 of 2 branches missed.">		if (n &lt; 2)</span>
-<span class="nc" id="L171">			return false;</span>
+<span class="fc" id="L209">		final int n = g.vertices().size();</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">		if (n &lt; 2)</span>
+<span class="nc" id="L211">			return false;</span>
 		Bitmap vertexToBlock;
-<span class="fc bfc" id="L173" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L174">			vertexToBlock = Bitmap.fromPredicate(n, mapping);</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L214">			vertexToBlock = Bitmap.fromPredicate(n, mapping);</span>
 		} else {
-<span class="fc" id="L176">			IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L177">			vertexToBlock = Bitmap.fromPredicate(n, vIdx -&gt; mapping.test(viMap.indexToIdInt(vIdx)));</span>
+<span class="fc" id="L216">			IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L217">			vertexToBlock = Bitmap.fromPredicate(n, vIdx -&gt; mapping.test(viMap.indexToIdInt(vIdx)));</span>
 		}
-<span class="fc bfc" id="L179" title="All 2 branches covered.">		if (vertexToBlock.get(0)) {</span>
-<span class="fc bfc" id="L180" title="All 2 branches covered.">			for (int v : range(1, n))</span>
-<span class="fc bfc" id="L181" title="All 2 branches covered.">				if (!vertexToBlock.get(v))</span>
-<span class="fc" id="L182">					return true;</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">		if (vertexToBlock.get(0)) {</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">			for (int v : range(1, n))</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">				if (!vertexToBlock.get(v))</span>
+<span class="fc" id="L222">					return true;</span>
 		} else {
-<span class="fc bfc" id="L184" title="All 2 branches covered.">			for (int v : range(1, n))</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">				if (vertexToBlock.get(v))</span>
-<span class="fc" id="L186">					return true;</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">			for (int v : range(1, n))</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">				if (vertexToBlock.get(v))</span>
+<span class="fc" id="L226">					return true;</span>
 		}
-<span class="fc" id="L188">		return false;</span>
+<span class="fc" id="L228">		return false;</span>
 	}
 
 }

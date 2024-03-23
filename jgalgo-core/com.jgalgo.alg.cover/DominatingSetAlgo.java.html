@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DominatingSetAlgo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.cover</a> &gt; <span class="el_source">DominatingSetAlgo.java</span></div><h1>DominatingSetAlgo.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.cover;
+
+import java.util.Collection;
+import java.util.Set;
+import com.jgalgo.alg.EdgeDirection;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
+/**
+ * An algorithm for computing a minimum dominating set.
+ *
+ * &lt;p&gt;
+ * Given a graph \(G = (V, E)\), a dominating set is a subset \(D \subseteq V\) such that for every \(v \in V\), either
+ * \(v \in D\) or there is an edge \((u, v) \in E\) such that \(u \in D\). The minimum dominating set problem is to find
+ * a dominating set of minimum size or weight. The problem is NP-hard. Algorithms implementing this interfaces are
+ * heuristics or fixed ration approximation algorithms.
+ *
+ * &lt;p&gt;
+ * In a directed graph, the 'dominance' should be defined with respect to either the in-edges, out-edges or in-edges +
+ * out-edges of the vertices. This is specified as a {@link EdgeDirection} parameter to
+ * {@link #computeMinimumDominationSet(Graph, WeightFunction, EdgeDirection)}, which yields different types of
+ * dominating sets.
+ *
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface.
+ *
+ * @author Barak Ugav
+ */
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">public interface DominatingSetAlgo {</span>
+
+	/**
+	 * Compute a minimum dominating set of the graph with respect to the in-degree + out-degree of the vertices.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @param  w   a vertex weight function
+	 * @return     a minimum dominating set of the graph
+	 */
+	default &lt;V, E&gt; Set&lt;V&gt; computeMinimumDominationSet(Graph&lt;V, E&gt; g, WeightFunction&lt;V&gt; w) {
+<span class="fc" id="L62">		return computeMinimumDominationSet(g, w, EdgeDirection.All);</span>
+	}
+
+	/**
+	 * Compute a minimum dominating set of the graph with respect to the given edges direction.
+	 *
+	 * @param  &lt;V&gt;                the vertices type
+	 * @param  &lt;E&gt;                the edges type
+	 * @param  g                  a graph
+	 * @param  w                  a vertex weight function
+	 * @param  dominanceDirection the direction of the edges to consider
+	 * @return                    a minimum dominating set of the graph
+	 */
+	&lt;V, E&gt; Set&lt;V&gt; computeMinimumDominationSet(Graph&lt;V, E&gt; g, WeightFunction&lt;V&gt; w, EdgeDirection dominanceDirection);
+
+	/**
+	 * Check whether a given set of vertices is a dominating set of a graph.
+	 *
+	 * @param  &lt;V&gt;                the vertices type
+	 * @param  &lt;E&gt;                the edges type
+	 * @param  g                  a graph
+	 * @param  dominatingSet      a set of vertices
+	 * @param  dominanceDirection the direction of the edges to consider, if {@code null} then {@link EdgeDirection#All}
+	 *                                is used
+	 * @return                    true if the given set is a dominating set of the graph
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; boolean isDominatingSet(Graph&lt;V, E&gt; g, Collection&lt;V&gt; dominatingSet,
+			EdgeDirection dominanceDirection) {
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		if (dominanceDirection == null)</span>
+<span class="fc" id="L92">			dominanceDirection = EdgeDirection.All;</span>
+
+		IndexGraph g0;
+		IntCollection dominatingSet0;
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L97">			g0 = (IndexGraph) g;</span>
+<span class="fc" id="L98">			dominatingSet0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) dominatingSet);</span>
+		} else {
+<span class="fc" id="L100">			g0 = g.indexGraph();</span>
+<span class="fc" id="L101">			dominatingSet0 = IndexIdMaps.idToIndexCollection(dominatingSet, g.indexGraphVerticesMap());</span>
+		}
+
+<span class="fc" id="L104">		final boolean directed = g.isDirected();</span>
+<span class="fc" id="L105">		final int n = g0.vertices().size();</span>
+<span class="fc" id="L106">		Bitmap dominatingSetBitmap = new Bitmap(n);</span>
+<span class="fc" id="L107">		Bitmap dominated = new Bitmap(n);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		for (int v : dominatingSet0) {</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">			if (dominatingSetBitmap.get(v))</span>
+<span class="fc" id="L110">				throw new IllegalArgumentException(&quot;duplicate vertex in dominating set: &quot; + v);</span>
+<span class="fc" id="L111">			dominatingSetBitmap.set(v);</span>
+<span class="fc" id="L112">			dominated.set(v);</span>
+
+<span class="fc bfc" id="L114" title="All 4 branches covered.">			if (!directed || dominanceDirection == EdgeDirection.Out) {</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">				for (IEdgeIter eit = g0.outEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L116">					eit.nextInt();</span>
+<span class="fc" id="L117">					dominated.set(eit.targetInt());</span>
+				}
+
+<span class="fc bfc" id="L120" title="All 2 branches covered.">			} else if (dominanceDirection == EdgeDirection.In) {</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">				for (IEdgeIter eit = g0.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L122">					eit.nextInt();</span>
+<span class="fc" id="L123">					dominated.set(eit.sourceInt());</span>
+				}
+
+			} else {
+<span class="pc bpc" id="L127" title="2 of 4 branches missed.">				assert dominanceDirection == EdgeDirection.All;</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">				for (IEdgeIter eit = g0.outEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L129">					eit.nextInt();</span>
+<span class="fc" id="L130">					dominated.set(eit.targetInt());</span>
+				}
+<span class="fc bfc" id="L132" title="All 2 branches covered.">				for (IEdgeIter eit = g0.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L133">					eit.nextInt();</span>
+<span class="fc" id="L134">					dominated.set(eit.sourceInt());</span>
+				}
+			}
+<span class="fc" id="L137">		}</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">		return dominated.cardinality() == n;</span>
+	}
+
+	/**
+	 * Create a new dominating set algorithm object.
+	 *
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link DominatingSetAlgo} object.
+	 *
+	 * @return a default implementation of {@link DominatingSetAlgo}
+	 */
+	static DominatingSetAlgo newInstance() {
+<span class="fc" id="L150">		return new DominatingSetAlgoGreedy();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

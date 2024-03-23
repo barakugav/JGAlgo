@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumEdgeCutUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.connect</a> &gt; <span class="el_source">MinimumEdgeCutUtils.java</span></div><h1>MinimumEdgeCutUtils.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.connect;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Collection;
+import java.util.Iterator;
+import com.jgalgo.alg.IVertexBiPartition;
+import com.jgalgo.alg.VertexBiPartition;
+import com.jgalgo.alg.flow.IFlow;
+import com.jgalgo.alg.flow.MaximumFlow;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import com.jgalgo.internal.util.IntAdapters;
+import com.jgalgo.internal.util.IterTools;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+
+class MinimumEdgeCutUtils {
+
+	private MinimumEdgeCutUtils() {}
+
+<span class="fc" id="L45">	abstract static class AbstractImplST implements MinimumEdgeCutST {</span>
+
+		@SuppressWarnings(&quot;unchecked&quot;)
+		@Override
+		public &lt;V, E&gt; VertexBiPartition&lt;V, E&gt; computeMinimumCut(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source, V sink) {
+<span class="fc bfc" id="L50" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L51">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L52">				int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();</span>
+<span class="fc" id="L53">				return (VertexBiPartition&lt;V, E&gt;) computeMinimumCut((IndexGraph) g, w0, source0, sink0);</span>
+
+			} else {
+<span class="fc" id="L56">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L57">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L58">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L59">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L60">				int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L61">				int iSink = viMap.idToIndex(sink);</span>
+<span class="fc" id="L62">				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSource, iSink);</span>
+<span class="fc" id="L63">				return VertexBiPartition.partitionFromIndexPartition(g, indexCut);</span>
+			}
+		}
+
+		@SuppressWarnings(&quot;unchecked&quot;)
+		@Override
+		public &lt;V, E&gt; VertexBiPartition&lt;V, E&gt; computeMinimumCut(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w,
+				Collection&lt;V&gt; sources, Collection&lt;V&gt; sinks) {
+<span class="fc bfc" id="L71" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L72">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L73">				IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
+<span class="fc" id="L74">				IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
+<span class="fc" id="L75">				return (VertexBiPartition&lt;V, E&gt;) computeMinimumCut((IndexGraph) g, w0, sources0, sinks0);</span>
+
+			} else {
+<span class="fc" id="L78">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L79">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L80">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L81">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L82">				IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);</span>
+<span class="fc" id="L83">				IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);</span>
+<span class="fc" id="L84">				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSources, iSinks);</span>
+<span class="fc" id="L85">				return VertexBiPartition.partitionFromIndexPartition(g, indexCut);</span>
+			}
+		}
+
+		abstract IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int sources, int sinks);
+
+		abstract IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, IntCollection sources,
+				IntCollection sinks);
+
+	}
+
+<span class="fc" id="L96">	abstract static class AbstractImplAllST implements MinimumEdgeCutAllST {</span>
+
+		@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+		@Override
+		public &lt;V, E&gt; Iterator&lt;VertexBiPartition&lt;V, E&gt;&gt; minimumCutsIter(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source,
+				V sink) {
+<span class="fc bfc" id="L102" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L103">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L104">				int source0 = ((Integer) source).intValue();</span>
+<span class="fc" id="L105">				int sink0 = ((Integer) sink).intValue();</span>
+<span class="fc" id="L106">				return (Iterator) minimumCutsIter((IndexGraph) g, w0, source0, sink0);</span>
+
+			} else {
+<span class="fc" id="L109">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L110">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L111">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L112">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L113">				int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L114">				int iSink = viMap.idToIndex(sink);</span>
+<span class="fc" id="L115">				Iterator&lt;IVertexBiPartition&gt; indexIter = minimumCutsIter(iGraph, iw, iSource, iSink);</span>
+<span class="fc" id="L116">				return IterTools</span>
+<span class="fc" id="L117">						.map(indexIter, iPartition -&gt; VertexBiPartition.partitionFromIndexPartition(g, iPartition));</span>
+			}
+		}
+
+		abstract Iterator&lt;IVertexBiPartition&gt; minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink);
+
+	}
+
+<span class="fc" id="L125">	abstract static class AbstractImplGlobal implements MinimumEdgeCutGlobal {</span>
+
+		@SuppressWarnings(&quot;unchecked&quot;)
+		@Override
+		public &lt;V, E&gt; VertexBiPartition&lt;V, E&gt; computeMinimumCut(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">			if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L131">				return (VertexBiPartition&lt;V, E&gt;) computeMinimumCut((IndexGraph) g,</span>
+<span class="nc" id="L132">						WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w));</span>
+
+			} else {
+<span class="fc" id="L135">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L136">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L137">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+
+<span class="fc" id="L139">				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw);</span>
+<span class="fc" id="L140">				return VertexBiPartition.partitionFromIndexPartition(g, indexCut);</span>
+			}
+		}
+
+		abstract IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w);
+
+	}
+
+	static IVertexBiPartition computeMinimumCutUsingMaxFlow(IndexGraph g, IWeightFunction w, int source, int sink,
+			MaximumFlow maxFlowAlg) {
+<span class="fc" id="L150">		IFlow flow = (IFlow) maxFlowAlg.computeMaximumFlow(g, w, Integer.valueOf(source), Integer.valueOf(sink));</span>
+<span class="fc" id="L151">		return minCutFromMaxFlow(g, IntLists.singleton(source), w, flow);</span>
+	}
+
+	static IVertexBiPartition computeMinimumCutUsingMaxFlow(IndexGraph g, IWeightFunction w, IntCollection sources,
+			IntCollection sinks, MaximumFlow maxFlowAlg) {
+<span class="fc" id="L156">		IFlow flow = (IFlow) maxFlowAlg.computeMaximumFlow(g, w, sources, sinks);</span>
+<span class="fc" id="L157">		return minCutFromMaxFlow(g, sources, w, flow);</span>
+	}
+
+	private static IVertexBiPartition minCutFromMaxFlow(IndexGraph g, IntCollection sources, IWeightFunction capacity,
+			IFlow flow) {
+<span class="fc" id="L162">		capacity = IWeightFunction.replaceNullWeightFunc(capacity);</span>
+<span class="fc" id="L163">		final int n = g.vertices().size();</span>
+<span class="fc" id="L164">		Bitmap visited = new Bitmap(n);</span>
+<span class="fc" id="L165">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+
+<span class="fc" id="L167">		final double eps =</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">				range(g.edges().size()).mapToDouble(capacity::weight).filter(c -&gt; c &gt; 0).min().orElse(0) * 1e-8;</span>
+
+		/* perform a BFS from source and use only non saturated edges */
+<span class="fc bfc" id="L171" title="All 2 branches covered.">		for (int source : sources) {</span>
+<span class="fc" id="L172">			visited.set(source);</span>
+<span class="fc" id="L173">			queue.enqueue(source);</span>
+<span class="fc" id="L174">		}</span>
+
+<span class="fc bfc" id="L176" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
+<span class="fc" id="L178">				int u = queue.dequeueInt();</span>
+
+<span class="fc bfc" id="L180" title="All 2 branches covered.">				for (IEdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L181">					int e = it.nextInt();</span>
+<span class="fc" id="L182">					int v = it.targetInt();</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L184">						continue;</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">					if (Math.abs(capacity.weight(e) - flow.getFlow(e)) &lt; eps)</span>
+<span class="fc" id="L186">						continue; // saturated edge</span>
+<span class="fc" id="L187">					visited.set(v);</span>
+<span class="fc" id="L188">					queue.enqueue(v);</span>
+<span class="fc" id="L189">				}</span>
+				/*
+				 * We don't have any guarantee that the graph has a twin edge for each edge, so we iterate over the
+				 * in-edges and search for edges with non zero flow which imply an existent of an out edge in the
+				 * residual network
+				 */
+<span class="fc bfc" id="L195" title="All 2 branches covered.">				for (IEdgeIter it = g.inEdges(u).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L196">					int e = it.nextInt();</span>
+<span class="fc" id="L197">					int v = it.sourceInt();</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L199">						continue;</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">					if (flow.getFlow(e) &lt; eps)</span>
+<span class="fc" id="L201">						continue; // saturated edge</span>
+<span class="fc" id="L202">					visited.set(v);</span>
+<span class="fc" id="L203">					queue.enqueue(v);</span>
+<span class="fc" id="L204">				}</span>
+<span class="fc" id="L205">			}</span>
+		} else {
+<span class="fc bfc" id="L207" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
+<span class="fc" id="L208">				int u = queue.dequeueInt();</span>
+
+<span class="fc bfc" id="L210" title="All 2 branches covered.">				for (IEdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L211">					int e = it.nextInt();</span>
+<span class="fc" id="L212">					int v = it.targetInt();</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L214">						continue;</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">					double directedFlow = flow.getFlow(e) * (g.edgeSource(e) == u ? +1 : -1);</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">					if (Math.abs(capacity.weight(e) - directedFlow) &lt; eps)</span>
+<span class="fc" id="L217">						continue; // saturated edge</span>
+<span class="fc" id="L218">					visited.set(v);</span>
+<span class="fc" id="L219">					queue.enqueue(v);</span>
+<span class="fc" id="L220">				}</span>
+<span class="fc" id="L221">			}</span>
+		}
+
+<span class="fc" id="L224">		return IVertexBiPartition.fromBitmap(g, visited);</span>
+	}
+
+	static MinimumEdgeCutST buildFromMaxFlow(MaximumFlow maxFlowAlg) {
+<span class="fc" id="L228">		return new AbstractImplST() {</span>
+
+			@Override
+			public IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
+<span class="fc" id="L232">				return computeMinimumCutUsingMaxFlow(g, w, source, sink, maxFlowAlg);</span>
+			}
+
+			@Override
+			public IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, IntCollection sources,
+					IntCollection sinks) {
+<span class="fc" id="L238">				return computeMinimumCutUsingMaxFlow(g, w, sources, sinks, maxFlowAlg);</span>
+			}
+
+		};
+	}
+
+	static MinimumEdgeCutGlobal globalMinCutFromStMinCut(MinimumEdgeCutST stMinCut) {
+<span class="fc" id="L245">		return new AbstractImplGlobal() {</span>
+			@Override
+			IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L248">				final int n = g.vertices().size();</span>
+<span class="pc bpc" id="L249" title="1 of 2 branches missed.">				if (n &lt; 2)</span>
+<span class="nc" id="L250">					throw new IllegalArgumentException(&quot;no valid cut in graphs with less than two vertices&quot;);</span>
+<span class="fc" id="L251">				w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
+<span class="fc" id="L252">				w = IWeightFunction.replaceNullWeightFunc(w);</span>
+
+<span class="fc" id="L254">				IVertexBiPartition bestCut = null;</span>
+<span class="fc" id="L255">				double bestCutWeight = Double.MAX_VALUE;</span>
+<span class="fc" id="L256">				final int source = 0;</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">				for (int sink : range(1, n)) {</span>
+<span class="fc" id="L258">					IVertexBiPartition cut = (IVertexBiPartition) stMinCut</span>
+<span class="fc" id="L259">							.computeMinimumCut(g, w, Integer.valueOf(source), Integer.valueOf(sink));</span>
+<span class="fc" id="L260">					double cutWeight = w.weightSum(cut.crossEdges());</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">					if (bestCutWeight &gt; cutWeight) {</span>
+<span class="fc" id="L262">						bestCutWeight = cutWeight;</span>
+<span class="fc" id="L263">						bestCut = cut;</span>
+					}
+<span class="fc" id="L265">				}</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">				assert bestCut != null;</span>
+<span class="fc" id="L267">				return bestCut;</span>
+			}
+		};
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

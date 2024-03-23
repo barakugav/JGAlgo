@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TspMetricMatchingAppx.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.path</a> &gt; <span class="el_source">TspMetricMatchingAppx.java</span></div><h1>TspMetricMatchingAppx.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg.path;
+
+import static com.jgalgo.internal.util.Range.range;
+import com.jgalgo.alg.match.IMatching;
+import com.jgalgo.alg.match.MatchingAlgo;
+import com.jgalgo.alg.span.MinimumSpanningTree;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
+/**
+ * TSP \(3/2\)-approximation using maximum matching.
+ *
+ * &lt;p&gt;
+ * The running of this algorithm is \(O(n^3)\) and it achieve \(3/2\)-approximation to the optimal TSP solution.
+ *
+ * &lt;p&gt;
+ * Based on 'Worst-Case Analysis of a New Heuristic for the Travelling Salesman Problem' by Nicos Christofides (1976).
+ *
+ * @author Barak Ugav
+ */
+public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
+
+<span class="fc" id="L42">	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();</span>
+<span class="fc" id="L43">	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();</span>
+
+	/**
+	 * Create a new TSP \(3/2\)-approximation algorithm.
+	 */
+<span class="fc" id="L48">	public TspMetricMatchingAppx() {}</span>
+
+	@Override
+	IPath computeShortestTour(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L52">		final int n = g.vertices().size();</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		if (n == 0)</span>
+<span class="fc" id="L54">			return null;</span>
+<span class="fc" id="L55">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L56">		Assertions.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
+		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
+
+		/* Calculate MST */
+<span class="fc" id="L60">		IntCollection mst = ((MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(g, w)).edges();</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		if (mst.size() &lt; n - 1)</span>
+<span class="fc" id="L62">			throw new IllegalArgumentException(&quot;graph is not connected&quot;);</span>
+
+		/*
+		 * Build graph for the matching calculation, containing only vertices with odd degree from the MST
+		 */
+<span class="fc" id="L67">		int[] degree = new int[g.vertices().size()];</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		for (int e : mst) {</span>
+<span class="fc" id="L69">			degree[g.edgeSource(e)]++;</span>
+<span class="fc" id="L70">			degree[g.edgeTarget(e)]++;</span>
+<span class="fc" id="L71">		}</span>
+<span class="fc" id="L72">		int mGn = 0;</span>
+<span class="fc" id="L73">		int[] mVtoV = new int[n];</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">		for (int u : range(n))</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">			if (degree[u] % 2 != 0)</span>
+<span class="fc" id="L76">				mVtoV[mGn++] = u;</span>
+<span class="fc" id="L77">		IndexGraphBuilder mG0 = IndexGraphBuilder.undirected();</span>
+<span class="fc" id="L78">		mG0.addVertices(range(mGn));</span>
+<span class="fc" id="L79">		mG0.ensureEdgeCapacity(mGn * (mGn - 1) / 2);</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		for (int v : range(mGn))</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			for (int u : range(v + 1, mGn))</span>
+<span class="fc" id="L82">				mG0.addEdge(v, u);</span>
+<span class="fc" id="L83">		IndexGraph oddGraph = mG0.reIndexAndBuild(true, true).graph;</span>
+<span class="fc" id="L84">		IWeightFunction mGWeights = e -&gt; {</span>
+<span class="fc" id="L85">			int u = mVtoV[oddGraph.edgeSource(e)];</span>
+<span class="fc" id="L86">			int v = mVtoV[oddGraph.edgeTarget(e)];</span>
+<span class="fc" id="L87">			return w.weight(g.getEdge(u, v));</span>
+		};
+<span class="fc" id="L89">		IndexGraph mG = mG0.reIndexAndBuild(true, true).graph;</span>
+
+		/* Calculate maximum matching between the odd vertices */
+<span class="fc" id="L92">		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(mG, mGWeights);</span>
+
+		/* Build a graph of the union of the MST and the matching result */
+<span class="fc" id="L95">		IndexGraphBuilder g1Builder = IndexGraphBuilder.undirected();</span>
+<span class="fc" id="L96">		g1Builder.addVertices(g.vertices());</span>
+<span class="fc" id="L97">		g1Builder.ensureEdgeCapacity(mst.size() + matching.edges().size());</span>
+<span class="fc" id="L98">		int[] g1EdgeRef = new int[mst.size() + matching.edges().size()];</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int e : mst) {</span>
+<span class="fc" id="L100">			int g1Edge = g1Builder.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L101">			g1EdgeRef[g1Edge] = e;</span>
+<span class="fc" id="L102">		}</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		for (int mGedge : matching.edges()) {</span>
+<span class="fc" id="L104">			int u = mVtoV[mG.edgeSource(mGedge)];</span>
+<span class="fc" id="L105">			int v = mVtoV[mG.edgeTarget(mGedge)];</span>
+<span class="fc" id="L106">			int g1Edge = g1Builder.addEdge(u, v);</span>
+<span class="fc" id="L107">			g1EdgeRef[g1Edge] = g.getEdge(u, v);</span>
+<span class="fc" id="L108">		}</span>
+<span class="fc" id="L109">		IndexGraph g1 = g1Builder.build();</span>
+
+<span class="fc" id="L111">		IPath cycle = TspMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);</span>
+
+		/* Convert cycle of edges to list of vertices */
+<span class="fc" id="L114">		return cycle;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

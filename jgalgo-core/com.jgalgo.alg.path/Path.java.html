@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Path.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.path</a> &gt; <span class="el_source">Path.java</span></div><h1>Path.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg.path;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.IntAdapters;
+import com.jgalgo.internal.util.Fastutil;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+/**
+ * A path of edges in a graph.
+ *
+ * &lt;p&gt;
+ * A path is a list of edges \(e_1,e_2,\ldots\) where each target vertex of edge \(e_i\) is the source vertex of the
+ * next edge \(e_{i+1}\). If the graph is undirected the definition of a 'source' and 'target' are interchangeable, and
+ * each pair of consecutive edges simply share an endpoint.
+ *
+ * &lt;p&gt;
+ * A Path object might be used to represent a cycle as well, if the source and target of the path are the same vertex.
+ *
+ * &lt;p&gt;
+ * If the underlying graph was modified after the Path object was created, the Path object should not be used.
+ *
+ * &lt;pre&gt; {@code
+ * Graph&lt;String, Integer&gt; g = ...;
+ * String sourceVertex = ...;
+ * String targetVertex = ...;
+ * Path&lt;String, Integer&gt; p = Path.findPath(g, sourceVertex, targetVertex);
+ *
+ * System.out.println(&quot;The path between u and v consist of the following edges:&quot;);
+ * for (EdgeIter&lt;String, Integer&gt; it = p.edgeIter(); it.hasNext();) {
+ * 	Integer e = it.next();
+ * 	String u = it.source(), v = it.target();
+ * 	System.out.println(&quot; &quot; + e + &quot;(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
+ * }
+ * }&lt;/pre&gt;
+ *
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
+ */
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">public interface Path&lt;V, E&gt; {</span>
+
+	/**
+	 * Get the source vertex of the path.
+	 *
+	 * &lt;p&gt;
+	 * If the returned vertex is the same as {@link #target()}, the represented path is actually a cycle.
+	 *
+	 * @return the source vertex of the path.
+	 */
+	V source();
+
+	/**
+	 * Get the target vertex of the path.
+	 *
+	 * &lt;p&gt;
+	 * If the returned vertex is the same as {@link #source()}, the represented path is actually a cycle.
+	 *
+	 * @return the target vertex of the path.
+	 */
+	V target();
+
+	/**
+	 * Check whether this path form a cycle.
+	 *
+	 * &lt;p&gt;
+	 * A cycle is a path which start and ends at the same vertex.
+	 *
+	 * @return {@code true} if this path form a cycle, else {@code false}
+	 */
+	default boolean isCycle() {
+<span class="fc" id="L97">		return source().equals(target());</span>
+	}
+
+	/**
+	 * Check whether this path is simple.
+	 *
+	 * &lt;p&gt;
+	 * A path is &lt;a href= &quot;https://en.wikipedia.org/wiki/Path_(graph_theory)#simple_path&quot;&gt;simple&lt;/a&gt; if the path does
+	 * not visit the same vertex twice. Specifically, a cycle is not simple.
+	 *
+	 * @return {@code true} if this path is simple, else {@code false}
+	 */
+	boolean isSimple();
+
+	/**
+	 * Get an {@link EdgeIter} that iterate over the edges of the path.
+	 *
+	 * @return an {@link EdgeIter} that iterate over the edges of the path.
+	 */
+	EdgeIter&lt;V, E&gt; edgeIter();
+
+	/**
+	 * Get the edges forming this path.
+	 *
+	 * &lt;p&gt;
+	 * The path is defined as a list of edges \(e_1,e_2,\ldots\), where each target vertex of an edge \(e_i\) is the
+	 * source vertex of the next edge \(e_{i+1}\).
+	 *
+	 * @return the edges forming this path, by the path order
+	 */
+	List&lt;E&gt; edges();
+
+	/**
+	 * Get the vertices forming this path.
+	 *
+	 * &lt;p&gt;
+	 * The path is defined as a list of edges \(e_1,e_2,\ldots\), where each target vertex of an edge \(e_i\) is the
+	 * source vertex of the next edge \(e_{i+1}\). The list of &lt;b&gt;vertices&lt;/b&gt; of this path is the vertices visited by
+	 * this path, ordered by their visit order. The first vertex is the source of the path and the last vertex is the
+	 * target of the path. The size of the returned list is always the size of the edges list plus one.
+	 *
+	 * &lt;p&gt;
+	 * Note that if this path is a cycle, the first and last vertices in the returned list are the same vertex.
+	 *
+	 * @return the vertices visited by this path, by the path order
+	 */
+	List&lt;V&gt; vertices();
+
+	/**
+	 * Get the graph this path is defined on.
+	 *
+	 * @return the graph this path is defined on.
+	 */
+	Graph&lt;V, E&gt; graph();
+
+	/**
+	 * Create a sub path of this path that contains the edges between the specified {@code fromEdgeIndex}, inclusive,
+	 * and {@code toEdgeIndex}, exclusive.
+	 *
+	 * &lt;p&gt;
+	 * This method is equivalent to the following code:
+	 *
+	 * &lt;pre&gt;{@code
+	 * List&lt;E&gt; edges = edges().subList(fromEdgeIndex, toEdgeIndex);
+	 * V source = vertices().get(fromEdgeIndex);
+	 * V target = vertices().get(toEdgeIndex);
+	 * return Path.valueOf(graph(), source, target, edges);
+	 * }&lt;/pre&gt;
+	 *
+	 * @param  fromEdgeIndex             low endpoint (inclusive) of the edges subList
+	 * @param  toEdgeIndex               high endpoint (exclusive) of the edges subList
+	 * @return                           a sub path of the specified edges range within this path edges list
+	 * @throws IndexOutOfBoundsException if {@code fromEdgeIndex &lt; 0} or {@code toEdgeIndex &gt; edgesNum} or
+	 *                                       {@code fromEdgeIndex &gt; toEdgeIndex}
+	 */
+	Path&lt;V, E&gt; subPath(int fromEdgeIndex, int toEdgeIndex);
+
+	/**
+	 * Check whether this path equals another object.
+	 *
+	 * &lt;p&gt;
+	 * If the given object is not a path, this function returns {@code false}. For two paths to be equal, they must be
+	 * defined in the same graph, which is compared using the naive {@code ==} operator, and they must represent the
+	 * same path in the graph. If one path is a cycle and the other is not, they are not equal. If both are not cycles,
+	 * they must have the same source and target vertices, and the same edges in the same order. If both are cycles,
+	 * they must have the same edges in the same order, but an offset between the lists of edges is allowed. For
+	 * example, the two paths \(e_1,e_2,e_3\) and \(e_2,e_3,e_1\) are equal (if they form a cycle!). Note that the
+	 * sources and targets vertices are not equal in the example. For undirected graphs, all the above rules holds with
+	 * the option to reverse one of the list of edges.
+	 *
+	 * @param  o the object to compare to
+	 * @return   {@code true} if this path equals the given object, else {@code false}
+	 */
+	@Override
+	boolean equals(Object o);
+
+	/**
+	 * Create a new path from an edge list, a source and a target vertices.
+	 *
+	 * &lt;p&gt;
+	 * The edges list passed to this function is used for the whole lifetime of the returned path. The list should not
+	 * be modified after passed to this method, as it is not cloned.
+	 *
+	 * &lt;p&gt;
+	 * Note that this function does not check whether the given edge list is a valid path in the given graph. To check
+	 * for validity, use {@link #isPath(Graph, Object, Object, List)}.
+	 *
+	 * &lt;p&gt;
+	 * If an {@link IntGraph} is passed as argument, the returned path will be an {@link IPath} object.
+	 *
+	 * @param  &lt;V&gt;    the vertices type
+	 * @param  &lt;E&gt;    the edges type
+	 * @param  g      the graph
+	 * @param  source a source vertex
+	 * @param  target a target vertex
+	 * @param  edges  a list of edges that form a path from the {@code source} to the {@code target} vertices in the
+	 * @return        a new path
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; Path&lt;V, E&gt; valueOf(Graph&lt;V, E&gt; g, V source, V target, List&lt;E&gt; edges) {
+<span class="fc bfc" id="L217" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L218">			int iSource = ((Integer) source).intValue();</span>
+<span class="fc" id="L219">			int iTarget = ((Integer) target).intValue();</span>
+<span class="fc" id="L220">			IntList iEdges = IntAdapters.asIntList((List&lt;Integer&gt;) edges);</span>
+<span class="fc" id="L221">			return (Path&lt;V, E&gt;) IPath.valueOf((IntGraph) g, iSource, iTarget, iEdges);</span>
+
+		} else {
+<span class="fc" id="L224">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L225">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L226">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L227">			int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L228">			int iTarget = viMap.idToIndex(target);</span>
+<span class="fc" id="L229">			IntList iEdges = Fastutil.list(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());</span>
+
+<span class="fc" id="L231">			IPath indexPath = Paths.valueOf(iGraph, iSource, iTarget, iEdges);</span>
+<span class="fc" id="L232">			return pathFromIndexPath(g, indexPath);</span>
+		}
+	}
+
+	/**
+	 * Create a path view from a path in the index graph of the given graph.
+	 *
+	 * @param  &lt;V&gt;       the vertices type
+	 * @param  &lt;E&gt;       the edges type
+	 * @param  g         the graph, must not be an index graph
+	 * @param  indexPath the path in the index graph of the given graph
+	 * @return           a path view
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; Path&lt;V, E&gt; pathFromIndexPath(Graph&lt;V, E&gt; g, IPath indexPath) {
+<span class="fc bfc" id="L247" title="All 2 branches covered.">		if (indexPath == null)</span>
+<span class="fc" id="L248">			return null;</span>
+<span class="pc bpc" id="L249" title="2 of 4 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L251">			return (Path&lt;V, E&gt;) new Paths.IntPathFromIndexPath((IntGraph) g, indexPath);</span>
+		} else {
+<span class="fc" id="L253">			return new Paths.ObjPathFromIndexPath&lt;&gt;(g, indexPath);</span>
+		}
+	}
+
+	/**
+	 * Check whether the given edge list is a valid path in the given graph.
+	 *
+	 * &lt;p&gt;
+	 * A list of edges is a valid path in the graph if it is a list of edges \(e_1,e_2,\ldots\) where each target vertex
+	 * of an edge \(e_i\) is the source vertex of the next edge \(e_{i+1}\). If the graph is undirected the definition
+	 * of a 'source' and 'target' are interchangeable, and each pair of consecutive edges simply share an endpoint. In
+	 * addition, the edge list must start with the {@code source} vertex and end with the {@code target} vertex.
+	 *
+	 * @param  &lt;V&gt;    the vertices type
+	 * @param  &lt;E&gt;    the edges type
+	 * @param  g      a graph
+	 * @param  source a source vertex
+	 * @param  target a target vertex
+	 * @param  edges  a list of edges that form a path from the {@code source} to the {@code target} vertices in the
+	 *                    graph.
+	 * @return        {@code true} if the given edge list is a valid path in the given graph, else {@code false}
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; boolean isPath(Graph&lt;V, E&gt; g, V source, V target, List&lt;E&gt; edges) {
+		IndexGraph ig;
+		int source0, target0;
+		IntList edges0;
+<span class="fc bfc" id="L280" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L281">			ig = (IndexGraph) g;</span>
+<span class="fc" id="L282">			source0 = ((Integer) source).intValue();</span>
+<span class="fc" id="L283">			target0 = ((Integer) target).intValue();</span>
+<span class="fc" id="L284">			edges0 = IntAdapters.asIntList((List&lt;Integer&gt;) edges);</span>
+		} else {
+<span class="fc" id="L286">			ig = g.indexGraph();</span>
+<span class="fc" id="L287">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L288">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L289">			source0 = viMap.idToIndex(source);</span>
+<span class="fc" id="L290">			target0 = viMap.idToIndex(target);</span>
+<span class="fc" id="L291">			edges0 = IndexIdMaps.idToIndexList(edges, eiMap);</span>
+		}
+
+<span class="fc" id="L294">		return Paths.isPath(ig, source0, target0, edges0);</span>
+	}
+
+	/**
+	 * Create an iterator that iterate over the vertices visited by an edge path.
+	 *
+	 * &lt;p&gt;
+	 * The returned iterator will be identical to the iterator of {@link Path#vertices()}}.
+	 *
+	 * &lt;p&gt;
+	 * This method assume the list of edges is a valid path in the graph starting from the given source vertex, no
+	 * validation is performed to check that.
+	 *
+	 * &lt;p&gt;
+	 * If the passed graph is an instance of {@link IntGraph}, the returned iterator will be an instance of
+	 * {@link IntIterator}.
+	 *
+	 * @param  &lt;V&gt;    the vertices type
+	 * @param  &lt;E&gt;    the edges type
+	 * @param  g      a graph
+	 * @param  source the source vertex of the path
+	 * @param  edges  a list of edges that from a path starting from {@code source}
+	 * @return        an iterator that iterate over the vertices visited by the path
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; Iterator&lt;V&gt; verticesIter(Graph&lt;V, E&gt; g, V source, List&lt;E&gt; edges) {
+<span class="fc bfc" id="L320" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L321">			int src = ((Integer) source).intValue();</span>
+<span class="fc" id="L322">			IntList edges0 = IntAdapters.asIntList((List&lt;Integer&gt;) edges);</span>
+<span class="fc" id="L323">			return (Iterator&lt;V&gt;) IPath.verticesIter((IntGraph) g, src, edges0);</span>
+		} else {
+<span class="fc" id="L325">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L326">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L327">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L328">			int src = viMap.idToIndex(source);</span>
+<span class="fc" id="L329">			IntList edges0 = IndexIdMaps.idToIndexList(edges, eiMap);</span>
+<span class="fc" id="L330">			IntIterator indexIter = IPath.verticesIter(ig, src, edges0);</span>
+<span class="fc" id="L331">			return IndexIdMaps.indexToIdIterator(indexIter, viMap);</span>
+		}
+	}
+
+	/**
+	 * Find a valid path from \(u\) to \(v\).
+	 *
+	 * &lt;p&gt;
+	 * This function uses BFS, which will result in the shortest path in the number of edges.
+	 *
+	 * &lt;p&gt;
+	 * If an {@link IntGraph} is passed as argument, the returned path will be an {@link IPath} object.
+	 *
+	 * @param  &lt;V&gt;    the vertices type
+	 * @param  &lt;E&gt;    the edges type
+	 * @param  g      a graph
+	 * @param  source source vertex
+	 * @param  target target vertex
+	 * @return        a path from \(u\) to \(v\), or {@code null} if no such path was found
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; Path&lt;V, E&gt; findPath(Graph&lt;V, E&gt; g, V source, V target) {
+<span class="fc bfc" id="L353" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
+<span class="fc" id="L354">			return (Path&lt;V, E&gt;) IPath</span>
+<span class="fc" id="L355">					.findPath((IntGraph) g, ((Integer) source).intValue(), ((Integer) target).intValue());</span>
+
+<span class="fc" id="L357">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L358">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L359">		int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L360">		int iTarget = viMap.idToIndex(target);</span>
+
+<span class="fc" id="L362">		IPath indexPath = Paths.findPath(iGraph, iSource, iTarget);</span>
+<span class="fc" id="L363">		return Path.pathFromIndexPath(g, indexPath);</span>
+	}
+
+	/**
+	 * Find all the vertices reachable from a given source vertex.
+	 *
+	 * @param  &lt;V&gt;    the vertices type
+	 * @param  &lt;E&gt;    the edges type
+	 * @param  g      a graph
+	 * @param  source a source vertex
+	 * @return        a set of all the vertices reachable from the given source vertex
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; Set&lt;V&gt; reachableVertices(Graph&lt;V, E&gt; g, V source) {
+<span class="fc bfc" id="L377" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L378">			return (Set&lt;V&gt;) IPath.reachableVertices((IntGraph) g, ((Integer) source).intValue());</span>
+
+		} else {
+<span class="fc" id="L381">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L382">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L383">			int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L384">			IntSet indexRes = IPath.reachableVertices(ig, iSource);</span>
+<span class="fc" id="L385">			return IndexIdMaps.indexToIdSet(indexRes, viMap);</span>
+		}
+	}
+
+	/**
+	 * Find all the vertices reachable from a given set of source vertices.
+	 *
+	 * @param  &lt;V&gt;     the vertices type
+	 * @param  &lt;E&gt;     the edges type
+	 * @param  g       a graph
+	 * @param  sources an iterator over a set of source vertices
+	 * @return         a set of all the vertices reachable from the given source vertices
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; Set&lt;V&gt; reachableVertices(Graph&lt;V, E&gt; g, Iterator&lt;V&gt; sources) {
+<span class="fc bfc" id="L400" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L401">			IntIterator iSources = IntAdapters.asIntIterator((Iterator&lt;Integer&gt;) sources);</span>
+<span class="fc" id="L402">			return (Set&lt;V&gt;) IPath.reachableVertices((IntGraph) g, iSources);</span>
+
+		} else {
+<span class="fc" id="L405">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L406">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L407">			IntIterator iSources = IndexIdMaps.idToIndexIterator(sources, viMap);</span>
+<span class="fc" id="L408">			IntSet indexRes = IPath.reachableVertices(ig, iSources);</span>
+<span class="fc" id="L409">			return IndexIdMaps.indexToIdSet(indexRes, viMap);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

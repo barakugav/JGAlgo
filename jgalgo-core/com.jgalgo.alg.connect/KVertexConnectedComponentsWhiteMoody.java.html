@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KVertexConnectedComponentsWhiteMoody.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.connect</a> &gt; <span class="el_source">KVertexConnectedComponentsWhiteMoody.java</span></div><h1>KVertexConnectedComponentsWhiteMoody.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.connect;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.ObjIntConsumer;
+import java.util.function.Predicate;
+import com.jgalgo.alg.IVertexPartition;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.BitmapSet;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.IterTools;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.Stack;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+/**
+ * White-Moody algorithm for finding k-vertex-connected components in an undirected graph.
+ *
+ * &lt;p&gt;
+ * Based on 'Structural Cohesion and Embeddedness: A Hierarchical Concept of Social Groups' by White and Moody (2003).
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L51">class KVertexConnectedComponentsWhiteMoody extends KVertexConnectedComponentsUtils.AbstractImpl {</span>
+
+<span class="fc" id="L53">	private final WeaklyConnectedComponentsAlgo unaryConnectedComponentsAlgo =</span>
+<span class="fc" id="L54">			WeaklyConnectedComponentsAlgo.newInstance();</span>
+<span class="fc" id="L55">	private final BiConnectedComponentsAlgo biConnectedComponentsAlgo = BiConnectedComponentsAlgo.newInstance();</span>
+<span class="fc" id="L56">	private final MinimumVertexCutGlobal globalConnectivityAlgo = MinimumVertexCutGlobal.newInstance();</span>
+<span class="fc" id="L57">	private final MinimumVertexCutAllGlobalKanevsky allGlobalConnectivityAlgo = new MinimumVertexCutAllGlobalKanevsky();</span>
+
+	@Override
+	List&lt;IntSet&gt; findKVertexConnectedComponents(IndexGraph g, int k) {
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		if (k &lt; 0)</span>
+<span class="fc" id="L62">			throw new IllegalArgumentException(&quot;k must be non negative&quot;);</span>
+<span class="fc" id="L63">		List&lt;List&lt;IntSet&gt;&gt; hierarchy = findVertexConnectedComponentsHierarchy(g);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		return k &gt;= hierarchy.size() ? List.of() : hierarchy.get(k);</span>
+	}
+
+	List&lt;List&lt;IntSet&gt;&gt; findVertexConnectedComponentsHierarchy(IndexGraph g) {
+<span class="fc" id="L68">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L69">		List&lt;List&lt;IntSet&gt;&gt; kComponents = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L70">		ObjIntConsumer&lt;IntSet&gt; addComponent = (c, k) -&gt; {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">			while (kComponents.size() &lt;= k)</span>
+<span class="fc" id="L72">				kComponents.add(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L73">			kComponents.get(k).add(c);</span>
+<span class="fc" id="L74">		};</span>
+
+		/* Compute the 0-connected components (isolated vertices) and 1-connected (weakly connected) manually */
+<span class="fc" id="L77">		IVertexPartition ccs1 = (IVertexPartition) unaryConnectedComponentsAlgo.findWeaklyConnectedComponents(g);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		for (int b : range(ccs1.numberOfBlocks())) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">			boolean isIsolated = ccs1.blockVertices(b).size() == 1;</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			int compConnectivity = isIsolated ? 0 : 1;</span>
+<span class="fc" id="L81">			addComponent.accept(ccs1.blockVertices(b), compConnectivity);</span>
+<span class="fc" id="L82">		}</span>
+
+		/* Compute the 2-connected components (bi-comps) manually */
+<span class="fc" id="L85">		BiConnectedComponentsAlgo.IResult ccs2 =</span>
+<span class="fc" id="L86">				(BiConnectedComponentsAlgo.IResult) biConnectedComponentsAlgo.findBiConnectedComponents(g);</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		for (int b : range(ccs2.getNumberOfBiCcs())) {</span>
+			// TODO bi-comp algorithm should not return comps of size 2. should assert here
+			/* avoid considering dyads as bicomponents */
+<span class="fc bfc" id="L90" title="All 2 branches covered.">			if (ccs2.getBiCcVertices(b).size() &gt; 2)</span>
+<span class="fc" id="L91">				addComponent.accept(ccs2.getBiCcVertices(b), 2);</span>
+<span class="fc" id="L92">		}</span>
+
+<span class="fc" id="L94">		final int n = g.vertices().size();</span>
+<span class="fc" id="L95">		var isCliqueState = new Object() {</span>
+<span class="fc" id="L96">			final Bitmap cBitmap = new Bitmap(n);</span>
+<span class="fc" id="L97">			final BitmapSet neighbors = new BitmapSet(n);</span>
+		};
+<span class="fc" id="L99">		Predicate&lt;IntSet&gt; isClique = c -&gt; {</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">			if (c.size() &lt;= 1)</span>
+<span class="fc" id="L101">				return true;</span>
+<span class="fc" id="L102">			Bitmap cBitmap = isCliqueState.cBitmap;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			for (int v : c)</span>
+<span class="fc" id="L104">				cBitmap.set(v);</span>
+<span class="fc" id="L105">			boolean result = true;</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">			verticesLoop: for (int u : c) {</span>
+<span class="fc" id="L107">				BitmapSet neighbors = isCliqueState.neighbors;</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L109">					eit.nextInt();</span>
+<span class="fc" id="L110">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">					if (cBitmap.get(v))</span>
+<span class="fc" id="L112">						neighbors.set(v);</span>
+<span class="fc" id="L113">				}</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">				for (int v : c) {</span>
+<span class="fc bfc" id="L115" title="All 4 branches covered.">					if (u != v &amp;&amp; !neighbors.get(v)) {</span>
+<span class="fc" id="L116">						result = false;</span>
+<span class="fc" id="L117">						break verticesLoop;</span>
+					}
+<span class="fc" id="L119">				}</span>
+<span class="fc" id="L120">				neighbors.clear();</span>
+<span class="fc" id="L121">			}</span>
+<span class="fc" id="L122">			JGAlgoUtils.clearAllUnsafe(cBitmap, c);</span>
+<span class="fc" id="L123">			return result;</span>
+		};
+
+		/*
+		 * For a graph, we first compute its connectivity k, and than compute all the k-vertex-cuts in the graph,
+		 * generating sub graphs with connectivity greater than k. Each such sub graph (or component) is than explored
+		 * recursively, until tha graph is either trivial (single vertex) or a clique. We start the recursion from the
+		 * bi-connected components of the graph, as we know how to compute them very efficiently.
+		 */
+		// TODO use tri-connected algorithm as a base, instead of bi-connected algo. Runs in linear time
+<span class="fc" id="L133">		Stack&lt;IntObjectPair&lt;Iterator&lt;IntSet&gt;&gt;&gt; stack = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		for (int b : range(ccs2.getNumberOfBiCcs())) {</span>
+<span class="fc" id="L135">			IntSet biccVertices = ccs2.getBiCcVertices(b);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">			if (biccVertices.size() &lt;= 2)</span>
+<span class="fc" id="L137">				continue;</span>
+			/* Create the subgraph of the bi-connected components (avoid copying if the whole graph is bi-connected) */
+<span class="fc bfc" id="L139" title="All 2 branches covered.">			IntGraph biCc = biccVertices.size() &lt; n ? g.subGraphCopy(biccVertices, null) : g;</span>
+<span class="fc" id="L140">			IndexGraph iBiCc = biCc.indexGraph();</span>
+<span class="fc" id="L141">			IndexIntIdMap biCcViMap = biCc.indexGraphVerticesMap();</span>
+
+			/* Compute the connectivity of the component */
+<span class="fc" id="L144">			int topConnectivity = globalConnectivityAlgo.computeMinimumCut(iBiCc, null).size();</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			if (topConnectivity &gt; 2)</span>
+<span class="fc" id="L146">				addComponent.accept(biccVertices, topConnectivity);</span>
+
+			/* Add further sub-graphs of the components, generated from all the vertex-cuts of the component */
+<span class="fc" id="L149">			Iterator&lt;IntSet&gt; cuts = allGlobalConnectivityAlgo.minimumCutsIter(iBiCc, topConnectivity);</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">			if (cuts.hasNext()) {</span>
+<span class="fc" id="L151">				List&lt;IntSet&gt; partitions = generateSubCompsFromCuts(iBiCc, cuts, topConnectivity);</span>
+<span class="fc" id="L152">				Iterator&lt;IntSet&gt; partitionsIter =</span>
+<span class="fc" id="L153">						IterTools.map(partitions.iterator(), s -&gt; IndexIdMaps.indexToIdSet(s, biCcViMap));</span>
+<span class="fc" id="L154">				stack.push(IntObjectPair.of(topConnectivity, partitionsIter));</span>
+			}
+
+			/* Explore recursively the sub graphs */
+<span class="fc bfc" id="L158" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
+<span class="fc" id="L159">				IntObjectPair&lt;Iterator&lt;IntSet&gt;&gt; pair = stack.top();</span>
+<span class="fc" id="L160">				Iterator&lt;IntSet&gt; compsIter = pair.second();</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">				if (!compsIter.hasNext()) {</span>
+<span class="fc" id="L162">					stack.pop();</span>
+<span class="fc" id="L163">					continue;</span>
+				}
+<span class="fc" id="L165">				final int parentConnectivity = pair.firstInt();</span>
+<span class="fc" id="L166">				IntSet compVertices = compsIter.next();</span>
+
+				/* Recursion end condition, if the component is a clique */
+<span class="fc bfc" id="L169" title="All 2 branches covered.">				if (isClique.test(compVertices)) {</span>
+<span class="fc" id="L170">					int thisK = compVertices.size() - 1;</span>
+<span class="pc bpc" id="L171" title="1 of 4 branches missed.">					if (thisK &gt; parentConnectivity &amp;&amp; thisK &gt; 2)</span>
+<span class="fc" id="L172">						addComponent.accept(compVertices, thisK);</span>
+					continue;
+				}
+
+				/* Create the component sub graph */
+<span class="fc" id="L177">				IntGraph comp = biCc.subGraphCopy(compVertices, null);</span>
+<span class="fc" id="L178">				IndexGraph iComp = comp.indexGraph();</span>
+<span class="fc" id="L179">				IndexIntIdMap compViMap = comp.indexGraphVerticesMap();</span>
+
+				/* Compute the component connectivity */
+<span class="fc" id="L182">				final int compConnectivity = globalConnectivityAlgo.computeMinimumCut(iComp, null).size();</span>
+<span class="pc bpc" id="L183" title="1 of 4 branches missed.">				if (compConnectivity &gt; parentConnectivity &amp;&amp; compConnectivity &gt; 2)</span>
+<span class="fc" id="L184">					addComponent.accept(compVertices, compConnectivity);</span>
+
+				/* Add further sub-graphs of the components, generated from all the vertex-cuts of the component */
+<span class="fc" id="L187">				cuts = allGlobalConnectivityAlgo.minimumCutsIter(iComp, compConnectivity);</span>
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">				if (cuts.hasNext()) {</span>
+<span class="fc" id="L189">					List&lt;IntSet&gt; partitions = generateSubCompsFromCuts(iComp, cuts, compConnectivity);</span>
+<span class="fc" id="L190">					Iterator&lt;IntSet&gt; partitionsIter =</span>
+<span class="fc" id="L191">							IterTools.map(partitions.iterator(), s -&gt; IndexIdMaps.indexToIdSet(s, compViMap));</span>
+<span class="fc" id="L192">					stack.push(IntObjectPair.of(compConnectivity, partitionsIter));</span>
+				}
+<span class="fc" id="L194">			}</span>
+<span class="fc" id="L195">		}</span>
+
+		/*
+		 * Propagate components to all levels. We might need to copy a components of connectivity k to the list of
+		 * components of connectivity k-1, if the vertices of the component are not included in any comp at connectivity
+		 * k-1.
+		 */
+<span class="fc" id="L202">		Bitmap kBitmap = new Bitmap(n);</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">		for (int k = kComponents.size() - 1; k &gt;= 0; k--) {</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">			if (k == kComponents.size() - 1) {</span>
+<span class="fc" id="L205">				kComponents.set(k, consolidateSets(g, kComponents.get(k), k));</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">			} else if (kComponents.get(k).isEmpty()) {</span>
+<span class="fc" id="L207">				kComponents.set(k, consolidateSets(g, kComponents.get(k + 1), k));</span>
+			} else {
+<span class="fc bfc" id="L209" title="All 2 branches covered.">				for (IntSet c : kComponents.get(k))</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">					for (int v : c)</span>
+<span class="fc" id="L211">						kBitmap.set(v);</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">				for (IntSet c : kComponents.get(k + 1)) {</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">					for (int v : c) {</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">						if (!kBitmap.get(v)) {</span>
+<span class="fc" id="L215">							kComponents.get(k).add(c);</span>
+<span class="fc" id="L216">							break;</span>
+						}
+<span class="fc" id="L218">					}</span>
+<span class="fc" id="L219">				}</span>
+<span class="fc" id="L220">				kComponents.set(k, consolidateSets(g, kComponents.get(k), k));</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">				for (IntSet c : kComponents.get(k))</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">					for (int v : c)</span>
+<span class="fc" id="L223">						kBitmap.clear(v);</span>
+			}
+		}
+
+<span class="fc" id="L227">		return kComponents;</span>
+	}
+
+	List&lt;IntSet&gt; generateSubCompsFromCuts(IndexGraph g, Iterator&lt;IntSet&gt; cuts, int k) {
+<span class="fc" id="L231">		final int n = g.vertices().size();</span>
+<span class="fc" id="L232">		Bitmap cut = new Bitmap(n);</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">		for (IntSet c : IterTools.foreach(cuts))</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">			for (int v : c)</span>
+<span class="fc" id="L235">				cut.set(v);</span>
+
+<span class="fc" id="L237">		Bitmap nodes = cut.copy();</span>
+<span class="fc" id="L238">		nodes.not();</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">		for (int v : range(n))</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">			if (g.outEdges(v).size() &lt;= k)</span>
+<span class="fc" id="L241">				nodes.clear(v);</span>
+
+<span class="fc" id="L243">		Bitmap visited = nodes.copy();</span>
+<span class="fc" id="L244">		visited.not();</span>
+<span class="fc" id="L245">		int[] comp = new int[n];</span>
+<span class="fc" id="L246">		List&lt;IntSet&gt; comps = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L248" title="All 2 branches covered.">		for (int r : range(n)) {</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">			if (visited.get(r))</span>
+<span class="fc" id="L250">				continue;</span>
+<span class="fc" id="L251">			int compSize = 0;</span>
+<span class="fc" id="L252">			int bfsNextIdx = 0;</span>
+
+<span class="fc" id="L254">			comp[compSize++] = r;</span>
+<span class="fc" id="L255">			visited.set(r);</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">			while (bfsNextIdx &lt; compSize) {</span>
+<span class="fc" id="L257">				int u = comp[bfsNextIdx++];</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L259">					eit.nextInt();</span>
+<span class="fc" id="L260">					int v = eit.targetInt();</span>
+<span class="pc bpc" id="L261" title="1 of 2 branches missed.">					if (visited.get(r))</span>
+<span class="fc" id="L262">						continue;</span>
+<span class="nc" id="L263">					comp[compSize++] = v;</span>
+<span class="nc" id="L264">					visited.set(v);</span>
+<span class="nc" id="L265">				}</span>
+<span class="fc" id="L266">			}</span>
+
+<span class="fc" id="L268">			int neighborCutVerticesNum = 0;</span>
+<span class="fc" id="L269">			Bitmap neighborCutVerticesBitmap = cut.copy();</span>
+<span class="fc" id="L270">			neighborCutVerticesBitmap.not();</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">			for (int uIdx : range(compSize)) {</span>
+<span class="fc" id="L272">				int u = comp[uIdx];</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L274">					eit.nextInt();</span>
+<span class="fc" id="L275">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">					if (!neighborCutVerticesBitmap.get(v)) {</span>
+<span class="fc" id="L277">						comp[compSize + neighborCutVerticesNum++] = v;</span>
+<span class="fc" id="L278">						neighborCutVerticesBitmap.set(v);</span>
+					}
+<span class="fc" id="L280">				}</span>
+<span class="fc" id="L281">			}</span>
+			// neighborCutVerticesBitmap.clearAllUnsafe(
+			// ImmutableIntArraySet.withNaiveContains(comp, compSize, compSize + neighborCutVerticesNum));
+<span class="fc" id="L284">			compSize += neighborCutVerticesNum;</span>
+
+<span class="fc" id="L286">			comps.add(ImmutableIntArraySet.withNaiveContains(Arrays.copyOf(comp, compSize)));</span>
+<span class="fc" id="L287">		}</span>
+
+<span class="fc" id="L289">		return consolidateSets(g, comps, k + 1);</span>
+	}
+
+	private static List&lt;IntSet&gt; consolidateSets(IndexGraph g, List&lt;IntSet&gt; sets, int k) {
+<span class="fc" id="L293">		final int n = g.vertices().size();</span>
+<span class="fc" id="L294">		List&lt;IntSet&gt; unionSet = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L296">		int setsNum = sets.size();</span>
+<span class="fc" id="L297">		Bitmap visitedSets = new Bitmap(setsNum);</span>
+
+<span class="fc" id="L299">		int[] comp = new int[setsNum];</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">		for (int startSet : range(setsNum)) {</span>
+<span class="fc bfc" id="L301" title="All 2 branches covered.">			if (visitedSets.get(startSet))</span>
+<span class="fc" id="L302">				continue;</span>
+<span class="fc" id="L303">			int compSize = 0;</span>
+<span class="fc" id="L304">			int bfsNextIdx = 0;</span>
+
+<span class="fc" id="L306">			visitedSets.set(startSet);</span>
+<span class="fc" id="L307">			comp[compSize++] = startSet;</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">			while (bfsNextIdx &lt; compSize) {</span>
+<span class="fc" id="L309">				int uSetIdx = comp[bfsNextIdx++];</span>
+<span class="fc" id="L310">				Bitmap uSetBitmap = new Bitmap(n);</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">				for (int v : sets.get(uSetIdx))</span>
+<span class="fc" id="L312">					uSetBitmap.set(v);</span>
+
+<span class="fc bfc" id="L314" title="All 2 branches covered.">				for (int vSetIdx : range(setsNum)) {</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">					if (visitedSets.get(vSetIdx))</span>
+<span class="fc" id="L316">						continue;</span>
+<span class="fc" id="L317">					BitmapSet intersection = new BitmapSet(n);</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">					for (int v : sets.get(vSetIdx)) {</span>
+<span class="fc bfc" id="L319" title="All 2 branches covered.">						if (uSetBitmap.get(v))</span>
+<span class="fc" id="L320">							intersection.add(v);</span>
+<span class="fc" id="L321">					}</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">					if (intersection.size() &gt;= k) {</span>
+<span class="fc" id="L323">						visitedSets.set(vSetIdx);</span>
+<span class="fc" id="L324">						comp[compSize++] = vSetIdx;</span>
+					}
+<span class="fc" id="L326">					intersection.clear();</span>
+<span class="fc" id="L327">				}</span>
+<span class="fc" id="L328">			}</span>
+
+<span class="fc" id="L330">			IntArrayList union = new IntArrayList();</span>
+<span class="fc" id="L331">			Bitmap unionBitmap = new Bitmap(n);</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">			for (int i : range(compSize)) {</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">				for (int v : sets.get(comp[i])) {</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">					if (!unionBitmap.get(v)) {</span>
+<span class="fc" id="L335">						union.add(v);</span>
+<span class="fc" id="L336">						unionBitmap.set(v);</span>
+					}
+<span class="fc" id="L338">				}</span>
+<span class="fc" id="L339">			}</span>
+<span class="fc" id="L340">			unionSet.add(ImmutableIntArraySet.withNaiveContains(union.toIntArray()));</span>
+<span class="fc" id="L341">		}</span>
+<span class="fc" id="L342">		return unionSet;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

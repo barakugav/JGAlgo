@@ -16,7 +16,7 @@
 
 package com.jgalgo.example;
 
-import com.jgalgo.alg.ShortestPathSingleSource;
+import com.jgalgo.alg.path.ShortestPathSingleSource;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightsDouble;
 

@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsomorphismTester.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.isomorphism</a> &gt; <span class="el_source">IsomorphismTester.java</span></div><h1>IsomorphismTester.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.isomorphism;
+
+import java.util.Iterator;
+import java.util.Optional;
+import java.util.function.BiPredicate;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
+
+/**
+ * Tester that check whether two graphs are isomorphic.
+ *
+ * &lt;p&gt;
+ * Given two graphs, an isomorphism is a mapping function that maps the first graph vertices to the second graph
+ * vertices, while preserving the structure of the graph. There are few variants of the problem:
+ *
+ * &lt;ul&gt;
+ * &lt;li&gt;&lt;b&gt;Full&lt;/b&gt;: Given two graphs \(G_1 = (V_1, E_1)\) and \(G_2 = (V_2, E_2)\), a full isomorphism is a
+ * &lt;b&gt;bijective&lt;/b&gt; function \(m: V_1 \rightarrow V_2\) such that \((u, v) \in E_1\) &lt;b&gt;if and only if&lt;/b&gt; \((m(u),
+ * m(v)) \in E_2\). In the case of a directed graph, the function must preserve the direction of the edges. Note that
+ * full isomorphism can only exists between graphs with the same number of vertices and edges, as the vertex mapping is
+ * bijective.&lt;/li&gt;
+ * &lt;li&gt;&lt;b&gt;Induced subgraph&lt;/b&gt;: Given two graphs \(G_1 = (V_1, E_1)\) and \(G_2 = (V_2, E_2)\), an induced subgraph
+ * isomorphism is an &lt;b&gt;injective&lt;/b&gt; function \(m: V_1 \rightarrow V_2\) such that \((u, v) \in E_1\) &lt;b&gt;if and only
+ * if&lt;/b&gt; \((m(u), m(v)) \in E_2\). In the case of a directed graph, the function must preserve the direction of the
+ * edges. The first graph \(G_1\) is the smaller graph, and the second graph \(G_2\) is the bigger graph, namely there
+ * is an induced sub graph of {@code g2} that is isomorphic to {@code g1}. Note that induced subgraph isomorphism can
+ * only exists between graphs \(G_1\) and \(G_2\) if \(|V_1| \leq |V_2|\) and \(|E_1| \leq |E_2|\). There may be
+ * vertices of \(G_2\) that are not mapped to any vertex of \(G_1\). Full isomorphism between two graphs can be seen as
+ * a special case of induced subgraph isomorphism where the the number of vertices and edges is the same.&lt;/li&gt;
+ * &lt;li&gt;&lt;b&gt;Subgraph&lt;/b&gt;: Given two graphs \(G_1 = (V_1, E_1)\) and \(G_2 = (V_2, E_2)\), a subgraph isomorphism is an
+ * &lt;b&gt;injective&lt;/b&gt; function \(m: V_1 \rightarrow V_2\) such that if \((u, v) \in E_1\) &lt;b&gt;than&lt;/b&gt; \((m(u), m(v)) \in
+ * E_2\). In the case of a directed graph, the function must preserve the direction of the edges. The first graph
+ * \(G_1\) is the smaller graph, and the second graph \(G_2\) is the bigger graph, namely there is a sub graph of
+ * {@code g2} that is isomorphic to {@code g1}. Note that subgraph isomorphism can only exists between graphs \(G_1\)
+ * and \(G_2\) if \(|V_1| \leq |V_2|\) and \(|E_1| \leq |E_2|\). There may be vertices of \(G_2\) that are not mapped to
+ * any vertex of \(G_1\), and edges of \(G_2\) that are not mapped to any edge of \(G_1\) (even if they are connecting
+ * mapped vertices of \(G_2\)).&lt;/li&gt;
+ * &lt;/ul&gt;
+ *
+ * &lt;p&gt;
+ * All the methods in this interface accept two graphs {@code g1} and {@code g2} and check for a &lt;b&gt;sub graph&lt;/b&gt;
+ * isomorphism between them, where {@code g1} is the smaller graph, and {@code g2} is the bigger graph. The methods
+ * accept a {@code boolean} flag that indicates whether to search for a &lt;i&gt;sub graph&lt;/i&gt; isomorphism or an &lt;i&gt;induced
+ * sub graph&lt;/i&gt; isomorphism. To check for a full isomorphism, use induced sub graph isomorphism and make sure that the
+ * number of vertices of {@code g1} and {@code g2} are the same.
+ *
+ * &lt;p&gt;
+ * The full isomorphism problem which asks whether two graphs are isomorphic is one of few standard problems in
+ * computational complexity theory belonging to NP, but not known to belong to either of its well-known subsets: P and
+ * NP-complete. The sub graph isomorphism variants are NP-complete.
+ *
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface.
+ *
+ * @see    IsomorphismMapping
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Graph_isomorphism&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+public interface IsomorphismTester {
+
+	/**
+	 * Get an induced sub graph isomorphism mapping between two graphs if one exists.
+	 *
+	 * &lt;p&gt;
+	 * Given two graphs \(G_1 = (V_1, E_1)\) and \(G_2 = (V_2, E_2)\), an induced subgraph isomorphism is an
+	 * &lt;b&gt;injective&lt;/b&gt; function \(m: V_1 \rightarrow V_2\) such that \((u, v) \in E_1\) &lt;b&gt;if and only if&lt;/b&gt; \((m(u),
+	 * m(v)) \in E_2\). In the case of a directed graph, the function must preserve the direction of the edges. The
+	 * first graph \(G_1\) is the smaller graph, and the second graph \(G_2\) is the bigger graph, namely there is an
+	 * induced sub graph of {@code g2} that is isomorphic to {@code g1}. Note that induced subgraph isomorphism can only
+	 * exists between graphs \(G_1\) and \(G_2\) if \(|V_1| \leq |V_2|\) and \(|E_1| \leq |E_2|\). There may be vertices
+	 * of \(G_2\) that are not mapped to any vertex of \(G_1\). In such case the
+	 * {@linkplain IsomorphismMapping#inverse() inverse} of the returned mapping may not map all vertices and edges of
+	 * {@code g2}, see {@link IsomorphismMapping}.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g1} and {@code g2} have the same number of vertices, then searching for an induced sub graph
+	 * isomorphism is equivalent to searching for a full isomorphism. In full isomorphism, the mapping is bijective, and
+	 * all vertices and edges of {@code g2} are mapped to vertices and edges of {@code g1}.
+	 *
+	 * &lt;p&gt;
+	 * To find a sub graph isomorphism, use {@link #isomorphicMapping(Graph, Graph, boolean)} with the induced flag set
+	 * to {@code false}.
+	 *
+	 * &lt;p&gt;
+	 * Note that the type of vertices and edges of the two graphs may be different. Only the structure of the graphs is
+	 * considered.
+	 *
+	 * &lt;p&gt;
+	 * If both {@code g1} and {@code g2} are instances of {@link IntGraph}, the optional return value will be an
+	 * instance of {@link IsomorphismIMapping}.
+	 *
+	 * @param  &lt;V1&gt;                     the type of vertices of the first graph
+	 * @param  &lt;E1&gt;                     the type of edges of the first graph
+	 * @param  &lt;V2&gt;                     the type of vertices of the second graph
+	 * @param  &lt;E2&gt;                     the type of edges of the second graph
+	 * @param  g1                       the first graph
+	 * @param  g2                       the second graph
+	 * @return                          an induced sub graph isomorphism mapping between the two graphs if one exists,
+	 *                                  {@code Optional.empty()} otherwise. The returned mapping maps vertices and edges
+	 *                                  from the first graph to vertices and edges of the second graph. The inverse
+	 *                                  mapping can be obtained by calling {@link IsomorphismMapping#inverse()}.
+	 * @throws IllegalArgumentException if {@code g1} is directed and {@code g2} is undirected, or vice versa
+	 */
+	default &lt;V1, E1, V2, E2&gt; Optional&lt;IsomorphismMapping&lt;V1, E1, V2, E2&gt;&gt; isomorphicMapping(Graph&lt;V1, E1&gt; g1,
+			Graph&lt;V2, E2&gt; g2) {
+<span class="fc" id="L121">		return isomorphicMapping(g1, g2, true);</span>
+	}
+
+	/**
+	 * Get a sub graph isomorphism mapping between two graphs if one exists, optionally induced.
+	 *
+	 * &lt;p&gt;
+	 * Given two graphs \(G_1 = (V_1, E_1)\) and \(G_2 = (V_2, E_2)\), a subgraph isomorphism is an &lt;b&gt;injective&lt;/b&gt;
+	 * function \(m: V_1 \rightarrow V_2\) such that if \((u, v) \in E_1\) &lt;b&gt;than&lt;/b&gt; \((m(u), m(v)) \in E_2\). In the
+	 * case of a directed graph, the function must preserve the direction of the edges. An induced subgraph isomorphism
+	 * is same as above, but the mapping also satisfies \((u, v) \in E_1\) &lt;b&gt;if and only if&lt;/b&gt; \((m(u), m(v)) \in
+	 * E_2\). The first graph \(G_1\) is the smaller graph, and the second graph \(G_2\) is the bigger graph, namely
+	 * there is a sub graph of {@code g2} that is isomorphic to {@code g1}. Note that subgraph isomorphism can only
+	 * exists between graphs \(G_1\) and \(G_2\) if \(|V_1| \leq |V_2|\) and \(|E_1| \leq |E_2|\). There may be vertices
+	 * of \(G_2\) that are not mapped to any vertex of \(G_1\), and if non-induced sub graph isomorphism is searched,
+	 * also edges of \(G_2\) that are not mapped to any edge of \(G_1\) (even if they are connecting mapped vertices of
+	 * \(G_2\)). In such case the {@linkplain IsomorphismMapping#inverse() inverse} of the returned mapping may not map
+	 * all vertices and edges of {@code g2}, see {@link IsomorphismMapping}.
+	 *
+	 * &lt;p&gt;
+	 * Note that the type of vertices and edges of the two graphs may be different. Only the structure of the graphs is
+	 * considered.
+	 *
+	 * &lt;p&gt;
+	 * If both {@code g1} and {@code g2} are instances of {@link IntGraph}, the optional return value will be an
+	 * instance of {@link IsomorphismIMapping}.
+	 *
+	 * @param  &lt;V1&gt;                     the type of vertices of the first graph
+	 * @param  &lt;E1&gt;                     the type of edges of the first graph
+	 * @param  &lt;V2&gt;                     the type of vertices of the second graph
+	 * @param  &lt;E2&gt;                     the type of edges of the second graph
+	 * @param  g1                       the first graph. If sub graph isomorphism is searched, {@code g1} is the smaller
+	 *                                      graph, namely the method search for a mapping from {@code g1} to a sub graph
+	 *                                      of {@code g2}
+	 * @param  g2                       the second graph. If sub graph isomorphism is searched, {@code g2} is the bigger
+	 *                                      graph, namely the method search for a mapping from {@code g1} to a sub graph
+	 *                                      of {@code g2}
+	 * @param  induced                  whether to search for an induced sub graph isomorphism or a sub graph
+	 *                                      isomorphism. See the {@linkplain IsomorphismTester interface} documentation
+	 *                                      for more details
+	 * @return                          a (optionally induced) sub graph isomorphism mapping between the two graphs if
+	 *                                  one exists, {@code Optional.empty()} otherwise. The returned mapping maps
+	 *                                  vertices and edges from the first graph to vertices and edges of the second
+	 *                                  graph. The inverse mapping can be obtained by calling
+	 *                                  {@link IsomorphismMapping#inverse()}.
+	 * @throws IllegalArgumentException if {@code g1} is directed and {@code g2} is undirected, or vice versa
+	 */
+	default &lt;V1, E1, V2, E2&gt; Optional&lt;IsomorphismMapping&lt;V1, E1, V2, E2&gt;&gt; isomorphicMapping(Graph&lt;V1, E1&gt; g1,
+			Graph&lt;V2, E2&gt; g2, boolean induced) {
+<span class="fc" id="L170">		Iterator&lt;IsomorphismMapping&lt;V1, E1, V2, E2&gt;&gt; iter = isomorphicMappingsIter(g1, g2, induced, null, null);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">		return iter.hasNext() ? Optional.of(iter.next()) : Optional.empty();</span>
+	}
+
+	/**
+	 * Get an iterator over all the induced sub graph isomorphism mappings between two graphs.
+	 *
+	 * &lt;p&gt;
+	 * Given two graphs \(G_1 = (V_1, E_1)\) and \(G_2 = (V_2, E_2)\), an induced subgraph isomorphism is an
+	 * &lt;b&gt;injective&lt;/b&gt; function \(m: V_1 \rightarrow V_2\) such that \((u, v) \in E_1\) &lt;b&gt;if and only if&lt;/b&gt; \((m(u),
+	 * m(v)) \in E_2\). In the case of a directed graph, the function must preserve the direction of the edges. The
+	 * first graph \(G_1\) is the smaller graph, and the second graph \(G_2\) is the bigger graph, namely there is an
+	 * induced sub graph of {@code g2} that is isomorphic to {@code g1}. Note that induced subgraph isomorphism can only
+	 * exists between graphs \(G_1\) and \(G_2\) if \(|V_1| \leq |V_2|\) and \(|E_1| \leq |E_2|\). There may be vertices
+	 * of \(G_2\) that are not mapped to any vertex of \(G_1\). In such case the
+	 * {@linkplain IsomorphismMapping#inverse() inverse} of the returned mappings may not map all vertices and edges of
+	 * {@code g2}, see {@link IsomorphismMapping}.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g1} and {@code g2} have the same number of vertices, then searching for an induced sub graph
+	 * isomorphism is equivalent to searching for a full isomorphism. In full isomorphism, the mapping is bijective, and
+	 * all vertices and edges of {@code g2} are mapped to vertices and edges of {@code g1}.
+	 *
+	 * &lt;p&gt;
+	 * To get an iterator over all sub graph isomorphisms, use {@link #isomorphicMappingsIter(Graph, Graph, boolean)}
+	 * with the induced flag set to {@code false}.
+	 *
+	 * &lt;p&gt;
+	 * Note that the type of vertices and edges of the two graphs may be different. Only the structure of the graphs is
+	 * considered.
+	 *
+	 * &lt;p&gt;
+	 * If both {@code g1} and {@code g2} are instances of {@link IntGraph}, the returned iterator will iterate over
+	 * objects of {@link IsomorphismIMapping}.
+	 *
+	 * @param  &lt;V1&gt;                     the type of vertices of the first graph
+	 * @param  &lt;E1&gt;                     the type of edges of the first graph
+	 * @param  &lt;V2&gt;                     the type of vertices of the second graph
+	 * @param  &lt;E2&gt;                     the type of edges of the second graph
+	 * @param  g1                       the first graph
+	 * @param  g2                       the second graph
+	 * @return                          an iterator over all the induced sub graph isomorphism mappings between the two
+	 *                                  graphs. The returned mappings maps vertices and edges from the first graph to
+	 *                                  vertices and edges of the second graph. The inverse mapping can be obtained by
+	 *                                  calling {@link IsomorphismMapping#inverse()}.
+	 * @throws IllegalArgumentException if {@code g1} is directed and {@code g2} is undirected, or vice versa
+	 */
+	default &lt;V1, E1, V2, E2&gt; Iterator&lt;IsomorphismMapping&lt;V1, E1, V2, E2&gt;&gt; isomorphicMappingsIter(Graph&lt;V1, E1&gt; g1,
+			Graph&lt;V2, E2&gt; g2) {
+<span class="fc" id="L219">		return isomorphicMappingsIter(g1, g2, true, null, null);</span>
+	}
+
+	/**
+	 * Get an iterator over all the sub graph isomorphism mappings between two graphs, optionally induced.
+	 *
+	 * &lt;p&gt;
+	 * Given two graphs \(G_1 = (V_1, E_1)\) and \(G_2 = (V_2, E_2)\), a subgraph isomorphism is an &lt;b&gt;injective&lt;/b&gt;
+	 * function \(m: V_1 \rightarrow V_2\) such that if \((u, v) \in E_1\) &lt;b&gt;than&lt;/b&gt; \((m(u), m(v)) \in E_2\). In the
+	 * case of a directed graph, the function must preserve the direction of the edges. An induced subgraph isomorphism
+	 * is same as above, but the mapping also satisfies \((u, v) \in E_1\) &lt;b&gt;if and only if&lt;/b&gt; \((m(u), m(v)) \in
+	 * E_2\). The first graph \(G_1\) is the smaller graph, and the second graph \(G_2\) is the bigger graph, namely
+	 * there is a sub graph of {@code g2} that is isomorphic to {@code g1}. Note that subgraph isomorphism can only
+	 * exists between graphs \(G_1\) and \(G_2\) if \(|V_1| \leq |V_2|\) and \(|E_1| \leq |E_2|\). There may be vertices
+	 * of \(G_2\) that are not mapped to any vertex of \(G_1\), and if non-induced sub graph isomorphism is searched,
+	 * also edges of \(G_2\) that are not mapped to any edge of \(G_1\) (even if they are connecting mapped vertices of
+	 * \(G_2\)). In such case the {@linkplain IsomorphismMapping#inverse() inverse} of the returned mappings may not map
+	 * all vertices and edges of {@code g2}, see {@link IsomorphismMapping}.
+	 *
+	 * &lt;p&gt;
+	 * Note that the type of vertices and edges of the two graphs may be different. Only the structure of the graphs is
+	 * considered.
+	 *
+	 * &lt;p&gt;
+	 * If both {@code g1} and {@code g2} are instances of {@link IntGraph}, the returned iterator will iterate over
+	 * objects of {@link IsomorphismIMapping}.
+	 *
+	 * @param  &lt;V1&gt;                     the type of vertices of the first graph
+	 * @param  &lt;E1&gt;                     the type of edges of the first graph
+	 * @param  &lt;V2&gt;                     the type of vertices of the second graph
+	 * @param  &lt;E2&gt;                     the type of edges of the second graph
+	 * @param  g1                       the first graph. If sub graph isomorphism is searched, {@code g1} is the smaller
+	 *                                      graph, namely the method search for a mapping from {@code g1} to a sub graph
+	 *                                      of {@code g2}
+	 * @param  g2                       the second graph. If sub graph isomorphism is searched, {@code g2} is the bigger
+	 *                                      graph, namely the method search for a mapping from {@code g1} to a sub graph
+	 *                                      of {@code g2}
+	 * @param  induced                  whether to search for an induced sub graph isomorphism or a sub graph
+	 *                                      isomorphism. See the {@linkplain IsomorphismTester interface} documentation
+	 *                                      for more details
+	 * @return                          an iterator over all the (optionally induced) sub graph isomorphism mappings
+	 *                                  between the two graphs. The returned mappings maps vertices and edges from the
+	 *                                  first graph to vertices and edges of the second graph. The inverse mapping can
+	 *                                  be obtained by calling {@link IsomorphismMapping#inverse()}.
+	 * @throws IllegalArgumentException if {@code g1} is directed and {@code g2} is undirected, or vice versa
+	 */
+	default &lt;V1, E1, V2, E2&gt; Iterator&lt;IsomorphismMapping&lt;V1, E1, V2, E2&gt;&gt; isomorphicMappingsIter(Graph&lt;V1, E1&gt; g1,
+			Graph&lt;V2, E2&gt; g2, boolean induced) {
+<span class="fc" id="L267">		return isomorphicMappingsIter(g1, g2, induced, null, null);</span>
+	}
+
+	/**
+	 * Get an iterator over all the sub graph isomorphism mappings between two graphs, optionally induced, with vertex
+	 * and/or edge matchers.
+	 *
+	 * &lt;p&gt;
+	 * Given two graphs \(G_1 = (V_1, E_1)\) and \(G_2 = (V_2, E_2)\), a subgraph isomorphism is an &lt;b&gt;injective&lt;/b&gt;
+	 * function \(m: V_1 \rightarrow V_2\) such that if \((u, v) \in E_1\) &lt;b&gt;than&lt;/b&gt; \((m(u), m(v)) \in E_2\). In the
+	 * case of a directed graph, the function must preserve the direction of the edges. An induced subgraph isomorphism
+	 * is same as above, but the mapping also satisfies \((u, v) \in E_1\) &lt;b&gt;if and only if&lt;/b&gt; \((m(u), m(v)) \in
+	 * E_2\). The first graph \(G_1\) is the smaller graph, and the second graph \(G_2\) is the bigger graph, namely
+	 * there is a sub graph of {@code g2} that is isomorphic to {@code g1}. Note that subgraph isomorphism can only
+	 * exists between graphs \(G_1\) and \(G_2\) if \(|V_1| \leq |V_2|\) and \(|E_1| \leq |E_2|\). There may be vertices
+	 * of \(G_2\) that are not mapped to any vertex of \(G_1\), and if non-induced sub graph isomorphism is searched,
+	 * also edges of \(G_2\) that are not mapped to any edge of \(G_1\) (even if they are connecting mapped vertices of
+	 * \(G_2\)). In such case the {@linkplain IsomorphismMapping#inverse() inverse} of the returned mappings may not map
+	 * all vertices and edges of {@code g2}, see {@link IsomorphismMapping}.
+	 *
+	 * &lt;p&gt;
+	 * In addition to the structure of the graphs, this method also takes two predicates that filter pairs of vertices
+	 * and edges, one from each graph, that are not allowed to be mapped to each other. For a given pair \(v_1,v_2\)
+	 * where \(v_1 \in V_1\) and \(v_2 \in V_2\), if the vertex matcher returns {@code false}, then the pair is not
+	 * considered for mapping. The edge matchers is used similarly. If a matcher is {@code null}, all pairs of vertices
+	 * or edges are allowed. The matchers allow to compare other properties of the vertices/edge besides their
+	 * structure, such as weights.
+	 *
+	 * &lt;p&gt;
+	 * Note that the type of vertices and edges of the two graphs may be different. Only the structure of the graphs is
+	 * considered, along with the matchers, if provided.
+	 *
+	 * &lt;p&gt;
+	 * If both {@code g1} and {@code g2} are instances of {@link IntGraph}, the returned iterator will iterate over
+	 * objects of {@link IsomorphismIMapping}.
+	 *
+	 * @param  &lt;V1&gt;                     the type of vertices of the first graph
+	 * @param  &lt;E1&gt;                     the type of edges of the first graph
+	 * @param  &lt;V2&gt;                     the type of vertices of the second graph
+	 * @param  &lt;E2&gt;                     the type of edges of the second graph
+	 * @param  g1                       the first graph. If sub graph isomorphism is searched, {@code g1} is the smaller
+	 *                                      graph, namely the method search for a mapping from {@code g1} to a sub graph
+	 *                                      of {@code g2}
+	 * @param  g2                       the second graph. If sub graph isomorphism is searched, {@code g2} is the bigger
+	 *                                      graph, namely the method search for a mapping from {@code g1} to a sub graph
+	 *                                      of {@code g2}
+	 * @param  induced                  whether to search for an induced sub graph isomorphism or a sub graph
+	 *                                      isomorphism. See the {@linkplain IsomorphismTester interface} documentation
+	 *                                      for more details
+	 * @param  vertexMatcher            a predicate that filters pairs of vertices, one from each graph, that are not
+	 *                                      allowed to be mapped to each other. For a given pair \(v_1,v_2\) where \(v_1
+	 *                                      \in V_1\) and \(v_2 \in V_2\), if the matcher returns {@code false}, then
+	 *                                      the pair is not considered for mapping. If {@code null}, all pairs of
+	 *                                      vertices are allowed.
+	 * @param  edgeMatcher              a predicate that filters pairs of edges, one from each graph, that are not
+	 *                                      allowed to be mapped to each other. For a given pair \(e_1,e_2\) where \(e_1
+	 *                                      \in E_1\) and \(e_2 \in E_2\), if the matcher returns {@code false}, then
+	 *                                      the pair is not considered for mapping. If {@code null}, all pairs of edges
+	 *                                      are allowed.
+	 * @return                          an iterator over all the (optionally induced) sub graph isomorphism mappings
+	 *                                  between the two graphs. The returned mappings maps vertices and edges from the
+	 *                                  first graph to vertices and edges of the second graph. The inverse mapping can
+	 *                                  be obtained by calling {@link IsomorphismMapping#inverse()}.
+	 * @throws IllegalArgumentException if {@code g1} is directed and {@code g2} is undirected, or vice versa
+	 */
+	&lt;V1, E1, V2, E2&gt; Iterator&lt;IsomorphismMapping&lt;V1, E1, V2, E2&gt;&gt; isomorphicMappingsIter(Graph&lt;V1, E1&gt; g1,
+			Graph&lt;V2, E2&gt; g2, boolean induced, BiPredicate&lt;? super V1, ? super V2&gt; vertexMatcher,
+			BiPredicate&lt;? super E1, ? super E2&gt; edgeMatcher);
+
+	/**
+	 * Create a new isomorphism tester.
+	 *
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link IsomorphismTester} object.
+	 *
+	 * @return a default implementation of {@link IsomorphismTester}
+	 */
+	static IsomorphismTester newInstance() {
+<span class="fc" id="L345">		return new IsomorphismTesterVf2();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

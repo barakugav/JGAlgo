@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TspMetricMSTAppx.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.path</a> &gt; <span class="el_source">TspMetricMSTAppx.java</span></div><h1>TspMetricMSTAppx.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg.path;
+
+import static com.jgalgo.internal.util.Range.range;
+import com.jgalgo.alg.span.MinimumSpanningTree;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
+/**
+ * TSP \(2\)-approximation using MST.
+ *
+ * &lt;p&gt;
+ * An MST of a graph weight is less or equal to the optimal TSP tour. By doubling each edge in such MST and finding an
+ * Eulerian tour on these edges a tour was found with weight at most \(2\) times the optimal TSP tour. In addition,
+ * shortcuts are used if vertices are repeated in the initial Eulerian tour - this is possible only in the metric
+ * special case.
+ *
+ * &lt;p&gt;
+ * The running of this algorithm is \(O(n^2)\) and it achieve \(2\)-approximation to the optimal TSP solution.
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L41">public class TspMetricMSTAppx extends TspMetricUtils.AbstractImpl {</span>
+
+<span class="fc" id="L43">	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();</span>
+	// /*
+	// * If true, the algorithm will validate the distance table and check the metric constrain is satisfied. This
+	// * increases the running time to O(n^3)
+	// */
+	// private static final boolean VALIDATE_METRIC = true;
+
+	/**
+	 * Create a new TSP \(2\)-approximation algorithm.
+	 */
+<span class="fc" id="L53">	public TspMetricMSTAppx() {}</span>
+
+	@Override
+	IPath computeShortestTour(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L57">		final int n = g.vertices().size();</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		if (n == 0)</span>
+<span class="fc" id="L59">			return null;</span>
+<span class="fc" id="L60">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L61">		Assertions.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
+		// if (VALIDATE_METRIC)
+		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
+
+		/* Calculate MST */
+<span class="fc" id="L66">		IntCollection mst = ((MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(g, w)).edges();</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (mst.size() &lt; n - 1)</span>
+<span class="fc" id="L68">			throw new IllegalArgumentException(&quot;graph is not connected&quot;);</span>
+
+		/* Build a graph with each MST edge duplicated */
+<span class="fc" id="L71">		IndexGraphBuilder g1Builder = IndexGraphBuilder.undirected();</span>
+<span class="fc" id="L72">		g1Builder.addVertices(range(n));</span>
+<span class="fc" id="L73">		g1Builder.ensureEdgeCapacity(mst.size() + mst.size() * 2);</span>
+<span class="fc" id="L74">		int[] edgeRef = new int[mst.size() * 2];</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">		for (int e : mst) {</span>
+<span class="fc" id="L76">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L77">			edgeRef[g1Builder.addEdge(u, v)] = e;</span>
+<span class="fc" id="L78">			edgeRef[g1Builder.addEdge(u, v)] = e;</span>
+<span class="fc" id="L79">		}</span>
+<span class="fc" id="L80">		IndexGraph g1 = g1Builder.build();</span>
+
+<span class="fc" id="L82">		IPath cycle = TspMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">		assert cycle.edges().size() == n;</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">		assert cycle.isCycle();</span>
+
+		/* Convert cycle of edges to list of vertices */
+<span class="fc" id="L87">		return cycle;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -198,7 +198,7 @@ public class JGraphTAdapter&lt;V, E&gt; extends org.jgrapht.graph.AbstractGraph&
 	@Override
 	public V addVertex() {
 <span class="fc bfc" id="L200" title="All 2 branches covered.">		if (vertexSupplier == null)</span>
-<span class="fc" id="L201">			throw new UnsupportedOperationException(&quot;graph does not have an vertex supplier&quot;);</span>
+<span class="fc" id="L201">			throw new UnsupportedOperationException(&quot;graph does not have a vertex supplier&quot;);</span>
 <span class="fc" id="L202">		V vertex = vertexSupplier.get();</span>
 <span class="fc" id="L203">		graph.addVertex(vertex);</span>
 <span class="fc" id="L204">		return vertex;</span>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WeaklyConnectedComponentsAlgo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.connect</a> &gt; <span class="el_source">WeaklyConnectedComponentsAlgo.java</span></div><h1>WeaklyConnectedComponentsAlgo.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg.connect;
+
+import com.jgalgo.alg.IVertexPartition;
+import com.jgalgo.alg.VertexPartition;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
+
+/**
+ * Weakly Connected components algorithm.
+ *
+ * &lt;p&gt;
+ * Given a graph \(G=(V,E)\), two vertices \(u,v \in V\) are weakly connected if there is an &lt;i&gt;undirected&lt;/i&gt; path from
+ * \(u\) to \(v\). A weakly connected component is a maximal set of vertices that each pair in the set is weakly
+ * connected. This definition hold for both directed and undirected graphs. For undirected graphs, the strongly and
+ * weakly connected components are identical. The set of vertices \(V\) can be partitioned into disjoint weakly
+ * connected components.
+ *
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface.
+ *
+ * @see    StronglyConnectedComponentsAlgo
+ * @author Barak Ugav
+ */
+public interface WeaklyConnectedComponentsAlgo {
+
+	/**
+	 * Compute all weakly connected components in a graph.
+	 *
+	 * &lt;p&gt;
+	 * Given a directed graph, if we replace all the directed edges with undirected edges and compute the (strongly)
+	 * connected components in the result undirected graph.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, a {@link IVertexPartition} object will be returned.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @return     a result object containing the partition of the vertices into weakly connected components
+	 */
+	&lt;V, E&gt; VertexPartition&lt;V, E&gt; findWeaklyConnectedComponents(Graph&lt;V, E&gt; g);
+
+	/**
+	 * Check whether a graph is weakly connected.
+	 *
+	 * &lt;p&gt;
+	 * A graph is weakly connected if there is an &lt;i&gt;undirected&lt;/i&gt; path from any vertex to any other vertex. Namely if
+	 * the the whole graph is a single weakly connected component.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, a {@link IVertexPartition} object will be returned.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @return     {@code true} if the graph is weakly connected, {@code false} otherwise
+	 */
+	&lt;V, E&gt; boolean isWeaklyConnected(Graph&lt;V, E&gt; g);
+
+	/**
+	 * Create a new weakly connected components algorithm object.
+	 *
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link WeaklyConnectedComponentsAlgo} object.
+	 *
+	 * @return a default implementation of {@link WeaklyConnectedComponentsAlgo}
+	 */
+	static WeaklyConnectedComponentsAlgo newInstance() {
+<span class="fc" id="L85">		return new WeaklyConnectedComponentsAlgoImpl();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

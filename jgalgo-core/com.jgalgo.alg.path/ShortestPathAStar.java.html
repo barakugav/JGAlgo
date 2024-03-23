@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ShortestPathAStar.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.path</a> &gt; <span class="el_source">ShortestPathAStar.java</span></div><h1>ShortestPathAStar.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg.path;
+
+import java.util.Objects;
+import java.util.function.IntToDoubleFunction;
+import java.util.function.ToDoubleFunction;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.ds.DoubleIntReferenceableHeap;
+import com.jgalgo.internal.ds.ReferenceableHeap;
+import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntLists;
+
+/**
+ * A* shortest path algorithm.
+ *
+ * &lt;p&gt;
+ * The A star (\(A^*\)) algorithm try to find the shortest path from a source to target vertex. It uses a heuristic that
+ * map a vertex to an estimation of its distance from the target position.
+ *
+ * &lt;p&gt;
+ * An advantage of the \(A^*\) algorithm over other {@link ShortestPathSingleSource} algorithm, is that it can terminate
+ * much faster for the specific source and target, especially if the heuristic is good.
+ *
+ * &lt;p&gt;
+ * The algorithm runs in \(O(m + n \log n)\) and uses linear space in the worse case. If the heuristic is good, smaller
+ * running time and space (!) will be used.
+ *
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/A*_search_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+<span class="fc" id="L59">class ShortestPathAStar implements ShortestPathHeuristicST {</span>
+
+<span class="fc" id="L61">	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();</span>
+
+	/**
+	 * Construct a new AStart algorithm.
+	 */
+<span class="fc" id="L66">	ShortestPathAStar() {}</span>
+
+	/**
+	 * Set the implementation of the heap used by this algorithm.
+	 *
+	 * @param heapBuilder a builder for heaps used by this algorithm
+	 */
+	void setHeapBuilder(ReferenceableHeap.Builder heapBuilder) {
+<span class="nc" id="L74">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
+<span class="nc" id="L75">	}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public &lt;V, E&gt; Path&lt;V, E&gt; computeShortestPath(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source, V target,
+			ToDoubleFunction&lt;V&gt; vHeuristic) {
+<span class="fc bfc" id="L81" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L82">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L83">			int source0 = ((Integer) source).intValue();</span>
+<span class="fc" id="L84">			int target0 = ((Integer) target).intValue();</span>
+<span class="fc" id="L85">			ToDoubleFunction&lt;Integer&gt; vHeuristic0 = (ToDoubleFunction&lt;Integer&gt;) vHeuristic;</span>
+<span class="fc" id="L86">			IntToDoubleFunction vHeuristic1 = v -&gt; vHeuristic0.applyAsDouble(Integer.valueOf(v));</span>
+<span class="fc" id="L87">			return (Path&lt;V, E&gt;) computeShortestPath((IndexGraph) g, w0, source0, target0, vHeuristic1);</span>
+
+		} else {
+<span class="fc" id="L90">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L91">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L92">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L93">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L94">			int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L95">			int iTarget = viMap.idToIndex(target);</span>
+<span class="fc" id="L96">			IntToDoubleFunction indexVHeuristic = vIdx -&gt; vHeuristic.applyAsDouble(viMap.indexToId(vIdx));</span>
+<span class="fc" id="L97">			IPath indexPath = NegativeCycleException</span>
+<span class="fc" id="L98">					.runAndConvertException(g,</span>
+<span class="fc" id="L99">							() -&gt; computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic));</span>
+<span class="fc" id="L100">			return Path.pathFromIndexPath(g, indexPath);</span>
+		}
+	}
+
+	@Override
+	public IPath computeShortestPath(IntGraph g, IWeightFunction w, int source, int target,
+			IntToDoubleFunction vHeuristic) {
+<span class="fc bfc" id="L107" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L108">			IntToDoubleFunction vHeuristic1 = v -&gt; vHeuristic.applyAsDouble(v);</span>
+<span class="fc" id="L109">			return computeShortestPath((IndexGraph) g, w, source, target, vHeuristic1);</span>
+
+		} else {
+<span class="fc" id="L112">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L113">			IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L114">			IndexIntIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L115">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction&lt;Integer&gt;) w, eiMap);</span>
+<span class="fc" id="L116">			int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L117">			int iTarget = viMap.idToIndex(target);</span>
+<span class="fc" id="L118">			IntToDoubleFunction indexVHeuristic = vIdx -&gt; vHeuristic.applyAsDouble(viMap.indexToIdInt(vIdx));</span>
+<span class="fc" id="L119">			IPath indexPath = NegativeCycleException</span>
+<span class="fc" id="L120">					.runAndConvertException(g,</span>
+<span class="fc" id="L121">							() -&gt; computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic));</span>
+<span class="fc" id="L122">			return (IPath) Path.pathFromIndexPath(g, indexPath);</span>
+		}
+
+	}
+
+	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
+<span class="fc bfc" id="L128" title="All 2 branches covered.">		if (source == target)</span>
+<span class="fc" id="L129">			return IPath.valueOf(g, source, target, IntLists.emptyList());</span>
+<span class="fc" id="L130">		DoubleIntReferenceableHeap heap = (DoubleIntReferenceableHeap) heapBuilder.build(double.class, int.class);</span>
+
+<span class="fc" id="L132">		Int2ObjectMap&lt;Info&gt; info = new Int2ObjectOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L133">		Info sourceInfo = new Info();</span>
+<span class="fc" id="L134">		sourceInfo.distance = 0;</span>
+<span class="fc" id="L135">		info.put(source, sourceInfo);</span>
+<span class="fc" id="L136">		heap.insert(.0, source);</span>
+
+<span class="fc bfc" id="L138" title="All 2 branches covered.">		while (heap.isNotEmpty()) {</span>
+<span class="fc" id="L139">			DoubleIntReferenceableHeap.Ref min = heap.extractMin();</span>
+<span class="fc" id="L140">			int u = min.value();</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			if (u == target)</span>
+<span class="fc" id="L142">				return computePath(g, source, target, info);</span>
+<span class="fc" id="L143">			Info uInfo = info.get(u);</span>
+<span class="fc" id="L144">			final double uDistance = uInfo.distance;</span>
+<span class="fc" id="L145">			uInfo.heapPtr = null;</span>
+
+<span class="fc bfc" id="L147" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L148">				int e = eit.nextInt();</span>
+<span class="fc" id="L149">				int v = eit.targetInt();</span>
+<span class="fc" id="L150">				Info vInfo = info.computeIfAbsent(v, k -&gt; new Info());</span>
+
+<span class="fc" id="L152">				double ew = w.weight(e);</span>
+<span class="fc" id="L153">				Assertions.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L154">				double distance = uDistance + ew;</span>
+
+<span class="fc bfc" id="L156" title="All 2 branches covered.">				if (distance &gt;= vInfo.distance)</span>
+<span class="fc" id="L157">					continue;</span>
+<span class="fc" id="L158">				vInfo.distance = distance;</span>
+<span class="fc" id="L159">				vInfo.backtrack = e;</span>
+<span class="fc" id="L160">				double distanceEstimate = distance + vHeuristic.applyAsDouble(v);</span>
+
+<span class="fc bfc" id="L162" title="All 2 branches covered.">				if (vInfo.heapPtr == null) {</span>
+<span class="fc" id="L163">					vInfo.heapPtr = heap.insert(distanceEstimate, v);</span>
+				} else {
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">					assert distanceEstimate &lt;= vInfo.heapPtr.key();</span>
+<span class="fc" id="L166">					heap.decreaseKey(vInfo.heapPtr, distanceEstimate);</span>
+				}
+<span class="fc" id="L168">			}</span>
+<span class="fc" id="L169">		}</span>
+<span class="fc" id="L170">		return null;</span>
+	}
+
+	private static IPath computePath(IndexGraph g, int source, int target, Int2ObjectMap&lt;Info&gt; info) {
+<span class="fc" id="L174">		IntArrayList path = new IntArrayList();</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc" id="L176">			for (int v = target;;) {</span>
+<span class="fc" id="L177">				int e = info.get(v).backtrack;</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">				if (e &lt; 0) {</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">					assert v == source;</span>
+					break;
+				}
+<span class="fc" id="L182">				path.add(e);</span>
+<span class="fc" id="L183">				v = g.edgeSource(e);</span>
+<span class="fc" id="L184">			}</span>
+		} else {
+<span class="fc" id="L186">			for (int v = target;;) {</span>
+<span class="fc" id="L187">				int e = info.get(v).backtrack;</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">				if (e &lt; 0) {</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">					assert v == source;</span>
+					break;
+				}
+<span class="fc" id="L192">				path.add(e);</span>
+<span class="fc" id="L193">				v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L194">			}</span>
+		}
+<span class="fc" id="L196">		IntArrays.reverse(path.elements(), 0, path.size());</span>
+<span class="fc" id="L197">		return IPath.valueOf(g, source, target, path);</span>
+	}
+
+<span class="fc" id="L200">	static class Info {</span>
+<span class="fc" id="L201">		int backtrack = -1;</span>
+<span class="fc" id="L202">		double distance = Double.POSITIVE_INFINITY;</span>
+		DoubleIntReferenceableHeap.Ref heapPtr;
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
