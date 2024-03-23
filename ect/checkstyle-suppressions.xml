@@ -5,14 +5,18 @@
 	<!-- Suppress formatting warnings of auto-generated code -->
 	<suppress files="[\\/]src-generated[\\/]"
 		checks="(.*Whitespace.*|MethodParamPad|LineLength|LeftCurly|SeparatorWrap)" />
+	<!-- The generated sources are added to non-generated package in which there is package-info.java -->
+	<suppress files="[\\/]src-generated[\\/]"
+		checks="(JavadocPackage)" />
+
 
 	<!-- No need for javadoc for com.jgalgo.internal.** -->
 	<suppress files="com[\\/]jgalgo[\\/]internal[\\/]"
-		checks="(MissingJavadocMethod|MissingJavadocType)" />
+		checks="(MissingJavadocMethod|MissingJavadocType|JavadocPackage)" />
 
 	<!-- Benchmarks are not released, suppress a lot of checks -->
 	<suppress files="com[\\/]jgalgo[\\/]bench[\\/]"
-		checks="(MissingJavadocMethod|MissingJavadocType|MethodName)" />
+		checks="(MissingJavadocMethod|MissingJavadocType|MethodName|JavadocPackage)" />
 	<!-- Completely ignore JMH generated sources -->
 	<suppress files="[\\/]jmh_generated[\\/]" checks="[a-zA-Z0-9]*" />
 
