@@ -198,7 +198,7 @@ public class JGraphTAdapter<V, E> extends org.jgrapht.graph.AbstractGraph<V, E> 
 	@Override
 	public V addVertex() {
 		if (vertexSupplier == null)
-			throw new UnsupportedOperationException("graph does not have an vertex supplier");
+			throw new UnsupportedOperationException("graph does not have a vertex supplier");
 		V vertex = vertexSupplier.get();
 		graph.addVertex(vertex);
 		return vertex;

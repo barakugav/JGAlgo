@@ -65,7 +65,7 @@ public interface MinimumVertexCutAllST {
 	 * Iterate over all the minimum vertex-cuts in a graph between two terminal vertices.
 	 *
 	 * <p>
-	 * Given a graph \(G=(V,E)\), an vertex-cut is a set of vertices whose removal disconnect the source from the sink.
+	 * Given a graph \(G=(V,E)\), a vertex-cut is a set of vertices whose removal disconnect the source from the sink.
 	 * Note that connectivity is with respect to direction from the source to the sink, and not the other way around. In
 	 * undirected graphs the source and sink are interchangeable.
 	 *
@@ -94,7 +94,7 @@ public interface MinimumVertexCutAllST {
 	 * Compute all the minimum vertex-cuts in a graph between two terminal vertices.
 	 *
 	 * <p>
-	 * Given a graph \(G=(V,E)\), an vertex-cut is a set of vertices whose removal disconnect the source from the sink.
+	 * Given a graph \(G=(V,E)\), a vertex-cut is a set of vertices whose removal disconnect the source from the sink.
 	 * Note that connectivity is with respect to direction from the source to the sink, and not the other way around. In
 	 * undirected graphs the source and sink are interchangeable.
 	 *

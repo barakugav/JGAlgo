@@ -67,7 +67,7 @@ public interface MinimumVertexCutGlobal {
 	 * Compute the global minimum vertex-cut in a graph.
 	 *
 	 * <p>
-	 * Given a graph \(G=(V,E)\), an vertex-cut is a set of vertices whose removal disconnect graph into more than one
+	 * Given a graph \(G=(V,E)\), a vertex-cut is a set of vertices whose removal disconnect graph into more than one
 	 * connected components.
 	 *
 	 * <p>
