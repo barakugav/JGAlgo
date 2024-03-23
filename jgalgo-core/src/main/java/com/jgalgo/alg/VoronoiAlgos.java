@@ -22,6 +22,7 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
@@ -58,17 +59,23 @@ class VoronoiAlgos {
 
 	}
 
-	static class ResultImpl extends VertexPartitions.Impl implements VoronoiAlgo.IResult {
+	static class ResultImpl implements VoronoiAlgo.IResult {
 
+		private final IVertexPartition partition;
 		private final double[] distance;
 		private final int[] backtrack;
 		private final int[] sites;
 
-		ResultImpl(IndexGraph g, int blockNum, int[] vertexToBlock, double[] distance, int[] backtrack, int[] sites) {
-			super(g, blockNum, vertexToBlock);
+		ResultImpl(IndexGraph g, int[] vertexToBlock, int blockNum, double[] distance, int[] backtrack, int[] sites) {
+			partition = IVertexPartition.fromArray(g, vertexToBlock, blockNum);
 			this.distance = Objects.requireNonNull(distance);
 			this.backtrack = Objects.requireNonNull(backtrack);
 			this.sites = Objects.requireNonNull(sites);
+		}
+
+		@Override
+		public IVertexPartition partition() {
+			return partition;
 		}
 
 		@Override
@@ -82,6 +89,7 @@ class VoronoiAlgos {
 				return null;
 			IntArrayList path = new IntArrayList();
 			int site;
+			IndexGraph g = (IndexGraph) partition.graph();
 			if (g.isDirected()) {
 				for (int v = target;;) {
 					int e = backtrack[v];
@@ -114,78 +122,89 @@ class VoronoiAlgos {
 
 		@Override
 		public int vertexSite(int vertex) {
-			int siteIdx = vertexBlock(vertex);
+			int siteIdx = partition.vertexBlock(vertex);
 			return siteIdx < sites.length ? sites[siteIdx] : -1;
 		}
-
 	}
 
-	static class ObjResultFromIndexResult<V, E> extends VertexPartitions.ObjPartitionFromIndexPartition<V, E>
-			implements VoronoiAlgo.Result<V, E> {
+	static class ObjResultFromIndexResult<V, E> implements VoronoiAlgo.Result<V, E> {
+
+		private final VoronoiAlgo.IResult indexRes;
+		private final IndexIdMap<V> viMap;
+		private final VertexPartition<V, E> partition;
 
 		ObjResultFromIndexResult(Graph<V, E> g, VoronoiAlgo.IResult indexRes) {
-			super(g, indexRes);
+			this.indexRes = Objects.requireNonNull(indexRes);
+			viMap = g.indexGraphVerticesMap();
+			partition = VertexPartition.partitionFromIndexPartition(g, indexRes.partition());
 		}
 
-		VoronoiAlgo.IResult indexRes() {
-			return (VoronoiAlgo.IResult) super.indexPartition;
+		@Override
+		public VertexPartition<V, E> partition() {
+			return partition;
 		}
 
 		@Override
 		public double distance(V vertex) {
-			return indexRes().distance(viMap.idToIndex(vertex));
+			return indexRes.distance(viMap.idToIndex(vertex));
 		}
 
 		@Override
 		public Path<V, E> getPath(V target) {
-			IPath indexPath = indexRes().getPath(viMap.idToIndex(target));
-			return Paths.pathFromIndexPath(graph(), indexPath);
+			IPath indexPath = indexRes.getPath(viMap.idToIndex(target));
+			return Path.pathFromIndexPath(partition.graph(), indexPath);
 		}
 
 		@Override
 		public V blockSite(int block) {
-			int site = indexRes().blockSiteInt(block);
+			int site = indexRes.blockSiteInt(block);
 			return viMap.indexToIdIfExist(site);
 		}
 
 		@Override
 		public V vertexSite(V vertex) {
-			int site = indexRes().vertexSite(viMap.idToIndex(vertex));
+			int site = indexRes.vertexSite(viMap.idToIndex(vertex));
 			return viMap.indexToIdIfExist(site);
 		}
 	}
 
-	static class IntResultFromIndexResult extends VertexPartitions.IntPartitionFromIndexPartition
-			implements VoronoiAlgo.IResult {
+	static class IntResultFromIndexResult implements VoronoiAlgo.IResult {
+
+		private final VoronoiAlgo.IResult indexRes;
+		private final IndexIntIdMap viMap;
+		private final IVertexPartition partition;
 
 		IntResultFromIndexResult(IntGraph g, VoronoiAlgo.IResult indexRes) {
-			super(g, indexRes);
+			this.indexRes = Objects.requireNonNull(indexRes);
+			viMap = g.indexGraphVerticesMap();
+			partition = (IVertexPartition) VertexPartition.partitionFromIndexPartition(g, indexRes.partition());
 		}
 
-		VoronoiAlgo.IResult indexRes() {
-			return (VoronoiAlgo.IResult) super.indexPartition;
+		@Override
+		public IVertexPartition partition() {
+			return partition;
 		}
 
 		@Override
 		public double distance(int vertex) {
-			return indexRes().distance(viMap.idToIndex(vertex));
+			return indexRes.distance(viMap.idToIndex(vertex));
 		}
 
 		@Override
 		public IPath getPath(int target) {
-			IPath indexPath = indexRes().getPath(viMap.idToIndex(target));
-			return (IPath) Paths.pathFromIndexPath(graph(), indexPath);
+			IPath indexPath = indexRes.getPath(viMap.idToIndex(target));
+			return (IPath) Path.pathFromIndexPath(partition.graph(), indexPath);
 		}
 
 		@Override
 		public int blockSiteInt(int block) {
-			int site = indexRes().blockSiteInt(block);
+			int site = indexRes.blockSiteInt(block);
 			return viMap.indexToIdIfExistInt(site);
 		}
 
 		@Override
 		public int vertexSite(int vertex) {
-			int site = indexRes().vertexSite(viMap.idToIndex(vertex));
+			int site = indexRes.vertexSite(viMap.idToIndex(vertex));
 			return viMap.indexToIdIfExistInt(site);
 		}
 	}

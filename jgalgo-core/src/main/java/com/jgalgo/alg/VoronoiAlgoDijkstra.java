@@ -85,7 +85,7 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 		}
 		int blockNum = sitesArr.length + (hasUnreachable ? 1 : 0);
 
-		return new VoronoiAlgos.ResultImpl(g, blockNum, cell, distance, backtrack, sitesArr);
+		return new VoronoiAlgos.ResultImpl(g, cell, blockNum, distance, backtrack, sitesArr);
 	}
 
 }

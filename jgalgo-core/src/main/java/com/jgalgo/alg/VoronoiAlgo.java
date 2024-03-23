@@ -71,12 +71,13 @@ public interface VoronoiAlgo {
 	 * The result object is firstly a valid {@link IVertexPartition} of the graph. The partition is defined by the
 	 * sites. Each 'block' contains all the vertices that are closer to the site of the block than to any other site. If
 	 * some vertices are unreachable from any sites, the partition will contain an addition block with index
-	 * {@code siteNumber+1} that contains all these vertices.
+	 * {@code siteNumber+1} that contains all these vertices. The result object itself does not extends the
+	 * {@link VertexPartition} interface, but the partition is accessible by the {@link #partition()} method.
 	 *
 	 * <p>
-	 * In addition to being a partition, the result object also contains the distance of each vertex from its site, and
-	 * the shortest path from the sites to the vertices. Note that the direction of the distances and paths (in case of
-	 * a directed graph) is from the sites to the vertices. If the other direction is needed, consider passing a
+	 * In addition to holding a partition, the result object also contains the distance of each vertex from its site,
+	 * and the shortest path from the sites to the vertices. Note that the direction of the distances and paths (in case
+	 * of a directed graph) is from the sites to the vertices. If the other direction is needed, consider passing a
 	 * reversed view of the original graph by using {@link Graph#reverseView()}.
 	 *
 	 * @param  <V> the vertices type
@@ -84,7 +85,15 @@ public interface VoronoiAlgo {
 	 * @see        Path
 	 * @author     Barak Ugav
 	 */
-	static interface Result<V, E> extends VertexPartition<V, E> {
+	static interface Result<V, E> {
+
+		/**
+		 * Get the partition of the graph to blocks where each block contains the vertices which are closest to a single
+		 * site.
+		 *
+		 * @return the partition of the graph to sites blocks
+		 */
+		VertexPartition<V, E> partition();
 
 		/**
 		 * Get the distance of a vertex from its site.
@@ -152,7 +161,10 @@ public interface VoronoiAlgo {
 	 *
 	 * @author Barak Ugav
 	 */
-	static interface IResult extends IVertexPartition, VoronoiAlgo.Result<Integer, Integer> {
+	static interface IResult extends VoronoiAlgo.Result<Integer, Integer> {
+
+		@Override
+		IVertexPartition partition();
 
 		/**
 		 * Get the distance of a vertex from its site.

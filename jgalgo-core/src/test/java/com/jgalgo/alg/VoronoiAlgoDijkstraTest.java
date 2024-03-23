@@ -15,11 +15,11 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -75,7 +75,7 @@ class VoronoiAlgoDijkstraTest extends TestBase {
 	private static <V, E> void testAlgo(Graph<V, E> g, WeightFunction<E> w, Collection<V> sites, VoronoiAlgo algo) {
 		VoronoiAlgo.Result<V, E> cells = algo.computeVoronoiCells(g, sites, w);
 
-		assertTrue(VertexPartition.isPartition(g, cells::vertexBlock));
+		assertTrue(VertexPartition.isPartition(g, cells.partition()::vertexBlock));
 
 		ShortestPathSingleSource sssp = new ShortestPathSingleSourceDijkstra();
 		Object2ObjectMap<V, ShortestPathSingleSource.Result<V, E>> ssspResults = new Object2ObjectOpenHashMap<>();
@@ -86,23 +86,25 @@ class VoronoiAlgoDijkstraTest extends TestBase {
 			double expected = sites.stream().mapToDouble(site -> ssspResults.get(site).distance(v)).min().getAsDouble();
 			assertEquals(expected, actual);
 			if (expected == Double.POSITIVE_INFINITY) {
-				int unreachableCell = cells.numberOfBlocks() - 1;
+				int unreachableCell = cells.partition().numberOfBlocks() - 1;
 				assertNull(cells.getPath(v));
-				assertEquals(unreachableCell, cells.vertexBlock(v));
+				assertEquals(unreachableCell, cells.partition().vertexBlock(v));
 				assertEquals(null, cells.vertexSite(v));
 
 			} else {
 				Path<V, E> path = cells.getPath(v);
 				assertNotNull(path);
-				assertTrue(cells.vertexBlock(v) < sites.size());
-				assertEquals(cells.blockSite(cells.vertexBlock(v)), cells.vertexSite(v));
+				assertTrue(cells.partition().vertexBlock(v) < sites.size());
+				assertEquals(cells.blockSite(cells.partition().vertexBlock(v)), cells.vertexSite(v));
 			}
 		}
 
-		int unreachableCell = cells.numberOfBlocks() > sites.size() ? cells.numberOfBlocks() - 1 : -1;
+		int unreachableCell =
+				cells.partition().numberOfBlocks() > sites.size() ? cells.partition().numberOfBlocks() - 1 : -1;
 		if (unreachableCell >= 0)
 			assertEquals(null, cells.blockSite(unreachableCell));
-		Collection<V> unreachableVertices = unreachableCell >= 0 ? cells.blockVertices(unreachableCell) : List.of();
+		Collection<V> unreachableVertices =
+				unreachableCell >= 0 ? cells.partition().blockVertices(unreachableCell) : List.of();
 		for (V unreachable : unreachableVertices) {
 			assertEquals(Double.POSITIVE_INFINITY, cells.distance(unreachable));
 			assertEquals(null, cells.getPath(unreachable));

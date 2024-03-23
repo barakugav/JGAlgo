@@ -85,12 +85,12 @@ class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 		IntList neighbors = new IntArrayList(terminalNum);
 		for (int t : range(terminalNum)) {
 			assert neighbors.isEmpty() && Arrays.stream(neighborsBestEdge).allMatch(e -> e < 0);
-			for (int u : cells.blockVertices(t)) {
+			for (int u : cells.partition().blockVertices(t)) {
 				double uDistance = cells.distance(u);
 				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.targetInt();
-					int vT = cells.vertexBlock(v);
+					int vT = cells.partition().vertexBlock(v);
 					if (vT <= t)
 						continue;
 					double ew = uDistance + w.weight(e) + cells.distance(v);

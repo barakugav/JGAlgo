@@ -17,7 +17,6 @@
 package com.jgalgo.internal.util;
 
 import java.util.concurrent.TimeUnit;
-
 import org.junit.jupiter.api.Timeout;
 
 @Timeout(value = 20, unit = TimeUnit.SECONDS)
