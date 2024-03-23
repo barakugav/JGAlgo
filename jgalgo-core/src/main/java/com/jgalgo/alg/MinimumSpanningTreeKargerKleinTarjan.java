@@ -54,7 +54,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTrees.Abstract
 	private final Random rand = new Random();
 	private final WeaklyConnectedComponentsAlgo ccAlg = WeaklyConnectedComponentsAlgo.newInstance();
 	private final MinimumSpanningTreeBoruvka boruvka = new MinimumSpanningTreeBoruvka();
-	private final TreePathMaxima tpm = new TreePathMaximaHagerup();
+	private final TreePathMaxima tpm = TreePathMaxima.newInstance();
 
 	private final AllocatedMemory allocatedMem = new AllocatedMemory();
 

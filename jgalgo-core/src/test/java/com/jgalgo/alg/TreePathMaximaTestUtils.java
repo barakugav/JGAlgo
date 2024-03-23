@@ -147,7 +147,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = GraphsTestUtils.randConnectedGraph(n, m, false, seedGen.nextSeed());
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			Collection<Integer> mstEdges = new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges();
+			Collection<Integer> mstEdges = MinimumSpanningTree.newInstance().computeMinimumSpanningTree(g, w).edges();
 
 			boolean isMST = TreePathMaxima.verifyMST(g, w, mstEdges, algo);
 			assertTrue(isMST);
@@ -168,7 +168,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			Set<Integer> mstEdges =
-					new IntOpenHashSet(new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges());
+					new IntOpenHashSet(MinimumSpanningTree.newInstance().computeMinimumSpanningTree(g, w).edges());
 			Graph<Integer, Integer> mst = Graph.newUndirected();
 			mst.addVertices(g.vertices());
 			mst.addEdges(EdgeSet.of(mstEdges, g));

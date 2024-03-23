@@ -114,8 +114,12 @@ class MinimumEdgeCutGlobalStoerWagnerTest extends TestBase {
 			assertTrue(minCutWeight <= bestCutWeight, "failed to find minimum cut: " + bestCut);
 
 		} else {
-			MinimumEdgeCutGlobal validationAlgo =
-					MinimumEdgeCutUtils.globalMinCutFromStMinCut(new MaximumFlowEdmondsKarp());
+			// TODO simply instantiate MaximumFlowEdmondsKarp once it is public API
+			MaximumFlow.Builder builder = MaximumFlow.builder();
+			builder.setOption("impl", "edmonds-karp");
+			MinimumEdgeCutST edmondsKarpAlgo = MinimumEdgeCutST.newFromMaximumFlow(builder.build());
+
+			MinimumEdgeCutGlobal validationAlgo = MinimumEdgeCutUtils.globalMinCutFromStMinCut(edmondsKarpAlgo);
 			VertexBiPartition<V, E> minCutExpected = validationAlgo.computeMinimumCut(g, w);
 			double minCutWeightExpected = w.weightSum(minCutExpected.crossEdges());
 

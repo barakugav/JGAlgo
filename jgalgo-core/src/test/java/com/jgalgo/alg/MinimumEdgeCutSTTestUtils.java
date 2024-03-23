@@ -162,8 +162,15 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 			assertTrue(minCutWeight <= bestCutWeight + eps, "failed to find minimum cut: " + bestCut);
 
 		} else {
-			MinimumEdgeCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()
-					: MaximumFlowPushRelabel.newInstanceHighestFirst();
+			// TODO simply instantiate MaximumFlowEdmondsKarp and MaximumFlowPushRelabel once it is public API
+			MaximumFlow.Builder builder = MaximumFlow.builder();
+			builder.setOption("impl", "edmonds-karp");
+			MinimumEdgeCutST edmondsKarpAlgo = MinimumEdgeCutST.newFromMaximumFlow(builder.build());
+			builder.setOption("impl", "push-relabel-highest-first");
+			MinimumEdgeCutST pushRelabelAlgo = MinimumEdgeCutST.newFromMaximumFlow(builder.build());
+
+			MinimumEdgeCutST validationAlgo =
+					alg.getClass().equals(pushRelabelAlgo.getClass()) ? edmondsKarpAlgo : pushRelabelAlgo;
 			VertexBiPartition<V, E> minCutExpected = validationAlgo.computeMinimumCut(g, w, source, sink);
 			double minCutWeightExpected = w.weightSum(minCutExpected.crossEdges());
 
@@ -212,8 +219,15 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 			assertTrue(minCutWeight <= bestCutWeight + eps, "failed to find minimum cut: " + bestCut);
 
 		} else {
-			MinimumEdgeCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()
-					: MaximumFlowPushRelabel.newInstanceHighestFirst();
+			// TODO simply instantiate MaximumFlowEdmondsKarp and MaximumFlowPushRelabel once it is public API
+			MaximumFlow.Builder builder = MaximumFlow.builder();
+			builder.setOption("impl", "edmonds-karp");
+			MinimumEdgeCutST edmondsKarpAlgo = MinimumEdgeCutST.newFromMaximumFlow(builder.build());
+			builder.setOption("impl", "push-relabel-highest-first");
+			MinimumEdgeCutST pushRelabelAlgo = MinimumEdgeCutST.newFromMaximumFlow(builder.build());
+
+			MinimumEdgeCutST validationAlgo =
+					alg.getClass().equals(pushRelabelAlgo.getClass()) ? edmondsKarpAlgo : pushRelabelAlgo;
 			VertexBiPartition<V, E> minCutExpected = validationAlgo.computeMinimumCut(g, w, sources, sinks);
 			double minCutWeightExpected = w.weightSum(minCutExpected.crossEdges());
 
