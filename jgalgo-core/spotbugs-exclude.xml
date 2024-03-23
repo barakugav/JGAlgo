@@ -5,19 +5,6 @@
     <Bug pattern="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE" />
   </Match>
   <Match>
-    <!-- Heap element in DSatur coloring implementation is only used in a heap, in which the
-    compareTo() method is used and the equals() is not -->
-    <Class name="com.jgalgo.alg.ColoringDSaturHeap$HeapElm" />
-    <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
-  </Match>
-  <Match>
-    <!-- DSatur coloring heap SHOULD negate the comparison result, as we want vertices with GREATER
-    degree to be extracted first from the heap -->
-    <Class name="com.jgalgo.alg.ColoringDSaturHeap$HeapElm" />
-    <Method name="compareTo" />
-    <Bug pattern="RV_NEGATING_RESULT_OF_COMPARETO" />
-  </Match>
-  <Match>
     <!-- Intended -->
     <Class name="com.jgalgo.internal.util.DebugPrinter" />
     <Method name="setPrintStream" />
@@ -26,7 +13,7 @@
   <Match>
     <!-- The Path object indeed store a mutable reference to the graph and the user should not
     modify the graph while the Path object is in use -->
-    <Class name="com.jgalgo.alg.Path" />
+    <Class name="com.jgalgo.alg.path.Path" />
     <Constructor />
     <Local name="g" />
     <Bug pattern="EI_EXPOSE_REP2" />
@@ -98,12 +85,12 @@
   </Match>
   <Match>
     <!-- should be fine -->
-    <Class name="com.jgalgo.alg.MatchingWeightedGabow1990Abstract$Worker" />
+    <Class name="com.jgalgo.alg.math.MatchingWeightedGabow1990Abstract$Worker" />
     <Bug pattern="FL_FLOATS_AS_LOOP_COUNTERS" />
   </Match>
   <Match>
     <!-- intentional -->
-    <Class name="com.jgalgo.alg.SSSPDial$DialHeap" />
+    <Class name="com.jgalgo.alg.path.SSSPDial$DialHeap" />
     <Method name="extractMin" />
     <Field name="scanIdx" />
     <Bug pattern="SA_FIELD_SELF_ASSIGNMENT" />
@@ -155,30 +142,19 @@
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
-    <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
-    <Or>
-      <Class name="com.jgalgo.alg.AStar" />
-      <Class name="com.jgalgo.alg.ColoringDSaturHeap" />
-      <Class name="com.jgalgo.alg.MSTFredmanTarjan" />
-      <Class name="com.jgalgo.alg.MSTPrim" />
-    </Or>
-    <Method name="setHeapBuilder" />
-    <Bug pattern="EI_EXPOSE_REP2" />
-  </Match>
-  <Match>
     <!-- NoSuchElementException will be thrown by Assertions.hasNext(this); -->
     <Or>
       <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*BinarySearchTrees\$BSTIterator" />
       <Class name="com.jgalgo.internal.ds.HeapBinary$It" />
-      <Class name="com.jgalgo.alg.MatchingWeightedGabow1990Abstract$Blossom$1$1" />
-      <Class name="com.jgalgo.alg.MatchingWeightedGabow1990Abstract$Worker$1" />
-      <Class name="com.jgalgo.alg.MatchingWeightedGabow1990Abstract$Worker$2" />
-      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Blossom$1$1" />
-      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Blossom$2$1" />
-      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Tree$1$1" />
-      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Tree$2$1" />
-      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Worker$2$1" />
-      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Worker$3$1" />
+      <Class name="com.jgalgo.alg.match.MatchingWeightedGabow1990Abstract$Blossom$1$1" />
+      <Class name="com.jgalgo.alg.match.MatchingWeightedGabow1990Abstract$Worker$1" />
+      <Class name="com.jgalgo.alg.match.MatchingWeightedGabow1990Abstract$Worker$2" />
+      <Class name="com.jgalgo.alg.match.MatchingWeightedBlossomV$Blossom$1$1" />
+      <Class name="com.jgalgo.alg.match.MatchingWeightedBlossomV$Blossom$2$1" />
+      <Class name="com.jgalgo.alg.match.MatchingWeightedBlossomV$Tree$1$1" />
+      <Class name="com.jgalgo.alg.match.MatchingWeightedBlossomV$Tree$2$1" />
+      <Class name="com.jgalgo.alg.match.MatchingWeightedBlossomV$Worker$2$1" />
+      <Class name="com.jgalgo.alg.match.MatchingWeightedBlossomV$Worker$3$1" />
       <Class name="com.jgalgo.internal.util.IterTools$IterPeekableImpl" />
       <Class name="com.jgalgo.internal.util.JGAlgoUtils$NullIterator" />
       <Class name="com.jgalgo.internal.util.JGAlgoUtils$NullListIterator" />
@@ -191,8 +167,8 @@
   <Match>
     <!-- used when Debug=trues -->
     <Or>
-      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Debug" />
-      <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Debug$Impl" />
+      <Class name="com.jgalgo.alg.match.MatchingWeightedBlossomV$Debug" />
+      <Class name="com.jgalgo.alg.match.MatchingWeightedBlossomV$Debug$Impl" />
     </Or>
     <Or>
       <Bug pattern="UC_USELESS_VOID_METHOD" />

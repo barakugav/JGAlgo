@@ -17,10 +17,10 @@
 package com.jgalgo.graph;
 
 import java.util.Collection;
-import com.jgalgo.alg.MatchingAlgo;
-import com.jgalgo.alg.MinimumSpanningTree;
-import com.jgalgo.alg.ShortestPathSingleSource;
-import com.jgalgo.alg.VertexCover;
+import com.jgalgo.alg.cover.VertexCover;
+import com.jgalgo.alg.match.MatchingAlgo;
+import com.jgalgo.alg.path.ShortestPathSingleSource;
+import com.jgalgo.alg.span.MinimumSpanningTree;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterables;

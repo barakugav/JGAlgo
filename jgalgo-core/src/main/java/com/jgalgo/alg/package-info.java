@@ -19,15 +19,15 @@
  *
  * <p>
  * Most algorithms accept a {@link com.jgalgo.graph.Graph} object as input, and perform some computation on it.
- * Algorithms in this package follow a common pattern: an interface is defined for the functionality only (e.g.
- * {@link com.jgalgo.alg.ShortestPathSingleSource}), a result object is defined within the interface (e.g.
- * {@link com.jgalgo.alg.ShortestPathSingleSource.Result}), a default implementation is provided via
- * {@code newInstance()} method (e.g. {@link com.jgalgo.alg.ShortestPathSingleSource#newInstance()}), and a builder that
- * allow more control over the algorithm may be provided via {@code builder()} method (e.g.
- * {@link com.jgalgo.alg.ShortestPathSingleSource#builder()}). In addition, algorithm interfaces define a result object
- * specifically for {@linkplain com.jgalgo.graph.IntGraph int graphs} in which the vertices and edges are integer only
- * (e.g. {@link com.jgalgo.alg.ShortestPathSingleSource.IResult}). In the common use case, there is no need to use
- * {@link com.jgalgo.graph.IntGraph} and the result objects that are specific for it.
+ * Algorithms in this package and its sub packages follow a common pattern: an interface is defined for the
+ * functionality only (e.g. {@link com.jgalgo.alg.path.ShortestPathSingleSource}), a result object is defined within the
+ * interface (e.g. {@link com.jgalgo.alg.path.ShortestPathSingleSource.Result}), a default implementation is provided
+ * via {@code newInstance()} method (e.g. {@link com.jgalgo.alg.path.ShortestPathSingleSource#newInstance()}), and a
+ * builder that allow more control over the algorithm may be provided via {@code builder()} method (e.g.
+ * {@link com.jgalgo.alg.path.ShortestPathSingleSource#builder()}). In addition, algorithm interfaces define a result
+ * object specifically for {@linkplain com.jgalgo.graph.IntGraph int graphs} in which the vertices and edges are integer
+ * only (e.g. {@link com.jgalgo.alg.path.ShortestPathSingleSource.IResult}). In the common use case, there is no need to
+ * use {@link com.jgalgo.graph.IntGraph} and the result objects that are specific for it.
  *
  * <p>
  * None of the algorithms or result objects in this package are thread safe. Result objects should not be used once the

@@ -16,8 +16,8 @@
 package com.jgalgo.example;
 
 import java.util.List;
-import com.jgalgo.alg.BfsIter;
-import com.jgalgo.alg.DfsIter;
+import com.jgalgo.alg.traversal.BfsIter;
+import com.jgalgo.alg.traversal.DfsIter;
 import com.jgalgo.graph.Graph;
 
 /**

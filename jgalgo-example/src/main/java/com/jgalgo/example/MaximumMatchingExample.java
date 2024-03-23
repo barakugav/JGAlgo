@@ -15,8 +15,8 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.alg.Matching;
-import com.jgalgo.alg.MatchingAlgo;
+import com.jgalgo.alg.match.Matching;
+import com.jgalgo.alg.match.MatchingAlgo;
 import com.jgalgo.graph.Graph;
 
 /**

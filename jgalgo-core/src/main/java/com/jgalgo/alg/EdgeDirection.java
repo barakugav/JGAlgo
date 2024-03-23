@@ -15,6 +15,8 @@
  */
 package com.jgalgo.alg;
 
+import com.jgalgo.alg.cores.CoresAlgo;
+
 /**
  * The direction type of an edge with respect to a vertex.
  *
