@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReverseGraphViews.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">ReverseGraphViews.java</span></div><h1>ReverseGraphViews.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.graph;
+
+import java.util.AbstractSet;
+import java.util.Objects;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+class ReverseGraphViews {
+
+	private ReverseGraphViews() {}
+
+	private static interface ReverseGraph&lt;V, E&gt; {
+		Graph&lt;V, E&gt; graph();
+	}
+
+	private static class ObjReverseGraph&lt;V, E&gt; extends GraphViews.GraphView&lt;V, E&gt; implements ReverseGraph&lt;V, E&gt; {
+
+		ObjReverseGraph(Graph&lt;V, E&gt; g) {
+<span class="fc" id="L34">			super(g);</span>
+<span class="fc" id="L35">		}</span>
+
+		@Override
+		public EdgeSet&lt;V, E&gt; outEdges(V source) {
+<span class="fc" id="L39">			return reverseEdgeSet(graph().inEdges(source));</span>
+		}
+
+		@Override
+		public EdgeSet&lt;V, E&gt; inEdges(V target) {
+<span class="fc" id="L44">			return reverseEdgeSet(graph().outEdges(target));</span>
+		}
+
+		@Override
+		public E getEdge(V source, V target) {
+<span class="fc" id="L49">			return graph().getEdge(target, source);</span>
+		}
+
+		@Override
+		public EdgeSet&lt;V, E&gt; getEdges(V source, V target) {
+<span class="fc" id="L54">			return reverseEdgeSet(graph().getEdges(target, source));</span>
+		}
+
+		@Override
+		public void addEdge(V source, V target, E edge) {
+<span class="fc" id="L59">			graph().addEdge(target, source, edge);</span>
+<span class="fc" id="L60">		}</span>
+
+		@Override
+		public void addEdges(EdgeSet&lt;? extends V, ? extends E&gt; edges) {
+<span class="fc" id="L64">			graph().addEdges(reverseEdgeSet(edges));</span>
+<span class="fc" id="L65">		}</span>
+
+		@Override
+		public void removeInEdgesOf(V vertex) {
+<span class="fc" id="L69">			graph().removeOutEdgesOf(vertex);</span>
+<span class="fc" id="L70">		}</span>
+
+		@Override
+		public void removeOutEdgesOf(V vertex) {
+<span class="fc" id="L74">			graph().removeInEdgesOf(vertex);</span>
+<span class="fc" id="L75">		}</span>
+
+		@Override
+		public void moveEdge(E edge, V newSource, V newTarget) {
+<span class="fc" id="L79">			graph().moveEdge(edge, newTarget, newSource);</span>
+<span class="fc" id="L80">		}</span>
+
+		@Override
+		public V edgeSource(E edge) {
+<span class="fc" id="L84">			return graph().edgeTarget(edge);</span>
+		}
+
+		@Override
+		public V edgeTarget(E edge) {
+<span class="fc" id="L89">			return graph().edgeSource(edge);</span>
+		}
+
+		@Override
+		public IndexGraph indexGraph() {
+<span class="fc" id="L94">			return graph().indexGraph().reverseView();</span>
+		}
+	}
+
+	private abstract static class ReverseIntGraphBase extends GraphViews.IntGraphViewBase
+			implements ReverseGraph&lt;Integer, Integer&gt; {
+
+		ReverseIntGraphBase(IntGraph g) {
+<span class="fc" id="L102">			super(g);</span>
+<span class="fc" id="L103">		}</span>
+
+		@Override
+		public IEdgeSet outEdges(int source) {
+<span class="fc" id="L107">			return new ReversedIEdgeSet(graph().inEdges(source));</span>
+		}
+
+		@Override
+		public IEdgeSet inEdges(int target) {
+<span class="fc" id="L112">			return new ReversedIEdgeSet(graph().outEdges(target));</span>
+		}
+
+		@Override
+		public int getEdge(int source, int target) {
+<span class="fc" id="L117">			return graph().getEdge(target, source);</span>
+		}
+
+		@Override
+		public IEdgeSet getEdges(int source, int target) {
+<span class="fc" id="L122">			return new ReversedIEdgeSet(graph().getEdges(target, source));</span>
+		}
+
+		@Override
+		public int addEdge(int source, int target) {
+<span class="fc" id="L127">			return graph().addEdge(target, source);</span>
+		}
+
+		@Override
+		public void addEdges(EdgeSet&lt;? extends Integer, ? extends Integer&gt; edges) {
+<span class="fc" id="L132">			graph().addEdges(reverseEdgeSet(edges));</span>
+<span class="fc" id="L133">		}</span>
+
+		@Override
+		public void removeInEdgesOf(int vertex) {
+<span class="fc" id="L137">			graph().removeOutEdgesOf(vertex);</span>
+<span class="fc" id="L138">		}</span>
+
+		@Override
+		public void removeOutEdgesOf(int vertex) {
+<span class="fc" id="L142">			graph().removeInEdgesOf(vertex);</span>
+<span class="fc" id="L143">		}</span>
+
+		@Override
+		public void moveEdge(int edge, int newSource, int newTarget) {
+<span class="fc" id="L147">			graph().moveEdge(edge, newTarget, newSource);</span>
+<span class="fc" id="L148">		}</span>
+
+		@Override
+		public int edgeSource(int edge) {
+<span class="fc" id="L152">			return graph().edgeTarget(edge);</span>
+		}
+
+		@Override
+		public int edgeTarget(int edge) {
+<span class="fc" id="L157">			return graph().edgeSource(edge);</span>
+		}
+	}
+
+	private static class ReverseIntGraph extends ReverseIntGraphBase {
+
+		ReverseIntGraph(IntGraph g) {
+<span class="fc" id="L164">			super(g);</span>
+<span class="fc" id="L165">		}</span>
+
+		@Override
+		public void addVertex(int vertex) {
+<span class="fc" id="L169">			graph().addVertex(vertex);</span>
+<span class="fc" id="L170">		}</span>
+
+		@Override
+		public void renameVertex(int vertex, int newId) {
+<span class="fc" id="L174">			graph().renameVertex(vertex, newId);</span>
+<span class="fc" id="L175">		}</span>
+
+		@Override
+		public void addEdge(int source, int target, int edge) {
+<span class="fc" id="L179">			graph().addEdge(target, source, edge);</span>
+<span class="fc" id="L180">		}</span>
+
+		@Override
+		public void renameEdge(int edge, int newId) {
+<span class="fc" id="L184">			graph().renameEdge(edge, newId);</span>
+<span class="fc" id="L185">		}</span>
+
+		@Override
+		public IdBuilderInt vertexBuilder() {
+<span class="fc" id="L189">			return graph().vertexBuilder();</span>
+		}
+
+		@Override
+		public IdBuilderInt edgeBuilder() {
+<span class="fc" id="L194">			return graph().edgeBuilder();</span>
+		}
+
+		@Override
+		public IndexGraph indexGraph() {
+<span class="fc" id="L199">			return graph().indexGraph().reverseView();</span>
+		}
+
+		@Override
+		public IndexIntIdMap indexGraphVerticesMap() {
+<span class="fc" id="L204">			return graph().indexGraphVerticesMap();</span>
+		}
+
+		@Override
+		public IndexIntIdMap indexGraphEdgesMap() {
+<span class="fc" id="L209">			return graph().indexGraphEdgesMap();</span>
+		}
+	}
+
+	private static class ReverseIndexGraph extends ReverseIntGraphBase implements IndexGraph {
+
+		ReverseIndexGraph(IndexGraph g) {
+<span class="fc" id="L216">			super(g);</span>
+<span class="fc" id="L217">		}</span>
+
+		@Override
+		public IndexGraph graph() {
+<span class="fc" id="L221">			return (IndexGraph) super.graph();</span>
+		}
+
+		@Override
+		public IntSet addEdgesReassignIds(IEdgeSet edges) {
+<span class="fc" id="L226">			return graph().addEdgesReassignIds(new ReversedIEdgeSet(edges));</span>
+		}
+
+		@Override
+		public void addVertexRemoveListener(IndexRemoveListener listener) {
+<span class="fc" id="L231">			graph().addVertexRemoveListener(listener);</span>
+<span class="fc" id="L232">		}</span>
+
+		@Override
+		public void removeVertexRemoveListener(IndexRemoveListener listener) {
+<span class="fc" id="L236">			graph().removeVertexRemoveListener(listener);</span>
+<span class="fc" id="L237">		}</span>
+
+		@Override
+		public void addEdgeRemoveListener(IndexRemoveListener listener) {
+<span class="fc" id="L241">			graph().addEdgeRemoveListener(listener);</span>
+<span class="fc" id="L242">		}</span>
+
+		@Override
+		public void removeEdgeRemoveListener(IndexRemoveListener listener) {
+<span class="fc" id="L246">			graph().removeEdgeRemoveListener(listener);</span>
+<span class="fc" id="L247">		}</span>
+
+		@Deprecated
+		@Override
+		public IndexIntIdMap indexGraphVerticesMap() {
+<span class="fc" id="L252">			return graph().indexGraphVerticesMap();</span>
+		}
+
+		@Deprecated
+		@Override
+		public IndexIntIdMap indexGraphEdgesMap() {
+<span class="fc" id="L258">			return graph().indexGraphEdgesMap();</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private static &lt;V, E&gt; EdgeSet&lt;V, E&gt; reverseEdgeSet(EdgeSet&lt;V, E&gt; set) {
+<span class="fc bfc" id="L264" title="All 2 branches covered.">		if (set instanceof IEdgeSet) {</span>
+<span class="fc" id="L265">			return (EdgeSet&lt;V, E&gt;) new ReversedIEdgeSet((IEdgeSet) set);</span>
+		} else {
+<span class="fc" id="L267">			return new ReversedEdgeSet&lt;&gt;(set);</span>
+		}
+	}
+
+	private static class ReversedEdgeSet&lt;V, E&gt; extends AbstractSet&lt;E&gt; implements EdgeSet&lt;V, E&gt; {
+
+		private final EdgeSet&lt;V, E&gt; set;
+
+<span class="fc" id="L275">		ReversedEdgeSet(EdgeSet&lt;V, E&gt; set) {</span>
+<span class="fc" id="L276">			this.set = Objects.requireNonNull(set);</span>
+<span class="fc" id="L277">		}</span>
+
+		@Override
+		public boolean contains(Object edge) {
+<span class="fc" id="L281">			return set.contains(edge);</span>
+		}
+
+		@Override
+		public int size() {
+<span class="fc" id="L286">			return set.size();</span>
+		}
+
+		@Override
+		public boolean remove(Object edge) {
+<span class="fc" id="L291">			return set.remove(edge);</span>
+		}
+
+		@Override
+		public void clear() {
+<span class="fc" id="L296">			set.clear();</span>
+<span class="fc" id="L297">		}</span>
+
+		@Override
+		public EdgeIter&lt;V, E&gt; iterator() {
+<span class="fc" id="L301">			return new ReversedEdgeIter&lt;&gt;(set.iterator());</span>
+		}
+	}
+
+	private static class ReversedIEdgeSet extends AbstractIntSet implements IEdgeSet {
+
+		private final IEdgeSet set;
+
+<span class="fc" id="L309">		ReversedIEdgeSet(IEdgeSet set) {</span>
+<span class="fc" id="L310">			this.set = Objects.requireNonNull(set);</span>
+<span class="fc" id="L311">		}</span>
+
+		@Override
+		public boolean contains(int edge) {
+<span class="fc" id="L315">			return set.contains(edge);</span>
+		}
+
+		@Override
+		public int size() {
+<span class="fc" id="L320">			return set.size();</span>
+		}
+
+		@Override
+		public boolean remove(int edge) {
+<span class="fc" id="L325">			return set.remove(edge);</span>
+		}
+
+		@Override
+		public void clear() {
+<span class="fc" id="L330">			set.clear();</span>
+<span class="fc" id="L331">		}</span>
+
+		@Override
+		public IEdgeIter iterator() {
+<span class="fc" id="L335">			return new ReversedIEdgeIter(set.iterator());</span>
+		}
+	}
+
+	private static class ReversedEdgeIter&lt;V, E&gt; extends GraphViews.EdgeIterView&lt;V, E&gt; {
+		ReversedEdgeIter(EdgeIter&lt;V, E&gt; it) {
+<span class="fc" id="L341">			super(it);</span>
+<span class="fc" id="L342">		}</span>
+
+		@Override
+		public V source() {
+<span class="fc" id="L346">			return it.target();</span>
+		}
+
+		@Override
+		public V target() {
+<span class="fc" id="L351">			return it.source();</span>
+		}
+	}
+
+	private static class ReversedIEdgeIter extends GraphViews.IEdgeIterView {
+		ReversedIEdgeIter(IEdgeIter it) {
+<span class="fc" id="L357">			super(it);</span>
+<span class="fc" id="L358">		}</span>
+
+		@Override
+		public int sourceInt() {
+<span class="fc" id="L362">			return it.targetInt();</span>
+		}
+
+		@Override
+		public int targetInt() {
+<span class="fc" id="L367">			return it.sourceInt();</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; Graph&lt;V, E&gt; of(Graph&lt;V, E&gt; g) {
+<span class="fc bfc" id="L373" title="All 2 branches covered.">		if (g instanceof ReverseGraph)</span>
+<span class="fc" id="L374">			return ((ReverseGraph&lt;V, E&gt;) g).graph();</span>
+<span class="fc bfc" id="L375" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L376">			return (Graph&lt;V, E&gt;) new ReverseIndexGraph((IndexGraph) g);</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
+<span class="fc" id="L378">			return (Graph&lt;V, E&gt;) new ReverseIntGraph((IntGraph) g);</span>
+<span class="fc" id="L379">		return new ObjReverseGraph&lt;&gt;(g);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

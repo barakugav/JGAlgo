@@ -127,62 +127,62 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 
 <span class="fc" id="L128">	private static class DialHeap {</span>
 
-		private final LinkedListFixedSize.Doubly heapBucketsNodes;
-		private int[] heapBucketsHead;
+		private final LinkedListFixedSize.Doubly bucketsNodes;
+		private int[] bucketsHead;
 		final int[] distances;
-		private int heapScanIdx;
+		private int scanIdx;
 		private int maxDistance;
 
 <span class="fc" id="L136">		DialHeap(int n, int initialSize) {</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">			heapBucketsHead = initialSize &lt;= 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[initialSize];</span>
-<span class="fc" id="L138">			Arrays.fill(heapBucketsHead, LinkedListFixedSize.None);</span>
-<span class="fc" id="L139">			heapBucketsNodes = new LinkedListFixedSize.Doubly(n);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			bucketsHead = initialSize &lt;= 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[initialSize];</span>
+<span class="fc" id="L138">			Arrays.fill(bucketsHead, LinkedListFixedSize.None);</span>
+<span class="fc" id="L139">			bucketsNodes = new LinkedListFixedSize.Doubly(n);</span>
 <span class="fc" id="L140">			distances = new int[n];</span>
 <span class="fc" id="L141">			Arrays.fill(distances, 0, n, Integer.MAX_VALUE);</span>
 
 <span class="fc" id="L143">			maxDistance = -1;</span>
-<span class="fc" id="L144">			heapScanIdx = 0;</span>
+<span class="fc" id="L144">			scanIdx = 0;</span>
 <span class="fc" id="L145">		}</span>
 
 		void insert(int v, int distance) {
 <span class="fc" id="L148">			distances[v] = distance;</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">			if (distance &gt;= heapBucketsHead.length) {</span>
-<span class="fc" id="L150">				int oldLength = heapBucketsHead.length;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">			if (distance &gt;= bucketsHead.length) {</span>
+<span class="fc" id="L150">				int oldLength = bucketsHead.length;</span>
 <span class="fc" id="L151">				int newLength = Math.max(distance + 1, oldLength * 2);</span>
-<span class="fc" id="L152">				heapBucketsHead = Arrays.copyOf(heapBucketsHead, newLength);</span>
-<span class="fc" id="L153">				Arrays.fill(heapBucketsHead, oldLength, newLength, LinkedListFixedSize.None);</span>
+<span class="fc" id="L152">				bucketsHead = Arrays.copyOf(bucketsHead, newLength);</span>
+<span class="fc" id="L153">				Arrays.fill(bucketsHead, oldLength, newLength, LinkedListFixedSize.None);</span>
 <span class="fc" id="L154">				maxDistance = distance;</span>
 <span class="fc bfc" id="L155" title="All 2 branches covered.">			} else if (distance &gt; maxDistance) {</span>
 <span class="fc" id="L156">				maxDistance = distance;</span>
 			}
 
-<span class="fc" id="L159">			int h = heapBucketsHead[distance];</span>
-<span class="fc" id="L160">			heapBucketsHead[distance] = v;</span>
+<span class="fc" id="L159">			int h = bucketsHead[distance];</span>
+<span class="fc" id="L160">			bucketsHead[distance] = v;</span>
 <span class="fc bfc" id="L161" title="All 2 branches covered.">			if (h != LinkedListFixedSize.None)</span>
-<span class="fc" id="L162">				heapBucketsNodes.connect(v, h);</span>
+<span class="fc" id="L162">				bucketsNodes.connect(v, h);</span>
 <span class="fc" id="L163">		}</span>
 
 		void decreaseKey(int v, int distance) {
 <span class="fc" id="L166">			int oldDistance = distances[v];</span>
 <span class="pc bpc" id="L167" title="1 of 2 branches missed.">			assert distance &lt; oldDistance;</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">			if (v == heapBucketsHead[oldDistance])</span>
-<span class="fc" id="L169">				heapBucketsHead[oldDistance] = heapBucketsNodes.next(v);</span>
-<span class="fc" id="L170">			heapBucketsNodes.disconnect(v);</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">			if (v == bucketsHead[oldDistance])</span>
+<span class="fc" id="L169">				bucketsHead[oldDistance] = bucketsNodes.next(v);</span>
+<span class="fc" id="L170">			bucketsNodes.disconnect(v);</span>
 
 <span class="fc" id="L172">			insert(v, distance);</span>
 <span class="fc" id="L173">		}</span>
 
 		int extractMin() {
-<span class="fc bfc" id="L176" title="All 2 branches covered.">			for (int distance = heapScanIdx; distance &lt;= maxDistance; distance++) {</span>
-<span class="fc" id="L177">				int v = heapBucketsHead[distance];</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">			for (int distance = scanIdx; distance &lt;= maxDistance; distance++) {</span>
+<span class="fc" id="L177">				int v = bucketsHead[distance];</span>
 <span class="fc bfc" id="L178" title="All 2 branches covered.">				if (v != LinkedListFixedSize.None) {</span>
-<span class="fc" id="L179">					heapBucketsHead[distance] = heapBucketsNodes.next(v);</span>
-<span class="fc" id="L180">					heapBucketsNodes.disconnect(v);</span>
-<span class="fc" id="L181">					heapScanIdx = distance;</span>
+<span class="fc" id="L179">					bucketsHead[distance] = bucketsNodes.next(v);</span>
+<span class="fc" id="L180">					bucketsNodes.disconnect(v);</span>
+<span class="fc" id="L181">					scanIdx = distance;</span>
 <span class="fc" id="L182">					return v;</span>
 				}
 			}
-<span class="fc" id="L185">			heapScanIdx = maxDistance;</span>
+<span class="fc" id="L185">			scanIdx = maxDistance;</span>
 <span class="fc" id="L186">			return -1;</span>
 		}
 

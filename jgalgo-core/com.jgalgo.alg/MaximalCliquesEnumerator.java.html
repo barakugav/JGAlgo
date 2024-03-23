@@ -16,12 +16,10 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Algorithm for enumerating over all maximal cliques in a graph.
@@ -39,10 +37,11 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * Graph&lt;String, Integer&gt; g = ...;
  * MaximalCliquesEnumerator maxCliquesAlgo = MaximalCliquesEnumerator.newInstance();
  *
- * for (Set&lt;String&gt; clique : maxCliquesAlgo.allMaximalCliques(g)) {
- * 	System.out.println(&quot;Clique in the graph:&quot;);
- * 	for (String v : clique)
- * 		System.out.println(&quot;\t&quot; + v);
+ * for (Iterator&lt;Set&lt;String&gt;&gt; it = maxCliquesAlgo.maximalCliquesIter(g); it.hasNext();) {
+ *	Set&lt;String&gt; clique = it.next();
+ *	System.out.println(&quot;Clique in the graph:&quot;);
+ *	for (String v : clique)
+ *		System.out.println(&quot;\t&quot; + v);
  * }
  * }&lt;/pre&gt;
  *
@@ -52,10 +51,6 @@ public interface MaximalCliquesEnumerator {
 
 	/**
 	 * Iterate over all maximal cliques in a graph.
-	 *
-	 * &lt;p&gt;
-	 * In contrast to {@link #allMaximalCliques(Graph)}, this method may iterate the cliques one at a time and can be
-	 * used to avoid storing all the cliques in memory at the the time.
 	 *
 	 * &lt;p&gt;
 	 * If {@code g} is {@link IntGraph}, the returned iterator will be iterate over {@link IntSet}.
@@ -68,26 +63,6 @@ public interface MaximalCliquesEnumerator {
 	&lt;V, E&gt; Iterator&lt;Set&lt;V&gt;&gt; maximalCliquesIter(Graph&lt;V, E&gt; g);
 
 	/**
-	 * Finds all the maximal cliques in a graph.
-	 *
-	 * &lt;p&gt;
-	 * The number of maximal cliques can be exponential in the number of vertices in the graph. If the graph is large,
-	 * consider using the {@link #maximalCliquesIter(Graph)} method instead, which may iterate the cliques one at a time
-	 * without storing all them at the same time in memory.
-	 *
-	 * &lt;p&gt;
-	 * If {@code g} is {@link IntGraph}, the returned object will be a list of {@link IntSet}.
-	 *
-	 * @param  &lt;V&gt; the vertices type
-	 * @param  &lt;E&gt; the edges type
-	 * @param  g   a graph
-	 * @return     a list containing all maximal cliques in the graph
-	 */
-	default &lt;V, E&gt; List&lt;Set&lt;V&gt;&gt; allMaximalCliques(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L87">		return new ObjectArrayList&lt;&gt;(maximalCliquesIter(g));</span>
-	}
-
-	/**
 	 * Create a new maximal cliques algorithm object.
 	 *
 	 * &lt;p&gt;
@@ -97,7 +72,7 @@ public interface MaximalCliquesEnumerator {
 	 * @return a default implementation of {@link MaximalCliquesEnumerator}
 	 */
 	static MaximalCliquesEnumerator newInstance() {
-<span class="nc" id="L100">		return builder().build();</span>
+<span class="fc" id="L75">		return builder().build();</span>
 	}
 
 	/**
@@ -109,34 +84,34 @@ public interface MaximalCliquesEnumerator {
 	 * @return a new builder for maximal cliques algorithms
 	 */
 	static MaximalCliquesEnumerator.Builder builder() {
-<span class="nc" id="L112">		return new MaximalCliquesEnumerator.Builder() {</span>
+<span class="fc" id="L87">		return new MaximalCliquesEnumerator.Builder() {</span>
 			String impl;
 
 			@Override
 			public MaximalCliquesEnumerator build() {
-<span class="nc bnc" id="L117" title="All 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L118" title="All 3 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L93" title="All 3 branches missed.">					switch (impl) {</span>
 						case &quot;bron-kerbosch&quot;:
-<span class="nc" id="L120">							return new MaximalCliquesEnumeratorBronKerbosch();</span>
+<span class="nc" id="L95">							return new MaximalCliquesEnumeratorBronKerbosch();</span>
 						case &quot;bron-kerbosch-pivot&quot;:
-<span class="nc" id="L122">							return new MaximalCliquesEnumeratorBronKerboschPivot();</span>
+<span class="nc" id="L97">							return new MaximalCliquesEnumeratorBronKerboschPivot();</span>
 						default:
-<span class="nc" id="L124">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L99">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="nc" id="L127">				return new MaximalCliquesEnumeratorBronKerbosch();</span>
+<span class="fc" id="L102">				return new MaximalCliquesEnumeratorBronKerbosch();</span>
 			}
 
 			@Override
 			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L132" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L134">						impl = (String) value;</span>
-<span class="nc" id="L135">						break;</span>
+<span class="nc" id="L109">						impl = (String) value;</span>
+<span class="nc" id="L110">						break;</span>
 					default:
-<span class="nc" id="L137">						MaximalCliquesEnumerator.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L112">						MaximalCliquesEnumerator.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L139">			}</span>
+<span class="nc" id="L114">			}</span>
 		};
 	}
 

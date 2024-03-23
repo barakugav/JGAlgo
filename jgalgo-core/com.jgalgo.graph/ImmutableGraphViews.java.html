@@ -1,0 +1,688 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ImmutableGraphViews.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">ImmutableGraphViews.java</span></div><h1>ImmutableGraphViews.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.graph;
+
+import java.util.AbstractSet;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
+import com.jgalgo.graph.Graphs.ImmutableGraph;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
+
+class ImmutableGraphViews {
+
+	private ImmutableGraphViews() {}
+
+	private static class ImmutableGraphView&lt;V, E&gt; extends AbstractGraph&lt;V, E&gt; implements ImmutableGraph {
+
+		private final Graph&lt;V, E&gt; graph;
+
+<span class="fc" id="L36">		ImmutableGraphView(Graph&lt;V, E&gt; g) {</span>
+<span class="fc" id="L37">			this.graph = Objects.requireNonNull(g);</span>
+<span class="fc" id="L38">		}</span>
+
+		@Override
+		public Set&lt;V&gt; vertices() {
+<span class="fc" id="L42">			return graph.vertices();</span>
+		}
+
+		@Override
+		public Set&lt;E&gt; edges() {
+<span class="fc" id="L47">			return graph.edges();</span>
+		}
+
+		@Override
+		public void addVertex(V vertex) {
+<span class="fc" id="L52">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices&quot;);</span>
+		}
+
+		@Override
+		public void addVertices(Collection&lt;? extends V&gt; vertices) {
+<span class="fc" id="L57">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices&quot;);</span>
+		}
+
+		@Override
+		public void removeVertex(V vertex) {
+<span class="fc" id="L62">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices&quot;);</span>
+		}
+
+		@Override
+		public void removeVertices(Collection&lt;? extends V&gt; vertices) {
+<span class="fc" id="L67">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices&quot;);</span>
+		}
+
+		@Override
+		public void renameVertex(V vertex, V newId) {
+<span class="fc" id="L72">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot rename vertices&quot;);</span>
+		}
+
+		@Override
+		public EdgeSet&lt;V, E&gt; outEdges(V source) {
+<span class="fc" id="L77">			return new ImmutableEdgeSet&lt;&gt;(graph.outEdges(source));</span>
+		}
+
+		@Override
+		public EdgeSet&lt;V, E&gt; inEdges(V target) {
+<span class="fc" id="L82">			return new ImmutableEdgeSet&lt;&gt;(graph.inEdges(target));</span>
+		}
+
+		@Override
+		public E getEdge(V source, V target) {
+<span class="fc" id="L87">			return graph.getEdge(source, target);</span>
+		}
+
+		@Override
+		public EdgeSet&lt;V, E&gt; getEdges(V source, V target) {
+<span class="fc" id="L92">			return new ImmutableEdgeSet&lt;&gt;(graph.getEdges(source, target));</span>
+		}
+
+		@Override
+		public void addEdge(V source, V target, E edge) {
+<span class="fc" id="L97">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
+		}
+
+		@Override
+		public void addEdges(EdgeSet&lt;? extends V, ? extends E&gt; edges) {
+<span class="fc" id="L102">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
+		}
+
+		@Override
+		public void removeEdge(E edge) {
+<span class="fc" id="L107">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+		}
+
+		@Override
+		public void removeEdges(Collection&lt;? extends E&gt; edges) {
+<span class="fc" id="L112">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+		}
+
+		@Override
+		public void removeEdgesOf(V vertex) {
+<span class="fc" id="L117">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+		}
+
+		@Override
+		public void removeOutEdgesOf(V source) {
+<span class="fc" id="L122">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+		}
+
+		@Override
+		public void removeInEdgesOf(V target) {
+<span class="fc" id="L127">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+		}
+
+		@Override
+		public void renameEdge(E edge, E newId) {
+<span class="fc" id="L132">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot rename edges&quot;);</span>
+		}
+
+		@Override
+		public void moveEdge(E edge, V newSource, V newTarget) {
+<span class="fc" id="L137">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot move edges&quot;);</span>
+		}
+
+		@Override
+		public V edgeSource(E edge) {
+<span class="fc" id="L142">			return graph.edgeSource(edge);</span>
+		}
+
+		@Override
+		public V edgeTarget(E edge) {
+<span class="fc" id="L147">			return graph.edgeTarget(edge);</span>
+		}
+
+		@Override
+		public V edgeEndpoint(E edge, V endpoint) {
+<span class="fc" id="L152">			return graph.edgeEndpoint(edge, endpoint);</span>
+		}
+
+		@Override
+		public void clear() {
+<span class="fc" id="L157">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices and edges&quot;);</span>
+		}
+
+		@Override
+		public void clearEdges() {
+<span class="fc" id="L162">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+		}
+
+		@Override
+		public IdBuilder&lt;V&gt; vertexBuilder() {
+<span class="fc" id="L167">			return null;</span>
+		}
+
+		@Override
+		public IdBuilder&lt;E&gt; edgeBuilder() {
+<span class="fc" id="L172">			return null;</span>
+		}
+
+		@Override
+<span class="fc" id="L176">		public void ensureVertexCapacity(int vertexCapacity) {}</span>
+
+		@Override
+<span class="fc" id="L179">		public void ensureEdgeCapacity(int edgeCapacity) {}</span>
+
+		@SuppressWarnings(&quot;unchecked&quot;)
+		@Override
+		public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT verticesWeights(String key) {
+<span class="fc" id="L184">			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.verticesWeights(key));</span>
+		}
+
+		@Override
+		public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
+				T defVal) {
+<span class="fc" id="L190">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices weights&quot;);</span>
+		}
+
+		@Override
+		public void removeVerticesWeights(String key) {
+<span class="fc" id="L195">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices weights&quot;);</span>
+		}
+
+		@Override
+		public Set&lt;String&gt; verticesWeightsKeys() {
+<span class="fc" id="L200">			return graph.verticesWeightsKeys();</span>
+		}
+
+		@SuppressWarnings(&quot;unchecked&quot;)
+		@Override
+		public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT edgesWeights(String key) {
+<span class="fc" id="L206">			return (WeightsT) WeightsImpl.ObjImmutableView.newInstance(graph.edgesWeights(key));</span>
+		}
+
+		@Override
+		public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
+				T defVal) {
+<span class="fc" id="L212">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges weights&quot;);</span>
+		}
+
+		@Override
+		public void removeEdgesWeights(String key) {
+<span class="fc" id="L217">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges weights&quot;);</span>
+		}
+
+		@Override
+		public Set&lt;String&gt; edgesWeightsKeys() {
+<span class="fc" id="L222">			return graph.edgesWeightsKeys();</span>
+		}
+
+		@Override
+		public boolean isDirected() {
+<span class="fc" id="L227">			return graph.isDirected();</span>
+		}
+
+		@Override
+		public boolean isAllowSelfEdges() {
+<span class="fc" id="L232">			return graph.isAllowSelfEdges();</span>
+		}
+
+		@Override
+		public boolean isAllowParallelEdges() {
+<span class="fc" id="L237">			return graph.isAllowParallelEdges();</span>
+		}
+
+		@Override
+		public IndexGraph indexGraph() {
+<span class="fc" id="L242">			return graph.indexGraph().immutableView();</span>
+		}
+
+		@Override
+		public IndexIdMap&lt;V&gt; indexGraphVerticesMap() {
+<span class="fc" id="L247">			return graph.indexGraphVerticesMap();</span>
+		}
+
+		@Override
+		public IndexIdMap&lt;E&gt; indexGraphEdgesMap() {
+<span class="fc" id="L252">			return graph.indexGraphEdgesMap();</span>
+		}
+
+	}
+
+	private abstract static class ImmutableIntGraphViewBase extends AbstractGraph&lt;Integer, Integer&gt;
+			implements IntGraph, ImmutableGraph {
+
+		private final IntGraph graph;
+
+<span class="fc" id="L262">		ImmutableIntGraphViewBase(IntGraph g) {</span>
+<span class="fc" id="L263">			this.graph = Objects.requireNonNull(g);</span>
+<span class="fc" id="L264">		}</span>
+
+		@Override
+		public IntSet vertices() {
+<span class="fc" id="L268">			return graph.vertices();</span>
+		}
+
+		@Override
+		public IntSet edges() {
+<span class="fc" id="L273">			return graph.edges();</span>
+		}
+
+		@Override
+		public void addVertices(Collection&lt;? extends Integer&gt; vertices) {
+<span class="fc" id="L278">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices&quot;);</span>
+		}
+
+		@Override
+		public void removeVertex(int vertex) {
+<span class="fc" id="L283">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices&quot;);</span>
+		}
+
+		@Override
+		public void removeVertices(Collection&lt;? extends Integer&gt; vertices) {
+<span class="fc" id="L288">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices&quot;);</span>
+		}
+
+		@Override
+		public IEdgeSet outEdges(int source) {
+<span class="fc" id="L293">			return new ImmutableIEdgeSet(graph.outEdges(source));</span>
+		}
+
+		@Override
+		public IEdgeSet inEdges(int target) {
+<span class="fc" id="L298">			return new ImmutableIEdgeSet(graph.inEdges(target));</span>
+		}
+
+		@Override
+		public int getEdge(int source, int target) {
+<span class="fc" id="L303">			return graph.getEdge(source, target);</span>
+		}
+
+		@Override
+		public IEdgeSet getEdges(int source, int target) {
+<span class="fc" id="L308">			return new ImmutableIEdgeSet(graph.getEdges(source, target));</span>
+		}
+
+		@Override
+		public void addEdges(EdgeSet&lt;? extends Integer, ? extends Integer&gt; edges) {
+<span class="fc" id="L313">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
+		}
+
+		@Override
+		public void removeEdge(int edge) {
+<span class="fc" id="L318">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+		}
+
+		@Override
+		public void removeEdges(Collection&lt;? extends Integer&gt; edges) {
+<span class="fc" id="L323">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+		}
+
+		@Override
+		public void removeEdgesOf(int vertex) {
+<span class="fc" id="L328">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+		}
+
+		@Override
+		public void removeOutEdgesOf(int source) {
+<span class="fc" id="L333">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+		}
+
+		@Override
+		public void removeInEdgesOf(int target) {
+<span class="fc" id="L338">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+		}
+
+		@Override
+		public void moveEdge(int edge, int newSource, int newTarget) {
+<span class="fc" id="L343">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot move edges&quot;);</span>
+		}
+
+		@Override
+		public int edgeSource(int edge) {
+<span class="fc" id="L348">			return graph.edgeSource(edge);</span>
+		}
+
+		@Override
+		public int edgeTarget(int edge) {
+<span class="fc" id="L353">			return graph.edgeTarget(edge);</span>
+		}
+
+		@Override
+		public int edgeEndpoint(int edge, int endpoint) {
+<span class="fc" id="L358">			return graph.edgeEndpoint(edge, endpoint);</span>
+		}
+
+		@Override
+		public void clear() {
+<span class="fc" id="L363">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices and edges&quot;);</span>
+		}
+
+		@Override
+		public void clearEdges() {
+<span class="fc" id="L368">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges&quot;);</span>
+		}
+
+		@Override
+<span class="fc" id="L372">		public void ensureVertexCapacity(int vertexCapacity) {}</span>
+
+		@Override
+<span class="fc" id="L375">		public void ensureEdgeCapacity(int edgeCapacity) {}</span>
+
+		@SuppressWarnings(&quot;unchecked&quot;)
+		@Override
+		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT verticesWeights(String key) {
+<span class="fc" id="L380">			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.verticesWeights(key));</span>
+		}
+
+		@Override
+		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
+				T defVal) {
+<span class="fc" id="L386">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices weights&quot;);</span>
+		}
+
+		@Override
+		public void removeVerticesWeights(String key) {
+<span class="fc" id="L391">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove vertices weights&quot;);</span>
+		}
+
+		@Override
+		public Set&lt;String&gt; verticesWeightsKeys() {
+<span class="fc" id="L396">			return graph.verticesWeightsKeys();</span>
+		}
+
+		@SuppressWarnings(&quot;unchecked&quot;)
+		@Override
+		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT edgesWeights(String key) {
+<span class="fc" id="L402">			return (WeightsT) WeightsImpl.IntImmutableView.newInstance(graph.edgesWeights(key));</span>
+		}
+
+		@Override
+		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
+				T defVal) {
+<span class="fc" id="L408">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges weights&quot;);</span>
+		}
+
+		@Override
+		public void removeEdgesWeights(String key) {
+<span class="fc" id="L413">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove edges weights&quot;);</span>
+		}
+
+		@Override
+		public Set&lt;String&gt; edgesWeightsKeys() {
+<span class="fc" id="L418">			return graph.edgesWeightsKeys();</span>
+		}
+
+		@Override
+		public boolean isDirected() {
+<span class="fc" id="L423">			return graph.isDirected();</span>
+		}
+
+		@Override
+		public boolean isAllowSelfEdges() {
+<span class="fc" id="L428">			return graph.isAllowSelfEdges();</span>
+		}
+
+		@Override
+		public boolean isAllowParallelEdges() {
+<span class="fc" id="L433">			return graph.isAllowParallelEdges();</span>
+		}
+
+		IntGraph graph() {
+<span class="fc" id="L437">			return graph;</span>
+		}
+	}
+
+	private static class ImmutableIntGraphView extends ImmutableIntGraphViewBase {
+
+		ImmutableIntGraphView(IntGraph g) {
+<span class="fc" id="L444">			super(g);</span>
+<span class="fc" id="L445">		}</span>
+
+		@Override
+		public void addVertex(int vertex) {
+<span class="fc" id="L449">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices&quot;);</span>
+		}
+
+		@Override
+		public void renameVertex(int vertex, int newId) {
+<span class="fc" id="L454">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot rename vertices&quot;);</span>
+		}
+
+		@Override
+		public void addEdge(int source, int target, int edge) {
+<span class="fc" id="L459">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
+		}
+
+		@Override
+		public void renameEdge(int edge, int newId) {
+<span class="fc" id="L464">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot rename edges&quot;);</span>
+		}
+
+		@Override
+		public IdBuilderInt vertexBuilder() {
+<span class="fc" id="L469">			return graph().vertexBuilder();</span>
+		}
+
+		@Override
+		public IdBuilderInt edgeBuilder() {
+<span class="fc" id="L474">			return graph().edgeBuilder();</span>
+		}
+
+		@Override
+		public IndexGraph indexGraph() {
+<span class="fc" id="L479">			return graph().indexGraph().immutableView();</span>
+		}
+
+		@Override
+		public IndexIntIdMap indexGraphVerticesMap() {
+<span class="fc" id="L484">			return graph().indexGraphVerticesMap();</span>
+		}
+
+		@Override
+		public IndexIntIdMap indexGraphEdgesMap() {
+<span class="fc" id="L489">			return graph().indexGraphEdgesMap();</span>
+		}
+	}
+
+	private static class ImmutableIndexGraphView extends ImmutableIntGraphViewBase implements IndexGraph {
+
+		ImmutableIndexGraphView(IndexGraph g) {
+<span class="fc" id="L496">			super(g);</span>
+<span class="fc" id="L497">		}</span>
+
+		@Override
+		IndexGraph graph() {
+<span class="fc" id="L501">			return (IndexGraph) super.graph();</span>
+		}
+
+		@Override
+		public int addVertexInt() {
+<span class="fc" id="L506">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add vertices&quot;);</span>
+		}
+
+		@Override
+		public int addEdge(int source, int target) {
+<span class="fc" id="L511">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
+		}
+
+		@Override
+		public IntSet addEdgesReassignIds(IEdgeSet edges) {
+<span class="fc" id="L516">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
+		}
+
+		@Override
+		public void addVertexRemoveListener(IndexRemoveListener listener) {
+<span class="fc" id="L521">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add a listener&quot;);</span>
+		}
+
+		@Override
+		public void removeVertexRemoveListener(IndexRemoveListener listener) {
+<span class="fc" id="L526">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove a listener&quot;);</span>
+		}
+
+		@Override
+		public void addEdgeRemoveListener(IndexRemoveListener listener) {
+<span class="fc" id="L531">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot add a listener&quot;);</span>
+		}
+
+		@Override
+		public void removeEdgeRemoveListener(IndexRemoveListener listener) {
+<span class="fc" id="L536">			throw new UnsupportedOperationException(&quot;graph is immutable, cannot remove a listener&quot;);</span>
+		}
+
+		@Deprecated
+		@Override
+		public IndexIntIdMap indexGraphVerticesMap() {
+<span class="fc" id="L542">			return graph().indexGraphVerticesMap();</span>
+		}
+
+		@Deprecated
+		@Override
+		public IndexIntIdMap indexGraphEdgesMap() {
+<span class="fc" id="L548">			return graph().indexGraphEdgesMap();</span>
+		}
+	}
+
+	private static class ImmutableEdgeSet&lt;V, E&gt; extends AbstractSet&lt;E&gt; implements EdgeSet&lt;V, E&gt; {
+
+		private final EdgeSet&lt;V, E&gt; set;
+
+<span class="fc" id="L556">		ImmutableEdgeSet(EdgeSet&lt;V, E&gt; set) {</span>
+<span class="fc" id="L557">			this.set = Objects.requireNonNull(set);</span>
+<span class="fc" id="L558">		}</span>
+
+		@Override
+		public boolean contains(Object edge) {
+<span class="fc" id="L562">			return set.contains(edge);</span>
+		}
+
+		@Override
+		public int size() {
+<span class="fc" id="L567">			return set.size();</span>
+		}
+
+		@Override
+		public EdgeIter&lt;V, E&gt; iterator() {
+<span class="fc" id="L572">			return new ImmutableEdgeIter&lt;&gt;(set.iterator());</span>
+		}
+	}
+
+	private static class ImmutableIEdgeSet extends AbstractIntSet implements IEdgeSet {
+
+		private final IEdgeSet set;
+
+<span class="fc" id="L580">		ImmutableIEdgeSet(IEdgeSet set) {</span>
+<span class="fc" id="L581">			this.set = Objects.requireNonNull(set);</span>
+<span class="fc" id="L582">		}</span>
+
+		@Override
+		public boolean contains(int edge) {
+<span class="fc" id="L586">			return set.contains(edge);</span>
+		}
+
+		@Override
+		public int size() {
+<span class="fc" id="L591">			return set.size();</span>
+		}
+
+		@Override
+		public IEdgeIter iterator() {
+<span class="fc" id="L596">			return new ImmutableIEdgeIter(set.iterator());</span>
+		}
+	}
+
+	private static class ImmutableEdgeIter&lt;V, E&gt; implements EdgeIter&lt;V, E&gt;, ObjectIterator&lt;E&gt; {
+		private final EdgeIter&lt;V, E&gt; it;
+
+<span class="fc" id="L603">		ImmutableEdgeIter(EdgeIter&lt;V, E&gt; it) {</span>
+<span class="fc" id="L604">			this.it = Objects.requireNonNull(it);</span>
+<span class="fc" id="L605">		}</span>
+
+		@Override
+		public V source() {
+<span class="fc" id="L609">			return it.source();</span>
+		}
+
+		@Override
+		public V target() {
+<span class="fc" id="L614">			return it.target();</span>
+		}
+
+		@Override
+		public E next() {
+<span class="fc" id="L619">			return it.next();</span>
+		}
+
+		@Override
+		public boolean hasNext() {
+<span class="fc" id="L624">			return it.hasNext();</span>
+		}
+
+		@Override
+		public E peekNext() {
+<span class="fc" id="L629">			return it.peekNext();</span>
+		}
+
+		@Override
+		public int skip(int n) {
+<span class="fc" id="L634">			return JGAlgoUtils.objIterSkip(it, n);</span>
+		}
+	}
+
+	private static class ImmutableIEdgeIter implements IEdgeIter {
+		private final IEdgeIter it;
+
+<span class="fc" id="L641">		ImmutableIEdgeIter(IEdgeIter it) {</span>
+<span class="fc" id="L642">			this.it = Objects.requireNonNull(it);</span>
+<span class="fc" id="L643">		}</span>
+
+		@Override
+		public int sourceInt() {
+<span class="fc" id="L647">			return it.sourceInt();</span>
+		}
+
+		@Override
+		public int targetInt() {
+<span class="fc" id="L652">			return it.targetInt();</span>
+		}
+
+		@Override
+		public int nextInt() {
+<span class="fc" id="L657">			return it.nextInt();</span>
+		}
+
+		@Override
+		public boolean hasNext() {
+<span class="fc" id="L662">			return it.hasNext();</span>
+		}
+
+		@Override
+		public int peekNextInt() {
+<span class="fc" id="L667">			return it.peekNextInt();</span>
+		}
+
+		@Override
+		public int skip(int n) {
+<span class="fc" id="L672">			return it.skip(n);</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; Graph&lt;V, E&gt; of(Graph&lt;V, E&gt; g) {
+<span class="fc bfc" id="L678" title="All 2 branches covered.">		if (g instanceof ImmutableGraph)</span>
+<span class="fc" id="L679">			return g;</span>
+<span class="fc bfc" id="L680" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L681">			return (Graph&lt;V, E&gt;) new ImmutableIndexGraphView((IndexGraph) g);</span>
+<span class="fc bfc" id="L682" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
+<span class="fc" id="L683">			return (Graph&lt;V, E&gt;) new ImmutableIntGraphView((IntGraph) g);</span>
+<span class="fc" id="L684">		return new ImmutableGraphView&lt;&gt;(g);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import java.util.List;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
@@ -51,76 +52,17 @@ public interface KVertexConnectedComponentsAlgo {
 	/**
 	 * Find all k-vertex connected components in a graph.
 	 *
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, the returned list will be a list of {@link IntSet}.
+	 *
 	 * @param  &lt;V&gt;                      the vertices type
 	 * @param  &lt;E&gt;                      the edges type
 	 * @param  g                        a graph
 	 * @param  k                        the k value, non negative
-	 * @return                          a result object containing the k-vertex connected components
+	 * @return                          a list of the k-connected components
 	 * @throws IllegalArgumentException if {@code k} is negative
 	 */
-	&lt;V, E&gt; KVertexConnectedComponentsAlgo.Result&lt;V, E&gt; findKVertexConnectedComponents(Graph&lt;V, E&gt; g, int k);
-
-	/**
-	 * Result of a {@link KVertexConnectedComponentsAlgo} computation.
-	 *
-	 * @param  &lt;V&gt; the vertices type
-	 * @param  &lt;E&gt; the edges type
-	 * @author     Barak Ugav
-	 */
-	static interface Result&lt;V, E&gt; {
-
-		/**
-		 * The number of k-vertex connected components.
-		 *
-		 * @return the number of k-vertex connected components
-		 */
-		int componentsNum();
-
-		/**
-		 * The vertices of the k-vertex connected component with the given index.
-		 *
-		 * @param  compIndex the index of the component
-		 * @return           the vertices of the component
-		 */
-		Set&lt;V&gt; componentVertices(int compIndex);
-
-		/**
-		 * The subgraph of the k-vertex connected component with the given index.
-		 *
-		 * @param  compIndex the index of the component
-		 * @return           the subgraph of the component
-		 */
-		default Graph&lt;V, E&gt; componentSubGraph(int compIndex) {
-<span class="fc" id="L94">			return graph().subGraphCopy(componentVertices(compIndex), null);</span>
-		}
-
-		/**
-		 * The graph on which the k-vertex connected components were found.
-		 *
-		 * @return the graph
-		 */
-		Graph&lt;V, E&gt; graph();
-
-	}
-
-	/**
-	 * Result of a {@link KVertexConnectedComponentsAlgo} computation for {@link IntGraph}.
-	 *
-	 * @author Barak Ugav
-	 */
-	static interface IResult extends KVertexConnectedComponentsAlgo.Result&lt;Integer, Integer&gt; {
-
-		@Override
-		IntSet componentVertices(int compIndex);
-
-		@Override
-		default IntGraph componentSubGraph(int compIndex) {
-<span class="fc" id="L118">			return (IntGraph) KVertexConnectedComponentsAlgo.Result.super.componentSubGraph(compIndex);</span>
-		}
-
-		@Override
-		IntGraph graph();
-	}
+	&lt;V, E&gt; List&lt;Set&lt;V&gt;&gt; findKVertexConnectedComponents(Graph&lt;V, E&gt; g, int k);
 
 	/**
 	 * Create a new k-connected components algorithm object.
@@ -131,7 +73,7 @@ public interface KVertexConnectedComponentsAlgo {
 	 * @return a default implementation of {@link KVertexConnectedComponentsAlgo}
 	 */
 	static KVertexConnectedComponentsAlgo newInstance() {
-<span class="fc" id="L134">		return new KVertexConnectedComponentsWhiteMoody();</span>
+<span class="fc" id="L76">		return new KVertexConnectedComponentsWhiteMoody();</span>
 	}
 
 }

@@ -146,7 +146,7 @@ import com.jgalgo.internal.util.Assertions;
 
 
 <span class="fc" id="L148">		SplayBSTNode &lt;K, V&gt; parent = n.parent;</span>
-<span class="fc" id="L149">		n.clearWithoutUserData();</span>
+<span class="fc" id="L149">		n.clearTreePointers();</span>
 <span class="fc bfc" id="L150" title="All 2 branches covered.">		root = impl.splay(child != null ? child : parent);</span>
 <span class="fc" id="L151">	}</span>
 

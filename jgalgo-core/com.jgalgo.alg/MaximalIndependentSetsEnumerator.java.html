@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaximalIndependentSetsEnumerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">MaximalIndependentSetsEnumerator.java</span></div><h1>MaximalIndependentSetsEnumerator.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import java.util.Iterator;
+import java.util.Set;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+/**
+ * Algorithm for enumerating over all maximal independent sets in a graph.
+ *
+ * &lt;p&gt;
+ * An independent set is a subset of vertices of an graph such that there are no edges between any pair of vertices in
+ * the set. Self edges are allowed within an independent set, namely they are ignored. A maximal independent set is an
+ * independent set that cannot be extended by including one more vertex.
+ *
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface.
+ *
+ * &lt;pre&gt; {@code
+ * Graph&lt;String, Integer&gt; g = ...;
+ * MaximalIndependentSetsEnumerator independentSetsAlgo = MaximalIndependentSetsEnumerator.newInstance();
+ *
+ * for (Iterator&lt;Set&lt;String&gt;&gt; it = independentSetsAlgo.maximalIndependentSetsIter(g); it.hasNext();) {
+ *	Set&lt;String&gt; independentSet = it.next();
+ *	System.out.println(&quot;Independent set in the graph:&quot;);
+ *	for (String v : independentSet)
+ *		System.out.println(&quot;\t&quot; + v);
+ * }
+ * }&lt;/pre&gt;
+ *
+ * @author Barak Ugav
+ */
+public interface MaximalIndependentSetsEnumerator {
+
+	/**
+	 * Iterate over all maximal independent sets in a graph.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned iterator will be iterate over {@link IntSet}.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @return     an iterator that iterates over all maximal independent sets in the graph
+	 */
+	&lt;V, E&gt; Iterator&lt;Set&lt;V&gt;&gt; maximalIndependentSetsIter(Graph&lt;V, E&gt; g);
+
+	/**
+	 * Create a new maximal independent sets algorithm object.
+	 *
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MaximalIndependentSetsEnumerator} object.
+	 *
+	 * @return a default implementation of {@link MaximalIndependentSetsEnumerator}
+	 */
+	static MaximalIndependentSetsEnumerator newInstance() {
+<span class="fc" id="L73">		return new MaximalIndependentSetsEnumeratorComplementCliques();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
