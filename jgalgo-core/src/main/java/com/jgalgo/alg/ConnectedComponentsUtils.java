@@ -34,7 +34,7 @@ class ConnectedComponentsUtils {
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IVertexPartition indexResult = findStronglyConnectedComponents(iGraph);
-				return VertexPartitions.partitionFromIndexPartition(g, indexResult);
+				return VertexPartition.partitionFromIndexPartition(g, indexResult);
 			}
 		}
 
@@ -68,7 +68,7 @@ class ConnectedComponentsUtils {
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IVertexPartition indexResult = findWeaklyConnectedComponents(iGraph);
-				return VertexPartitions.partitionFromIndexPartition(g, indexResult);
+				return VertexPartition.partitionFromIndexPartition(g, indexResult);
 			}
 		}
 

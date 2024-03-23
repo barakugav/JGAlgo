@@ -20,9 +20,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
+import com.jgalgo.alg.VertexBiPartitions.IntBiPartitionFromIndexBiPartition;
+import com.jgalgo.alg.VertexBiPartitions.ObjBiPartitionFromIndexBiPartition;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
 
@@ -163,7 +169,9 @@ public interface VertexBiPartition<V, E> extends VertexPartition<V, E> {
 	 * @param  <V>     the vertices type
 	 * @param  <E>     the edges type
 	 * @param  g       the graph
-	 * @param  mapping a mapping function that maps from a vertex to either {@code true} or {@code false}
+	 * @param  mapping a mapping function that maps from a vertex to either {@code true} or {@code false}, where
+	 *                     {@code true} means the vertex is contained in the left block and {@code false} means the
+	 *                     vertex is contained in the right block
 	 * @return         a new vertex bi-partition
 	 */
 	@SuppressWarnings("unchecked")
@@ -175,8 +183,51 @@ public interface VertexBiPartition<V, E> extends VertexPartition<V, E> {
 			final int n = g.vertices().size();
 			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 			Bitmap vertexToBlock = Bitmap.fromPredicate(n, vIdx -> mapping.test(viMap.indexToId(vIdx)));
-			IVertexBiPartition indexPartition = new VertexBiPartitions.FromBitmap(g.indexGraph(), vertexToBlock);
+			IVertexBiPartition indexPartition = new VertexBiPartitions.IndexImpl(g.indexGraph(), vertexToBlock::get);
 			return new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition<>(g, indexPartition);
+		}
+	}
+
+	/**
+	 * Create a new vertex bi-partition from a vertex-side weights container.
+	 *
+	 * @param  <V>     the vertices type
+	 * @param  <E>     the edges type
+	 * @param  g       the graph
+	 * @param  weights a weights container that maps from a vertex to either {@code true} or {@code false}, where
+	 *                     {@code true} means the vertex is contained in the left block and {@code false} means the
+	 *                     vertex is contained in the right block
+	 * @return         a new vertex bi-partition
+	 */
+	@SuppressWarnings("unchecked")
+	static <V, E> VertexBiPartition<V, E> fromWeights(Graph<V, E> g, WeightsBool<V> weights) {
+		if (g instanceof IntGraph) {
+			return (VertexBiPartition<V, E>) IVertexBiPartition.fromWeights((IntGraph) g, (IWeightsBool) weights);
+		} else {
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			IWeightsBool indexWeights = IndexIdMaps.idToIndexWeights(weights, viMap);
+			IVertexBiPartition indexPartition = new VertexBiPartitions.IndexImpl(g.indexGraph(), indexWeights::get);
+			return new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition<>(g, indexPartition);
+		}
+	}
+
+	/**
+	 * Create a vertex bi-partition view from a vertex bi-partition of the index graph of the given graph.
+	 *
+	 * @param  <V>            the vertices type
+	 * @param  <E>            the edges type
+	 * @param  g              the graph, must not be an index graph
+	 * @param  indexPartition the bi-partition of the index graph of the given graph
+	 * @return                a vertex bi-partition view
+	 */
+	@SuppressWarnings("unchecked")
+	static <V, E> VertexBiPartition<V, E> partitionFromIndexPartition(Graph<V, E> g,
+			IVertexBiPartition indexPartition) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (VertexBiPartition<V, E>) new IntBiPartitionFromIndexBiPartition((IntGraph) g, indexPartition);
+		} else {
+			return new ObjBiPartitionFromIndexBiPartition<>(g, indexPartition);
 		}
 	}
 

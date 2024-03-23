@@ -42,18 +42,20 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 class VertexPartitions {
 
-	static class Impl implements IVertexPartition {
+	private VertexPartitions() {}
+
+	static class IndexImpl implements IVertexPartition {
 		final IndexGraph g;
-		private final int blockNum;
 		private final int[] vertexToBlock;
+		private final int blockNum;
 		private IntSet[] blockVertices;
 		private IntSet[] blockEdges;
 		private BiInt2ObjFunc<IntSet> crossEdges;
 
-		Impl(IndexGraph g, int blockNum, int[] vertexToBlock) {
+		IndexImpl(IndexGraph g, int[] vertexToBlock, int blockNum) {
 			this.g = Objects.requireNonNull(g);
-			this.blockNum = blockNum;
 			this.vertexToBlock = Objects.requireNonNull(vertexToBlock);
+			this.blockNum = blockNum;
 		}
 
 		@Override
@@ -446,16 +448,6 @@ class VertexPartitions {
 					.mapToObj(this::blockVertices)
 					.map(Object::toString)
 					.collect(Collectors.joining(", ", "[", "]"));
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	static <V, E> VertexPartition<V, E> partitionFromIndexPartition(Graph<V, E> g, IVertexPartition indexPartition) {
-		assert !(g instanceof IndexGraph);
-		if (g instanceof IntGraph) {
-			return (VertexPartition<V, E>) new IntPartitionFromIndexPartition((IntGraph) g, indexPartition);
-		} else {
-			return new ObjPartitionFromIndexPartition<>(g, indexPartition);
 		}
 	}
 

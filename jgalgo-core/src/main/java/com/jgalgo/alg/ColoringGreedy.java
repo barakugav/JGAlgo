@@ -76,7 +76,7 @@ class ColoringGreedy extends ColoringUtils.AbstractImpl implements RandomizedAlg
 			int color = colors[u] = usedColors.nextClearBit(0);
 			colorsNum = Math.max(colorsNum, color + 1);
 		}
-		return new VertexPartitions.Impl(g, colorsNum, colors);
+		return IVertexPartition.fromArray(g, colors, colorsNum);
 	}
 
 }

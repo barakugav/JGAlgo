@@ -49,7 +49,7 @@ class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.Abstrac
 	IVertexPartition computeKEdgeConnectedComponents(IndexGraph g, int k) {
 		final int n = g.vertices().size();
 		if (n == 0)
-			return new VertexPartitions.Impl(g, 0, IntArrays.DEFAULT_EMPTY_ARRAY);
+			return IVertexPartition.fromArray(g, IntArrays.DEFAULT_EMPTY_ARRAY, 0);
 
 		IndexGraphBuilder auxGraph = IndexGraphBuilder.undirected();
 		auxGraph.addVertices(g.vertices());
@@ -185,7 +185,7 @@ class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.Abstrac
 				}
 			}
 		}
-		return new VertexPartitions.Impl(origGraph, compNum, comp);
+		return IVertexPartition.fromArray(origGraph, comp, compNum);
 	}
 
 }

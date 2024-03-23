@@ -224,7 +224,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			private final Iterator<IntSet> closuresIter = (Iterator) closuresAlgo.closuresIter(residual);
-			private IVertexBiPartition nextCut = new VertexBiPartitions.FromBitmap(g, reachableFromSource);
+			private IVertexBiPartition nextCut = IVertexBiPartition.fromBitmap(g, reachableFromSource);
 
 			@Override
 			public boolean hasNext() {
@@ -242,7 +242,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 						cut.set(resVToV[resV]);
 					for (int v : reachableFromSource)
 						cut.set(v);
-					nextCut = new VertexBiPartitions.FromBitmap(g, cut);
+					nextCut = IVertexBiPartition.fromBitmap(g, cut);
 				} else {
 					nextCut = null;
 				}

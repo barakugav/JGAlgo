@@ -19,8 +19,11 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Set;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
+import com.jgalgo.alg.VertexPartitions.IntPartitionFromIndexPartition;
+import com.jgalgo.alg.VertexPartitions.ObjPartitionFromIndexPartition;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Bitmap;
@@ -224,8 +227,27 @@ public interface VertexPartition<V, E> {
 			maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 		}
 
-		IVertexPartition indexPartition = new VertexPartitions.Impl(g.indexGraph(), maxBlock + 1, vertexToBlock);
+		IVertexPartition indexPartition = new VertexPartitions.IndexImpl(g.indexGraph(), vertexToBlock, maxBlock + 1);
 		return new VertexPartitions.ObjPartitionFromIndexPartition<>(g, indexPartition);
+	}
+
+	/**
+	 * Create a vertex partition view from a vertex partition of the index graph of the given graph.
+	 *
+	 * @param  <V>            the vertices type
+	 * @param  <E>            the edges type
+	 * @param  g              the graph, must not be an index graph
+	 * @param  indexPartition the partition of the index graph of the given graph
+	 * @return                a vertex partition view
+	 */
+	@SuppressWarnings("unchecked")
+	static <V, E> VertexPartition<V, E> partitionFromIndexPartition(Graph<V, E> g, IVertexPartition indexPartition) {
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (VertexPartition<V, E>) new IntPartitionFromIndexPartition((IntGraph) g, indexPartition);
+		} else {
+			return new ObjPartitionFromIndexPartition<>(g, indexPartition);
+		}
 	}
 
 	/**

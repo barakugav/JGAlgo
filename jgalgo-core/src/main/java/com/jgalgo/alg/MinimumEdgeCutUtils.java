@@ -56,7 +56,7 @@ class MinimumEdgeCutUtils {
 				int iSource = viMap.idToIndex(source);
 				int iSink = viMap.idToIndex(sink);
 				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSource, iSink);
-				return VertexBiPartitions.partitionFromIndexPartition(g, indexCut);
+				return VertexBiPartition.partitionFromIndexPartition(g, indexCut);
 			}
 		}
 
@@ -78,7 +78,7 @@ class MinimumEdgeCutUtils {
 				IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
 				IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
 				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw, iSources, iSinks);
-				return VertexBiPartitions.partitionFromIndexPartition(g, indexCut);
+				return VertexBiPartition.partitionFromIndexPartition(g, indexCut);
 			}
 		}
 
@@ -110,7 +110,7 @@ class MinimumEdgeCutUtils {
 				int iSink = viMap.idToIndex(sink);
 				Iterator<IVertexBiPartition> indexIter = minimumCutsIter(iGraph, iw, iSource, iSink);
 				return IterTools
-						.map(indexIter, iPartition -> VertexBiPartitions.partitionFromIndexPartition(g, iPartition));
+						.map(indexIter, iPartition -> VertexBiPartition.partitionFromIndexPartition(g, iPartition));
 			}
 		}
 
@@ -133,7 +133,7 @@ class MinimumEdgeCutUtils {
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 
 				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw);
-				return VertexBiPartitions.partitionFromIndexPartition(g, indexCut);
+				return VertexBiPartition.partitionFromIndexPartition(g, indexCut);
 			}
 		}
 
@@ -217,7 +217,7 @@ class MinimumEdgeCutUtils {
 			}
 		}
 
-		return new VertexBiPartitions.FromBitmap(g, visited);
+		return IVertexBiPartition.fromBitmap(g, visited);
 	}
 
 	static MinimumEdgeCutST buildFromMaxFlow(MaximumFlow maxFlowAlg) {

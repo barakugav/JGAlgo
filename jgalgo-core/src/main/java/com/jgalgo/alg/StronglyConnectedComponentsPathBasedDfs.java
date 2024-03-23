@@ -91,7 +91,7 @@ class StronglyConnectedComponentsPathBasedDfs extends ConnectedComponentsUtils.A
 						for (int w : range(n))
 							if (comp[w] < 0)
 								return null;
-						return new VertexPartitions.Impl(g, compNum, comp);
+						return IVertexPartition.fromArray(g, comp, compNum);
 					}
 					compNum++;
 					p.popInt();
@@ -102,7 +102,7 @@ class StronglyConnectedComponentsPathBasedDfs extends ConnectedComponentsUtils.A
 					break;
 			}
 		}
-		return new VertexPartitions.Impl(g, compNum, comp);
+		return IVertexPartition.fromArray(g, comp, compNum);
 	}
 
 	@Override

@@ -119,12 +119,12 @@ public class BipartiteGraphs {
 		for (int v : range(ig.vertices().size()))
 			partition.set(v, partition0.get(v));
 
-		IVertexBiPartition indexPartition = new VertexBiPartitions.FromWeights(ig, partition);
+		IVertexBiPartition indexPartition = IVertexBiPartition.fromWeights(ig, partition);
 		VertexBiPartition<V, E> resultPartition;
 		if (g instanceof IndexGraph) {
 			resultPartition = (VertexBiPartition<V, E>) indexPartition;
 		} else {
-			resultPartition = VertexBiPartitions.partitionFromIndexPartition(g, indexPartition);
+			resultPartition = VertexBiPartition.partitionFromIndexPartition(g, indexPartition);
 		}
 		return Optional.of(resultPartition);
 	}
@@ -220,12 +220,12 @@ public class BipartiteGraphs {
 					+ "' but it is not a boolean weights");
 		IWeightsBool partition = (IWeightsBool) existingPartition;
 
-		IVertexBiPartition indexPartition = new VertexBiPartitions.FromWeights(ig, partition);
+		IVertexBiPartition indexPartition = IVertexBiPartition.fromWeights(ig, partition);
 		VertexBiPartition<V, E> resultPartition;
 		if (g instanceof IndexGraph) {
 			resultPartition = (VertexBiPartition<V, E>) indexPartition;
 		} else {
-			resultPartition = VertexBiPartitions.partitionFromIndexPartition(g, indexPartition);
+			resultPartition = VertexBiPartition.partitionFromIndexPartition(g, indexPartition);
 		}
 		return Optional.of(resultPartition);
 	}

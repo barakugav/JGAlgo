@@ -132,7 +132,7 @@ class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 			}
 		}
 
-		return new VertexPartitions.Impl(g, colorsNum, colors);
+		return IVertexPartition.fromArray(g, colors, colorsNum);
 	}
 
 }

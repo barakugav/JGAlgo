@@ -96,7 +96,7 @@ class StronglyConnectedComponentsTarjan extends ConnectedComponentsUtils.Abstrac
 						for (int w : range(n))
 							if (comp[w] < 0)
 								return null;
-						return new VertexPartitions.Impl(g, compNum, comp);
+						return IVertexPartition.fromArray(g, comp, compNum);
 					}
 				}
 
@@ -111,7 +111,7 @@ class StronglyConnectedComponentsTarjan extends ConnectedComponentsUtils.Abstrac
 			}
 		}
 
-		return new VertexPartitions.Impl(g, compNum, comp);
+		return IVertexPartition.fromArray(g, comp, compNum);
 	}
 
 	@Override

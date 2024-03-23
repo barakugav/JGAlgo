@@ -131,7 +131,7 @@ class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutUtils.AbstractImplGl
 			cg.contract(S, T);
 		}
 
-		return new VertexBiPartitions.FromBitmap(g, minimumCut);
+		return IVertexBiPartition.fromBitmap(g, minimumCut);
 	}
 
 }

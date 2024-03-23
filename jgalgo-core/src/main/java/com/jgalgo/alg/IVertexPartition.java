@@ -127,7 +127,7 @@ public interface IVertexPartition extends VertexPartition<Integer, Integer> {
 				vertexToBlock[v] = mapping.applyAsInt(v);
 				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 			}
-			return new VertexPartitions.Impl((IndexGraph) g, maxBlock + 1, vertexToBlock);
+			return new VertexPartitions.IndexImpl((IndexGraph) g, vertexToBlock, maxBlock + 1);
 		} else {
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			int maxBlock = -1;
@@ -135,9 +135,32 @@ public interface IVertexPartition extends VertexPartition<Integer, Integer> {
 				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToIdInt(v));
 				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 			}
-			IVertexPartition indexPartition = new VertexPartitions.Impl(g.indexGraph(), maxBlock + 1, vertexToBlock);
+			IVertexPartition indexPartition =
+					new VertexPartitions.IndexImpl(g.indexGraph(), vertexToBlock, maxBlock + 1);
 			return new VertexPartitions.IntPartitionFromIndexPartition(g, indexPartition);
 		}
+	}
+
+	/**
+	 * Create a new vertex partition from an array of vertex-blockIndex mapping.
+	 *
+	 * <p>
+	 * This function accept index graphs only, as the mapping is done by the index of the vertices.
+	 *
+	 * <p>
+	 * Note that this function does not validate the input, namely it does not check that the block numbers are all the
+	 * range [0, maxBlockIndex], and that there are no 'empty' blocks.
+	 *
+	 * @param  g             the graph
+	 * @param  vertexToBlock an array of size \(n\) where \(n\) is the number of vertices in the graph, in which each
+	 *                           element is the block index of the corresponding vertex. The array is not copied, and it
+	 *                           is assumed that the user of this function will not modify the array after calling this
+	 *                           function
+	 * @param  blocksNum     the number of blocks
+	 * @return               a new vertex partition
+	 */
+	static IVertexPartition fromArray(IndexGraph g, int[] vertexToBlock, int blocksNum) {
+		return new VertexPartitions.IndexImpl(g, vertexToBlock, blocksNum);
 	}
 
 	/**

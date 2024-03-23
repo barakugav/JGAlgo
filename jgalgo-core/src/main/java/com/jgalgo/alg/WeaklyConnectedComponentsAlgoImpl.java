@@ -69,7 +69,7 @@ class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.Abstrac
 				}
 			}
 		}
-		return new VertexPartitions.Impl(g, compNum, comp);
+		return IVertexPartition.fromArray(g, comp, compNum);
 	}
 
 	@Override

@@ -18,7 +18,9 @@ package com.jgalgo.alg;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Map;
 import java.util.function.IntPredicate;
+import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Bitmap;
@@ -137,19 +139,57 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition<
 	 * Note that this function does not validate the input. For that, see {@link #isPartition(IntGraph, IntPredicate)}.
 	 *
 	 * @param  g       the graph
-	 * @param  mapping a mapping function that maps from a vertex to either {@code true} or {@code false}
+	 * @param  mapping a mapping function that maps from a vertex to either {@code true} or {@code false}, where
+	 *                     {@code true} means the vertex is contained in the left block and {@code false} means the
+	 *                     vertex is contained in the right block
 	 * @return         a new vertex bi-partition
 	 */
 	static IVertexBiPartition fromMapping(IntGraph g, IntPredicate mapping) {
 		final int n = g.vertices().size();
 		if (g instanceof IndexGraph) {
-			return new VertexBiPartitions.FromBitmap((IndexGraph) g, Bitmap.fromPredicate(n, mapping));
+			return new VertexBiPartitions.IndexImpl((IndexGraph) g, Bitmap.fromPredicate(n, mapping)::get);
 		} else {
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			Bitmap vertexToBlock = Bitmap.fromPredicate(n, vIdx -> mapping.test(viMap.indexToIdInt(vIdx)));
-			IVertexBiPartition indexPartition = new VertexBiPartitions.FromBitmap(g.indexGraph(), vertexToBlock);
+			IVertexBiPartition indexPartition = new VertexBiPartitions.IndexImpl(g.indexGraph(), vertexToBlock::get);
 			return new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, indexPartition);
 		}
+	}
+
+	/**
+	 * Create a new vertex bi-partition from a vertex-side weights container.
+	 *
+	 * @param  g       the graph
+	 * @param  weights a weights container that maps from a vertex to either {@code true} or {@code false}, where
+	 *                     {@code true} means the vertex is contained in the left block and {@code false} means the
+	 *                     vertex is contained in the right block
+	 * @return         a new vertex bi-partition
+	 */
+	static IVertexBiPartition fromWeights(IntGraph g, IWeightsBool weights) {
+		if (g instanceof IndexGraph) {
+			return new VertexBiPartitions.IndexImpl((IndexGraph) g, weights::get);
+		} else {
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IWeightsBool indexWeights = IndexIdMaps.idToIndexWeights(weights, viMap);
+			IVertexBiPartition indexPartition = new VertexBiPartitions.IndexImpl(g.indexGraph(), indexWeights::get);
+			return new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, indexPartition);
+		}
+	}
+
+	/**
+	 * Create a new vertex bi-partition from a bitmap.
+	 *
+	 * <p>
+	 * This function can be used only for index graphs.
+	 *
+	 * @param  g      the index graph
+	 * @param  bitmap a bitmap where {@code true} means the vertex is contained in the left block and {@code false}
+	 *                    means the vertex is contained in the right block. The bitmap is not copied, and it is assumed
+	 *                    the user of this function will not modify the bitmap after calling this function
+	 * @return        a new vertex bi-partition
+	 */
+	static IVertexBiPartition fromBitmap(IndexGraph g, Bitmap bitmap) {
+		return new VertexBiPartitions.IndexImpl(g, bitmap::get);
 	}
 
 	/**

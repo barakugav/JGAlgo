@@ -33,7 +33,7 @@ class KEdgeConnectedComponentsUtils {
 			} else {
 				IndexGraph ig = g.indexGraph();
 				IVertexPartition indexPartition = computeKEdgeConnectedComponents(ig, k);
-				return VertexPartitions.partitionFromIndexPartition(g, indexPartition);
+				return VertexPartition.partitionFromIndexPartition(g, indexPartition);
 			}
 		}
 

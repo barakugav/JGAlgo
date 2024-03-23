@@ -31,7 +31,7 @@ class ColoringUtils {
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IVertexPartition indexResult = computeColoring(iGraph);
-				return VertexPartitions.partitionFromIndexPartition(g, indexResult);
+				return VertexPartition.partitionFromIndexPartition(g, indexResult);
 			}
 		}
 

@@ -1657,7 +1657,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.AbstractImplWithoutResidualGra
 			Bitmap cut = visited.copy();
 			cut.not();
 			visited.clear();
-			return new VertexBiPartitions.FromBitmap(g, cut);
+			return IVertexBiPartition.fromBitmap(g, cut);
 		}
 
 		abstract boolean hasExcess(int u);

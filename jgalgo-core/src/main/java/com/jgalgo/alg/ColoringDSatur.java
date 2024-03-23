@@ -120,7 +120,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 				}
 			}
 		}
-		return new VertexPartitions.Impl(g, colorsNum, colors);
+		return IVertexPartition.fromArray(g, colors, colorsNum);
 	}
 
 	private static long heapKey(int saturationDegree, int uncoloredDegree) {
