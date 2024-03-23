@@ -176,6 +176,10 @@ def generate_sourcefile(input_filename, output_filename, constants, functions):
     append_lines(root_block)
     text = "\n".join(text)
 
+    # Add a newline at the end if there isn't one
+    if len(text) == 0 or text[-1] != "\n":
+        text += "\n"
+
     # Replace all constants one by one, in reverse sorted order to (hopefully) avoid one constant being a prefix of another
     sorted_constants = sorted(constants.items(), key=lambda kv: kv[0], reverse=True)
     for constant, value in sorted_constants:

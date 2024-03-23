@@ -19,6 +19,10 @@
 		<property name="file" value="ect/checkstyle-suppressions.xml" />
 	</module>
 
+	<!-- Checks whether files end with a new line.                        -->
+    <!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
+    <module name="NewlineAtEndOfFile"/>
+
 	<module name="LineLength">
 		<property name="fileExtensions" value="java" />
 		<property name="max" value="120" />
