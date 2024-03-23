@@ -50,7 +50,7 @@ class KShortestPathsSTs {
 				int iTarget = viMap.idToIndex(target);
 				List<IPath> indexResult = NegativeCycleException
 						.runAndConvertException(g, () -> computeKShortestPaths(iGraph, iw, iSource, iTarget, k));
-				return indexResult.stream().map(p -> Paths.pathFromIndexPath(g, p)).collect(toList());
+				return indexResult.stream().map(p -> Path.pathFromIndexPath(g, p)).collect(toList());
 			}
 		}
 

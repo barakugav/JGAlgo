@@ -135,7 +135,7 @@ public interface IPath extends Path<Integer, Integer> {
 			IntList iEdges = Fastutil.list(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
 
 			IPath indexPath = Paths.valueOf(iGraph, iSource, iTarget, iEdges);
-			return (IPath) Paths.pathFromIndexPath(g, indexPath);
+			return (IPath) Path.pathFromIndexPath(g, indexPath);
 		}
 	}
 
@@ -193,7 +193,7 @@ public interface IPath extends Path<Integer, Integer> {
 			int iTarget = viMap.idToIndex(target);
 
 			IPath indexPath = Paths.findPath(iGraph, iSource, iTarget);
-			return (IPath) Paths.pathFromIndexPath(g, indexPath);
+			return (IPath) Path.pathFromIndexPath(g, indexPath);
 		}
 	}
 

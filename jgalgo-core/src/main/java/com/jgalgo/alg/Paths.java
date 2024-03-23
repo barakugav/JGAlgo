@@ -369,18 +369,6 @@ class Paths {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	static <V, E> Path<V, E> pathFromIndexPath(Graph<V, E> g, IPath indexPath) {
-		if (indexPath == null)
-			return null;
-		assert !(g instanceof IndexGraph);
-		if (g instanceof IntGraph) {
-			return (Path<V, E>) new IntPathFromIndexPath((IntGraph) g, indexPath);
-		} else {
-			return new ObjPathFromIndexPath<>(g, indexPath);
-		}
-	}
-
 	static IPath findPath(IndexGraph g, final int source, final int target) {
 		if (source == target)
 			return IPath.valueOf(g, source, target, IntLists.emptyList());
@@ -459,7 +447,7 @@ class Paths {
 		}
 	}
 
-	private static class ObjPathFromIndexPath<V, E> extends AbstractPath<V, E> {
+	static class ObjPathFromIndexPath<V, E> extends AbstractPath<V, E> {
 
 		private final IPath indexPath;
 		private final Graph<V, E> g;
@@ -514,7 +502,7 @@ class Paths {
 		}
 	}
 
-	private static class IntPathFromIndexPath extends AbstractPath<Integer, Integer> implements IPath {
+	static class IntPathFromIndexPath extends AbstractPath<Integer, Integer> implements IPath {
 
 		private final IPath indexPath;
 		private final IntGraph g;

@@ -31,7 +31,7 @@ abstract class CyclesEnumeratorAbstract implements CyclesEnumerator {
 		} else {
 			IndexGraph iGraph = g.indexGraph();
 			Iterator<IPath> indexResult = cyclesIter(iGraph);
-			return IterTools.map(indexResult, iPath -> Paths.pathFromIndexPath(g, iPath));
+			return IterTools.map(indexResult, iPath -> Path.pathFromIndexPath(g, iPath));
 		}
 	}
 

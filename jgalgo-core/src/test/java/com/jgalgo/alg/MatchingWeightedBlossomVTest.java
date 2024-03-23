@@ -16,9 +16,9 @@
 package com.jgalgo.alg;
 
 import org.junit.jupiter.api.Test;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.TestBase;
 
 public class MatchingWeightedBlossomVTest extends TestBase {

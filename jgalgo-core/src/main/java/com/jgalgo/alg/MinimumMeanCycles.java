@@ -41,7 +41,7 @@ class MinimumMeanCycles {
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 				IPath indexPath = computeMinimumMeanCycle(iGraph, iw);
-				return Paths.pathFromIndexPath(g, indexPath);
+				return Path.pathFromIndexPath(g, indexPath);
 			}
 		}
 

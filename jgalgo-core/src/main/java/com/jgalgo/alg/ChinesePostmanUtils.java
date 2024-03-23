@@ -41,7 +41,7 @@ class ChinesePostmanUtils {
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 				IPath indexPath = computeShortestEdgeVisitorCircle(iGraph, iw);
-				return Paths.pathFromIndexPath(g, indexPath);
+				return Path.pathFromIndexPath(g, indexPath);
 			}
 		}
 

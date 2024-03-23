@@ -189,7 +189,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		} else {
 			IndexGraph iGraph = g.indexGraph();
 			Optional<IPath> indexPath = computeEulerianTour(iGraph);
-			return indexPath.map(path -> Paths.pathFromIndexPath(g, path));
+			return indexPath.map(path -> Path.pathFromIndexPath(g, path));
 		}
 	}
 

@@ -82,7 +82,7 @@ public class NegativeCycleException extends RuntimeException {
 	static <V, E> NegativeCycleException fromIndexException(NegativeCycleException e, Graph<V, E> g) {
 		assert g.indexGraph() == e.graph;
 		IPath indexPath = (IPath) e.cycle(g.indexGraph());
-		Path<V, E> path = Paths.pathFromIndexPath(g, indexPath);
+		Path<V, E> path = Path.pathFromIndexPath(g, indexPath);
 		return new NegativeCycleException(g, path);
 	}
 

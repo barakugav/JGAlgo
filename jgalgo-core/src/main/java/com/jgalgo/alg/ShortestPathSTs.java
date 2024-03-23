@@ -50,7 +50,7 @@ class ShortestPathSTs {
 				ObjectDoublePair<IPath> indexPath = NegativeCycleException
 						.runAndConvertException(g, () -> computeShortestPathAndWeight(iGraph, iw, iSource, iTarget));
 				return indexPath == null ? null
-						: ObjectDoublePair.of(Paths.pathFromIndexPath(g, indexPath.first()), indexPath.secondDouble());
+						: ObjectDoublePair.of(Path.pathFromIndexPath(g, indexPath.first()), indexPath.secondDouble());
 			}
 		}
 

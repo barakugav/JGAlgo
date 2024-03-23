@@ -16,12 +16,12 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import static com.jgalgo.internal.util.Range.range;
 
 /**
  * TSP \(2\)-approximation using MST.

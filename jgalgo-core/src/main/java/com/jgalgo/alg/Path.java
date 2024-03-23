@@ -229,7 +229,28 @@ public interface Path<V, E> {
 			IntList iEdges = Fastutil.list(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
 
 			IPath indexPath = Paths.valueOf(iGraph, iSource, iTarget, iEdges);
-			return Paths.pathFromIndexPath(g, indexPath);
+			return pathFromIndexPath(g, indexPath);
+		}
+	}
+
+	/**
+	 * Create a path view from a path in the index graph of the given graph.
+	 *
+	 * @param  <V>       the vertices type
+	 * @param  <E>       the edges type
+	 * @param  g         the graph, must not be an index graph
+	 * @param  indexPath the path in the index graph of the given graph
+	 * @return           a path view
+	 */
+	@SuppressWarnings("unchecked")
+	static <V, E> Path<V, E> pathFromIndexPath(Graph<V, E> g, IPath indexPath) {
+		if (indexPath == null)
+			return null;
+		assert !(g instanceof IndexGraph);
+		if (g instanceof IntGraph) {
+			return (Path<V, E>) new Paths.IntPathFromIndexPath((IntGraph) g, indexPath);
+		} else {
+			return new Paths.ObjPathFromIndexPath<>(g, indexPath);
 		}
 	}
 
@@ -339,7 +360,7 @@ public interface Path<V, E> {
 		int iTarget = viMap.idToIndex(target);
 
 		IPath indexPath = Paths.findPath(iGraph, iSource, iTarget);
-		return Paths.pathFromIndexPath(g, indexPath);
+		return Path.pathFromIndexPath(g, indexPath);
 	}
 
 	/**

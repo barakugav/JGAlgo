@@ -44,7 +44,7 @@ class HamiltonianPathAlgos {
 			} else {
 				IndexGraph ig = g.indexGraph();
 				Iterator<IPath> indexIter = hamiltonianPathsIter(ig);
-				return IterTools.map(indexIter, iPath -> Paths.pathFromIndexPath(g, iPath));
+				return IterTools.map(indexIter, iPath -> Path.pathFromIndexPath(g, iPath));
 			}
 		}
 
@@ -59,7 +59,7 @@ class HamiltonianPathAlgos {
 				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 				int src = viMap.idToIndex(source), trg = viMap.idToIndex(target);
 				Iterator<IPath> indexIter = hamiltonianPathsIter(ig, src, trg);
-				return IterTools.map(indexIter, iPath -> Paths.pathFromIndexPath(g, iPath));
+				return IterTools.map(indexIter, iPath -> Path.pathFromIndexPath(g, iPath));
 			}
 		}
 
@@ -71,7 +71,7 @@ class HamiltonianPathAlgos {
 			} else {
 				IndexGraph ig = g.indexGraph();
 				Iterator<IPath> indexIter = hamiltonianCyclesIter(ig);
-				return IterTools.map(indexIter, iPath -> Paths.pathFromIndexPath(g, iPath));
+				return IterTools.map(indexIter, iPath -> Path.pathFromIndexPath(g, iPath));
 			}
 		}
 

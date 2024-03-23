@@ -40,7 +40,7 @@ class SimplePathsEnumerators {
 				int iSource = viMap.idToIndex(source);
 				int iTarget = viMap.idToIndex(target);
 				Iterator<IPath> indexResult = simplePathsIter(iGraph, iSource, iTarget);
-				return IterTools.map(indexResult, iPath -> Paths.pathFromIndexPath(g, iPath));
+				return IterTools.map(indexResult, iPath -> Path.pathFromIndexPath(g, iPath));
 			}
 		}
 
