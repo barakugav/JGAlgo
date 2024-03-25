@@ -38,12 +38,21 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class MinimumVertexCutSTEdgeCut extends MinimumVertexCutUtils.AbstractImplST {
+public class MinimumVertexCutSTEdgeCut extends MinimumVertexCutSTAbstract {
 
 	private final MinimumEdgeCutST minEdgeCutAlgo = MinimumEdgeCutST.newInstance();
 
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link MinimumVertexCutST#newInstance()} to get a default implementation for the
+	 * {@link MinimumVertexCutST} interface.
+	 */
+	public MinimumVertexCutSTEdgeCut() {}
+
 	@Override
-	IntSet computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
+	protected IntSet computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
 		AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, w);
 		int[] vertexCut = computeMinCut(g, source, sink, auxiliaryGraph);
 		if (vertexCut == null)
