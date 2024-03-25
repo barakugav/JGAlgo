@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg.connect;
 
-import com.jgalgo.alg.connect.MinimumVertexCutUtils.AuxiliaryGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Bitmap;
@@ -53,7 +52,7 @@ public class MinimumVertexCutSTEdgeCut extends MinimumVertexCutSTAbstract {
 
 	@Override
 	protected IntSet computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
-		AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, w);
+		MinVertexCutAuxiliaryGraph auxiliaryGraph = new MinVertexCutAuxiliaryGraph(g, w);
 		int[] vertexCut = computeMinCut(g, source, sink, auxiliaryGraph);
 		if (vertexCut == null)
 			return null;
@@ -62,7 +61,7 @@ public class MinimumVertexCutSTEdgeCut extends MinimumVertexCutSTAbstract {
 		return ImmutableIntArraySet.withBitmap(Bitmap.fromOnes(n, vertexCut));
 	}
 
-	int[] computeMinCut(IndexGraph g, int source, int sink, AuxiliaryGraph auxiliaryGraph) {
+	int[] computeMinCut(IndexGraph g, int source, int sink, MinVertexCutAuxiliaryGraph auxiliaryGraph) {
 		if (g.containsEdge(source, sink))
 			return null;
 

@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 import com.jgalgo.alg.IVertexBiPartition;
-import com.jgalgo.alg.connect.MinimumVertexCutUtils.AuxiliaryGraph;
 import com.jgalgo.alg.flow.IFlow;
 import com.jgalgo.alg.flow.MaximumFlow;
 import com.jgalgo.graph.IEdgeIter;
@@ -97,7 +96,7 @@ public class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutAllGlobal
 			cuts.add(ImmutableIntArraySet.withNaiveContains(cut));
 		}
 
-		AuxiliaryGraph auxGraph = new AuxiliaryGraph(g, null, true);
+		MinVertexCutAuxiliaryGraph auxGraph = new MinVertexCutAuxiliaryGraph(g, null, true);
 		for (int x : kVertices) {
 			Bitmap nonAdjacent = new Bitmap(n);
 			nonAdjacent.setAll();

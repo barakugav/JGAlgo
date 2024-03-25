@@ -18,7 +18,6 @@ package com.jgalgo.alg.connect;
 import java.util.Iterator;
 import java.util.Set;
 import com.jgalgo.alg.IVertexBiPartition;
-import com.jgalgo.alg.connect.MinimumVertexCutUtils.AuxiliaryGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
@@ -58,7 +57,7 @@ public class MinimumVertexCutAllSTEdgeCut extends MinimumVertexCutAllSTAbstract 
 
 	@Override
 	protected Iterator<IntSet> minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink) {
-		AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, w);
+		MinVertexCutAuxiliaryGraph auxiliaryGraph = new MinVertexCutAuxiliaryGraph(g, w);
 		if (g.containsEdge(source, sink))
 			return null;
 

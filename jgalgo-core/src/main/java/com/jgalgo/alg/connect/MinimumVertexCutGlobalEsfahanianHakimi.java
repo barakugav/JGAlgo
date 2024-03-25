@@ -16,7 +16,6 @@
 package com.jgalgo.alg.connect;
 
 import static com.jgalgo.internal.util.Range.range;
-import com.jgalgo.alg.connect.MinimumVertexCutUtils.AuxiliaryGraph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -93,7 +92,7 @@ public class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutGlob
 				(startVertexNeighborsIsOut ? neighbors.outNeighbors(startVertex) : neighbors.inNeighbors(startVertex))
 						.toIntArray();
 
-		final AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, null);
+		final MinVertexCutAuxiliaryGraph auxiliaryGraph = new MinVertexCutAuxiliaryGraph(g, null);
 
 		IntSet startVertexNeighbors = neighbors.neighbors(startVertex);
 
