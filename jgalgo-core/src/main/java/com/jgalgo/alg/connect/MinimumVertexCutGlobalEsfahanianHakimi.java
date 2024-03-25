@@ -34,12 +34,21 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.AbstractImplGlobal {
+public class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutGlobalAbstract {
 
 	private final MinimumVertexCutSTEdgeCut minCutStAlgo = new MinimumVertexCutSTEdgeCut();
 
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link MinimumVertexCutGlobal#newInstance()} to get a default implementation for the
+	 * {@link MinimumVertexCutGlobal} interface.
+	 */
+	public MinimumVertexCutGlobalEsfahanianHakimi() {}
+
 	@Override
-	IntSet computeMinimumCut(IndexGraph g, IWeightFunction w) {
+	protected IntSet computeMinimumCut(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyCardinality(w);
 		if (g.vertices().isEmpty())
 			throw new IllegalArgumentException("No vertex cut exists in an empty graph");
