@@ -45,15 +45,19 @@ import com.jgalgo.internal.util.Bitmap;
  * @see    <a href= "https://en.wikipedia.org/wiki/Recursive_largest_first_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
+public class ColoringRecursiveLargestFirst extends ColoringAlgoAbstract {
 
 	/**
 	 * Create a new coloring algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link ColoringAlgo#newInstance()} to get a default implementation for the
+	 * {@link ColoringAlgo} interface.
 	 */
-	ColoringRecursiveLargestFirst() {}
+	public ColoringRecursiveLargestFirst() {}
 
 	@Override
-	IVertexPartition computeColoring(IndexGraph g) {
+	protected IVertexPartition computeColoring(IndexGraph g) {
 		Assertions.onlyUndirected(g);
 		Assertions.noSelfEdges(g, "no valid coloring in graphs with self edges");
 

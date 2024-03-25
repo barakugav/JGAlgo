@@ -28,11 +28,11 @@ import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 
 /**
- * The DSatur coloring algorithm.
+ * The D-Satur coloring algorithm.
  *
  * <p>
- * The Saturation Degree (DSatur) coloring algorithm is a greedy algorithm, namely it examine the vertices in some order
- * and assign for each vertex the minimum (integer) color which is not used by its neighbors. It differ from other
+ * The Saturation Degree (D-Satur) coloring algorithm is a greedy algorithm, namely it examine the vertices in some
+ * order and assign for each vertex the minimum (integer) color which is not used by its neighbors. It differ from other
  * greedy coloring algorithms by the order of the vertices: the next vertex to be colored is the vertex with the highest
  * number of colors in its neighborhood (called saturation degree).
  *
@@ -46,14 +46,18 @@ import com.jgalgo.internal.util.Assertions;
  * @see    <a href="https://en.wikipedia.org/wiki/DSatur">Wikipedia</a>
  * @author Barak Ugav
  */
-class ColoringDSatur extends ColoringUtils.AbstractImpl {
+public class ColoringDSatur extends ColoringAlgoAbstract {
 
 	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 
 	/**
 	 * Create a new coloring algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link ColoringAlgo#newInstance()} to get a default implementation for the
+	 * {@link ColoringAlgo} interface.
 	 */
-	ColoringDSatur() {}
+	public ColoringDSatur() {}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -65,7 +69,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 	}
 
 	@Override
-	IVertexPartition computeColoring(IndexGraph g) {
+	protected IVertexPartition computeColoring(IndexGraph g) {
 		Assertions.onlyUndirected(g);
 		Assertions.noSelfEdges(g, "no valid coloring in graphs with self edges");
 

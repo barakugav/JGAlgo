@@ -44,9 +44,18 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    <a href="https://en.wikipedia.org/wiki/Greedy_coloring">Wikipedia</a>
  * @author Barak Ugav
  */
-class ColoringGreedy extends ColoringUtils.AbstractImpl implements RandomizedAlgorithm {
+public class ColoringGreedy extends ColoringAlgoAbstract implements RandomizedAlgorithm {
 
 	private final Random rand = new Random();
+
+	/**
+	 * Create a new coloring algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link ColoringAlgo#newInstance()} to get a default implementation for the
+	 * {@link ColoringAlgo} interface.
+	 */
+	public ColoringGreedy() {}
 
 	@Override
 	public void setSeed(long seed) {
@@ -54,7 +63,7 @@ class ColoringGreedy extends ColoringUtils.AbstractImpl implements RandomizedAlg
 	}
 
 	@Override
-	IVertexPartition computeColoring(IndexGraph g) {
+	protected IVertexPartition computeColoring(IndexGraph g) {
 		Assertions.onlyUndirected(g);
 		Assertions.noSelfEdges(g, "no valid coloring in graphs with self edges");
 
