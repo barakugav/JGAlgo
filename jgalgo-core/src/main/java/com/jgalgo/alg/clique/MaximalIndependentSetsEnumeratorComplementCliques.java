@@ -27,12 +27,21 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class MaximalIndependentSetsEnumeratorComplementCliques extends MaximalIndependentSetsEnumerators.AbstractImpl {
+public class MaximalIndependentSetsEnumeratorComplementCliques extends MaximalIndependentSetsEnumeratorAbstract {
 
 	private final MaximalCliquesEnumerator cliquesAlgo = MaximalCliquesEnumerator.newInstance();
 
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link MaximalIndependentSetsEnumerator#newInstance()} to get a default implementation for
+	 * the {@link MaximalIndependentSetsEnumerator} interface.
+	 */
+	public MaximalIndependentSetsEnumeratorComplementCliques() {}
+
 	@Override
-	Iterator<IntSet> maximalIndependentSetsIter(IndexGraph g) {
+	protected Iterator<IntSet> maximalIndependentSetsIter(IndexGraph g) {
 		final int n = g.vertices().size();
 		Bitmap edges = new Bitmap(n * n);
 		for (int e : range(g.edges().size())) {
