@@ -42,13 +42,22 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class ClosuresEnumeratorSchrageBaker extends ClosuresEnumerators.AbstractImpl {
+public class ClosuresEnumeratorSchrageBaker extends ClosuresEnumeratorAbstract {
 
 	private final StronglyConnectedComponentsAlgo sccAlgo = StronglyConnectedComponentsAlgo.newInstance();
 	private final TopologicalOrderAlgo topoAlgo = TopologicalOrderAlgo.newInstance();
 
+	/**
+	 * Constructs a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link ClosuresEnumerator#newInstance()} to get a default implementation for the
+	 * {@link ClosuresEnumerator} interface.
+	 */
+	public ClosuresEnumeratorSchrageBaker() {}
+
 	@Override
-	Iterator<IntSet> closuresIter(IndexGraph g) {
+	protected Iterator<IntSet> closuresIter(IndexGraph g) {
 		Assertions.onlyDirected(g);
 		final int n = g.vertices().size();
 
