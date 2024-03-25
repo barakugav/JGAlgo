@@ -210,7 +210,7 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>${maven-javadoc-plugin.version}</version>
         <configuration>
-          <show>protected</show>
+          <show>public</show>
           <source>${java.version}</source>
 
           <links>
