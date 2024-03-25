@@ -105,27 +105,6 @@ class MinimumVertexCutUtils {
 		abstract IntSet computeMinimumCut(IndexGraph g, IWeightFunction w);
 	}
 
-	abstract static class AbstractImplAllGlobal implements MinimumVertexCutAllGlobal {
-
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		@Override
-		public <V, E> Iterator<Set<V>> minimumCutsIter(Graph<V, E> g, WeightFunction<V> w) {
-			if (g instanceof IndexGraph) {
-				IWeightFunction iw = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-				return (Iterator) minimumCutsIter((IndexGraph) g, iw);
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);
-				Iterator<IntSet> indexCuts = minimumCutsIter(iGraph, iw);
-				return IterTools.map(indexCuts, c -> IndexIdMaps.indexToIdSet(c, viMap));
-			}
-		}
-
-		abstract Iterator<IntSet> minimumCutsIter(IndexGraph g, IWeightFunction w);
-	}
-
 	static class AuxiliaryGraph {
 
 		final IndexGraph graph;

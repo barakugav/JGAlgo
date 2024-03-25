@@ -43,14 +43,23 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
  *
  * @author Barak Ugav
  */
-class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutUtils.AbstractImplAllGlobal {
+public class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutAllGlobalAbstract {
 
 	private final MinimumVertexCutGlobal globalConnectivityAlgo = MinimumVertexCutGlobal.newInstance();
 	private final MaximumFlow maxFlowAlgo = MaximumFlow.newInstance();
 	private final MinimumEdgeCutAllSTPicardQueyranne minEdgeCutAllStAlgo = new MinimumEdgeCutAllSTPicardQueyranne();
 
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link MinimumVertexCutAllGlobal#newInstance()} to get a default implementation for the
+	 * {@link MinimumVertexCutAllGlobal} interface.
+	 */
+	public MinimumVertexCutAllGlobalKanevsky() {}
+
 	@Override
-	Iterator<IntSet> minimumCutsIter(IndexGraph g, IWeightFunction w) {
+	protected Iterator<IntSet> minimumCutsIter(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 		Assertions.onlyCardinality(w);
 
