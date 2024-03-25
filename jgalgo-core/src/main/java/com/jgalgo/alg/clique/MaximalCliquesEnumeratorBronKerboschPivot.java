@@ -37,10 +37,19 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-class MaximalCliquesEnumeratorBronKerboschPivot extends MaximalCliquesEnumerators.AbstractImpl {
+public class MaximalCliquesEnumeratorBronKerboschPivot extends MaximalCliquesEnumeratorAbstract {
+
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link MaximalCliquesEnumerator#newInstance()} to get a default implementation for the
+	 * {@link MaximalCliquesEnumerator} interface.
+	 */
+	public MaximalCliquesEnumeratorBronKerboschPivot() {}
 
 	@Override
-	Iterator<IntSet> maximalCliquesIter(IndexGraph g) {
+	protected Iterator<IntSet> maximalCliquesIter(IndexGraph g) {
 		Assertions.onlyUndirected(g);
 
 		return new Iterator<>() {
@@ -201,7 +210,6 @@ class MaximalCliquesEnumeratorBronKerboschPivot extends MaximalCliquesEnumerator
 
 				return pivot;
 			}
-
 		};
 	}
 
