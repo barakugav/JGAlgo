@@ -43,12 +43,21 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
  *
  * @author Barak Ugav
  */
-class MinimumVertexCutAllSTEdgeCut extends MinimumVertexCutUtils.AbstractImplAllST {
+public class MinimumVertexCutAllSTEdgeCut extends MinimumVertexCutAllSTAbstract {
 
 	private final MinimumEdgeCutAllST minEdgeCutAlgo = MinimumEdgeCutAllST.newInstance();
 
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link MinimumVertexCutAllST#newInstance()} to get a default implementation for the
+	 * {@link MinimumVertexCutAllST} interface.
+	 */
+	public MinimumVertexCutAllSTEdgeCut() {}
+
 	@Override
-	Iterator<IntSet> minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink) {
+	protected Iterator<IntSet> minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink) {
 		AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, w);
 		if (g.containsEdge(source, sink))
 			return null;
