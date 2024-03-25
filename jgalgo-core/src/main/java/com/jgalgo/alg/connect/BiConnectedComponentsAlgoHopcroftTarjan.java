@@ -42,10 +42,19 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgos.AbstractImpl {
+public class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoAbstract {
+
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link BiConnectedComponentsAlgo#newInstance()} to get a default implementation for the
+	 * {@link BiConnectedComponentsAlgo} interface.
+	 */
+	public BiConnectedComponentsAlgoHopcroftTarjan() {}
 
 	@Override
-	BiConnectedComponentsAlgo.IResult findBiConnectedComponents(IndexGraph g) {
+	protected BiConnectedComponentsAlgo.IResult findBiConnectedComponents(IndexGraph g) {
 		Assertions.onlyUndirected(g);
 
 		final int n = g.vertices().size();
@@ -168,7 +177,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgos
 			}
 		}
 
-		return new BiConnectedComponentsAlgos.IndexResult(g, biccs);
+		return new IndexResult(g, biccs);
 	}
 
 }

@@ -36,35 +36,50 @@ import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-class BiConnectedComponentsAlgos {
+/**
+ * Abstract class for bi-connected components algorithms.
+ *
+ * <p>
+ * The class implements the interface by solving the problem on the index graph and then maps the results back to the
+ * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ *
+ * @author Barak Ugav
+ */
+public abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponentsAlgo {
 
-	private BiConnectedComponentsAlgos() {}
+	/**
+	 * Default constructor.
+	 */
+	public BiConnectedComponentsAlgoAbstract() {}
 
-	abstract static class AbstractImpl implements BiConnectedComponentsAlgo {
+	@SuppressWarnings("unchecked")
+	@Override
+	public <V, E> BiConnectedComponentsAlgo.Result<V, E> findBiConnectedComponents(Graph<V, E> g) {
+		if (g instanceof IndexGraph)
+			return (BiConnectedComponentsAlgo.Result<V, E>) findBiConnectedComponents((IndexGraph) g);
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> BiConnectedComponentsAlgo.Result<V, E> findBiConnectedComponents(Graph<V, E> g) {
-			if (g instanceof IndexGraph)
-				return (BiConnectedComponentsAlgo.Result<V, E>) findBiConnectedComponents((IndexGraph) g);
+		IndexGraph iGraph = g.indexGraph();
+		BiConnectedComponentsAlgo.IResult indexResult = findBiConnectedComponents(iGraph);
+		return resultFromIndexResult(g, indexResult);
+	}
 
-			IndexGraph iGraph = g.indexGraph();
-			BiConnectedComponentsAlgo.IResult indexResult = findBiConnectedComponents(iGraph);
-			return resultFromIndexResult(g, indexResult);
+	/**
+	 * Compute all maximal bi-connected components of a graph.
+	 *
+	 * @see      #findBiConnectedComponents(Graph)
+	 * @param  g a graph
+	 * @return   a result object containing the bi-connected components of the graph
+	 */
+	protected abstract BiConnectedComponentsAlgo.IResult findBiConnectedComponents(IndexGraph g);
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> BiConnectedComponentsAlgo.Result<V, E> resultFromIndexResult(Graph<V, E> g,
+			BiConnectedComponentsAlgo.IResult indexRes) {
+		if (g instanceof IntGraph) {
+			return (BiConnectedComponentsAlgo.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexRes);
+		} else {
+			return new ObjResultFromIndexResult<>(g, indexRes);
 		}
-
-		abstract BiConnectedComponentsAlgo.IResult findBiConnectedComponents(IndexGraph g);
-
-		@SuppressWarnings("unchecked")
-		private static <V, E> BiConnectedComponentsAlgo.Result<V, E> resultFromIndexResult(Graph<V, E> g,
-				BiConnectedComponentsAlgo.IResult indexRes) {
-			if (g instanceof IntGraph) {
-				return (BiConnectedComponentsAlgo.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexRes);
-			} else {
-				return new ObjResultFromIndexResult<>(g, indexRes);
-			}
-		}
-
 	}
 
 	static class IndexResult implements BiConnectedComponentsAlgo.IResult {
@@ -306,7 +321,7 @@ class BiConnectedComponentsAlgos {
 
 	}
 
-	static class IntResultFromIndexResult implements BiConnectedComponentsAlgo.IResult {
+	private static class IntResultFromIndexResult implements BiConnectedComponentsAlgo.IResult {
 
 		private final BiConnectedComponentsAlgo.IResult indexRes;
 		private final IndexIntIdMap viMap;
@@ -354,7 +369,7 @@ class BiConnectedComponentsAlgos {
 		}
 	}
 
-	static class ObjResultFromIndexResult<V, E> implements BiConnectedComponentsAlgo.Result<V, E> {
+	private static class ObjResultFromIndexResult<V, E> implements BiConnectedComponentsAlgo.Result<V, E> {
 
 		private final BiConnectedComponentsAlgo.IResult indexRes;
 		private final IndexIdMap<V> viMap;
