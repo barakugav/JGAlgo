@@ -40,13 +40,22 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImplAllST {
+public class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutAllSTAbstract {
 
 	private final MaximumFlow maxFlowAlgo = MaximumFlow.newInstance();
 	private final ClosuresEnumerator closuresAlgo = ClosuresEnumerator.newInstance();
 
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link MinimumEdgeCutAllST#newInstance()} to get a default implementation for the
+	 * {@link MinimumEdgeCutAllST} interface.
+	 */
+	public MinimumEdgeCutAllSTPicardQueyranne() {}
+
 	@Override
-	Iterator<IVertexBiPartition> minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink) {
+	protected Iterator<IVertexBiPartition> minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink) {
 		/* Compute maximum flow in the graph, with the weight function as capacity func */
 		IFlow maxFlow = (IFlow) maxFlowAlgo.computeMaximumFlow(g, w, Integer.valueOf(source), Integer.valueOf(sink));
 

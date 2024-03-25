@@ -17,7 +17,6 @@ package com.jgalgo.alg.connect;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
-import java.util.Iterator;
 import com.jgalgo.alg.IVertexBiPartition;
 import com.jgalgo.alg.VertexBiPartition;
 import com.jgalgo.alg.flow.IFlow;
@@ -33,7 +32,6 @@ import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.IntAdapters;
-import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -90,35 +88,6 @@ class MinimumEdgeCutUtils {
 
 		abstract IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, IntCollection sources,
 				IntCollection sinks);
-
-	}
-
-	abstract static class AbstractImplAllST implements MinimumEdgeCutAllST {
-
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		@Override
-		public <V, E> Iterator<VertexBiPartition<V, E>> minimumCutsIter(Graph<V, E> g, WeightFunction<E> w, V source,
-				V sink) {
-			if (g instanceof IndexGraph) {
-				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-				int source0 = ((Integer) source).intValue();
-				int sink0 = ((Integer) sink).intValue();
-				return (Iterator) minimumCutsIter((IndexGraph) g, w0, source0, sink0);
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-				int iSource = viMap.idToIndex(source);
-				int iSink = viMap.idToIndex(sink);
-				Iterator<IVertexBiPartition> indexIter = minimumCutsIter(iGraph, iw, iSource, iSink);
-				return IterTools
-						.map(indexIter, iPartition -> VertexBiPartition.partitionFromIndexPartition(g, iPartition));
-			}
-		}
-
-		abstract Iterator<IVertexBiPartition> minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink);
 
 	}
 
