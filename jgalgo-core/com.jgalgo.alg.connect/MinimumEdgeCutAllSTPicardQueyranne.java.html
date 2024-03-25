@@ -40,218 +40,227 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L43">class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImplAllST {</span>
+<span class="fc" id="L43">public class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutAllSTAbstract {</span>
 
 <span class="fc" id="L45">	private final MaximumFlow maxFlowAlgo = MaximumFlow.newInstance();</span>
 <span class="fc" id="L46">	private final ClosuresEnumerator closuresAlgo = ClosuresEnumerator.newInstance();</span>
 
-	@Override
-	Iterator&lt;IVertexBiPartition&gt; minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink) {
-		/* Compute maximum flow in the graph, with the weight function as capacity func */
-<span class="fc" id="L51">		IFlow maxFlow = (IFlow) maxFlowAlgo.computeMaximumFlow(g, w, Integer.valueOf(source), Integer.valueOf(sink));</span>
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * &lt;p&gt;
+	 * Please prefer using {@link MinimumEdgeCutAllST#newInstance()} to get a default implementation for the
+	 * {@link MinimumEdgeCutAllST} interface.
+	 */
+<span class="fc" id="L55">	public MinimumEdgeCutAllSTPicardQueyranne() {}</span>
 
-<span class="fc" id="L53">		return minimumCutsIter(g, w, source, sink, maxFlow);</span>
+	@Override
+	protected Iterator&lt;IVertexBiPartition&gt; minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink) {
+		/* Compute maximum flow in the graph, with the weight function as capacity func */
+<span class="fc" id="L60">		IFlow maxFlow = (IFlow) maxFlowAlgo.computeMaximumFlow(g, w, Integer.valueOf(source), Integer.valueOf(sink));</span>
+
+<span class="fc" id="L62">		return minimumCutsIter(g, w, source, sink, maxFlow);</span>
 	}
 
 	Iterator&lt;IVertexBiPartition&gt; minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink, IFlow maxFlow) {
-<span class="fc" id="L57">		final int n = g.vertices().size();</span>
-<span class="fc" id="L58">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">		final double eps = range(g.edges().size()).mapToDouble(w::weight).filter(c -&gt; c &gt; 0).min().orElse(0) * 1e-8;</span>
+<span class="fc" id="L66">		final int n = g.vertices().size();</span>
+<span class="fc" id="L67">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">		final double eps = range(g.edges().size()).mapToDouble(w::weight).filter(c -&gt; c &gt; 0).min().orElse(0) * 1e-8;</span>
 
 		/* Identify all the vertices reachable from the source and the reverse-reachable from the sink */
-<span class="fc" id="L62">		Bitmap reachableFromSource = new Bitmap(n);</span>
-<span class="fc" id="L63">		Bitmap reverseReachableFromSink = new Bitmap(n);</span>
-<span class="fc" id="L64">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
-<span class="fc" id="L65">		reachableFromSource.set(source);</span>
-<span class="fc" id="L66">		queue.enqueue(source);</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
-<span class="fc" id="L69">				int u = queue.dequeueInt();</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L71">					int e = eit.nextInt();</span>
-<span class="fc" id="L72">					double ef = maxFlow.getFlow(e);</span>
-<span class="fc" id="L73">					double ew = w.weight(e);</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">					if (!(ef &lt; ew - eps))</span>
-<span class="fc" id="L75">						continue; /* not a residual edge */</span>
-<span class="fc" id="L76">					int v = eit.targetInt();</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">					if (reachableFromSource.get(v))</span>
-<span class="fc" id="L78">						continue;</span>
-<span class="fc" id="L79">					reachableFromSource.set(v);</span>
-<span class="fc" id="L80">					queue.enqueue(v);</span>
-<span class="fc" id="L81">				}</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L83">					int e = eit.nextInt();</span>
-<span class="fc" id="L84">					double ef = maxFlow.getFlow(e);</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">					if (!(ef &gt; eps))</span>
-<span class="fc" id="L86">						continue; /* not a residual edge */</span>
-<span class="fc" id="L87">					int v = eit.sourceInt();</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">					if (reachableFromSource.get(v))</span>
-<span class="fc" id="L89">						continue;</span>
-<span class="fc" id="L90">					reachableFromSource.set(v);</span>
-<span class="fc" id="L91">					queue.enqueue(v);</span>
-<span class="fc" id="L92">				}</span>
-<span class="fc" id="L93">			}</span>
+<span class="fc" id="L71">		Bitmap reachableFromSource = new Bitmap(n);</span>
+<span class="fc" id="L72">		Bitmap reverseReachableFromSink = new Bitmap(n);</span>
+<span class="fc" id="L73">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L74">		reachableFromSource.set(source);</span>
+<span class="fc" id="L75">		queue.enqueue(source);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
+<span class="fc" id="L78">				int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L80">					int e = eit.nextInt();</span>
+<span class="fc" id="L81">					double ef = maxFlow.getFlow(e);</span>
+<span class="fc" id="L82">					double ew = w.weight(e);</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">					if (!(ef &lt; ew - eps))</span>
+<span class="fc" id="L84">						continue; /* not a residual edge */</span>
+<span class="fc" id="L85">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">					if (reachableFromSource.get(v))</span>
+<span class="fc" id="L87">						continue;</span>
+<span class="fc" id="L88">					reachableFromSource.set(v);</span>
+<span class="fc" id="L89">					queue.enqueue(v);</span>
+<span class="fc" id="L90">				}</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L92">					int e = eit.nextInt();</span>
+<span class="fc" id="L93">					double ef = maxFlow.getFlow(e);</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">					if (!(ef &gt; eps))</span>
+<span class="fc" id="L95">						continue; /* not a residual edge */</span>
+<span class="fc" id="L96">					int v = eit.sourceInt();</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">					if (reachableFromSource.get(v))</span>
+<span class="fc" id="L98">						continue;</span>
+<span class="fc" id="L99">					reachableFromSource.set(v);</span>
+<span class="fc" id="L100">					queue.enqueue(v);</span>
+<span class="fc" id="L101">				}</span>
+<span class="fc" id="L102">			}</span>
 		} else {
-<span class="fc bfc" id="L95" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
-<span class="fc" id="L96">				int u = queue.dequeueInt();</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">				for (int e : g.outEdges(u)) {</span>
-<span class="fc" id="L98">					int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);</span>
-<span class="fc" id="L99">					double f = maxFlow.getFlow(e);</span>
-<span class="fc" id="L100">					double ew = w.weight(e);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
+<span class="fc" id="L105">				int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">				for (int e : g.outEdges(u)) {</span>
+<span class="fc" id="L107">					int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);</span>
+<span class="fc" id="L108">					double f = maxFlow.getFlow(e);</span>
+<span class="fc" id="L109">					double ew = w.weight(e);</span>
 					int v;
-<span class="fc bfc" id="L102" title="All 2 branches covered.">					if (u == u0) {</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">						if (!(f &lt; ew - eps))</span>
-<span class="fc" id="L104">							continue; /* not a residual edge */</span>
-<span class="fc" id="L105">						v = v0;</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">					if (u == u0) {</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">						if (!(f &lt; ew - eps))</span>
+<span class="fc" id="L113">							continue; /* not a residual edge */</span>
+<span class="fc" id="L114">						v = v0;</span>
 					} else {
-<span class="pc bpc" id="L107" title="1 of 2 branches missed.">						assert u == v0;</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">						if (!(f &gt; -ew + eps))</span>
-<span class="fc" id="L109">							continue; /* not a residual edge */</span>
-<span class="fc" id="L110">						v = u0;</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">						assert u == v0;</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">						if (!(f &gt; -ew + eps))</span>
+<span class="fc" id="L118">							continue; /* not a residual edge */</span>
+<span class="fc" id="L119">						v = u0;</span>
 					}
-<span class="fc bfc" id="L112" title="All 2 branches covered.">					if (reachableFromSource.get(v))</span>
-<span class="fc" id="L113">						continue;</span>
-<span class="fc" id="L114">					reachableFromSource.set(v);</span>
-<span class="fc" id="L115">					queue.enqueue(v);</span>
-<span class="fc" id="L116">				}</span>
-<span class="fc" id="L117">			}</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">					if (reachableFromSource.get(v))</span>
+<span class="fc" id="L122">						continue;</span>
+<span class="fc" id="L123">					reachableFromSource.set(v);</span>
+<span class="fc" id="L124">					queue.enqueue(v);</span>
+<span class="fc" id="L125">				}</span>
+<span class="fc" id="L126">			}</span>
 		}
-<span class="fc" id="L119">		reverseReachableFromSink.set(sink);</span>
-<span class="fc" id="L120">		queue.enqueue(sink);</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
-<span class="fc" id="L123">				int u = queue.dequeueInt();</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L125">					int e = eit.nextInt();</span>
-<span class="fc" id="L126">					double ef = maxFlow.getFlow(e);</span>
-<span class="fc" id="L127">					double ew = w.weight(e);</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">					if (!(ef &lt; ew - eps))</span>
-<span class="fc" id="L129">						continue; /* not a residual edge */</span>
-<span class="fc" id="L130">					int v = eit.sourceInt();</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">					if (reverseReachableFromSink.get(v))</span>
-<span class="fc" id="L132">						continue;</span>
-<span class="fc" id="L133">					reverseReachableFromSink.set(v);</span>
-<span class="fc" id="L134">					queue.enqueue(v);</span>
-<span class="fc" id="L135">				}</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L137">					int e = eit.nextInt();</span>
-<span class="fc" id="L138">					double ef = maxFlow.getFlow(e);</span>
-<span class="fc bfc" id="L139" title="All 2 branches covered.">					if (!(ef &gt; eps))</span>
-<span class="fc" id="L140">						continue; /* not a residual edge */</span>
-<span class="fc" id="L141">					int v = eit.targetInt();</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">					if (reverseReachableFromSink.get(v))</span>
-<span class="fc" id="L143">						continue;</span>
-<span class="fc" id="L144">					reverseReachableFromSink.set(v);</span>
-<span class="fc" id="L145">					queue.enqueue(v);</span>
-<span class="fc" id="L146">				}</span>
-<span class="fc" id="L147">			}</span>
+<span class="fc" id="L128">		reverseReachableFromSink.set(sink);</span>
+<span class="fc" id="L129">		queue.enqueue(sink);</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
+<span class="fc" id="L132">				int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L134">					int e = eit.nextInt();</span>
+<span class="fc" id="L135">					double ef = maxFlow.getFlow(e);</span>
+<span class="fc" id="L136">					double ew = w.weight(e);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">					if (!(ef &lt; ew - eps))</span>
+<span class="fc" id="L138">						continue; /* not a residual edge */</span>
+<span class="fc" id="L139">					int v = eit.sourceInt();</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">					if (reverseReachableFromSink.get(v))</span>
+<span class="fc" id="L141">						continue;</span>
+<span class="fc" id="L142">					reverseReachableFromSink.set(v);</span>
+<span class="fc" id="L143">					queue.enqueue(v);</span>
+<span class="fc" id="L144">				}</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L146">					int e = eit.nextInt();</span>
+<span class="fc" id="L147">					double ef = maxFlow.getFlow(e);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">					if (!(ef &gt; eps))</span>
+<span class="fc" id="L149">						continue; /* not a residual edge */</span>
+<span class="fc" id="L150">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">					if (reverseReachableFromSink.get(v))</span>
+<span class="fc" id="L152">						continue;</span>
+<span class="fc" id="L153">					reverseReachableFromSink.set(v);</span>
+<span class="fc" id="L154">					queue.enqueue(v);</span>
+<span class="fc" id="L155">				}</span>
+<span class="fc" id="L156">			}</span>
 		} else {
-<span class="fc bfc" id="L149" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
-<span class="fc" id="L150">				int u = queue.dequeueInt();</span>
-<span class="fc bfc" id="L151" title="All 2 branches covered.">				for (int e : g.outEdges(u)) {</span>
-<span class="fc" id="L152">					int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);</span>
-<span class="fc" id="L153">					double f = maxFlow.getFlow(e);</span>
-<span class="fc" id="L154">					double ew = w.weight(e);</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
+<span class="fc" id="L159">				int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">				for (int e : g.outEdges(u)) {</span>
+<span class="fc" id="L161">					int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);</span>
+<span class="fc" id="L162">					double f = maxFlow.getFlow(e);</span>
+<span class="fc" id="L163">					double ew = w.weight(e);</span>
 					int v;
-<span class="fc bfc" id="L156" title="All 2 branches covered.">					if (u == u0) {</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">						if (!(f &gt; -ew + eps))</span>
-<span class="fc" id="L158">							continue; /* not a residual edge */</span>
-<span class="fc" id="L159">						v = v0;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">					if (u == u0) {</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">						if (!(f &gt; -ew + eps))</span>
+<span class="fc" id="L167">							continue; /* not a residual edge */</span>
+<span class="fc" id="L168">						v = v0;</span>
 					} else {
-<span class="pc bpc" id="L161" title="1 of 2 branches missed.">						assert u == v0;</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">						if (!(f &lt; ew - eps))</span>
-<span class="fc" id="L163">							continue; /* not a residual edge */</span>
-<span class="fc" id="L164">						v = u0;</span>
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">						assert u == v0;</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">						if (!(f &lt; ew - eps))</span>
+<span class="fc" id="L172">							continue; /* not a residual edge */</span>
+<span class="fc" id="L173">						v = u0;</span>
 					}
-<span class="fc bfc" id="L166" title="All 2 branches covered.">					if (reverseReachableFromSink.get(v))</span>
-<span class="fc" id="L167">						continue;</span>
-<span class="fc" id="L168">					reverseReachableFromSink.set(v);</span>
-<span class="fc" id="L169">					queue.enqueue(v);</span>
-<span class="fc" id="L170">				}</span>
-<span class="fc" id="L171">			}</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">					if (reverseReachableFromSink.get(v))</span>
+<span class="fc" id="L176">						continue;</span>
+<span class="fc" id="L177">					reverseReachableFromSink.set(v);</span>
+<span class="fc" id="L178">					queue.enqueue(v);</span>
+<span class="fc" id="L179">				}</span>
+<span class="fc" id="L180">			}</span>
 		}
 
 		/* Remove blocks that always belong to the closure of the source and sink */
-<span class="fc" id="L175">		Bitmap removedVertices = new Bitmap(n);</span>
-<span class="fc" id="L176">		removedVertices.or(reachableFromSource);</span>
-<span class="fc" id="L177">		removedVertices.or(reverseReachableFromSink);</span>
+<span class="fc" id="L184">		Bitmap removedVertices = new Bitmap(n);</span>
+<span class="fc" id="L185">		removedVertices.or(reachableFromSource);</span>
+<span class="fc" id="L186">		removedVertices.or(reverseReachableFromSink);</span>
 
 		/* Build the residual network of the graph */
-<span class="fc" id="L180">		IndexGraphBuilder residual0 = IndexGraphBuilder.directed();</span>
-<span class="fc" id="L181">		residual0.ensureVertexCapacity(n);</span>
-<span class="fc" id="L182">		int[] vToResV = new int[n];</span>
-<span class="fc" id="L183">		int[] resVToV = new int[n];</span>
-<span class="fc" id="L184">		Arrays.fill(vToResV, -1);</span>
-<span class="fc" id="L185">		Arrays.fill(resVToV, -1);</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">		for (int v : range(n)) {</span>
-<span class="fc bfc" id="L187" title="All 2 branches covered.">			if (removedVertices.get(v))</span>
-<span class="fc" id="L188">				continue;</span>
-<span class="fc" id="L189">			int resV = residual0.addVertexInt();</span>
-<span class="fc" id="L190">			vToResV[v] = resV;</span>
-<span class="fc" id="L191">			resVToV[resV] = v;</span>
-<span class="fc" id="L192">		}</span>
-<span class="fc bfc" id="L193" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc bfc" id="L194" title="All 2 branches covered.">			for (int e : range(g.edges().size())) {</span>
-<span class="fc" id="L195">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">				if (u == v)</span>
-<span class="fc" id="L197">					continue;</span>
-<span class="fc" id="L198">				int resU = vToResV[u], resV = vToResV[v];</span>
-<span class="fc bfc" id="L199" title="All 4 branches covered.">				if (resU &lt; 0 || resV &lt; 0)</span>
-<span class="fc" id="L200">					continue;</span>
-<span class="fc" id="L201">				double ef = maxFlow.getFlow(e);</span>
-<span class="fc" id="L202">				double ew = w.weight(e);</span>
-<span class="fc bfc" id="L203" title="All 2 branches covered.">				if (ef &lt; ew - eps)</span>
-<span class="fc" id="L204">					residual0.addEdge(resU, resV);</span>
-<span class="fc bfc" id="L205" title="All 2 branches covered.">				if (ef &gt; eps)</span>
-<span class="fc" id="L206">					residual0.addEdge(resV, resU);</span>
-<span class="fc" id="L207">			}</span>
+<span class="fc" id="L189">		IndexGraphBuilder residual0 = IndexGraphBuilder.directed();</span>
+<span class="fc" id="L190">		residual0.ensureVertexCapacity(n);</span>
+<span class="fc" id="L191">		int[] vToResV = new int[n];</span>
+<span class="fc" id="L192">		int[] resVToV = new int[n];</span>
+<span class="fc" id="L193">		Arrays.fill(vToResV, -1);</span>
+<span class="fc" id="L194">		Arrays.fill(resVToV, -1);</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">		for (int v : range(n)) {</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">			if (removedVertices.get(v))</span>
+<span class="fc" id="L197">				continue;</span>
+<span class="fc" id="L198">			int resV = residual0.addVertexInt();</span>
+<span class="fc" id="L199">			vToResV[v] = resV;</span>
+<span class="fc" id="L200">			resVToV[resV] = v;</span>
+<span class="fc" id="L201">		}</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">			for (int e : range(g.edges().size())) {</span>
+<span class="fc" id="L204">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">				if (u == v)</span>
+<span class="fc" id="L206">					continue;</span>
+<span class="fc" id="L207">				int resU = vToResV[u], resV = vToResV[v];</span>
+<span class="fc bfc" id="L208" title="All 4 branches covered.">				if (resU &lt; 0 || resV &lt; 0)</span>
+<span class="fc" id="L209">					continue;</span>
+<span class="fc" id="L210">				double ef = maxFlow.getFlow(e);</span>
+<span class="fc" id="L211">				double ew = w.weight(e);</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">				if (ef &lt; ew - eps)</span>
+<span class="fc" id="L213">					residual0.addEdge(resU, resV);</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">				if (ef &gt; eps)</span>
+<span class="fc" id="L215">					residual0.addEdge(resV, resU);</span>
+<span class="fc" id="L216">			}</span>
 
 		} else {
-<span class="fc bfc" id="L210" title="All 2 branches covered.">			for (int e : range(g.edges().size())) {</span>
-<span class="fc" id="L211">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L212" title="All 2 branches covered.">				if (u == v)</span>
-<span class="fc" id="L213">					continue;</span>
-<span class="fc" id="L214">				int resU = vToResV[u], resV = vToResV[v];</span>
-<span class="pc bpc" id="L215" title="1 of 4 branches missed.">				if (resU &lt; 0 || resV &lt; 0)</span>
-<span class="nc" id="L216">					continue;</span>
-<span class="fc" id="L217">				double f = maxFlow.getFlow(e);</span>
-<span class="fc" id="L218">				double ew = w.weight(e);</span>
-<span class="pc bpc" id="L219" title="1 of 2 branches missed.">				if (f &lt; ew - eps)</span>
-<span class="fc" id="L220">					residual0.addEdge(resU, resV);</span>
-<span class="pc bpc" id="L221" title="1 of 2 branches missed.">				if (f &gt; -ew + eps)</span>
-<span class="fc" id="L222">					residual0.addEdge(resV, resU);</span>
-<span class="fc" id="L223">			}</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">			for (int e : range(g.edges().size())) {</span>
+<span class="fc" id="L220">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">				if (u == v)</span>
+<span class="fc" id="L222">					continue;</span>
+<span class="fc" id="L223">				int resU = vToResV[u], resV = vToResV[v];</span>
+<span class="pc bpc" id="L224" title="1 of 4 branches missed.">				if (resU &lt; 0 || resV &lt; 0)</span>
+<span class="nc" id="L225">					continue;</span>
+<span class="fc" id="L226">				double f = maxFlow.getFlow(e);</span>
+<span class="fc" id="L227">				double ew = w.weight(e);</span>
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">				if (f &lt; ew - eps)</span>
+<span class="fc" id="L229">					residual0.addEdge(resU, resV);</span>
+<span class="pc bpc" id="L230" title="1 of 2 branches missed.">				if (f &gt; -ew + eps)</span>
+<span class="fc" id="L231">					residual0.addEdge(resV, resU);</span>
+<span class="fc" id="L232">			}</span>
 		}
-<span class="fc" id="L225">		IndexGraph residual = residual0.build();</span>
+<span class="fc" id="L234">		IndexGraph residual = residual0.build();</span>
 
-<span class="fc" id="L227">		return new Iterator&lt;&gt;() {</span>
+<span class="fc" id="L236">		return new Iterator&lt;&gt;() {</span>
 
-<span class="fc" id="L229">			@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })</span>
-<span class="fc" id="L230">			private final Iterator&lt;IntSet&gt; closuresIter = (Iterator) closuresAlgo.closuresIter(residual);</span>
-<span class="fc" id="L231">			private IVertexBiPartition nextCut = IVertexBiPartition.fromBitmap(g, reachableFromSource);</span>
+<span class="fc" id="L238">			@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })</span>
+<span class="fc" id="L239">			private final Iterator&lt;IntSet&gt; closuresIter = (Iterator) closuresAlgo.closuresIter(residual);</span>
+<span class="fc" id="L240">			private IVertexBiPartition nextCut = IVertexBiPartition.fromBitmap(g, reachableFromSource);</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc bfc" id="L235" title="All 2 branches covered.">				return nextCut != null;</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">				return nextCut != null;</span>
 			}
 
 			@Override
 			public IVertexBiPartition next() {
-<span class="fc" id="L240">				Assertions.hasNext(this);</span>
-<span class="fc" id="L241">				IVertexBiPartition ret = nextCut;</span>
+<span class="fc" id="L249">				Assertions.hasNext(this);</span>
+<span class="fc" id="L250">				IVertexBiPartition ret = nextCut;</span>
 
-<span class="fc bfc" id="L243" title="All 2 branches covered.">				if (closuresIter.hasNext()) {</span>
-<span class="fc" id="L244">					Bitmap cut = new Bitmap(n);</span>
-<span class="fc bfc" id="L245" title="All 2 branches covered.">					for (int resV : closuresIter.next())</span>
-<span class="fc" id="L246">						cut.set(resVToV[resV]);</span>
-<span class="fc bfc" id="L247" title="All 2 branches covered.">					for (int v : reachableFromSource)</span>
-<span class="fc" id="L248">						cut.set(v);</span>
-<span class="fc" id="L249">					nextCut = IVertexBiPartition.fromBitmap(g, cut);</span>
-<span class="fc" id="L250">				} else {</span>
-<span class="fc" id="L251">					nextCut = null;</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">				if (closuresIter.hasNext()) {</span>
+<span class="fc" id="L253">					Bitmap cut = new Bitmap(n);</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">					for (int resV : closuresIter.next())</span>
+<span class="fc" id="L255">						cut.set(resVToV[resV]);</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">					for (int v : reachableFromSource)</span>
+<span class="fc" id="L257">						cut.set(v);</span>
+<span class="fc" id="L258">					nextCut = IVertexBiPartition.fromBitmap(g, cut);</span>
+<span class="fc" id="L259">				} else {</span>
+<span class="fc" id="L260">					nextCut = null;</span>
 				}
 
-<span class="fc" id="L254">				return ret;</span>
+<span class="fc" id="L263">				return ret;</span>
 			}
 
 		};

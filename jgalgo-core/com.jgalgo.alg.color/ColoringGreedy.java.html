@@ -44,41 +44,50 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Greedy_coloring&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-<span class="fc" id="L47">class ColoringGreedy extends ColoringUtils.AbstractImpl implements RandomizedAlgorithm {</span>
+public class ColoringGreedy extends ColoringAlgoAbstract implements RandomizedAlgorithm {
 
 <span class="fc" id="L49">	private final Random rand = new Random();</span>
 
+	/**
+	 * Create a new coloring algorithm object.
+	 *
+	 * &lt;p&gt;
+	 * Please prefer using {@link ColoringAlgo#newInstance()} to get a default implementation for the
+	 * {@link ColoringAlgo} interface.
+	 */
+<span class="fc" id="L58">	public ColoringGreedy() {}</span>
+
 	@Override
 	public void setSeed(long seed) {
-<span class="fc" id="L53">		rand.setSeed(seed);</span>
-<span class="fc" id="L54">	}</span>
+<span class="fc" id="L62">		rand.setSeed(seed);</span>
+<span class="fc" id="L63">	}</span>
 
 	@Override
-	IVertexPartition computeColoring(IndexGraph g) {
-<span class="fc" id="L58">		Assertions.onlyUndirected(g);</span>
-<span class="fc" id="L59">		Assertions.noSelfEdges(g, &quot;no valid coloring in graphs with self edges&quot;);</span>
+	protected IVertexPartition computeColoring(IndexGraph g) {
+<span class="fc" id="L67">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L68">		Assertions.noSelfEdges(g, &quot;no valid coloring in graphs with self edges&quot;);</span>
 
-<span class="fc" id="L61">		final int n = g.vertices().size();</span>
-<span class="fc" id="L62">		int[] colors = new int[n];</span>
-<span class="fc" id="L63">		int colorsNum = 0;</span>
-<span class="fc" id="L64">		Arrays.fill(colors, -1);</span>
-<span class="fc" id="L65">		int[] order = range(n).toIntArray();</span>
-<span class="fc" id="L66">		IntArrays.shuffle(order, rand);</span>
+<span class="fc" id="L70">		final int n = g.vertices().size();</span>
+<span class="fc" id="L71">		int[] colors = new int[n];</span>
+<span class="fc" id="L72">		int colorsNum = 0;</span>
+<span class="fc" id="L73">		Arrays.fill(colors, -1);</span>
+<span class="fc" id="L74">		int[] order = range(n).toIntArray();</span>
+<span class="fc" id="L75">		IntArrays.shuffle(order, rand);</span>
 
-<span class="fc" id="L68">		BitSet usedColors = new BitSet();</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int u : order) {</span>
-<span class="fc" id="L70">			usedColors.clear();</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L72">				eit.nextInt();</span>
-<span class="fc" id="L73">				int v = eit.targetInt();</span>
-<span class="fc" id="L74">				int c = colors[v];</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">				if (c &gt;= 0)</span>
-<span class="fc" id="L76">					usedColors.set(c);</span>
-<span class="fc" id="L77">			}</span>
-<span class="fc" id="L78">			int color = colors[u] = usedColors.nextClearBit(0);</span>
-<span class="fc" id="L79">			colorsNum = Math.max(colorsNum, color + 1);</span>
+<span class="fc" id="L77">		BitSet usedColors = new BitSet();</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		for (int u : order) {</span>
+<span class="fc" id="L79">			usedColors.clear();</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L81">				eit.nextInt();</span>
+<span class="fc" id="L82">				int v = eit.targetInt();</span>
+<span class="fc" id="L83">				int c = colors[v];</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">				if (c &gt;= 0)</span>
+<span class="fc" id="L85">					usedColors.set(c);</span>
+<span class="fc" id="L86">			}</span>
+<span class="fc" id="L87">			int color = colors[u] = usedColors.nextClearBit(0);</span>
+<span class="fc" id="L88">			colorsNum = Math.max(colorsNum, color + 1);</span>
 		}
-<span class="fc" id="L81">		return IVertexPartition.fromArray(g, colors, colorsNum);</span>
+<span class="fc" id="L90">		return IVertexPartition.fromArray(g, colors, colorsNum);</span>
 	}
 
 }

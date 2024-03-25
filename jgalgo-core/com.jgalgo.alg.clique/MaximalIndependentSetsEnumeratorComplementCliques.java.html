@@ -27,36 +27,45 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L30">class MaximalIndependentSetsEnumeratorComplementCliques extends MaximalIndependentSetsEnumerators.AbstractImpl {</span>
+public class MaximalIndependentSetsEnumeratorComplementCliques extends MaximalIndependentSetsEnumeratorAbstract {
 
 <span class="fc" id="L32">	private final MaximalCliquesEnumerator cliquesAlgo = MaximalCliquesEnumerator.newInstance();</span>
 
-	@Override
-	Iterator&lt;IntSet&gt; maximalIndependentSetsIter(IndexGraph g) {
-<span class="fc" id="L36">		final int n = g.vertices().size();</span>
-<span class="fc" id="L37">		Bitmap edges = new Bitmap(n * n);</span>
-<span class="fc bfc" id="L38" title="All 2 branches covered.">		for (int e : range(g.edges().size())) {</span>
-<span class="fc" id="L39">			int u = g.edgeSource(e);</span>
-<span class="fc" id="L40">			int v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L41" title="All 2 branches covered.">			if (u &gt; v) {</span>
-<span class="fc" id="L42">				int tmp = u;</span>
-<span class="fc" id="L43">				u = v;</span>
-<span class="fc" id="L44">				v = tmp;</span>
-			}
-<span class="fc" id="L46">			edges.set(u * n + v);</span>
-<span class="fc" id="L47">		}</span>
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * &lt;p&gt;
+	 * Please prefer using {@link MaximalIndependentSetsEnumerator#newInstance()} to get a default implementation for
+	 * the {@link MaximalIndependentSetsEnumerator} interface.
+	 */
+<span class="fc" id="L41">	public MaximalIndependentSetsEnumeratorComplementCliques() {}</span>
 
-<span class="fc" id="L49">		IndexGraphBuilder b = IndexGraphBuilder.newInstance(false);</span>
-<span class="fc" id="L50">		b.addVertices(range(n));</span>
-<span class="fc bfc" id="L51" title="All 2 branches covered.">		for (int u : range(n))</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">			for (int v : range(u + 1, n))</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">				if (!edges.get(u * n + v))</span>
-<span class="fc" id="L54">					b.addEdge(u, v);</span>
-<span class="fc" id="L55">		IndexGraph complement = b.build();</span>
+	@Override
+	protected Iterator&lt;IntSet&gt; maximalIndependentSetsIter(IndexGraph g) {
+<span class="fc" id="L45">		final int n = g.vertices().size();</span>
+<span class="fc" id="L46">		Bitmap edges = new Bitmap(n * n);</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		for (int e : range(g.edges().size())) {</span>
+<span class="fc" id="L48">			int u = g.edgeSource(e);</span>
+<span class="fc" id="L49">			int v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">			if (u &gt; v) {</span>
+<span class="fc" id="L51">				int tmp = u;</span>
+<span class="fc" id="L52">				u = v;</span>
+<span class="fc" id="L53">				v = tmp;</span>
+			}
+<span class="fc" id="L55">			edges.set(u * n + v);</span>
+<span class="fc" id="L56">		}</span>
+
+<span class="fc" id="L58">		IndexGraphBuilder b = IndexGraphBuilder.newInstance(false);</span>
+<span class="fc" id="L59">		b.addVertices(range(n));</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">		for (int u : range(n))</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">			for (int v : range(u + 1, n))</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">				if (!edges.get(u * n + v))</span>
+<span class="fc" id="L63">					b.addEdge(u, v);</span>
+<span class="fc" id="L64">		IndexGraph complement = b.build();</span>
 
 		@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L58">		Iterator&lt;IntSet&gt; resIter = (Iterator) cliquesAlgo.maximalCliquesIter(complement);</span>
-<span class="fc" id="L59">		return resIter;</span>
+<span class="fc" id="L67">		Iterator&lt;IntSet&gt; resIter = (Iterator) cliquesAlgo.maximalCliquesIter(complement);</span>
+<span class="fc" id="L68">		return resIter;</span>
 	}
 
 }

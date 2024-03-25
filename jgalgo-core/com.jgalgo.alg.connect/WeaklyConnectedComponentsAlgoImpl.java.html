@@ -24,92 +24,109 @@ import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-<span class="fc" id="L27">class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.AbstractWeaklyConnectedComponentsAlgo {</span>
+/**
+ * Simple implementation of the weakly connected components algorithm.
+ *
+ * &lt;p&gt;
+ * The algorithm is implemented using a simple DFS traversal of the graph. It runs in linear time and uses linear space.
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L35">public class WeaklyConnectedComponentsAlgoImpl extends WeaklyConnectedComponentsAlgoAbstract {</span>
+
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * &lt;p&gt;
+	 * Please prefer using {@link WeaklyConnectedComponentsAlgo#newInstance()} to get a default implementation for the
+	 * {@link WeaklyConnectedComponentsAlgo} interface.
+	 */
+<span class="fc" id="L44">	public WeaklyConnectedComponentsAlgoImpl() {}</span>
 
 	@Override
-	IVertexPartition findWeaklyConnectedComponents(IndexGraph g) {
-<span class="fc" id="L31">		final boolean directed = g.isDirected();</span>
-<span class="fc" id="L32">		final int n = g.vertices().size();</span>
-<span class="fc" id="L33">		int[] comp = new int[n];</span>
-<span class="fc" id="L34">		Arrays.fill(comp, -1);</span>
-<span class="fc" id="L35">		int compNum = 0;</span>
+	public IVertexPartition findWeaklyConnectedComponents(IndexGraph g) {
+<span class="fc" id="L48">		final boolean directed = g.isDirected();</span>
+<span class="fc" id="L49">		final int n = g.vertices().size();</span>
+<span class="fc" id="L50">		int[] comp = new int[n];</span>
+<span class="fc" id="L51">		Arrays.fill(comp, -1);</span>
+<span class="fc" id="L52">		int compNum = 0;</span>
 
-<span class="fc" id="L37">		IntStack stack = new IntArrayList();</span>
-<span class="fc bfc" id="L38" title="All 2 branches covered.">		for (int root : range(n)) {</span>
-<span class="fc bfc" id="L39" title="All 2 branches covered.">			if (comp[root] &gt;= 0)</span>
-<span class="fc" id="L40">				continue;</span>
-<span class="fc" id="L41">			final int compIdx = compNum++;</span>
-<span class="fc" id="L42">			stack.push(root);</span>
-<span class="fc" id="L43">			comp[root] = compIdx;</span>
+<span class="fc" id="L54">		IntStack stack = new IntArrayList();</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		for (int root : range(n)) {</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">			if (comp[root] &gt;= 0)</span>
+<span class="fc" id="L57">				continue;</span>
+<span class="fc" id="L58">			final int compIdx = compNum++;</span>
+<span class="fc" id="L59">			stack.push(root);</span>
+<span class="fc" id="L60">			comp[root] = compIdx;</span>
 
-<span class="fc bfc" id="L45" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
-<span class="fc" id="L46">				int u = stack.popInt();</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
+<span class="fc" id="L63">				int u = stack.popInt();</span>
 
-<span class="fc bfc" id="L48" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L49">					eit.nextInt();</span>
-<span class="fc" id="L50">					int v = eit.targetInt();</span>
-<span class="fc bfc" id="L51" title="All 2 branches covered.">					if (comp[v] &gt;= 0) {</span>
-<span class="pc bpc" id="L52" title="1 of 2 branches missed.">						assert comp[v] == compIdx;</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L66">					eit.nextInt();</span>
+<span class="fc" id="L67">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">					if (comp[v] &gt;= 0) {</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">						assert comp[v] == compIdx;</span>
 						continue;
 					}
-<span class="fc" id="L55">					comp[v] = compIdx;</span>
-<span class="fc" id="L56">					stack.push(v);</span>
-<span class="fc" id="L57">				}</span>
+<span class="fc" id="L72">					comp[v] = compIdx;</span>
+<span class="fc" id="L73">					stack.push(v);</span>
+<span class="fc" id="L74">				}</span>
 
-<span class="fc bfc" id="L59" title="All 2 branches covered.">				if (directed) {</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L61">						eit.nextInt();</span>
-<span class="fc" id="L62">						int v = eit.sourceInt();</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">						if (comp[v] &gt;= 0) {</span>
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">							assert comp[v] == compIdx;</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">				if (directed) {</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L78">						eit.nextInt();</span>
+<span class="fc" id="L79">						int v = eit.sourceInt();</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">						if (comp[v] &gt;= 0) {</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">							assert comp[v] == compIdx;</span>
 							continue;
 						}
-<span class="fc" id="L67">						comp[v] = compIdx;</span>
-<span class="fc" id="L68">						stack.push(v);</span>
-<span class="fc" id="L69">					}</span>
+<span class="fc" id="L84">						comp[v] = compIdx;</span>
+<span class="fc" id="L85">						stack.push(v);</span>
+<span class="fc" id="L86">					}</span>
 				}
-<span class="fc" id="L71">			}</span>
-<span class="fc" id="L72">		}</span>
-<span class="fc" id="L73">		return IVertexPartition.fromArray(g, comp, compNum);</span>
+<span class="fc" id="L88">			}</span>
+<span class="fc" id="L89">		}</span>
+<span class="fc" id="L90">		return IVertexPartition.fromArray(g, comp, compNum);</span>
 	}
 
 	@Override
-	boolean isWeaklyConnected(IndexGraph g) {
-<span class="fc" id="L78">		final boolean directed = g.isDirected();</span>
-<span class="fc" id="L79">		final int n = g.vertices().size();</span>
-<span class="fc" id="L80">		Bitmap visited = new Bitmap(n);</span>
-<span class="fc" id="L81">		int visitedCount = 0;</span>
+	protected boolean isWeaklyConnected(IndexGraph g) {
+<span class="fc" id="L95">		final boolean directed = g.isDirected();</span>
+<span class="fc" id="L96">		final int n = g.vertices().size();</span>
+<span class="fc" id="L97">		Bitmap visited = new Bitmap(n);</span>
+<span class="fc" id="L98">		int visitedCount = 0;</span>
 
-<span class="fc" id="L83">		IntStack stack = new IntArrayList();</span>
-<span class="fc" id="L84">		int root = 0;</span>
-<span class="fc" id="L85">		stack.push(root);</span>
+<span class="fc" id="L100">		IntStack stack = new IntArrayList();</span>
+<span class="fc" id="L101">		int root = 0;</span>
+<span class="fc" id="L102">		stack.push(root);</span>
 
-<span class="fc bfc" id="L87" title="All 2 branches covered.">		while (!stack.isEmpty()) {</span>
-<span class="fc" id="L88">			int u = stack.popInt();</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">		while (!stack.isEmpty()) {</span>
+<span class="fc" id="L105">			int u = stack.popInt();</span>
 
-<span class="fc bfc" id="L90" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L91">				eit.nextInt();</span>
-<span class="fc" id="L92">				int v = eit.targetInt();</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">				if (visited.get(v))</span>
-<span class="fc" id="L94">					continue;</span>
-<span class="fc" id="L95">				visited.set(v);</span>
-<span class="fc" id="L96">				visitedCount++;</span>
-<span class="fc" id="L97">				stack.push(v);</span>
-<span class="fc" id="L98">			}</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L108">				eit.nextInt();</span>
+<span class="fc" id="L109">				int v = eit.targetInt();</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">				if (visited.get(v))</span>
+<span class="fc" id="L111">					continue;</span>
+<span class="fc" id="L112">				visited.set(v);</span>
+<span class="fc" id="L113">				visitedCount++;</span>
+<span class="fc" id="L114">				stack.push(v);</span>
+<span class="fc" id="L115">			}</span>
 
-<span class="fc bfc" id="L100" title="All 2 branches covered.">			if (directed) {</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L102">					eit.nextInt();</span>
-<span class="fc" id="L103">					int v = eit.sourceInt();</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">					if (visited.get(v))</span>
-<span class="fc" id="L105">						continue;</span>
-<span class="fc" id="L106">					visited.set(v);</span>
-<span class="fc" id="L107">					visitedCount++;</span>
-<span class="fc" id="L108">					stack.push(v);</span>
-<span class="fc" id="L109">				}</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L119">					eit.nextInt();</span>
+<span class="fc" id="L120">					int v = eit.sourceInt();</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L122">						continue;</span>
+<span class="fc" id="L123">					visited.set(v);</span>
+<span class="fc" id="L124">					visitedCount++;</span>
+<span class="fc" id="L125">					stack.push(v);</span>
+<span class="fc" id="L126">				}</span>
 			}
-<span class="fc" id="L111">		}</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">		return visitedCount == n;</span>
+<span class="fc" id="L128">		}</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">		return visitedCount == n;</span>
 	}
 
 }

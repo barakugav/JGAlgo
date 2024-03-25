@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg.connect;
 
-import com.jgalgo.alg.connect.MinimumVertexCutUtils.AuxiliaryGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Bitmap;
@@ -38,34 +37,43 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L41">class MinimumVertexCutSTEdgeCut extends MinimumVertexCutUtils.AbstractImplST {</span>
+public class MinimumVertexCutSTEdgeCut extends MinimumVertexCutSTAbstract {
 
-<span class="fc" id="L43">	private final MinimumEdgeCutST minEdgeCutAlgo = MinimumEdgeCutST.newInstance();</span>
+<span class="fc" id="L42">	private final MinimumEdgeCutST minEdgeCutAlgo = MinimumEdgeCutST.newInstance();</span>
+
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * &lt;p&gt;
+	 * Please prefer using {@link MinimumVertexCutST#newInstance()} to get a default implementation for the
+	 * {@link MinimumVertexCutST} interface.
+	 */
+<span class="fc" id="L51">	public MinimumVertexCutSTEdgeCut() {}</span>
 
 	@Override
-	IntSet computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
-<span class="fc" id="L47">		AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, w);</span>
-<span class="fc" id="L48">		int[] vertexCut = computeMinCut(g, source, sink, auxiliaryGraph);</span>
-<span class="fc bfc" id="L49" title="All 2 branches covered.">		if (vertexCut == null)</span>
-<span class="fc" id="L50">			return null;</span>
-
-<span class="fc" id="L52">		final int n = g.vertices().size();</span>
-<span class="fc" id="L53">		return ImmutableIntArraySet.withBitmap(Bitmap.fromOnes(n, vertexCut));</span>
-	}
-
-	int[] computeMinCut(IndexGraph g, int source, int sink, AuxiliaryGraph auxiliaryGraph) {
-<span class="fc bfc" id="L57" title="All 2 branches covered.">		if (g.containsEdge(source, sink))</span>
+	protected IntSet computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
+<span class="fc" id="L55">		MinVertexCutAuxiliaryGraph auxiliaryGraph = new MinVertexCutAuxiliaryGraph(g, w);</span>
+<span class="fc" id="L56">		int[] vertexCut = computeMinCut(g, source, sink, auxiliaryGraph);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		if (vertexCut == null)</span>
 <span class="fc" id="L58">			return null;</span>
 
-<span class="fc" id="L60">		IndexGraph g0 = auxiliaryGraph.graph;</span>
-<span class="fc" id="L61">		IWeightFunction w0 = auxiliaryGraph.weights;</span>
+<span class="fc" id="L60">		final int n = g.vertices().size();</span>
+<span class="fc" id="L61">		return ImmutableIntArraySet.withBitmap(Bitmap.fromOnes(n, vertexCut));</span>
+	}
 
-<span class="fc" id="L63">		IntSet edgesCut = (IntSet) minEdgeCutAlgo</span>
-<span class="fc" id="L64">				.computeMinimumCut(g0, w0, Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0))</span>
-<span class="fc" id="L65">				.crossEdges();</span>
-<span class="fc" id="L66">		int[] cut = edgesCut.toIntArray();</span>
-<span class="fc" id="L67">		auxiliaryGraph.edgeCutToVertexCut(cut);</span>
-<span class="fc" id="L68">		return cut;</span>
+	int[] computeMinCut(IndexGraph g, int source, int sink, MinVertexCutAuxiliaryGraph auxiliaryGraph) {
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		if (g.containsEdge(source, sink))</span>
+<span class="fc" id="L66">			return null;</span>
+
+<span class="fc" id="L68">		IndexGraph g0 = auxiliaryGraph.graph;</span>
+<span class="fc" id="L69">		IWeightFunction w0 = auxiliaryGraph.weights;</span>
+
+<span class="fc" id="L71">		IntSet edgesCut = (IntSet) minEdgeCutAlgo</span>
+<span class="fc" id="L72">				.computeMinimumCut(g0, w0, Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0))</span>
+<span class="fc" id="L73">				.crossEdges();</span>
+<span class="fc" id="L74">		int[] cut = edgesCut.toIntArray();</span>
+<span class="fc" id="L75">		auxiliaryGraph.edgeCutToVertexCut(cut);</span>
+<span class="fc" id="L76">		return cut;</span>
 	}
 
 }

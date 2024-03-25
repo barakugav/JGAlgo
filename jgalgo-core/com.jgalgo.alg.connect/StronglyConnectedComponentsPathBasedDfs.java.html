@@ -34,81 +34,90 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L37">class StronglyConnectedComponentsPathBasedDfs extends ConnectedComponentsUtils.AbstractStronglyConnectedComponentsAlgo {</span>
+public class StronglyConnectedComponentsPathBasedDfs extends StronglyConnectedComponentsAlgoAbstract {
+
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * &lt;p&gt;
+	 * Please prefer using {@link StronglyConnectedComponentsAlgo#newInstance()} to get a default implementation for the
+	 * {@link StronglyConnectedComponentsAlgo} interface.
+	 */
+<span class="fc" id="L46">	public StronglyConnectedComponentsPathBasedDfs() {}</span>
 
 	@Override
-	IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g) {
-<span class="fc" id="L41">		return findStronglyConnectedComponentsDirected(g, false);</span>
+	protected IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g) {
+<span class="fc" id="L50">		return findStronglyConnectedComponentsDirected(g, false);</span>
 	}
 
 	private static IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g, boolean stopAfterOneBlock) {
-<span class="fc" id="L45">		final int n = g.vertices().size();</span>
-<span class="fc" id="L46">		IntStack s = new IntArrayList();</span>
-<span class="fc" id="L47">		IntStack p = new IntArrayList();</span>
-<span class="fc" id="L48">		int[] dfsPath = new int[n];</span>
-<span class="fc" id="L49">		IEdgeIter[] edges = new IEdgeIter[n];</span>
+<span class="fc" id="L54">		final int n = g.vertices().size();</span>
+<span class="fc" id="L55">		IntStack s = new IntArrayList();</span>
+<span class="fc" id="L56">		IntStack p = new IntArrayList();</span>
+<span class="fc" id="L57">		int[] dfsPath = new int[n];</span>
+<span class="fc" id="L58">		IEdgeIter[] edges = new IEdgeIter[n];</span>
 		// TODO DFS stack class
 
-<span class="fc" id="L52">		int[] comp = new int[n];</span>
-<span class="fc" id="L53">		Arrays.fill(comp, -1);</span>
-<span class="fc" id="L54">		int compNum = 0;</span>
+<span class="fc" id="L61">		int[] comp = new int[n];</span>
+<span class="fc" id="L62">		Arrays.fill(comp, -1);</span>
+<span class="fc" id="L63">		int compNum = 0;</span>
 
-<span class="fc" id="L56">		int[] c = new int[n];</span>
-<span class="fc" id="L57">		int cNext = 1;</span>
+<span class="fc" id="L65">		int[] c = new int[n];</span>
+<span class="fc" id="L66">		int cNext = 1;</span>
 
-<span class="fc bfc" id="L59" title="All 2 branches covered.">		for (int root : range(n)) {</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">			if (comp[root] &gt;= 0)</span>
-<span class="fc" id="L61">				continue;</span>
-<span class="fc" id="L62">			dfsPath[0] = root;</span>
-<span class="fc" id="L63">			edges[0] = g.outEdges(root).iterator();</span>
-<span class="fc" id="L64">			c[root] = cNext++;</span>
-<span class="fc" id="L65">			s.push(root);</span>
-<span class="fc" id="L66">			p.push(root);</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		for (int root : range(n)) {</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">			if (comp[root] &gt;= 0)</span>
+<span class="fc" id="L70">				continue;</span>
+<span class="fc" id="L71">			dfsPath[0] = root;</span>
+<span class="fc" id="L72">			edges[0] = g.outEdges(root).iterator();</span>
+<span class="fc" id="L73">			c[root] = cNext++;</span>
+<span class="fc" id="L74">			s.push(root);</span>
+<span class="fc" id="L75">			p.push(root);</span>
 
-<span class="fc" id="L68">			dfs: for (int depth = 0;;) {</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">				for (IEdgeIter eit = edges[depth]; eit.hasNext();) {</span>
-<span class="fc" id="L70">					eit.nextInt();</span>
-<span class="fc" id="L71">					int v = eit.targetInt();</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">					if (c[v] == 0) {</span>
-<span class="fc" id="L73">						c[v] = cNext++;</span>
-<span class="fc" id="L74">						s.push(v);</span>
-<span class="fc" id="L75">						p.push(v);</span>
+<span class="fc" id="L77">			dfs: for (int depth = 0;;) {</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">				for (IEdgeIter eit = edges[depth]; eit.hasNext();) {</span>
+<span class="fc" id="L79">					eit.nextInt();</span>
+<span class="fc" id="L80">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">					if (c[v] == 0) {</span>
+<span class="fc" id="L82">						c[v] = cNext++;</span>
+<span class="fc" id="L83">						s.push(v);</span>
+<span class="fc" id="L84">						p.push(v);</span>
 
-<span class="fc" id="L77">						dfsPath[++depth] = v;</span>
-<span class="fc" id="L78">						edges[depth] = g.outEdges(v).iterator();</span>
-<span class="fc" id="L79">						continue dfs;</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">					} else if (comp[v] &lt; 0)</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">						while (c[p.topInt()] &gt; c[v])</span>
-<span class="fc" id="L82">							p.popInt();</span>
-<span class="fc" id="L83">				}</span>
-<span class="fc" id="L84">				int u = dfsPath[depth];</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">				if (p.topInt() == u) {</span>
+<span class="fc" id="L86">						dfsPath[++depth] = v;</span>
+<span class="fc" id="L87">						edges[depth] = g.outEdges(v).iterator();</span>
+<span class="fc" id="L88">						continue dfs;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">					} else if (comp[v] &lt; 0)</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">						while (c[p.topInt()] &gt; c[v])</span>
+<span class="fc" id="L91">							p.popInt();</span>
+<span class="fc" id="L92">				}</span>
+<span class="fc" id="L93">				int u = dfsPath[depth];</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">				if (p.topInt() == u) {</span>
 					int v;
 					do {
-<span class="fc" id="L88">						v = s.popInt();</span>
-<span class="fc" id="L89">						comp[v] = compNum;</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">					} while (v != u);</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">					if (stopAfterOneBlock) {</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">						for (int w : range(n))</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">							if (comp[w] &lt; 0)</span>
-<span class="fc" id="L94">								return null;</span>
-<span class="fc" id="L95">						return IVertexPartition.fromArray(g, comp, compNum);</span>
+<span class="fc" id="L97">						v = s.popInt();</span>
+<span class="fc" id="L98">						comp[v] = compNum;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">					} while (v != u);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">					if (stopAfterOneBlock) {</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">						for (int w : range(n))</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">							if (comp[w] &lt; 0)</span>
+<span class="fc" id="L103">								return null;</span>
+<span class="fc" id="L104">						return IVertexPartition.fromArray(g, comp, compNum);</span>
 					}
-<span class="fc" id="L97">					compNum++;</span>
-<span class="fc" id="L98">					p.popInt();</span>
+<span class="fc" id="L106">					compNum++;</span>
+<span class="fc" id="L107">					p.popInt();</span>
 				}
 
-<span class="fc" id="L101">				edges[depth] = null;</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">				if (depth-- == 0)</span>
-<span class="fc" id="L103">					break;</span>
-<span class="fc" id="L104">			}</span>
-<span class="fc" id="L105">		}</span>
-<span class="fc" id="L106">		return IVertexPartition.fromArray(g, comp, compNum);</span>
+<span class="fc" id="L110">				edges[depth] = null;</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">				if (depth-- == 0)</span>
+<span class="fc" id="L112">					break;</span>
+<span class="fc" id="L113">			}</span>
+<span class="fc" id="L114">		}</span>
+<span class="fc" id="L115">		return IVertexPartition.fromArray(g, comp, compNum);</span>
 	}
 
 	@Override
-	boolean isStronglyConnected(IndexGraph g) {
-<span class="fc bfc" id="L111" title="All 2 branches covered.">		return findStronglyConnectedComponentsDirected(g, true) != null;</span>
+	protected boolean isStronglyConnected(IndexGraph g) {
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		return findStronglyConnectedComponentsDirected(g, true) != null;</span>
 	}
 
 }

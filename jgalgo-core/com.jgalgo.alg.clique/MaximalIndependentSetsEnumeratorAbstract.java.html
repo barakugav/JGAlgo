@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaximalIndependentSetsEnumeratorAbstract.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.clique</a> &gt; <span class="el_source">MaximalIndependentSetsEnumeratorAbstract.java</span></div><h1>MaximalIndependentSetsEnumeratorAbstract.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.clique;
+
+import java.util.Iterator;
+import java.util.Set;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.internal.util.IterTools;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+/**
+ * Abstract class for enumerating over all maximal independent sets in a graph.
+ *
+ * &lt;p&gt;
+ * The class implements the interface by solving the problem on the index graph and then maps the results back to the
+ * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ *
+ * @author Barak Ugav
+ */
+public abstract class MaximalIndependentSetsEnumeratorAbstract implements MaximalIndependentSetsEnumerator {
+
+	/**
+	 * Default constructor.
+	 */
+<span class="fc" id="L41">	public MaximalIndependentSetsEnumeratorAbstract() {}</span>
+
+	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+	@Override
+	public &lt;V, E&gt; Iterator&lt;Set&lt;V&gt;&gt; maximalIndependentSetsIter(Graph&lt;V, E&gt; g) {
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L47">			return (Iterator) maximalIndependentSetsIter((IndexGraph) g);</span>
+		} else {
+<span class="fc" id="L49">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L50">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L51">			Iterator&lt;IntSet&gt; indexIter = maximalIndependentSetsIter(ig);</span>
+<span class="fc" id="L52">			return IterTools.map(indexIter, indexSet -&gt; IndexIdMaps.indexToIdSet(indexSet, viMap));</span>
+		}
+	}
+
+	/**
+	 * Iterate over all maximal independent sets in a graph.
+	 *
+	 * @see      #maximalIndependentSetsIter(Graph)
+	 * @param  g a graph
+	 * @return   an iterator that iterates over all maximal independent sets in the graph
+	 */
+	protected abstract Iterator&lt;IntSet&gt; maximalIndependentSetsIter(IndexGraph g);
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
