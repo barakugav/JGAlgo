@@ -91,29 +91,6 @@ class MinimumEdgeCutUtils {
 
 	}
 
-	abstract static class AbstractImplGlobal implements MinimumEdgeCutGlobal {
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> VertexBiPartition<V, E> computeMinimumCut(Graph<V, E> g, WeightFunction<E> w) {
-			if (g instanceof IndexGraph) {
-				return (VertexBiPartition<V, E>) computeMinimumCut((IndexGraph) g,
-						WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w));
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-
-				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw);
-				return VertexBiPartition.partitionFromIndexPartition(g, indexCut);
-			}
-		}
-
-		abstract IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w);
-
-	}
-
 	static IVertexBiPartition computeMinimumCutUsingMaxFlow(IndexGraph g, IWeightFunction w, int source, int sink,
 			MaximumFlow maxFlowAlg) {
 		IFlow flow = (IFlow) maxFlowAlg.computeMaximumFlow(g, w, Integer.valueOf(source), Integer.valueOf(sink));
@@ -207,34 +184,6 @@ class MinimumEdgeCutUtils {
 				return computeMinimumCutUsingMaxFlow(g, w, sources, sinks, maxFlowAlg);
 			}
 
-		};
-	}
-
-	static MinimumEdgeCutGlobal globalMinCutFromStMinCut(MinimumEdgeCutST stMinCut) {
-		return new AbstractImplGlobal() {
-			@Override
-			IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
-				final int n = g.vertices().size();
-				if (n < 2)
-					throw new IllegalArgumentException("no valid cut in graphs with less than two vertices");
-				w = WeightFunctions.localEdgeWeightFunction(g, w);
-				w = IWeightFunction.replaceNullWeightFunc(w);
-
-				IVertexBiPartition bestCut = null;
-				double bestCutWeight = Double.MAX_VALUE;
-				final int source = 0;
-				for (int sink : range(1, n)) {
-					IVertexBiPartition cut = (IVertexBiPartition) stMinCut
-							.computeMinimumCut(g, w, Integer.valueOf(source), Integer.valueOf(sink));
-					double cutWeight = w.weightSum(cut.crossEdges());
-					if (bestCutWeight > cutWeight) {
-						bestCutWeight = cutWeight;
-						bestCut = cut;
-					}
-				}
-				assert bestCut != null;
-				return bestCut;
-			}
 		};
 	}
 

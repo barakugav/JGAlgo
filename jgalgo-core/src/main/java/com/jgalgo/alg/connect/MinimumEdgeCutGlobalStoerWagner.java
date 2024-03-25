@@ -36,10 +36,19 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  *
  * @author Barak Ugav
  */
-class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutUtils.AbstractImplGlobal {
+public class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutGlobalAbstract {
+
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link MinimumEdgeCutGlobal#newInstance()} to get a default implementation for the
+	 * {@link MinimumEdgeCutGlobal} interface.
+	 */
+	public MinimumEdgeCutGlobalStoerWagner() {}
 
 	@Override
-	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
+	protected IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 		final int n = g.vertices().size();
 		if (n < 2)

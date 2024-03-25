@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg.connect;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
@@ -24,12 +25,16 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.alg.IVertexBiPartition;
 import com.jgalgo.alg.VertexBiPartition;
 import com.jgalgo.alg.flow.MaximumFlow;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.SubSets;
@@ -121,12 +126,40 @@ class MinimumEdgeCutGlobalStoerWagnerTest extends TestBase {
 			builder.setOption("impl", "edmonds-karp");
 			MinimumEdgeCutST edmondsKarpAlgo = MinimumEdgeCutST.newFromMaximumFlow(builder.build());
 
-			MinimumEdgeCutGlobal validationAlgo = MinimumEdgeCutUtils.globalMinCutFromStMinCut(edmondsKarpAlgo);
+			MinimumEdgeCutGlobal validationAlgo = globalMinCutFromStMinCut(edmondsKarpAlgo);
 			VertexBiPartition<V, E> minCutExpected = validationAlgo.computeMinimumCut(g, w);
 			double minCutWeightExpected = w.weightSum(minCutExpected.crossEdges());
 
 			assertEquals(minCutWeightExpected, minCutWeight, "failed to find minimum cut");
 		}
+	}
+
+	static MinimumEdgeCutGlobal globalMinCutFromStMinCut(MinimumEdgeCutST stMinCut) {
+		return new MinimumEdgeCutGlobalAbstract() {
+			@Override
+			protected IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
+				final int n = g.vertices().size();
+				if (n < 2)
+					throw new IllegalArgumentException("no valid cut in graphs with less than two vertices");
+				w = WeightFunctions.localEdgeWeightFunction(g, w);
+				w = IWeightFunction.replaceNullWeightFunc(w);
+
+				IVertexBiPartition bestCut = null;
+				double bestCutWeight = Double.MAX_VALUE;
+				final int source = 0;
+				for (int sink : range(1, n)) {
+					IVertexBiPartition cut = (IVertexBiPartition) stMinCut
+							.computeMinimumCut(g, w, Integer.valueOf(source), Integer.valueOf(sink));
+					double cutWeight = w.weightSum(cut.crossEdges());
+					if (bestCutWeight > cutWeight) {
+						bestCutWeight = cutWeight;
+						bestCut = cut;
+					}
+				}
+				assert bestCut != null;
+				return bestCut;
+			}
+		};
 	}
 
 }
