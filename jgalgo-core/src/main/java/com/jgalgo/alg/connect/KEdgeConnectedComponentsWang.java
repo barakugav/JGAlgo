@@ -37,11 +37,20 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  *
  * @author Barak Ugav
  */
-class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.AbstractImpl implements RandomizedAlgorithm {
+public class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsAlgoAbstract implements RandomizedAlgorithm {
 
 	private final Random rand = new Random();
 	private final WeaklyConnectedComponentsAlgo wccAlgo = WeaklyConnectedComponentsAlgo.newInstance();
 	private final MinimumEdgeCutST minCutAlgo = MinimumEdgeCutST.newInstance();
+
+	/**
+	 * Constructs a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link KEdgeConnectedComponentsAlgo#newInstance()} to get a default implementation for the
+	 * {@link KEdgeConnectedComponentsAlgo} interface.
+	 */
+	public KEdgeConnectedComponentsWang() {}
 
 	@Override
 	public void setSeed(long seed) {
@@ -49,7 +58,7 @@ class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.Abstrac
 	}
 
 	@Override
-	IVertexPartition computeKEdgeConnectedComponents(IndexGraph g, int k) {
+	protected IVertexPartition computeKEdgeConnectedComponents(IndexGraph g, int k) {
 		final int n = g.vertices().size();
 		if (n == 0)
 			return IVertexPartition.fromArray(g, IntArrays.DEFAULT_EMPTY_ARRAY, 0);
