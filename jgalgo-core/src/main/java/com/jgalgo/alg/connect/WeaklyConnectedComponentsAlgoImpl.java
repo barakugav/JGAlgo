@@ -24,10 +24,27 @@ import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.AbstractWeaklyConnectedComponentsAlgo {
+/**
+ * Simple implementation of the weakly connected components algorithm.
+ *
+ * <p>
+ * The algorithm is implemented using a simple DFS traversal of the graph. It runs in linear time and uses linear space.
+ *
+ * @author Barak Ugav
+ */
+public class WeaklyConnectedComponentsAlgoImpl extends WeaklyConnectedComponentsAlgoAbstract {
+
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link WeaklyConnectedComponentsAlgo#newInstance()} to get a default implementation for the
+	 * {@link WeaklyConnectedComponentsAlgo} interface.
+	 */
+	public WeaklyConnectedComponentsAlgoImpl() {}
 
 	@Override
-	IVertexPartition findWeaklyConnectedComponents(IndexGraph g) {
+	public IVertexPartition findWeaklyConnectedComponents(IndexGraph g) {
 		final boolean directed = g.isDirected();
 		final int n = g.vertices().size();
 		int[] comp = new int[n];
@@ -74,7 +91,7 @@ class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.Abstrac
 	}
 
 	@Override
-	boolean isWeaklyConnected(IndexGraph g) {
+	protected boolean isWeaklyConnected(IndexGraph g) {
 		final boolean directed = g.isDirected();
 		final int n = g.vertices().size();
 		Bitmap visited = new Bitmap(n);
