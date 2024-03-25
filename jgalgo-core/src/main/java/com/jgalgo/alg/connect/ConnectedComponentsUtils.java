@@ -22,43 +22,6 @@ import com.jgalgo.graph.IndexGraph;
 
 class ConnectedComponentsUtils {
 
-	abstract static class AbstractStronglyConnectedComponentsAlgo implements StronglyConnectedComponentsAlgo {
-
-		private final WeaklyConnectedComponentsAlgo weaklyConnectedComponentsAlgo =
-				WeaklyConnectedComponentsAlgo.newInstance();
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> VertexPartition<V, E> findStronglyConnectedComponents(Graph<V, E> g) {
-			if (g instanceof IndexGraph) {
-				return (VertexPartition<V, E>) findStronglyConnectedComponents((IndexGraph) g);
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IVertexPartition indexResult = findStronglyConnectedComponents(iGraph);
-				return VertexPartition.partitionFromIndexPartition(g, indexResult);
-			}
-		}
-
-		IVertexPartition findStronglyConnectedComponents(IndexGraph g) {
-			if (g.isDirected()) {
-				return findStronglyConnectedComponentsDirected(g);
-			} else {
-				return (IVertexPartition) weaklyConnectedComponentsAlgo.findWeaklyConnectedComponents(g);
-			}
-		}
-
-		@Override
-		public <V, E> boolean isStronglyConnected(Graph<V, E> g) {
-			return g instanceof IndexGraph ? isStronglyConnected((IndexGraph) g) : isStronglyConnected(g.indexGraph());
-		}
-
-		abstract IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g);
-
-		abstract boolean isStronglyConnected(IndexGraph g);
-
-	}
-
 	abstract static class AbstractWeaklyConnectedComponentsAlgo implements WeaklyConnectedComponentsAlgo {
 
 		@SuppressWarnings("unchecked")

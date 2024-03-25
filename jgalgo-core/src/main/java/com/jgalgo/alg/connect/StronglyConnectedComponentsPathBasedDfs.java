@@ -34,10 +34,19 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  *
  * @author Barak Ugav
  */
-class StronglyConnectedComponentsPathBasedDfs extends ConnectedComponentsUtils.AbstractStronglyConnectedComponentsAlgo {
+public class StronglyConnectedComponentsPathBasedDfs extends StronglyConnectedComponentsAlgoAbstract {
+
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link StronglyConnectedComponentsAlgo#newInstance()} to get a default implementation for the
+	 * {@link StronglyConnectedComponentsAlgo} interface.
+	 */
+	public StronglyConnectedComponentsPathBasedDfs() {}
 
 	@Override
-	IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g) {
+	protected IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g) {
 		return findStronglyConnectedComponentsDirected(g, false);
 	}
 
@@ -107,7 +116,7 @@ class StronglyConnectedComponentsPathBasedDfs extends ConnectedComponentsUtils.A
 	}
 
 	@Override
-	boolean isStronglyConnected(IndexGraph g) {
+	protected boolean isStronglyConnected(IndexGraph g) {
 		return findStronglyConnectedComponentsDirected(g, true) != null;
 	}
 
