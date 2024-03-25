@@ -48,7 +48,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-class KVertexConnectedComponentsWhiteMoody extends KVertexConnectedComponentsUtils.AbstractImpl {
+public class KVertexConnectedComponentsWhiteMoody extends KVertexConnectedComponentsAlgoAbstract {
 
 	private final WeaklyConnectedComponentsAlgo unaryConnectedComponentsAlgo =
 			WeaklyConnectedComponentsAlgo.newInstance();
@@ -56,8 +56,17 @@ class KVertexConnectedComponentsWhiteMoody extends KVertexConnectedComponentsUti
 	private final MinimumVertexCutGlobal globalConnectivityAlgo = MinimumVertexCutGlobal.newInstance();
 	private final MinimumVertexCutAllGlobalKanevsky allGlobalConnectivityAlgo = new MinimumVertexCutAllGlobalKanevsky();
 
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link KVertexConnectedComponentsAlgo#newInstance()} to get a default implementation for the
+	 * {@link KVertexConnectedComponentsAlgo} interface.
+	 */
+	public KVertexConnectedComponentsWhiteMoody() {}
+
 	@Override
-	List<IntSet> findKVertexConnectedComponents(IndexGraph g, int k) {
+	protected List<IntSet> findKVertexConnectedComponents(IndexGraph g, int k) {
 		if (k < 0)
 			throw new IllegalArgumentException("k must be non negative");
 		List<List<IntSet>> hierarchy = findVertexConnectedComponentsHierarchy(g);
