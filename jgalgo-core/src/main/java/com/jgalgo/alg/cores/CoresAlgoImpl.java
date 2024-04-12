@@ -26,8 +26,8 @@ import com.jgalgo.graph.IndexGraph;
  * Linear cores computing algorithm.
  *
  * <p>
- * The algorithm compute the core number of each vertex by computing the 0-core, than the 1-core, 2-core ect. It does so
- * by removing all vertices with degree less than the current core number.
+ * The algorithm compute the core number of each vertex by computing the 0-core, than the 1-core, 2-core, ect. It does
+ * so by removing all vertices with degree less than the current core number.
  *
  * <p>
  * The algorithm runs in linear time.
@@ -37,10 +37,19 @@ import com.jgalgo.graph.IndexGraph;
  *
  * @author Barak Ugav
  */
-class CoresAlgoImpl extends CoresAlgos.AbstractImpl {
+public class CoresAlgoImpl extends CoresAlgoAbstract {
+
+	/**
+	 * Create a new cores computing algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link CoresAlgo#newInstance()} to get a default implementation for the {@link CoresAlgo}
+	 * interface.
+	 */
+	public CoresAlgoImpl() {}
 
 	@Override
-	CoresAlgo.IResult computeCores(IndexGraph g, EdgeDirection degreeType) {
+	protected CoresAlgo.IResult computeCores(IndexGraph g, EdgeDirection degreeType) {
 		Objects.requireNonNull(degreeType);
 
 		final int n = g.vertices().size();

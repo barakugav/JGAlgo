@@ -19,9 +19,7 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
-import com.jgalgo.alg.EdgeDirection;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
@@ -33,35 +31,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 class CoresAlgos {
 
 	private CoresAlgos() {}
-
-	abstract static class AbstractImpl implements CoresAlgo {
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> CoresAlgo.Result<V, E> computeCores(Graph<V, E> g, EdgeDirection degreeType) {
-			if (g instanceof IndexGraph) {
-				return (CoresAlgo.Result<V, E>) computeCores((IndexGraph) g, degreeType);
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				CoresAlgo.IResult iResult = computeCores(iGraph, degreeType);
-				return resultFromIndexResult(g, iResult);
-			}
-		}
-
-		abstract CoresAlgo.IResult computeCores(IndexGraph g, EdgeDirection degreeType);
-
-		@SuppressWarnings("unchecked")
-		private static <V, E> CoresAlgo.Result<V, E> resultFromIndexResult(Graph<V, E> g,
-				CoresAlgo.IResult indexResult) {
-			assert !(g instanceof IndexGraph);
-			if (g instanceof IntGraph) {
-				return (CoresAlgo.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
-			} else {
-				return new ObjResultFromIndexResult<>(g, indexResult);
-			}
-		}
-	}
 
 	static class IndexResult implements CoresAlgo.IResult {
 

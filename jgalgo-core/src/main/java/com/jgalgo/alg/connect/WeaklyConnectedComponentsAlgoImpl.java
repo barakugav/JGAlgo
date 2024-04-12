@@ -44,7 +44,7 @@ public class WeaklyConnectedComponentsAlgoImpl extends WeaklyConnectedComponents
 	public WeaklyConnectedComponentsAlgoImpl() {}
 
 	@Override
-	public IVertexPartition findWeaklyConnectedComponents(IndexGraph g) {
+	protected IVertexPartition findWeaklyConnectedComponents(IndexGraph g) {
 		final boolean directed = g.isDirected();
 		final int n = g.vertices().size();
 		int[] comp = new int[n];
