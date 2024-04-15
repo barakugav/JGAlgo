@@ -27,8 +27,8 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import com.jgalgo.internal.util.Fastutil;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -44,7 +44,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class MinimumMeanCycleDasdanGupta extends MinimumMeanCycles.AbstractImpl {
+public class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 
 	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();
 
@@ -53,8 +53,12 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycles.AbstractImpl {
 
 	/**
 	 * Create a new minimum mean cycle algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link MinimumMeanCycle#newInstance()} to get a default implementation for the
+	 * {@link MinimumMeanCycle} interface.
 	 */
-	MinimumMeanCycleDasdanGupta() {}
+	public MinimumMeanCycleDasdanGupta() {}
 
 	/**
 	 * {@inheritDoc}
@@ -62,7 +66,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycles.AbstractImpl {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
+	protected IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyDirected(g);
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 
