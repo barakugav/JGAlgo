@@ -45,17 +45,21 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-class CyclesEnumeratorJohnson extends CyclesEnumeratorAbstract {
+public class CyclesEnumeratorJohnson extends CyclesEnumeratorAbstract {
 
 	private final StronglyConnectedComponentsAlgo ccAlg = StronglyConnectedComponentsAlgo.newInstance();
 
 	/**
 	 * Create a new cycles finder algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link CyclesEnumerator#newInstance()} to get a default implementation for the
+	 * {@link CyclesEnumerator} interface.
 	 */
-	CyclesEnumeratorJohnson() {}
+	public CyclesEnumeratorJohnson() {}
 
 	@Override
-	Iterator<IPath> cyclesIter(IndexGraph g) {
+	protected Iterator<IPath> cyclesIter(IndexGraph g) {
 		Assertions.onlyDirected(g);
 		Assertions.noParallelEdges(g, "graphs with parallel edges are not supported");
 		final int n = g.vertices().size();

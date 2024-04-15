@@ -22,7 +22,21 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.IterTools;
 
-abstract class CyclesEnumeratorAbstract implements CyclesEnumerator {
+/**
+ * Abstract class for enumerating all simple cycles in a graph.
+ *
+ * <p>
+ * The class implements the interface by solving the problem on the index graph and then maps the results back to the
+ * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ *
+ * @author Barak Ugav
+ */
+public abstract class CyclesEnumeratorAbstract implements CyclesEnumerator {
+
+	/**
+	 * Default constructor.
+	 */
+	public CyclesEnumeratorAbstract() {}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
@@ -37,6 +51,6 @@ abstract class CyclesEnumeratorAbstract implements CyclesEnumerator {
 		}
 	}
 
-	abstract Iterator<IPath> cyclesIter(IndexGraph g);
+	protected abstract Iterator<IPath> cyclesIter(IndexGraph g);
 
 }

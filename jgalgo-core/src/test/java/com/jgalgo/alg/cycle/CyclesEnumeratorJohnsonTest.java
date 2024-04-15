@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class CyclesEnumeratorJohnsonTest extends TestBase {
 
@@ -47,10 +48,10 @@ public class CyclesEnumeratorJohnsonTest extends TestBase {
 		g.addEdge(2, 0);
 
 		CyclesEnumerator algo = new CyclesEnumeratorJohnson();
-		assertNotNull(algo.allCycles(g));
+		assertNotNull(algo.cyclesIter(g));
 
 		g.addEdge(2, 0);
-		assertThrows(IllegalArgumentException.class, () -> algo.allCycles(g));
+		assertThrows(IllegalArgumentException.class, () -> new ObjectArrayList<>(algo.cyclesIter(g)));
 	}
 
 }

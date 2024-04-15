@@ -47,7 +47,7 @@ class CyclesEnumeratorTestUtils extends TestUtils {
 		int e2 = g.addEdge(v2, v1);
 		int e3 = g.addEdge(v2, v0);
 
-		Iterator<Path<Integer, Integer>> actual = cyclesFinder.allCycles(g).iterator();
+		Iterator<Path<Integer, Integer>> actual = cyclesFinder.cyclesIter(g);
 
 		IPath c1 = IPath.valueOf(g, v0, v0, IntList.of(e0, e1, e3));
 		IPath c2 = IPath.valueOf(g, v1, v1, IntList.of(e1, e2));

@@ -38,15 +38,19 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-class CyclesEnumeratorTarjan extends CyclesEnumeratorAbstract {
+public class CyclesEnumeratorTarjan extends CyclesEnumeratorAbstract {
 
 	/**
 	 * Create a new cycles enumeration algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link CyclesEnumerator#newInstance()} to get a default implementation for the
+	 * {@link CyclesEnumerator} interface.
 	 */
-	CyclesEnumeratorTarjan() {}
+	public CyclesEnumeratorTarjan() {}
 
 	@Override
-	Iterator<IPath> cyclesIter(IndexGraph g) {
+	protected Iterator<IPath> cyclesIter(IndexGraph g) {
 		Assertions.onlyDirected(g);
 		return new Iterator<>() {
 

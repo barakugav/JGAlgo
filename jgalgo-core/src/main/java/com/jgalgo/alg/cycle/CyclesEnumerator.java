@@ -17,13 +17,11 @@
 package com.jgalgo.alg.cycle;
 
 import java.util.Iterator;
-import java.util.List;
 import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.alg.path.IPath;
 import com.jgalgo.alg.path.Path;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * An algorithm that enumerate all cycles in a graph.
@@ -53,25 +51,6 @@ public interface CyclesEnumerator {
 	 * @return     an iterator that iteration over all cycles in the graph
 	 */
 	public <V, E> Iterator<Path<V, E>> cyclesIter(Graph<V, E> g);
-
-	/**
-	 * Find all cycles in the given graph.
-	 *
-	 * <p>
-	 * The number of cycles may be large, and its recommend to use {@link #cyclesIter(Graph)} to avoid storing all the
-	 * cycles in memory at once.
-	 *
-	 * <p>
-	 * If {@code g} is {@link IntGraph}, the returned list will contain {@link IPath} objects.
-	 *
-	 * @param  <V> the vertices type
-	 * @param  <E> the edges type
-	 * @param  g   a graph
-	 * @return     a list of all cycles in the graph
-	 */
-	default <V, E> List<Path<V, E>> allCycles(Graph<V, E> g) {
-		return new ObjectArrayList<>(cyclesIter(g));
-	}
 
 	/**
 	 * Create a new algorithm for cycles enumerating.
