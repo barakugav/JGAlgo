@@ -17,6 +17,7 @@ package com.jgalgo.alg.dag;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -42,7 +43,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 public interface TopologicalOrderAlgo {
 
 	/**
-	 * Compute the topological order of a DAG vertices.
+	 * Compute the topological order of the vertices in a DAG graph.
 	 *
 	 * &lt;p&gt;
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link TopologicalOrderAlgo.IResult}.
@@ -53,7 +54,24 @@ public interface TopologicalOrderAlgo {
 	 * @return                          a result object containing the computed order
 	 * @throws IllegalArgumentException if the graph is not DAG
 	 */
-	&lt;V, E&gt; TopologicalOrderAlgo.Result&lt;V, E&gt; computeTopologicalSorting(Graph&lt;V, E&gt; g);
+	default &lt;V, E&gt; TopologicalOrderAlgo.Result&lt;V, E&gt; computeTopologicalSorting(Graph&lt;V, E&gt; g) {
+<span class="fc" id="L58">		return computeTopologicalSortingIfExist(g)</span>
+<span class="fc" id="L59">				.orElseThrow(() -&gt; new IllegalArgumentException(&quot;no topological order, graph is not DAG&quot;));</span>
+	}
+
+	/**
+	 * Compute the topological order of the vertices, if the graph is DAG.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned optional will contain is {@link TopologicalOrderAlgo.IResult}.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a directed graph
+	 * @return     an optional of a result object containing the computed order, or an empty optional if the graph is
+	 *             not DAG
+	 */
+	&lt;V, E&gt; Optional&lt;TopologicalOrderAlgo.Result&lt;V, E&gt;&gt; computeTopologicalSortingIfExist(Graph&lt;V, E&gt; g);
 
 	/**
 	 * A result object of a {@link TopologicalOrderAlgo} algorithm.
@@ -86,7 +104,7 @@ public interface TopologicalOrderAlgo {
 		 * @return a comparator that compare vertices by their order in the topological order
 		 */
 		default Comparator&lt;V&gt; orderComparator() {
-<span class="fc" id="L89">			return (v1, v2) -&gt; Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));</span>
+<span class="fc" id="L107">			return (v1, v2) -&gt; Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));</span>
 		}
 	}
 
@@ -116,12 +134,12 @@ public interface TopologicalOrderAlgo {
 		@Deprecated
 		@Override
 		default int vertexOrderIndex(Integer vertex) {
-<span class="fc" id="L119">			return vertexOrderIndex(vertex.intValue());</span>
+<span class="fc" id="L137">			return vertexOrderIndex(vertex.intValue());</span>
 		}
 
 		@Override
 		default IntComparator orderComparator() {
-<span class="fc" id="L124">			return (v1, v2) -&gt; Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));</span>
+<span class="fc" id="L142">			return (v1, v2) -&gt; Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));</span>
 		}
 	}
 
@@ -134,7 +152,7 @@ public interface TopologicalOrderAlgo {
 	 * @return a default implementation of {@link TopologicalOrderAlgo}
 	 */
 	static TopologicalOrderAlgo newInstance() {
-<span class="fc" id="L137">		return new TopologicalOrderAlgoImpl();</span>
+<span class="fc" id="L155">		return new TopologicalOrderAlgoImpl();</span>
 	}
 
 }

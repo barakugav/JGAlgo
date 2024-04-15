@@ -16,6 +16,7 @@
 package com.jgalgo.alg.cycle;
 
 import static com.jgalgo.internal.util.Range.range;
+import java.util.Optional;
 import com.jgalgo.alg.euler.EulerianTourAlgo;
 import com.jgalgo.alg.match.IMatching;
 import com.jgalgo.alg.match.MatchingAlgo;
@@ -30,92 +31,123 @@ import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-<span class="fc" id="L33">class ChinesePostmanImpl extends ChinesePostmanUtils.AbstractImpl {</span>
+/**
+ * An algorithm for the chinese postman problem using minimum weighted perfect matching and Eulerian tour.
+ *
+ * &lt;p&gt;
+ * The chinese postman problem is to find a closed path that visits all edges in the graph at least once, with minimum
+ * weight sum with respect to a given edge weight function. The algorithm uses the following steps:
+ * &lt;ol&gt;
+ * &lt;li&gt;Find all vertices with odd degree. If all vertices have even degree, an Eulerian tour should exists (if the graph
+ * is connected).&lt;/li&gt;
+ * &lt;li&gt;Create a complete graph of the odd vertices, with edges weighted by the shortest paths between each pair.&lt;/li&gt;
+ * &lt;li&gt;Compute a minimum weighted perfect matching between the odd vertices.&lt;/li&gt;
+ * &lt;li&gt;Create a graph with the original vertices and edges, and for each edge resulted from the perfect matching, add an
+ * edge between the two vertices in the original graph.&lt;/li&gt;
+ * &lt;li&gt;Compute an Eulerian tour in the new graph.&lt;/li&gt;
+ * &lt;li&gt;Construct the full result path by replacing each artificial edge connecting two odd vertices with the shortest
+ * path between them.&lt;/li&gt;
+ * &lt;/ol&gt;
+ *
+ * &lt;p&gt;
+ * The running time and space are dominated by the shortest path all pairs and minimum perfect matching algorithms.
+ * Other than that, the algorithm use linear time and space.
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L58">public class ChinesePostmanImpl extends ChinesePostmanAbstract {</span>
 
-	// private final WeaklyConnectedComponentsAlgo connectedComponentsAlgo =
-	// WeaklyConnectedComponentsAlgo.newInstance();
-<span class="fc" id="L37">	private final EulerianTourAlgo eulerianTourAlgo = EulerianTourAlgo.newInstance();</span>
-<span class="fc" id="L38">	private final ShortestPathAllPairs shortestPathAllPairsAlgo = ShortestPathAllPairs.newInstance();</span>
-<span class="fc" id="L39">	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();</span>
+<span class="fc" id="L60">	private final EulerianTourAlgo eulerianTourAlgo = EulerianTourAlgo.newInstance();</span>
+<span class="fc" id="L61">	private final ShortestPathAllPairs shortestPathAllPairsAlgo = ShortestPathAllPairs.newInstance();</span>
+<span class="fc" id="L62">	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();</span>
 
-	private static int nonSelfEdgesDegree(IndexGraph g, int v) {
-<span class="fc" id="L42">		int nonSelfEdgesCount = 0;</span>
-<span class="fc bfc" id="L43" title="All 2 branches covered.">		for (int e : g.outEdges(v))</span>
-<span class="fc bfc" id="L44" title="All 2 branches covered.">			if (g.edgeSource(e) != g.edgeTarget(e))</span>
-<span class="fc" id="L45">				nonSelfEdgesCount++;</span>
-<span class="fc" id="L46">		return nonSelfEdgesCount;</span>
-	}
+	/**
+	 * Create a new instance of the Chinese postman algorithm.
+	 *
+	 * &lt;p&gt;
+	 * Please prefer using {@link ChinesePostman#newInstance()} to get a default implementation for the
+	 * {@link ChinesePostman} interface.
+	 */
+<span class="fc" id="L71">	public ChinesePostmanImpl() {}</span>
 
 	@Override
-	IPath computeShortestEdgeVisitorCircle(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L51">		Assertions.onlyUndirected(g);</span>
-		// if (!connectedComponentsAlgo.isWeaklyConnected(g))
-		// throw new IllegalArgumentException(&quot;Graph is not connected, cannot compute shortest edge visitor circle&quot;);
-		// If the graph is not connected, we will fail to find an Eulerian tour, so we just fail later
+	protected Optional&lt;IPath&gt; computeShortestEdgeVisitorCircleIfExist(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L75">		Assertions.onlyUndirected(g);</span>
 
 		/* Find all vertices with odd degree */
-<span class="fc" id="L57">		IntList oddVerticesList = new IntArrayList();</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">		for (int v : range(g.vertices().size()))</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">			if (nonSelfEdgesDegree(g, v) % 2 != 0)</span>
-<span class="fc" id="L60">				oddVerticesList.add(v);</span>
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">		if (oddVerticesList.isEmpty())</span>
+<span class="fc" id="L78">		IntList oddVerticesList = new IntArrayList();</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">		for (int v : range(g.vertices().size()))</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			if (nonSelfEdgesDegree(g, v) % 2 != 0)</span>
+<span class="fc" id="L81">				oddVerticesList.add(v);</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">		if (oddVerticesList.isEmpty())</span>
 			/* all vertices have even degree, an Eulerian tour should exists (if the graph is connected) */
-<span class="nc" id="L63">			return (IPath) eulerianTourAlgo.computeEulerianTour(g);</span>
-<span class="fc" id="L64">		int[] oddVertices = oddVerticesList.toIntArray();</span>
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">		assert oddVertices.length % 2 == 0;</span>
+<span class="nc" id="L84">			return eulerianTourAlgo.computeEulerianTourIfExist(g).map(p -&gt; (IPath) p);</span>
+<span class="fc" id="L85">		int[] oddVertices = oddVerticesList.toIntArray();</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">		assert oddVertices.length % 2 == 0;</span>
 
 		/* Create a complete graph of the odd vertices, with edges weighted by the shortest paths between each pair */
-<span class="fc" id="L68">		IndexGraphBuilder oddGraph0 = IndexGraphBuilder.undirected();</span>
-<span class="fc" id="L69">		oddGraph0.ensureVertexCapacity(oddVertices.length);</span>
-<span class="fc" id="L70">		oddGraph0.ensureEdgeCapacity(oddVertices.length * (oddVertices.length - 1) / 2);</span>
-<span class="fc" id="L71">		oddGraph0.addVertices(range(oddVertices.length));</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int v : range(oddVertices.length))</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">			for (int u : range(v + 1, oddVertices.length))</span>
-<span class="fc" id="L74">				oddGraph0.addEdge(v, u);</span>
-<span class="fc" id="L75">		IndexGraph oddGraph = oddGraph0.reIndexAndBuild(true, true).graph;</span>
-<span class="fc" id="L76">		ShortestPathAllPairs.IResult allPairsRes = (ShortestPathAllPairs.IResult) shortestPathAllPairsAlgo</span>
-<span class="fc" id="L77">				.computeSubsetShortestPaths(g, oddVerticesList, w);</span>
-<span class="fc" id="L78">		IWeightFunction oddW = e -&gt; {</span>
-<span class="fc" id="L79">			int u = oddVertices[oddGraph.edgeSource(e)];</span>
-<span class="fc" id="L80">			int v = oddVertices[oddGraph.edgeTarget(e)];</span>
-<span class="fc" id="L81">			return allPairsRes.distance(u, v);</span>
+<span class="fc" id="L89">		IndexGraphBuilder oddGraph0 = IndexGraphBuilder.undirected();</span>
+<span class="fc" id="L90">		oddGraph0.ensureVertexCapacity(oddVertices.length);</span>
+<span class="fc" id="L91">		oddGraph0.ensureEdgeCapacity(oddVertices.length * (oddVertices.length - 1) / 2);</span>
+<span class="fc" id="L92">		oddGraph0.addVertices(range(oddVertices.length));</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		for (int v : range(oddVertices.length))</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">			for (int u : range(v + 1, oddVertices.length))</span>
+<span class="fc" id="L95">				oddGraph0.addEdge(v, u);</span>
+<span class="fc" id="L96">		IndexGraph oddGraph = oddGraph0.reIndexAndBuild(true, true).graph;</span>
+<span class="fc" id="L97">		ShortestPathAllPairs.IResult allPairsRes = (ShortestPathAllPairs.IResult) shortestPathAllPairsAlgo</span>
+<span class="fc" id="L98">				.computeSubsetShortestPaths(g, oddVerticesList, w);</span>
+<span class="fc" id="L99">		IWeightFunction oddW = e -&gt; {</span>
+<span class="fc" id="L100">			int u = oddVertices[oddGraph.edgeSource(e)];</span>
+<span class="fc" id="L101">			int v = oddVertices[oddGraph.edgeTarget(e)];</span>
+<span class="fc" id="L102">			return allPairsRes.distance(u, v);</span>
 		};
 		/* Compute a minimum weighted perfected matching between the odd vertices */
-<span class="fc" id="L84">		IMatching oddMatching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(oddGraph, oddW);</span>
+<span class="fc" id="L105">		IMatching oddMatching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(oddGraph, oddW);</span>
 
 		/* Create a graph with the original vertices and edges, and add edges resulted from the perfect matching */
-<span class="fc" id="L87">		IndexGraphBuilder b = IndexGraphBuilder.undirected();</span>
-<span class="fc" id="L88">		b.ensureEdgeCapacity(g.edges().size() + oddMatching.edges().size());</span>
-<span class="fc" id="L89">		b.addVertices(g.vertices());</span>
-<span class="fc" id="L90">		b.addEdges(EdgeSet.allOf(g));</span>
-<span class="fc" id="L91">		final int originalEdgesThreshold = b.edges().size();</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int e : oddMatching.edges()) {</span>
-<span class="fc" id="L93">			int u = oddVertices[oddGraph.edgeSource(e)];</span>
-<span class="fc" id="L94">			int v = oddVertices[oddGraph.edgeTarget(e)];</span>
-<span class="fc" id="L95">			b.addEdge(u, v);</span>
-<span class="fc" id="L96">		}</span>
+<span class="fc" id="L108">		IndexGraphBuilder b = IndexGraphBuilder.undirected();</span>
+<span class="fc" id="L109">		b.ensureEdgeCapacity(g.edges().size() + oddMatching.edges().size());</span>
+<span class="fc" id="L110">		b.addVertices(g.vertices());</span>
+<span class="fc" id="L111">		b.addEdges(EdgeSet.allOf(g));</span>
+<span class="fc" id="L112">		final int originalEdgesThreshold = b.edges().size();</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">		for (int e : oddMatching.edges()) {</span>
+<span class="fc" id="L114">			int u = oddVertices[oddGraph.edgeSource(e)];</span>
+<span class="fc" id="L115">			int v = oddVertices[oddGraph.edgeTarget(e)];</span>
+<span class="fc" id="L116">			b.addEdge(u, v);</span>
+<span class="fc" id="L117">		}</span>
 		/* The new graph is Eulerian */
-<span class="fc" id="L98">		IndexGraph eulerianGraph = b.build();</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int v : range(eulerianGraph.vertices().size()))</span>
-<span class="pc bpc" id="L100" title="1 of 2 branches missed.">			assert nonSelfEdgesDegree(eulerianGraph, v) % 2 == 0;</span>
+<span class="fc" id="L119">		IndexGraph eulerianGraph = b.build();</span>
+<span class="pc bpc" id="L120" title="2 of 4 branches missed.">		assert range(eulerianGraph.vertices().size()).allMatch(v -&gt; nonSelfEdgesDegree(eulerianGraph, v) % 2 == 0);</span>
 
 		/* Compute an Eulerian tour in the new graph */
-<span class="fc" id="L103">		IPath eulerianTour = (IPath) eulerianTourAlgo.computeEulerianTour(eulerianGraph);</span>
+<span class="fc" id="L123">		Optional&lt;IPath&gt; eulerianTour0 = eulerianTourAlgo.computeEulerianTourIfExist(eulerianGraph).map(p -&gt; (IPath) p);</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">		if (eulerianTour0.isEmpty())</span>
+<span class="nc" id="L125">			return Optional.empty();</span>
+<span class="fc" id="L126">		IPath eulerianTour = eulerianTour0.get();</span>
+
 		/* Replace each artificial edge connecting two odd vertices with the shortest path between them */
-<span class="fc" id="L105">		IntList path = new IntArrayList(eulerianTour.edges().size());</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">		for (IEdgeIter eit = eulerianTour.edgeIter(); eit.hasNext();) {</span>
-<span class="fc" id="L107">			int e = eit.nextInt();</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (e &lt; originalEdgesThreshold) {</span>
+<span class="fc" id="L129">		IntList path = new IntArrayList(eulerianTour.edges().size());</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">		for (IEdgeIter eit = eulerianTour.edgeIter(); eit.hasNext();) {</span>
+<span class="fc" id="L131">			int e = eit.nextInt();</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">			if (e &lt; originalEdgesThreshold) {</span>
 				/* an original edge */
-<span class="fc" id="L110">				path.add(e);</span>
+<span class="fc" id="L134">				path.add(e);</span>
 			} else {
 				/* artificial edge connecting two odd vertices */
-<span class="fc" id="L113">				path.addAll(allPairsRes.getPath(eit.sourceInt(), eit.targetInt()).edges());</span>
+<span class="fc" id="L137">				path.addAll(allPairsRes.getPath(eit.sourceInt(), eit.targetInt()).edges());</span>
 			}
-<span class="fc" id="L115">		}</span>
+<span class="fc" id="L139">		}</span>
 
-<span class="fc" id="L117">		int pathSource = eulerianTour.sourceInt();</span>
-<span class="fc" id="L118">		return IPath.valueOf(g, pathSource, pathSource, path);</span>
+<span class="fc" id="L141">		int pathSource = eulerianTour.sourceInt();</span>
+<span class="fc" id="L142">		return Optional.of(IPath.valueOf(g, pathSource, pathSource, path));</span>
+	}
+
+	private static int nonSelfEdgesDegree(IndexGraph g, int v) {
+<span class="fc" id="L146">		int nonSelfEdgesCount = 0;</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">		for (int e : g.outEdges(v))</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">			if (g.edgeSource(e) != g.edgeTarget(e))</span>
+<span class="fc" id="L149">				nonSelfEdgesCount++;</span>
+<span class="fc" id="L150">		return nonSelfEdgesCount;</span>
 	}
 
 }

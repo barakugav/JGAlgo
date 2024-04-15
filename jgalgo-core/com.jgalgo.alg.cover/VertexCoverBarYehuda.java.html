@@ -33,32 +33,41 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L36">class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {</span>
+public class VertexCoverBarYehuda extends VertexCoverAbstract {
+
+	/**
+	 * Create a new Bar Yehuda's vertex cover algorithm object.
+	 *
+	 * &lt;p&gt;
+	 * Please prefer using {@link VertexCover#newInstance()} to get a default implementation for the {@link VertexCover}
+	 * interface.
+	 */
+<span class="fc" id="L45">	public VertexCoverBarYehuda() {}</span>
 
 	@Override
-	public IntSet computeMinimumVertexCover(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L40">		final int n = g.vertices().size();</span>
-<span class="fc" id="L41">		double[] sw = new double[n];</span>
-<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (int v : range(n))</span>
-<span class="fc" id="L43">			sw[v] = w.weight(v);</span>
+	protected IntSet computeMinimumVertexCover(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L49">		final int n = g.vertices().size();</span>
+<span class="fc" id="L50">		double[] sw = new double[n];</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">		for (int v : range(n))</span>
+<span class="fc" id="L52">			sw[v] = w.weight(v);</span>
 
-<span class="fc" id="L45">		Bitmap cover = new Bitmap(n);</span>
+<span class="fc" id="L54">		Bitmap cover = new Bitmap(n);</span>
 
-<span class="fc bfc" id="L47" title="All 2 branches covered.">		for (int e : range(g.edges().size())) {</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		for (int e : range(g.edges().size())) {</span>
 			int u, v;
-<span class="fc bfc" id="L49" title="All 4 branches covered.">			if (cover.get(u = g.edgeSource(e)) || cover.get(v = g.edgeTarget(e)))</span>
-<span class="fc" id="L50">				continue;</span>
-<span class="fc bfc" id="L51" title="All 2 branches covered.">			if (sw[u] &lt;= sw[v]) {</span>
-<span class="fc" id="L52">				sw[v] -= sw[u];</span>
+<span class="fc bfc" id="L58" title="All 4 branches covered.">			if (cover.get(u = g.edgeSource(e)) || cover.get(v = g.edgeTarget(e)))</span>
+<span class="fc" id="L59">				continue;</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">			if (sw[u] &lt;= sw[v]) {</span>
+<span class="fc" id="L61">				sw[v] -= sw[u];</span>
 				// sw[u] -= sw[u]; don't bother
-<span class="fc" id="L54">				cover.set(u);</span>
+<span class="fc" id="L63">				cover.set(u);</span>
 			} else {
-<span class="fc" id="L56">				sw[u] -= sw[v];</span>
+<span class="fc" id="L65">				sw[u] -= sw[v];</span>
 				// sw[v] -= sw[v]; don't bother
-<span class="fc" id="L58">				cover.set(v);</span>
+<span class="fc" id="L67">				cover.set(v);</span>
 			}
-<span class="fc" id="L60">		}</span>
-<span class="fc" id="L61">		return ImmutableIntArraySet.withBitmap(cover);</span>
+<span class="fc" id="L69">		}</span>
+<span class="fc" id="L70">		return ImmutableIntArraySet.withBitmap(cover);</span>
 	}
 
 }

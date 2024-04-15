@@ -26,8 +26,8 @@ import com.jgalgo.graph.IndexGraph;
  * Linear cores computing algorithm.
  *
  * &lt;p&gt;
- * The algorithm compute the core number of each vertex by computing the 0-core, than the 1-core, 2-core ect. It does so
- * by removing all vertices with degree less than the current core number.
+ * The algorithm compute the core number of each vertex by computing the 0-core, than the 1-core, 2-core, ect. It does
+ * so by removing all vertices with degree less than the current core number.
  *
  * &lt;p&gt;
  * The algorithm runs in linear time.
@@ -37,114 +37,123 @@ import com.jgalgo.graph.IndexGraph;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L40">class CoresAlgoImpl extends CoresAlgos.AbstractImpl {</span>
+<span class="fc" id="L40">public class CoresAlgoImpl extends CoresAlgoAbstract {</span>
+
+	/**
+	 * Create a new cores computing algorithm object.
+	 *
+	 * &lt;p&gt;
+	 * Please prefer using {@link CoresAlgo#newInstance()} to get a default implementation for the {@link CoresAlgo}
+	 * interface.
+	 */
+<span class="fc" id="L49">	public CoresAlgoImpl() {}</span>
 
 	@Override
-	CoresAlgo.IResult computeCores(IndexGraph g, EdgeDirection degreeType) {
-<span class="fc" id="L44">		Objects.requireNonNull(degreeType);</span>
+	protected CoresAlgo.IResult computeCores(IndexGraph g, EdgeDirection degreeType) {
+<span class="fc" id="L53">		Objects.requireNonNull(degreeType);</span>
 
-<span class="fc" id="L46">		final int n = g.vertices().size();</span>
-<span class="fc" id="L47">		final boolean directed = g.isDirected();</span>
+<span class="fc" id="L55">		final int n = g.vertices().size();</span>
+<span class="fc" id="L56">		final boolean directed = g.isDirected();</span>
 
 		/* cache the degree of each vertex */
-<span class="fc" id="L50">		int[] degree = new int[n];</span>
-<span class="fc" id="L51">		int maxDegree = 0;</span>
-<span class="fc bfc" id="L52" title="All 4 branches covered.">		if (!directed || degreeType == EdgeDirection.Out) {</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">			for (int v : range(n)) {</span>
-<span class="fc" id="L54">				degree[v] = g.outEdges(v).size();</span>
-<span class="fc" id="L55">				maxDegree = Math.max(maxDegree, degree[v]);</span>
-<span class="fc" id="L56">			}</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">		} else if (degreeType == EdgeDirection.In) {</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">			for (int v : range(n)) {</span>
-<span class="fc" id="L59">				degree[v] = g.inEdges(v).size();</span>
-<span class="fc" id="L60">				maxDegree = Math.max(maxDegree, degree[v]);</span>
-<span class="fc" id="L61">			}</span>
+<span class="fc" id="L59">		int[] degree = new int[n];</span>
+<span class="fc" id="L60">		int maxDegree = 0;</span>
+<span class="fc bfc" id="L61" title="All 4 branches covered.">		if (!directed || degreeType == EdgeDirection.Out) {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc" id="L63">				degree[v] = g.outEdges(v).size();</span>
+<span class="fc" id="L64">				maxDegree = Math.max(maxDegree, degree[v]);</span>
+<span class="fc" id="L65">			}</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">		} else if (degreeType == EdgeDirection.In) {</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc" id="L68">				degree[v] = g.inEdges(v).size();</span>
+<span class="fc" id="L69">				maxDegree = Math.max(maxDegree, degree[v]);</span>
+<span class="fc" id="L70">			}</span>
 		} else {
-<span class="pc bpc" id="L63" title="1 of 2 branches missed.">			assert degreeType == EdgeDirection.All;</span>
-<span class="fc bfc" id="L64" title="All 2 branches covered.">			for (int v : range(n)) {</span>
-<span class="fc" id="L65">				degree[v] = g.outEdges(v).size() + g.inEdges(v).size();</span>
-<span class="fc" id="L66">				maxDegree = Math.max(maxDegree, degree[v]);</span>
-<span class="fc" id="L67">			}</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">			assert degreeType == EdgeDirection.All;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc" id="L74">				degree[v] = g.outEdges(v).size() + g.inEdges(v).size();</span>
+<span class="fc" id="L75">				maxDegree = Math.max(maxDegree, degree[v]);</span>
+<span class="fc" id="L76">			}</span>
 		}
 
 		/* arrange the vertices in sorted bins per degree */
 		/* vertices[bin[d], bin[d+1]) are the vertices with degree d */
 		/* vertices[pos[v]] == v */
-<span class="fc" id="L73">		int[] bin = new int[maxDegree + 1];</span>
-<span class="fc" id="L74">		int[] vertices = new int[n];</span>
-<span class="fc" id="L75">		int[] pos = new int[n];</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">		for (int v : range(n))</span>
-<span class="fc" id="L77">			bin[degree[v]]++;</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">		for (int start = 0, d = 0; d &lt;= maxDegree; d++) {</span>
-<span class="fc" id="L79">			int verticesNum = bin[d];</span>
-<span class="fc" id="L80">			bin[d] = start;</span>
-<span class="fc" id="L81">			start += verticesNum;</span>
-		}
-<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (int v : range(n)) {</span>
-<span class="fc" id="L84">			pos[v] = bin[degree[v]];</span>
-<span class="fc" id="L85">			vertices[pos[v]] = v;</span>
+<span class="fc" id="L82">		int[] bin = new int[maxDegree + 1];</span>
+<span class="fc" id="L83">		int[] vertices = new int[n];</span>
+<span class="fc" id="L84">		int[] pos = new int[n];</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		for (int v : range(n))</span>
 <span class="fc" id="L86">			bin[degree[v]]++;</span>
-<span class="fc" id="L87">		}</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">		for (int i = maxDegree; i &gt; 0; i--)</span>
-<span class="fc" id="L89">			bin[i] = bin[i - 1];</span>
-<span class="fc" id="L90">		bin[0] = 0;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		for (int start = 0, d = 0; d &lt;= maxDegree; d++) {</span>
+<span class="fc" id="L88">			int verticesNum = bin[d];</span>
+<span class="fc" id="L89">			bin[d] = start;</span>
+<span class="fc" id="L90">			start += verticesNum;</span>
+		}
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int v : range(n)) {</span>
+<span class="fc" id="L93">			pos[v] = bin[degree[v]];</span>
+<span class="fc" id="L94">			vertices[pos[v]] = v;</span>
+<span class="fc" id="L95">			bin[degree[v]]++;</span>
+<span class="fc" id="L96">		}</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">		for (int i = maxDegree; i &gt; 0; i--)</span>
+<span class="fc" id="L98">			bin[i] = bin[i - 1];</span>
+<span class="fc" id="L99">		bin[0] = 0;</span>
 
-<span class="fc" id="L92">		IntConsumer decreaseDegree = v -&gt; {</span>
-<span class="fc" id="L93">			int vDegree = degree[v];</span>
-<span class="fc" id="L94">			int vPos = pos[v];</span>
-<span class="fc" id="L95">			int vBinStart = bin[vDegree];</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">			if (vPos != vBinStart) {</span>
-<span class="fc" id="L97">				int wPos = vBinStart;</span>
-<span class="fc" id="L98">				int w = vertices[wPos];</span>
-<span class="fc" id="L99">				pos[v] = wPos;</span>
-<span class="fc" id="L100">				pos[w] = vPos;</span>
-<span class="fc" id="L101">				vertices[vPos] = w;</span>
-<span class="fc" id="L102">				vertices[wPos] = v;</span>
+<span class="fc" id="L101">		IntConsumer decreaseDegree = v -&gt; {</span>
+<span class="fc" id="L102">			int vDegree = degree[v];</span>
+<span class="fc" id="L103">			int vPos = pos[v];</span>
+<span class="fc" id="L104">			int vBinStart = bin[vDegree];</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			if (vPos != vBinStart) {</span>
+<span class="fc" id="L106">				int wPos = vBinStart;</span>
+<span class="fc" id="L107">				int w = vertices[wPos];</span>
+<span class="fc" id="L108">				pos[v] = wPos;</span>
+<span class="fc" id="L109">				pos[w] = vPos;</span>
+<span class="fc" id="L110">				vertices[vPos] = w;</span>
+<span class="fc" id="L111">				vertices[wPos] = v;</span>
 			}
-<span class="fc" id="L104">			bin[vDegree]++;</span>
-<span class="fc" id="L105">			degree[v]--;</span>
-<span class="fc" id="L106">		};</span>
+<span class="fc" id="L113">			bin[vDegree]++;</span>
+<span class="fc" id="L114">			degree[v]--;</span>
+<span class="fc" id="L115">		};</span>
 
 		/* iterate over the vertices in increase order of their degree */
-<span class="fc bfc" id="L109" title="All 2 branches covered.">		for (int p : range(n)) {</span>
-<span class="fc" id="L110">			int u = vertices[p];</span>
-<span class="pc bpc" id="L111" title="1 of 2 branches missed.">			assert pos[u] == p;</span>
-<span class="fc" id="L112">			int uDegree = degree[u];</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">		for (int p : range(n)) {</span>
+<span class="fc" id="L119">			int u = vertices[p];</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">			assert pos[u] == p;</span>
+<span class="fc" id="L121">			int uDegree = degree[u];</span>
 
 			/* we 'remove' u from the graph, actually just decreasing the degree of its neighbors */
-<span class="fc bfc" id="L115" title="All 4 branches covered.">			if (!directed || degreeType == EdgeDirection.In) {</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L117">					eit.nextInt();</span>
-<span class="fc" id="L118">					int v = eit.targetInt();</span>
-<span class="fc bfc" id="L119" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
-<span class="fc" id="L120">						decreaseDegree.accept(v);</span>
-<span class="fc" id="L121">				}</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">			} else if (degreeType == EdgeDirection.Out) {</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L124">					eit.nextInt();</span>
-<span class="fc" id="L125">					int v = eit.sourceInt();</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
-<span class="fc" id="L127">						decreaseDegree.accept(v);</span>
-<span class="fc" id="L128">				}</span>
+<span class="fc bfc" id="L124" title="All 4 branches covered.">			if (!directed || degreeType == EdgeDirection.In) {</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L126">					eit.nextInt();</span>
+<span class="fc" id="L127">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
+<span class="fc" id="L129">						decreaseDegree.accept(v);</span>
+<span class="fc" id="L130">				}</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">			} else if (degreeType == EdgeDirection.Out) {</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L133">					eit.nextInt();</span>
+<span class="fc" id="L134">					int v = eit.sourceInt();</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
+<span class="fc" id="L136">						decreaseDegree.accept(v);</span>
+<span class="fc" id="L137">				}</span>
 			} else {
-<span class="pc bpc" id="L130" title="1 of 2 branches missed.">				assert degreeType == EdgeDirection.All;</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L132">					eit.nextInt();</span>
-<span class="fc" id="L133">					int v = eit.targetInt();</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
-<span class="fc" id="L135">						decreaseDegree.accept(v);</span>
-<span class="fc" id="L136">				}</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L138">					eit.nextInt();</span>
-<span class="fc" id="L139">					int v = eit.sourceInt();</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
-<span class="fc" id="L141">						decreaseDegree.accept(v);</span>
-<span class="fc" id="L142">				}</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">				assert degreeType == EdgeDirection.All;</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L141">					eit.nextInt();</span>
+<span class="fc" id="L142">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
+<span class="fc" id="L144">						decreaseDegree.accept(v);</span>
+<span class="fc" id="L145">				}</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L147">					eit.nextInt();</span>
+<span class="fc" id="L148">					int v = eit.sourceInt();</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
+<span class="fc" id="L150">						decreaseDegree.accept(v);</span>
+<span class="fc" id="L151">				}</span>
 			}
-<span class="fc" id="L144">		}</span>
+<span class="fc" id="L153">		}</span>
 
-<span class="fc" id="L146">		int[] core = degree;</span>
-<span class="fc" id="L147">		return new CoresAlgos.IndexResult(core);</span>
+<span class="fc" id="L155">		int[] core = degree;</span>
+<span class="fc" id="L156">		return new CoresAlgos.IndexResult(core);</span>
 	}
 
 }

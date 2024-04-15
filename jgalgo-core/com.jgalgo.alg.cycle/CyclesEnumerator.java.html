@@ -17,13 +17,11 @@
 package com.jgalgo.alg.cycle;
 
 import java.util.Iterator;
-import java.util.List;
 import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.alg.path.IPath;
 import com.jgalgo.alg.path.Path;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * An algorithm that enumerate all cycles in a graph.
@@ -55,25 +53,6 @@ public interface CyclesEnumerator {
 	public &lt;V, E&gt; Iterator&lt;Path&lt;V, E&gt;&gt; cyclesIter(Graph&lt;V, E&gt; g);
 
 	/**
-	 * Find all cycles in the given graph.
-	 *
-	 * &lt;p&gt;
-	 * The number of cycles may be large, and its recommend to use {@link #cyclesIter(Graph)} to avoid storing all the
-	 * cycles in memory at once.
-	 *
-	 * &lt;p&gt;
-	 * If {@code g} is {@link IntGraph}, the returned list will contain {@link IPath} objects.
-	 *
-	 * @param  &lt;V&gt; the vertices type
-	 * @param  &lt;E&gt; the edges type
-	 * @param  g   a graph
-	 * @return     a list of all cycles in the graph
-	 */
-	default &lt;V, E&gt; List&lt;Path&lt;V, E&gt;&gt; allCycles(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L73">		return new ObjectArrayList&lt;&gt;(cyclesIter(g));</span>
-	}
-
-	/**
 	 * Create a new algorithm for cycles enumerating.
 	 *
 	 * &lt;p&gt;
@@ -83,7 +62,7 @@ public interface CyclesEnumerator {
 	 * @return a default implementation of {@link CyclesEnumerator}
 	 */
 	static CyclesEnumerator newInstance() {
-<span class="nc" id="L86">		return builder().build();</span>
+<span class="nc" id="L65">		return builder().build();</span>
 	}
 
 	/**
@@ -95,34 +74,34 @@ public interface CyclesEnumerator {
 	 * @return a new builder that can build {@link CyclesEnumerator} objects
 	 */
 	static CyclesEnumerator.Builder builder() {
-<span class="nc" id="L98">		return new CyclesEnumerator.Builder() {</span>
+<span class="nc" id="L77">		return new CyclesEnumerator.Builder() {</span>
 			String impl;
 
 			@Override
 			public CyclesEnumerator build() {
-<span class="nc bnc" id="L103" title="All 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L104" title="All 3 branches missed.">					switch (impl) {</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L83" title="All 3 branches missed.">					switch (impl) {</span>
 						case &quot;johnson&quot;:
-<span class="nc" id="L106">							return new CyclesEnumeratorJohnson();</span>
+<span class="nc" id="L85">							return new CyclesEnumeratorJohnson();</span>
 						case &quot;tarjan&quot;:
-<span class="nc" id="L108">							return new CyclesEnumeratorTarjan();</span>
+<span class="nc" id="L87">							return new CyclesEnumeratorTarjan();</span>
 						default:
-<span class="nc" id="L110">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L89">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="nc" id="L113">				return new CyclesEnumeratorTarjan();</span>
+<span class="nc" id="L92">				return new CyclesEnumeratorTarjan();</span>
 			}
 
 			@Override
 			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L118" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L120">						impl = (String) value;</span>
-<span class="nc" id="L121">						break;</span>
+<span class="nc" id="L99">						impl = (String) value;</span>
+<span class="nc" id="L100">						break;</span>
 					default:
-<span class="nc" id="L123">						CyclesEnumerator.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L102">						CyclesEnumerator.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L125">			}</span>
+<span class="nc" id="L104">			}</span>
 		};
 	}
 

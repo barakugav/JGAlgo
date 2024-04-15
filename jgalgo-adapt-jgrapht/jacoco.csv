@@ -2,8 +2,8 @@ GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.IndexGraphImpl.OutEdges.new JGraphTWrapper.IndexGraphImpl.EdgeSetBase.IterBase() {...},0,63,0,8,0,9,0,7,0,3
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.InEdges,0,13,0,0,0,4,0,2,0,2
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.IndexGraphImpl.InEdges.new JGraphTWrapper.IndexGraphImpl.EdgeSetBase.IterBase() {...},0,63,0,8,0,9,0,7,0,3
-JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.OutEdges.new JGraphTWrapper.BaseEdgeSet.BaseIter() {...},0,51,0,8,0,8,0,7,0,3
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.BaseEdgeSet,0,39,0,0,0,10,0,6,0,6
+JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.OutEdges.new JGraphTWrapper.BaseEdgeSet.BaseIter() {...},0,51,0,8,0,8,0,7,0,3
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.IndexGraphImpl,0,397,1,17,0,82,1,52,0,44
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.IndexGraphImpl.InEdges,0,25,0,0,0,7,0,2,0,2
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.BaseEdgeSet.BaseIter,0,68,0,10,0,13,0,9,0,4
@@ -18,7 +18,7 @@ JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTAdapter,0,563,0,68,0,1
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper,0,589,0,44,0,132,0,69,0,47
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.OutEdges,0,13,0,0,0,4,0,2,0,2
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.IndexGraphImpl.new IWeightsDouble() {...},0,33,0,0,0,5,0,4,0,4
-JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.IndexGraphImpl.EdgeSetBase,0,24,0,0,0,5,0,3,0,3
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.IndexGraphImpl.IndicesSet,0,68,0,4,0,12,0,12,0,10
-JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.SourceTargetEdgeSet.new JGraphTWrapper.BaseEdgeSet.BaseIter() {...},0,29,0,4,0,7,0,5,0,3
+JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.IndexGraphImpl.EdgeSetBase,0,24,0,0,0,5,0,3,0,3
 JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.IndexGraphImpl.SourceTargetEdgeSet.new JGraphTWrapper.IndexGraphImpl.EdgeSetBase.IterBase() {...},0,29,0,4,0,7,0,5,0,3
+JGAlgo - JGraphT Adapters,com.jgalgo.adapt.jgrapht,JGraphTWrapper.SourceTargetEdgeSet.new JGraphTWrapper.BaseEdgeSet.BaseIter() {...},0,29,0,4,0,7,0,5,0,3

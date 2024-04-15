@@ -44,7 +44,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L44">	public WeaklyConnectedComponentsAlgoImpl() {}</span>
 
 	@Override
-	public IVertexPartition findWeaklyConnectedComponents(IndexGraph g) {
+	protected IVertexPartition findWeaklyConnectedComponents(IndexGraph g) {
 <span class="fc" id="L48">		final boolean directed = g.isDirected();</span>
 <span class="fc" id="L49">		final int n = g.vertices().size();</span>
 <span class="fc" id="L50">		int[] comp = new int[n];</span>

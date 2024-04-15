@@ -17,6 +17,7 @@ package com.jgalgo.alg.cover;
 
 import com.jgalgo.alg.match.IMatching;
 import com.jgalgo.alg.match.MatchingAlgo;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeSet;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -25,44 +26,68 @@ import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-<span class="fc" id="L28">class EdgeCoverCardinality extends EdgeCovers.AbstractImpl {</span>
+/**
+ * A simply algorithm for computing a minimum edge cover using a maximum matching algorithm.
+ *
+ * &lt;p&gt;
+ * The algorithm compute a maximum cardinality matching and adds the matching edges to the cover, and then adds more
+ * edges greedily until the cover is complete. This algorithm achieves the optimal solution for both directed and
+ * undirected graphs. For directed graph, the algorithm treat use the {@linkplain Graph#undirectedView() undirected
+ * view} of the graph.
+ *
+ * &lt;p&gt;
+ * The algorithm running time is dominated by the maximum matching algorithm. Other than that, the algorithm use linear
+ * time and space.
+ *
+ * @author Barak Ugav
+ */
+public class EdgeCoverCardinality extends EdgeCoverAbstract {
 
-<span class="fc" id="L30">	private final MatchingAlgo matchingAlgo = MatchingAlgo.builder().setCardinality(true).build();</span>
+<span class="fc" id="L46">	private final MatchingAlgo matchingAlgo = MatchingAlgo.builder().setCardinality(true).build();</span>
+
+	/**
+	 * Create a new edge cover algorithm object for unweighted graphs.
+	 *
+	 * &lt;p&gt;
+	 * Please prefer using {@link EdgeCover#newInstance()} to get a default implementation for the {@link EdgeCover}
+	 * interface.
+	 */
+<span class="fc" id="L55">	public EdgeCoverCardinality() {}</span>
 
 	@Override
-	IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L34">		Assertions.onlyCardinality(w);</span>
-<span class="fc" id="L35">		final int m = g.edges().size();</span>
+	protected IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L59">		Assertions.onlyCardinality(w);</span>
+<span class="fc" id="L60">		final int m = g.edges().size();</span>
 
-<span class="fc" id="L37">		IMatching matching =</span>
-<span class="fc bfc" id="L38" title="All 2 branches covered.">				(IMatching) matchingAlgo.computeMaximumMatching(g.isDirected() ? g.undirectedView() : g, null);</span>
+<span class="fc" id="L62">		IMatching matching =</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">				(IMatching) matchingAlgo.computeMaximumMatching(g.isDirected() ? g.undirectedView() : g, null);</span>
 
 		/* add all the matched edges */
-<span class="fc" id="L41">		Bitmap cover = new Bitmap(m);</span>
-<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (int e : matching.edges())</span>
-<span class="fc" id="L43">			cover.set(e);</span>
+<span class="fc" id="L66">		Bitmap cover = new Bitmap(m);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		for (int e : matching.edges())</span>
+<span class="fc" id="L68">			cover.set(e);</span>
 
 		/* add more edges greedily to complete the cover */
-<span class="fc bfc" id="L46" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc bfc" id="L47" title="All 2 branches covered.">			for (int v : matching.unmatchedVertices()) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">			for (int v : matching.unmatchedVertices()) {</span>
 				IEdgeSet edges;
-<span class="fc bfc" id="L49" title="All 4 branches covered.">				if ((edges = g.outEdges(v)).isEmpty() &amp;&amp; (edges = g.inEdges(v)).isEmpty())</span>
-<span class="fc" id="L50">					throw new IllegalArgumentException(</span>
+<span class="fc bfc" id="L74" title="All 4 branches covered.">				if ((edges = g.outEdges(v)).isEmpty() &amp;&amp; (edges = g.inEdges(v)).isEmpty())</span>
+<span class="fc" id="L75">					throw new IllegalArgumentException(</span>
 							&quot;no edge cover exists, vertex with index &quot; + v + &quot; has no edges&quot;);
-<span class="fc" id="L52">				cover.set(edges.iterator().nextInt());</span>
-<span class="fc" id="L53">			}</span>
+<span class="fc" id="L77">				cover.set(edges.iterator().nextInt());</span>
+<span class="fc" id="L78">			}</span>
 
 		} else {
-<span class="fc bfc" id="L56" title="All 2 branches covered.">			for (int v : matching.unmatchedVertices()) {</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			for (int v : matching.unmatchedVertices()) {</span>
 				IEdgeSet edges;
-<span class="fc bfc" id="L58" title="All 2 branches covered.">				if ((edges = g.outEdges(v)).isEmpty())</span>
-<span class="fc" id="L59">					throw new IllegalArgumentException(</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">				if ((edges = g.outEdges(v)).isEmpty())</span>
+<span class="fc" id="L84">					throw new IllegalArgumentException(</span>
 							&quot;no edge cover exists, vertex with index &quot; + v + &quot; has no edges&quot;);
-<span class="fc" id="L61">				cover.set(edges.iterator().nextInt());</span>
-<span class="fc" id="L62">			}</span>
+<span class="fc" id="L86">				cover.set(edges.iterator().nextInt());</span>
+<span class="fc" id="L87">			}</span>
 		}
 
-<span class="fc" id="L65">		return ImmutableIntArraySet.withBitmap(cover);</span>
+<span class="fc" id="L90">		return ImmutableIntArraySet.withBitmap(cover);</span>
 	}
 
 }
