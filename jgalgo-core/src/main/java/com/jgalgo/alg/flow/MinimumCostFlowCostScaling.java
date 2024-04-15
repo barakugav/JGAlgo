@@ -190,7 +190,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 			}
 
 			MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, capacity, costOrig, flow);
-			return new Flows.FlowImpl(gOrig, flow);
+			return newFlow(gOrig, flow);
 		}
 
 		private void solveWithPartialAugment() {

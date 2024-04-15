@@ -25,10 +25,10 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 
-class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
+class FlowCirculationPushRelabel extends FlowCirculationAbstract {
 
 	@Override
-	IFlow computeCirculation(IndexGraph g, IWeightFunction capacity, IWeightFunction supply) {
+	protected IFlow computeCirculation(IndexGraph g, IWeightFunction capacity, IWeightFunction supply) {
 		if (WeightFunction.isInteger(capacity) && WeightFunction.isInteger(supply)) {
 			return new WorkerInt(g, (IWeightFunctionInt) capacity, (IWeightFunctionInt) supply).computeCirculation();
 		} else {
@@ -224,7 +224,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 			assert g.vertices().intStream().allMatch(v -> excess[v] <= eps);
 			for (int e : range(g.edges().size()))
 				flow[e] = Math.max(0, Math.min(flow[e], capacityOrig.weight(e)));
-			return new Flows.FlowImpl(g, flow);
+			return newFlow(g, flow);
 		}
 	}
 
@@ -364,7 +364,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 			assert g.vertices().intStream().allMatch(v -> excess[v] == 0);
 			for (int e : range(g.edges().size()))
 				flow0[e] = flow[e];
-			return new Flows.FlowImpl(g, flow0);
+			return newFlow(g, flow0);
 		}
 	}
 

@@ -52,21 +52,25 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * <p>
  * Using the dynamic trees reduce the running time of the push-relabel algorithm to \(O(m n \log (n^2 / m))\) and linear
  * space. This implementation uses FIFO to order the vertices to be examined. Note that this implementation is usually
- * out preformed in practice by simpler variants of the push-relabel algorithm, such as
- * {@link MaximumFlowPushRelabelHighestFirst}.
+ * out preformed in practice by simpler variants of the push-relabel algorithm, such as {@link MaximumFlowPushRelabel}
+ * with highest label heuristic.
  *
- * @see    MaximumFlowPushRelabelFifo
+ * @see    MaximumFlowPushRelabel
  * @author Barak Ugav
  */
-class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.AbstractImplWithResidualGraph {
+public class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstractWithResidualNet {
 
 	/**
 	 * Create a new maximum flow algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link MaximumFlow#newInstance()} to get a default implementation for the {@link MaximumFlow}
+	 * interface.
 	 */
-	MaximumFlowPushRelabelDynamicTrees() {}
+	public MaximumFlowPushRelabelDynamicTrees() {}
 
 	@Override
-	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
+	protected IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
 		if (WeightFunction.isInteger(capacity)) {
 			return new WorkerInt(g, (IWeightFunctionInt) capacity, source, sink).computeMaxFlow();
 		} else {
@@ -75,11 +79,12 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.AbstractImplWithRe
 	}
 
 	@Override
-	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, IntCollection sources, IntCollection sinks) {
+	protected IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, IntCollection sources,
+			IntCollection sinks) {
 		throw new UnsupportedOperationException("multi source/sink not supported");
 	}
 
-	private abstract static class AbstractWorker extends MaximumFlows.AbstractImplWithResidualGraph.Worker {
+	private abstract static class AbstractWorker extends MaximumFlowAbstractWithResidualNet.Worker {
 
 		final DynamicTree dt;
 		final DynamicTreeExtension.TreeSize dtTreeSize;

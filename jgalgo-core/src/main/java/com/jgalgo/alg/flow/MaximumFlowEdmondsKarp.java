@@ -42,15 +42,19 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Edmonds%E2%80%93Karp_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MaximumFlowEdmondsKarp extends MaximumFlows.AbstractImplWithoutResidualGraph {
+public class MaximumFlowEdmondsKarp extends MaximumFlowAbstractWithoutResidualNet {
 
 	/**
 	 * Create a new maximum flow algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link MaximumFlow#newInstance()} to get a default implementation for the {@link MaximumFlow}
+	 * interface.
 	 */
-	MaximumFlowEdmondsKarp() {}
+	public MaximumFlowEdmondsKarp() {}
 
 	@Override
-	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
+	protected IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
 		if (WeightFunction.isInteger(capacity)) {
 			return new WorkerInt(g, (IWeightFunctionInt) capacity, source, sink).computeMaxFlow();
 		} else {
@@ -58,7 +62,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlows.AbstractImplWithoutResidualGra
 		}
 	}
 
-	private abstract class Worker extends MaximumFlows.AbstractImplWithoutResidualGraph.Worker {
+	private abstract class Worker extends MaximumFlowAbstractWithoutResidualNet.Worker {
 
 		Worker(IndexGraph gOrig, IWeightFunction capacity, int source, int sink) {
 			super(gOrig, capacity, source, sink);

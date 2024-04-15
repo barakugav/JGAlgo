@@ -43,7 +43,7 @@ public class FlowsTest extends TestBase {
 			g.addEdge(2, 0, 2);
 
 			double[] flows = new double[g.edges().size()];
-			IFlow flow0 = new Flows.FlowImpl(g.indexGraph(), flows);
+			IFlow flow0 = new Flows.IndexFlow(g.indexGraph(), flows);
 			Flow<Integer, Integer> flow = Flows.flowFromIndexFlow(g, flow0);
 
 			WeightsDouble<Integer> costDouble = Weights.createExternalEdgesWeights(g, double.class);
@@ -87,7 +87,7 @@ public class FlowsTest extends TestBase {
 			g.addEdge(2, 0, 2);
 
 			double[] flows = new double[g.edges().size()];
-			IFlow flow0 = new Flows.FlowImpl(g.indexGraph(), flows);
+			IFlow flow0 = new Flows.IndexFlow(g.indexGraph(), flows);
 			Flow<Integer, Integer> flow = Flows.flowFromIndexFlow(g, flow0);
 
 			WeightsDouble<Integer> costDouble = Weights.createExternalEdgesWeights(g, double.class);

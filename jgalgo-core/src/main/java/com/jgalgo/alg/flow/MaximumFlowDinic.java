@@ -41,24 +41,29 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Dinic%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MaximumFlowDinic extends MaximumFlows.AbstractImplWithResidualGraph {
+public class MaximumFlowDinic extends MaximumFlowAbstractWithResidualNet {
 
 	/**
 	 * Create a new maximum flow algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link MaximumFlow#newInstance()} to get a default implementation for the {@link MaximumFlow}
+	 * interface.
 	 */
-	MaximumFlowDinic() {}
+	public MaximumFlowDinic() {}
 
 	@Override
-	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
+	protected IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
 		return new Worker(g, capacity, source, sink).computeMaximumFlow();
 	}
 
 	@Override
-	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, IntCollection sources, IntCollection sinks) {
+	protected IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, IntCollection sources,
+			IntCollection sinks) {
 		return new Worker(g, capacity, sources, sinks).computeMaximumFlow();
 	}
 
-	private class Worker extends MaximumFlows.AbstractImplWithResidualGraph.Worker {
+	private class Worker extends MaximumFlowAbstractWithResidualNet.Worker {
 
 		final double[] flow;
 		final double[] capacity;

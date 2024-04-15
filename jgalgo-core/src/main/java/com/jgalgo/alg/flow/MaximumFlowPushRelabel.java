@@ -70,7 +70,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MaximumFlowPushRelabel extends MaximumFlows.AbstractImplWithoutResidualGraph {
+public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNet {
 
 	private static enum ActiveOrderPolicy {
 		FIFO, HighestFirst, LowestFirst, MoveToFront;
@@ -93,23 +93,90 @@ class MaximumFlowPushRelabel extends MaximumFlows.AbstractImplWithoutResidualGra
 		this.dischargePolicy = Objects.requireNonNull(dischargePolicy);
 	}
 
-	static MaximumFlowPushRelabel newInstanceFifo() {
+	/**
+	 * Create a new push-relabel maximum flow algorithm object with a FIFO heuristic.
+	 *
+	 * <p>
+	 * The push-relabel algorithm with FIFO heuristic examine active vertices by the order they became active. Using
+	 * this ordering achieve \(O(n^3)\) time complexity.
+	 *
+	 * <p>
+	 * Please prefer using {@link MaximumFlow#newInstance()} to get a default implementation for the {@link MaximumFlow}
+	 * interface.
+	 *
+	 * @return a new push-relabel maximum flow algorithm object with a FIFO heuristic
+	 */
+	public static MaximumFlowPushRelabel newInstanceFifo() {
 		return new MaximumFlowPushRelabel(ActiveOrderPolicy.FIFO, DischargePolicy.SingleStep);
 	}
 
-	static MaximumFlowPushRelabel newInstanceHighestFirst() {
+	/**
+	 * Create a new push-relabel maximum flow algorithm object with a highest first heuristic.
+	 *
+	 * <p>
+	 * The push-relabel algorithm with highest first heuristic examine active vertices in decreasing order of their
+	 * label. Using this ordering achieve \(O(n^2 \sqrt{m})\) time complexity.
+	 *
+	 * <p>
+	 * Please prefer using {@link MaximumFlow#newInstance()} to get a default implementation for the {@link MaximumFlow}
+	 * interface.
+	 *
+	 * @return a new push-relabel maximum flow algorithm object with a highest first heuristic
+	 */
+	public static MaximumFlowPushRelabel newInstanceHighestFirst() {
 		return new MaximumFlowPushRelabel(ActiveOrderPolicy.HighestFirst, DischargePolicy.SingleStep);
 	}
 
-	static MaximumFlowPushRelabel newInstanceLowestFirst() {
+	/**
+	 * Create a new push-relabel maximum flow algorithm object with a lowest first heuristic.
+	 *
+	 * <p>
+	 * The push-relabel algorithm with lowest first heuristic examine active vertices in increasing order of their
+	 * label. Using this ordering achieve \(O(n^2 m)\) time complexity.
+	 *
+	 * <p>
+	 * Please prefer using {@link MaximumFlow#newInstance()} to get a default implementation for the {@link MaximumFlow}
+	 * interface.
+	 *
+	 * @return a new push-relabel maximum flow algorithm object with a lowest first heuristic
+	 */
+	public static MaximumFlowPushRelabel newInstanceLowestFirst() {
 		return new MaximumFlowPushRelabel(ActiveOrderPolicy.LowestFirst, DischargePolicy.SingleStep);
 	}
 
-	static MaximumFlowPushRelabel newInstanceMoveToFront() {
+	/**
+	 * Create a new push-relabel maximum flow algorithm object with a move-to-front heuristic.
+	 *
+	 * <p>
+	 * The push-relabel algorithm with move-to-front heuristic examine active vertices in the order they became active,
+	 * but when an active vertex is relabeled it is moved to the front of the list. Using this ordering achieve
+	 * \(O(n^3)\) time complexity.
+	 *
+	 * <p>
+	 * Please prefer using {@link MaximumFlow#newInstance()} to get a default implementation for the {@link MaximumFlow}
+	 * interface.
+	 *
+	 * @return a new push-relabel maximum flow algorithm object with a move-to-front heuristic
+	 */
+	public static MaximumFlowPushRelabel newInstanceMoveToFront() {
 		return new MaximumFlowPushRelabel(ActiveOrderPolicy.MoveToFront, DischargePolicy.SingleStep);
 	}
 
-	static MaximumFlowPushRelabel newInstancePartialAugment() {
+	/**
+	 * Create a new push-relabel maximum flow algorithm object with a partial augment discharge policy and highest first
+	 * active heuristic.
+	 *
+	 * <p>
+	 * The push-relabel algorithm with partial augment discharge policy push flow along a path of admissible edges. This
+	 * policy is based on 'The Partial Augment–Relabel Algorithm for the Maximum Flow Problem' by Andrew V. Goldberg.
+	 *
+	 * <p>
+	 * Please prefer using {@link MaximumFlow#newInstance()} to get a default implementation for the {@link MaximumFlow}
+	 * interface.
+	 *
+	 * @return a new push-relabel maximum flow algorithm object with a partial augment discharge policy
+	 */
+	public static MaximumFlowPushRelabel newInstancePartialAugment() {
 		return new MaximumFlowPushRelabel(ActiveOrderPolicy.HighestFirst, DischargePolicy.PartialAugment);
 	}
 
@@ -119,7 +186,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.AbstractImplWithoutResidualGra
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
+	protected IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
 		if (WeightFunction.isInteger(capacity)) {
 			return new WorkerInt(g, (IWeightFunctionInt) capacity, source, sink, activeOrderPolicy, dischargePolicy)
 					.computeMaxFlow();
@@ -138,7 +205,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.AbstractImplWithoutResidualGra
 		}
 	}
 
-	abstract static class Worker extends MaximumFlows.AbstractImplWithoutResidualGraph.Worker {
+	abstract static class Worker extends MaximumFlowAbstractWithoutResidualNet.Worker {
 
 		final int[] label;
 		final IEdgeIter[] outEdgeIters;

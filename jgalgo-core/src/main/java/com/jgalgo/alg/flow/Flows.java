@@ -39,12 +39,12 @@ class Flows {
 
 	private Flows() {}
 
-	static class FlowImpl implements IFlow {
+	static class IndexFlow implements IFlow {
 
 		private final IndexGraph g;
 		private final double[] flow;
 
-		FlowImpl(IndexGraph g, double[] flow) {
+		IndexFlow(IndexGraph g, double[] flow) {
 			this.g = g;
 			this.flow = flow;
 		}

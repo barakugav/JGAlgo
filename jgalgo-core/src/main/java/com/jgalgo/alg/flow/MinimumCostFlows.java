@@ -34,12 +34,12 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 class MinimumCostFlows {
@@ -215,6 +215,10 @@ class MinimumCostFlows {
 		abstract IFlow computeMinCostFlow(IndexGraph g, IWeightFunction capacity, IWeightFunction cost,
 				IWeightFunction lowerBound, IWeightFunction supply);
 
+		protected static IFlow newFlow(IndexGraph g, double[] flow) {
+			return new Flows.IndexFlow(g, flow);
+		}
+
 	}
 
 	abstract static class AbstractImpl extends AbstractImplBase {
@@ -265,7 +269,7 @@ class MinimumCostFlows {
 			double[] flow = new double[g.edges().size()];
 			for (int e : range(g.edges().size()))
 				flow[e] = flow0.getFlow(e) + lowerBound.weight(e);
-			return new Flows.FlowImpl(g, flow);
+			return newFlow(g, flow);
 		}
 
 		static double hugeCost(IndexGraph g, IWeightFunction cost) {
@@ -434,7 +438,7 @@ class MinimumCostFlows {
 			double[] flow = new double[gOrig.edges().size()];
 			for (int e : range(gOrig.edges().size()))
 				flow[e] = flow0.getFlow(e);
-			return new Flows.FlowImpl(gOrig, flow);
+			return newFlow(gOrig, flow);
 		}
 
 		@Override
@@ -616,7 +620,7 @@ class MinimumCostFlows {
 			double[] flow = new double[gOrig.edges().size()];
 			for (int e : range(gOrig.edges().size()))
 				flow[e] = flow0.getFlow(e) + lowerBound.weight(e);
-			return new Flows.FlowImpl(gOrig, flow);
+			return newFlow(gOrig, flow);
 		}
 
 		@Override
@@ -721,7 +725,7 @@ class MinimumCostFlows {
 			double[] flow = new double[gOrig.edges().size()];
 			for (int e : range(gOrig.edges().size()))
 				flow[e] = flow0.getFlow(e);
-			return new Flows.FlowImpl(gOrig, flow);
+			return newFlow(gOrig, flow);
 		}
 
 	}
@@ -860,7 +864,7 @@ class MinimumCostFlows {
 			double[] flow = new double[gOrig.edges().size()];
 			for (int e : range(gOrig.edges().size()))
 				flow[e] = flow0.getFlow(e);
-			return new Flows.FlowImpl(gOrig, flow);
+			return newFlow(gOrig, flow);
 		}
 
 	}

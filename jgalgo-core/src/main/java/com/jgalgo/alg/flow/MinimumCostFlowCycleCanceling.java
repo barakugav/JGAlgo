@@ -77,7 +77,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 				flow0[resGraph.edgeRef[e]] = Math.max(0, Math.min(flow[e], capacity[e]));
 
 		MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, capacityOrig, cost, flow0);
-		return new Flows.FlowImpl(gOrig, flow0);
+		return newFlow(gOrig, flow0);
 	}
 
 	private static double initResidualCapacitiesAndFlows(IndexGraph gOrig, IWeightFunction capacityOrig, IFlow flowOrig,

@@ -40,32 +40,37 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * <p>
  * Using dynamic trees, the algorithm of Dinic to maximum flow problem is implemented in time \(O(m n \log n)\) and
  * linear space. In practice, the (relative) complicated implementation of dynamic trees have little gain in the overall
- * performance, and its probably better to use some variant of the {@link MaximumFlowPushRelabelFifo}, which has worse
+ * performance, and its probably better to use some variant of the {@link MaximumFlowPushRelabel}, which has worse
  * theoretically bounds, but runs faster in practice.
  *
  * @see    MaximumFlowDinic
  * @author Barak Ugav
  */
-class MaximumFlowDinicDynamicTrees extends MaximumFlows.AbstractImplWithResidualGraph {
+public class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstractWithResidualNet {
 
 	private final DebugPrinter debug = new DebugPrinter(false);
 
 	/**
 	 * Create a new maximum flow algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link MaximumFlow#newInstance()} to get a default implementation for the {@link MaximumFlow}
+	 * interface.
 	 */
-	MaximumFlowDinicDynamicTrees() {}
+	public MaximumFlowDinicDynamicTrees() {}
 
 	@Override
-	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
+	protected IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
 		return new Worker(g, capacity, source, sink).computeMaximumFlow();
 	}
 
 	@Override
-	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, IntCollection sources, IntCollection sinks) {
+	protected IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, IntCollection sources,
+			IntCollection sinks) {
 		return new Worker(g, capacity, sources, sinks).computeMaximumFlow();
 	}
 
-	private class Worker extends MaximumFlows.AbstractImplWithResidualGraph.Worker {
+	private class Worker extends MaximumFlowAbstractWithResidualNet.Worker {
 
 		final double[] capacity;
 		final double[] flow;
