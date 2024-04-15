@@ -28,12 +28,38 @@ import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
+/**
+ * A simply algorithm for computing a minimum weighted edge cover using a minimum weighted perfect matching algorithm.
+ *
+ * <p>
+ * The algorithm uses a reduction to a minimum weighted perfect matching problem: a graph \(G'\) is constructed, by
+ * duplicating the graph \(G\), namely duplicating each vertex \(v\) to two vertices \(v_0\) and \(v_1\) and adding an
+ * edge between \(u_0\) and \(v_0\) and between \(u_1\) and \(v_1\) for each edge \((u, v)\) in \(G\). In addition,
+ * between each pair of vertices \(v_0\) and \(v_1\) in \(G'\) an edge is added with weight equal to the minimum weight
+ * of an edge incident to \(v\) in \(G\). The minimum weighted perfect matching in \(G'\) is computed and the edges
+ * corresponding to the matching are added to the edge cover.
+ *
+ * <p>
+ * The algorithm running time and space are dominated by the minimum weighted perfect matching algorithm used. Other
+ * than that, the algorithm use linear space and time.
+ *
+ * @author Barak Ugav
+ */
+public class EdgeCoverWeighted extends EdgeCoverAbstract {
 
 	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();
 
+	/**
+	 * Create a new weighted edge cover algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link EdgeCover#newInstance()} to get a default implementation for the {@link EdgeCover}
+	 * interface.
+	 */
+	public EdgeCoverWeighted() {}
+
 	@Override
-	IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
+	protected IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
