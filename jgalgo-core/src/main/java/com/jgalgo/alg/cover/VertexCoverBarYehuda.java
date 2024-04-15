@@ -33,10 +33,19 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {
+public class VertexCoverBarYehuda extends VertexCoverAbstract {
+
+	/**
+	 * Create a new Bar Yehuda's vertex cover algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link VertexCover#newInstance()} to get a default implementation for the {@link VertexCover}
+	 * interface.
+	 */
+	public VertexCoverBarYehuda() {}
 
 	@Override
-	public IntSet computeMinimumVertexCover(IndexGraph g, IWeightFunction w) {
+	protected IntSet computeMinimumVertexCover(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 		double[] sw = new double[n];
 		for (int v : range(n))
