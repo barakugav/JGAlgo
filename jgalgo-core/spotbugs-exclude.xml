@@ -142,6 +142,12 @@
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
+    <!-- the returned list is immutable -->
+    <Class name="com.jgalgo.alg.dag.TopologicalOrderAlgoAbstract$IndexResult" />
+    <Method name="orderedVertices" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
     <!-- NoSuchElementException will be thrown by Assertions.hasNext(this); -->
     <Or>
       <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*BinarySearchTrees\$BSTIterator" />

@@ -18,19 +18,41 @@ package com.jgalgo.alg.dag;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
+import java.util.Optional;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import com.jgalgo.internal.util.Fastutil;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
+/**
+ * A simple algorithm that compute a topological order in a DAG graph.
+ *
+ * <p>
+ * The algorithm perform iterations while maintaining the in-degree of each vertex. At each iteration, a vertex \(u\)
+ * with in-degree zero is added as the next vertex in the result topological order, and the vertex is 'removed' from the
+ * graph conceptually, practically the algorithm decrease the in-degree of each vertex reachable by one of \(u\)'s out
+ * going edges. If there is no vertex with zero in-degree before all vertices were added to the topological sort, there
+ * is a cycle and no topological order exists.
+ *
+ * <p>
+ * The algorithm is linear in both space and running time.
+ *
+ * @author Barak Ugav
+ */
+public class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
+
+	/**
+	 * Create a new topological order algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link TopologicalOrderAlgo#newInstance()} to get a default implementation for the
+	 * {@link TopologicalOrderAlgo} interface.
+	 */
+	public TopologicalOrderAlgoImpl() {}
 
 	@Override
-	TopologicalOrderAlgo.IResult computeTopologicalSorting(IndexGraph g) {
+	protected Optional<TopologicalOrderAlgo.IResult> computeTopologicalSortingIfExist(IndexGraph g) {
 		Assertions.onlyDirected(g);
 		int n = g.vertices().size();
 		int[] inDegree = new int[n];
@@ -60,38 +82,7 @@ class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
 			}
 		}
 
-		if (topolSortSize != n)
-			throw new IllegalArgumentException("G is not a directed acyclic graph (DAG)");
-
-		return new Res(topolSort);
-	}
-
-	private static class Res implements TopologicalOrderAlgo.IResult {
-
-		private final IntList orderedVertices;
-		private int[] vertexOrderIndex;
-
-		Res(int[] topolSort) {
-			orderedVertices = Fastutil.list(topolSort);
-		}
-
-		@Override
-		public IntList orderedVertices() {
-			return orderedVertices;
-		}
-
-		@Override
-		public int vertexOrderIndex(int vertex) {
-			if (vertexOrderIndex == null) {
-				vertexOrderIndex = new int[orderedVertices.size()];
-				for (int i : range(orderedVertices.size()))
-					vertexOrderIndex[orderedVertices.getInt(i)] = i;
-			}
-			if (!(0 <= vertex && vertex < vertexOrderIndex.length))
-				throw NoSuchVertexException.ofIndex(vertex);
-			return vertexOrderIndex[vertex];
-		}
-
+		return topolSortSize == n ? Optional.of(new IndexResult(topolSort)) : Optional.empty();
 	}
 
 }

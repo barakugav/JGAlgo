@@ -15,32 +15,82 @@
  */
 package com.jgalgo.alg.dag;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchVertexException;
+import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {
+/**
+ * Abstract class for computing a topological order in a DAG graph.
+ *
+ * <p>
+ * The class implements the interface by solving the problem on the index graph and then maps the results back to the
+ * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ *
+ * @author Barak Ugav
+ */
+public abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {
+
+	/**
+	 * Default constructor.
+	 */
+	public TopologicalOrderAlgoAbstract() {}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <V, E> TopologicalOrderAlgo.Result<V, E> computeTopologicalSorting(Graph<V, E> g) {
+	public <V, E> Optional<TopologicalOrderAlgo.Result<V, E>> computeTopologicalSortingIfExist(Graph<V, E> g) {
 		if (g instanceof IndexGraph) {
-			return (TopologicalOrderAlgo.Result<V, E>) computeTopologicalSorting((IndexGraph) g);
+			return computeTopologicalSortingIfExist((IndexGraph) g).map(res -> (TopologicalOrderAlgo.Result<V, E>) res);
 
 		} else {
 			IndexGraph iGraph = g.indexGraph();
-			TopologicalOrderAlgo.IResult indexResult = computeTopologicalSorting(iGraph);
-			return resultFromIndexResult(g, indexResult);
+			Optional<TopologicalOrderAlgo.IResult> indexResult = computeTopologicalSortingIfExist(iGraph);
+			return indexResult.map(res -> resultFromIndexResult(g, res));
 		}
 	}
 
-	abstract TopologicalOrderAlgo.IResult computeTopologicalSorting(IndexGraph g);
+	protected abstract Optional<TopologicalOrderAlgo.IResult> computeTopologicalSortingIfExist(IndexGraph g);
+
+	/**
+	 * Result of the topological order algorithm for {@link IndexGraph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	protected static class IndexResult implements TopologicalOrderAlgo.IResult {
+
+		private final IntList orderedVertices;
+		private int[] vertexOrderIndex;
+
+		public IndexResult(int[] topolSort) {
+			orderedVertices = Fastutil.list(topolSort);
+		}
+
+		@Override
+		public IntList orderedVertices() {
+			return orderedVertices;
+		}
+
+		@Override
+		public int vertexOrderIndex(int vertex) {
+			if (vertexOrderIndex == null) {
+				vertexOrderIndex = new int[orderedVertices.size()];
+				for (int i : range(orderedVertices.size()))
+					vertexOrderIndex[orderedVertices.getInt(i)] = i;
+			}
+			if (!(0 <= vertex && vertex < vertexOrderIndex.length))
+				throw NoSuchVertexException.ofIndex(vertex);
+			return vertexOrderIndex[vertex];
+		}
+	}
 
 	private static class ObjResultFromIndexResult<V, E> implements TopologicalOrderAlgo.Result<V, E> {
 

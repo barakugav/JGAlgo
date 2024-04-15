@@ -17,6 +17,7 @@ package com.jgalgo.alg.dag;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -42,7 +43,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 public interface TopologicalOrderAlgo {
 
 	/**
-	 * Compute the topological order of a DAG vertices.
+	 * Compute the topological order of the vertices in a DAG graph.
 	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link TopologicalOrderAlgo.IResult}.
@@ -53,7 +54,24 @@ public interface TopologicalOrderAlgo {
 	 * @return                          a result object containing the computed order
 	 * @throws IllegalArgumentException if the graph is not DAG
 	 */
-	<V, E> TopologicalOrderAlgo.Result<V, E> computeTopologicalSorting(Graph<V, E> g);
+	default <V, E> TopologicalOrderAlgo.Result<V, E> computeTopologicalSorting(Graph<V, E> g) {
+		return computeTopologicalSortingIfExist(g)
+				.orElseThrow(() -> new IllegalArgumentException("no topological order, graph is not DAG"));
+	}
+
+	/**
+	 * Compute the topological order of the vertices, if the graph is DAG.
+	 *
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned optional will contain is {@link TopologicalOrderAlgo.IResult}.
+	 *
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a directed graph
+	 * @return     an optional of a result object containing the computed order, or an empty optional if the graph is
+	 *             not DAG
+	 */
+	<V, E> Optional<TopologicalOrderAlgo.Result<V, E>> computeTopologicalSortingIfExist(Graph<V, E> g);
 
 	/**
 	 * A result object of a {@link TopologicalOrderAlgo} algorithm.
