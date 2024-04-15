@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg.cycle;
 
+import java.util.Optional;
 import com.jgalgo.alg.path.IPath;
 import com.jgalgo.alg.path.Path;
 import com.jgalgo.graph.Graph;
@@ -46,14 +47,35 @@ public interface ChinesePostman {
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link IPath}. If {@code g} is {@link IntGraph}, prefer
 	 * to pass {@link IWeightFunction} for best performance.
 	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
+	 * @param  g                        a graph
+	 * @param  w                        an edge weight function
+	 * @return                          a closed path that visits all edges in the graph, with minimum weight sum with
+	 *                                  respect to the given edge weight function
+	 * @throws IllegalArgumentException if no solution exists, that is if the graph is not strongly connected
+	 */
+	default <V, E> Path<V, E> computeShortestEdgeVisitorCircle(Graph<V, E> g, WeightFunction<E> w) {
+		return computeShortestEdgeVisitorCircleIfExist(g, w)
+				.orElseThrow(() -> new IllegalArgumentException("No solution, graph is not strongly connected"));
+	}
+
+	/**
+	 * Compute the shortest circuit that visits all edges in the graph at least once, if it exist.
+	 *
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object is an optional of {@link IPath}. If {@code g} is
+	 * {@link IntGraph}, prefer to pass {@link IWeightFunction} for best performance.
+	 *
 	 * @param  <V> the vertices type
 	 * @param  <E> the edges type
 	 * @param  g   a graph
 	 * @param  w   an edge weight function
-	 * @return     a closed path that visits all edges in the graph, with minimum weight sum with respect to the given
-	 *             edge weight function
+	 * @return     an optional of closed path that visits all edges in the graph, with minimum weight sum with respect
+	 *             to the given edge weight function, or empty if no solution exists (the graph is not strongly
+	 *             connected)
 	 */
-	<V, E> Path<V, E> computeShortestEdgeVisitorCircle(Graph<V, E> g, WeightFunction<E> w);
+	<V, E> Optional<Path<V, E>> computeShortestEdgeVisitorCircleIfExist(Graph<V, E> g, WeightFunction<E> w);
 
 	/**
 	 * Create a new algorithm object for chinese postman problem.

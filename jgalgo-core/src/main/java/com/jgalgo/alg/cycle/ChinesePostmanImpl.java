@@ -16,6 +16,7 @@
 package com.jgalgo.alg.cycle;
 
 import static com.jgalgo.internal.util.Range.range;
+import java.util.Optional;
 import com.jgalgo.alg.euler.EulerianTourAlgo;
 import com.jgalgo.alg.match.IMatching;
 import com.jgalgo.alg.match.MatchingAlgo;
@@ -30,28 +31,48 @@ import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-class ChinesePostmanImpl extends ChinesePostmanUtils.AbstractImpl {
+/**
+ * An algorithm for the chinese postman problem using minimum weighted perfect matching and Eulerian tour.
+ *
+ * <p>
+ * The chinese postman problem is to find a closed path that visits all edges in the graph at least once, with minimum
+ * weight sum with respect to a given edge weight function. The algorithm uses the following steps:
+ * <ol>
+ * <li>Find all vertices with odd degree. If all vertices have even degree, an Eulerian tour should exists (if the graph
+ * is connected).</li>
+ * <li>Create a complete graph of the odd vertices, with edges weighted by the shortest paths between each pair.</li>
+ * <li>Compute a minimum weighted perfect matching between the odd vertices.</li>
+ * <li>Create a graph with the original vertices and edges, and for each edge resulted from the perfect matching, add an
+ * edge between the two vertices in the original graph.</li>
+ * <li>Compute an Eulerian tour in the new graph.</li>
+ * <li>Construct the full result path by replacing each artificial edge connecting two odd vertices with the shortest
+ * path between them.</li>
+ * </ol>
+ *
+ * <p>
+ * The running time and space are dominated by the shortest path all pairs and minimum perfect matching algorithms.
+ * Other than that, the algorithm use linear time and space.
+ *
+ * @author Barak Ugav
+ */
+public class ChinesePostmanImpl extends ChinesePostmanAbstract {
 
-	// private final WeaklyConnectedComponentsAlgo connectedComponentsAlgo =
-	// WeaklyConnectedComponentsAlgo.newInstance();
 	private final EulerianTourAlgo eulerianTourAlgo = EulerianTourAlgo.newInstance();
 	private final ShortestPathAllPairs shortestPathAllPairsAlgo = ShortestPathAllPairs.newInstance();
 	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();
 
-	private static int nonSelfEdgesDegree(IndexGraph g, int v) {
-		int nonSelfEdgesCount = 0;
-		for (int e : g.outEdges(v))
-			if (g.edgeSource(e) != g.edgeTarget(e))
-				nonSelfEdgesCount++;
-		return nonSelfEdgesCount;
-	}
+	/**
+	 * Create a new instance of the Chinese postman algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link ChinesePostman#newInstance()} to get a default implementation for the
+	 * {@link ChinesePostman} interface.
+	 */
+	public ChinesePostmanImpl() {}
 
 	@Override
-	IPath computeShortestEdgeVisitorCircle(IndexGraph g, IWeightFunction w) {
+	protected Optional<IPath> computeShortestEdgeVisitorCircleIfExist(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
-		// if (!connectedComponentsAlgo.isWeaklyConnected(g))
-		// throw new IllegalArgumentException("Graph is not connected, cannot compute shortest edge visitor circle");
-		// If the graph is not connected, we will fail to find an Eulerian tour, so we just fail later
 
 		/* Find all vertices with odd degree */
 		IntList oddVerticesList = new IntArrayList();
@@ -60,7 +81,7 @@ class ChinesePostmanImpl extends ChinesePostmanUtils.AbstractImpl {
 				oddVerticesList.add(v);
 		if (oddVerticesList.isEmpty())
 			/* all vertices have even degree, an Eulerian tour should exists (if the graph is connected) */
-			return (IPath) eulerianTourAlgo.computeEulerianTour(g);
+			return eulerianTourAlgo.computeEulerianTourIfExist(g).map(p -> (IPath) p);
 		int[] oddVertices = oddVerticesList.toIntArray();
 		assert oddVertices.length % 2 == 0;
 
@@ -96,11 +117,14 @@ class ChinesePostmanImpl extends ChinesePostmanUtils.AbstractImpl {
 		}
 		/* The new graph is Eulerian */
 		IndexGraph eulerianGraph = b.build();
-		for (int v : range(eulerianGraph.vertices().size()))
-			assert nonSelfEdgesDegree(eulerianGraph, v) % 2 == 0;
+		assert range(eulerianGraph.vertices().size()).allMatch(v -> nonSelfEdgesDegree(eulerianGraph, v) % 2 == 0);
 
 		/* Compute an Eulerian tour in the new graph */
-		IPath eulerianTour = (IPath) eulerianTourAlgo.computeEulerianTour(eulerianGraph);
+		Optional<IPath> eulerianTour0 = eulerianTourAlgo.computeEulerianTourIfExist(eulerianGraph).map(p -> (IPath) p);
+		if (eulerianTour0.isEmpty())
+			return Optional.empty();
+		IPath eulerianTour = eulerianTour0.get();
+
 		/* Replace each artificial edge connecting two odd vertices with the shortest path between them */
 		IntList path = new IntArrayList(eulerianTour.edges().size());
 		for (IEdgeIter eit = eulerianTour.edgeIter(); eit.hasNext();) {
@@ -115,7 +139,15 @@ class ChinesePostmanImpl extends ChinesePostmanUtils.AbstractImpl {
 		}
 
 		int pathSource = eulerianTour.sourceInt();
-		return IPath.valueOf(g, pathSource, pathSource, path);
+		return Optional.of(IPath.valueOf(g, pathSource, pathSource, path));
+	}
+
+	private static int nonSelfEdgesDegree(IndexGraph g, int v) {
+		int nonSelfEdgesCount = 0;
+		for (int e : g.outEdges(v))
+			if (g.edgeSource(e) != g.edgeTarget(e))
+				nonSelfEdgesCount++;
+		return nonSelfEdgesCount;
 	}
 
 }
