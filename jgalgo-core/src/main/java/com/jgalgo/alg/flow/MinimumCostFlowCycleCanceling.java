@@ -44,14 +44,23 @@ import com.jgalgo.internal.util.Bitmap;
  *
  * @author Barak Ugav
  */
-class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSourceSink {
+public class MinimumCostFlowCycleCanceling extends MinimumCostFlowAbstractBasedSourceSink {
 
 	private final MaximumFlow maxFlowAlg = MaximumFlow.newInstance();
 	private final MinimumMeanCycle minMeanCycleAlg = MinimumMeanCycle.newInstance();
 
+	/**
+	 * Create a new minimum-cost flow algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link MinimumCostFlow#newInstance()} to get a default implementation for the
+	 * {@link MinimumCostFlow} interface.
+	 */
+	public MinimumCostFlowCycleCanceling() {}
+
 	@Override
-	IFlow computeMinCostMaxFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IWeightFunction cost, int source,
-			int sink) {
+	protected IFlow computeMinCostMaxFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IWeightFunction cost,
+			int source, int sink) {
 		Assertions.onlyDirected(gOrig);
 		Assertions.flowSourceSinkNotTheSame(source, sink);
 

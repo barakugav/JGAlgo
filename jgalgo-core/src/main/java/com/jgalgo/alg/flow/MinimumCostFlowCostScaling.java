@@ -41,15 +41,25 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  * <p>
  * Based on 'Efficient implementations of minimum-cost flow algorithms' by Z. Kiraly, P. Kovacs (2012).
  *
- * @see    MaximumFlowPushRelabelPartialAugment
+ * @see    MaximumFlowPushRelabel
  * @author Barak Ugav
  */
-class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSupply {
+public class MinimumCostFlowCostScaling extends MinimumCostFlowAbstractBasedSupply {
 
 	private static final int alpha = 16;
 
+	/**
+	 * Create a new minimum-cost flow algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link MinimumCostFlow#newInstance()} to get a default implementation for the
+	 * {@link MinimumCostFlow} interface.
+	 */
+	public MinimumCostFlowCostScaling() {}
+
 	@Override
-	IFlow computeMinCostFlow(IndexGraph g, IWeightFunction capacity, IWeightFunction cost, IWeightFunction supply) {
+	protected IFlow computeMinCostFlow(IndexGraph g, IWeightFunction capacity, IWeightFunction cost,
+			IWeightFunction supply) {
 		if (!(WeightFunction.isInteger(capacity) && WeightFunction.isInteger(supply)))
 			throw new IllegalArgumentException("only integer capacities and flows are supported");
 		if (!WeightFunction.isInteger(cost))
