@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.IntBinaryOperator;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
@@ -40,11 +39,20 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
  *
  * @author Barak Ugav
  */
-class IsomorphismTesterVf2 extends IsomorphismTesters.AbstractImpl {
+public class IsomorphismTesterVf2 extends IsomorphismTesterAbstract {
+
+	/**
+	 * Create a new isomorphism algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link IsomorphismTester#newInstance()} to get a default implementation for the
+	 * {@link IsomorphismTester} interface.
+	 */
+	public IsomorphismTesterVf2() {}
 
 	@Override
-	Iterator<IsomorphismIMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2, boolean induced,
-			IntBinaryOperator vertexMatcher, IntBinaryOperator edgeMatcher) {
+	protected Iterator<IsomorphismIMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2, boolean induced,
+			IntMatcher vertexMatcher, IntMatcher edgeMatcher) {
 		Assertions.noParallelEdges(g1, "parallel edges are not supported");
 		Assertions.noParallelEdges(g2, "parallel edges are not supported");
 		if (g1.isDirected() != g2.isDirected())
@@ -61,8 +69,7 @@ class IsomorphismTesterVf2 extends IsomorphismTesters.AbstractImpl {
 		if (n1 == 0) {
 			assert m1 == 0;
 			return ObjectIterators
-					.singleton(new IsomorphismTesters.IndexMapping(g1, g2, IntArrays.DEFAULT_EMPTY_ARRAY,
-							IntArrays.DEFAULT_EMPTY_ARRAY));
+					.singleton(new IndexMapping(g1, g2, IntArrays.DEFAULT_EMPTY_ARRAY, IntArrays.DEFAULT_EMPTY_ARRAY));
 		}
 
 		if (g1.isDirected()) {
@@ -77,8 +84,8 @@ class IsomorphismTesterVf2 extends IsomorphismTesters.AbstractImpl {
 		final IndexGraph g1;
 		final IndexGraph g2;
 		final int n1, n2;
-		private final IntBinaryOperator vertexMatcher;
-		private final IntBinaryOperator edgeMatcher;
+		private final IntMatcher vertexMatcher;
+		private final IntMatcher edgeMatcher;
 		final boolean subGraph;
 		final boolean inducedSubGraph;
 
@@ -98,8 +105,8 @@ class IsomorphismTesterVf2 extends IsomorphismTesters.AbstractImpl {
 
 		static final int None = -1;
 
-		IsomorphismIterBase(IndexGraph g1, IndexGraph g2, boolean induced, IntBinaryOperator vertexMatcher,
-				IntBinaryOperator edgeMatcher) {
+		IsomorphismIterBase(IndexGraph g1, IndexGraph g2, boolean induced, IntMatcher vertexMatcher,
+				IntMatcher edgeMatcher) {
 			this.g1 = g1;
 			this.g2 = g2;
 			n1 = g1.vertices().size();
@@ -140,8 +147,7 @@ class IsomorphismTesterVf2 extends IsomorphismTesters.AbstractImpl {
 		public IsomorphismIMapping next() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			IsomorphismIMapping mapping =
-					new IsomorphismTesters.IndexMapping(g1, g2, nextMapping, computeEdgeMapping(nextMapping));
+			IsomorphismIMapping mapping = new IndexMapping(g1, g2, nextMapping, computeEdgeMapping(nextMapping));
 			nextMapping = null;
 			return mapping;
 		}
@@ -176,11 +182,11 @@ class IsomorphismTesterVf2 extends IsomorphismTesters.AbstractImpl {
 		}
 
 		boolean canMatchVertices(int v1, int v2) {
-			return vertexMatcher == null || vertexMatcher.applyAsInt(v1, v2) != 0;
+			return vertexMatcher == null || vertexMatcher.isMatch(v1, v2);
 		}
 
 		boolean canMatchEdges(int e1, int e2) {
-			return edgeMatcher == null || edgeMatcher.applyAsInt(e1, e2) != 0;
+			return edgeMatcher == null || edgeMatcher.isMatch(e1, e2);
 		}
 	}
 
@@ -196,8 +202,8 @@ class IsomorphismTesterVf2 extends IsomorphismTesters.AbstractImpl {
 		private final int[] stateT1InSize;
 		private final int[] stateT2InSize;
 
-		IsomorphismIterDirected(IndexGraph g1, IndexGraph g2, boolean induced, IntBinaryOperator vertexMatcher,
-				IntBinaryOperator edgeMatcher) {
+		IsomorphismIterDirected(IndexGraph g1, IndexGraph g2, boolean induced, IntMatcher vertexMatcher,
+				IntMatcher edgeMatcher) {
 			super(g1, g2, induced, vertexMatcher, edgeMatcher);
 
 			in1 = new int[n1];
@@ -508,8 +514,8 @@ class IsomorphismTesterVf2 extends IsomorphismTesters.AbstractImpl {
 		private final int[] stateT1OutSize;
 		private final int[] stateT2OutSize;
 
-		IsomorphismIterUndirected(IndexGraph g1, IndexGraph g2, boolean induced, IntBinaryOperator vertexMatcher,
-				IntBinaryOperator edgeMatcher) {
+		IsomorphismIterUndirected(IndexGraph g1, IndexGraph g2, boolean induced, IntMatcher vertexMatcher,
+				IntMatcher edgeMatcher) {
 			super(g1, g2, induced, vertexMatcher, edgeMatcher);
 
 			out1 = new int[n1];

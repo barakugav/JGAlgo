@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import com.jgalgo.alg.isomorphism.IsomorphismTesterAbstract.IndexMapping;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Graphs;
@@ -175,7 +176,7 @@ class IsomorphismTestUtils extends TestUtils {
 					int[] vMap = range(g.vertices().size()).map(((IsomorphismIMapping) mapping0)::mapVertex).toArray();
 					int[] eMap = range(g.edges().size()).map(((IsomorphismIMapping) mapping0)::mapEdge).toArray();
 					IsomorphismMapping<Integer, Integer, Integer, Integer> mapping2 =
-							new IsomorphismTesters.IndexMapping(g, (IndexGraph) mapping0.targetGraph(), vMap, eMap);
+							new IndexMapping(g, (IndexGraph) mapping0.targetGraph(), vMap, eMap);
 					IsomorphismMapping<Integer, Integer, Integer, Integer> mappingInv2 = mapping2.inverse();
 					for (Integer v2 : mapping0.targetGraph().vertices())
 						assertEquals(mapping0.inverse().mapVertex(v2), mappingInv2.mapVertex(v2));

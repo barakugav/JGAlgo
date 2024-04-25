@@ -226,4 +226,27 @@
       <Bug pattern="CO_SELF_NO_OBJECT" />
     </Or>
   </Match>
+  <Match>
+    <!-- The returned values are either immutables, or inputs in the first place -->
+    <Class name="com.jgalgo.alg.isomorphism.IsomorphismTesterAbstract$IndexMapping" />
+    <Constructor />
+    <Or>
+      <Local name="edgeMapping" />
+      <Local name="vertexMapping" />
+      <Local name="g1" />
+      <Local name="g2" />
+    </Or>
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- The function is documented, the given values are not copied and the user should not use them again -->
+    <Class name="com.jgalgo.alg.isomorphism.IsomorphismTesterAbstract$IndexMapping" />
+    <Or>
+      <Method name="mappedEdges" />
+      <Method name="mappedVertices" />
+      <Method name="sourceGraph" />
+      <Method name="targetGraph" />
+    </Or>
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
 </FindBugsFilter>
