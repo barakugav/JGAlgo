@@ -50,10 +50,19 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
  *
  * @author Barak Ugav
  */
-class HamiltonianPathRubin extends HamiltonianPathAlgos.CycleBasedAbstractImpl {
+public class HamiltonianPathRubin extends HamiltonianPathAlgoAbstractBasedCycle {
+
+	/**
+	 * Create a new Hamiltonian path algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link HamiltonianPathAlgo#newInstance()} to get a default implementation for the
+	 * {@link HamiltonianPathAlgo} interface.
+	 */
+	public HamiltonianPathRubin() {}
 
 	@Override
-	Iterator<IPath> hamiltonianCyclesIter(IndexGraph g) {
+	protected Iterator<IPath> hamiltonianCyclesIter(IndexGraph g) {
 		final int n = g.vertices().size();
 		if (n == 0)
 			return Collections.emptyIterator();
