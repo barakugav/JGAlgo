@@ -48,7 +48,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 @Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
-public class Lca2DynamicBench {
+public class LcaDynamicBench {
 
 	@Param({ "|V|=64 M=256", "|V|=512 M=4096", "|V|=4096 M=16384" })
 	public String args;
