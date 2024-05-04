@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  *
  * @author Barak Ugav
  */
-public class MatchingWeightedBipartiteSssp2 extends MatchingAlgoAbstractBasedMaximum {
+public class MatchingWeightedBipartiteSssp extends MatchingAlgoAbstractBasedMaximum {
 
 	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newInstance();
 	private ShortestPathSingleSource ssspNegative = ShortestPathSingleSource.builder().setNegativeWeights(true).build();
@@ -50,7 +50,7 @@ public class MatchingWeightedBipartiteSssp2 extends MatchingAlgoAbstractBasedMax
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-	public MatchingWeightedBipartiteSssp2() {}
+	public MatchingWeightedBipartiteSssp() {}
 
 	/**
 	 * Set the {@link ShortestPathSingleSource} algorithm used by this algorithm.
