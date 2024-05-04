@@ -217,12 +217,12 @@ class BinarySearchTrees {
 		}
 	}
 
-	static class BSTIterator<NodeT extends Node<NodeT>> implements Iterator<NodeT> {
+	static class BstIterator<NodeT extends Node<NodeT>> implements Iterator<NodeT> {
 
 		private final NodeT subtreeRoot;
 		private NodeT n;
 
-		BSTIterator(NodeT subtreeRoot) {
+		BstIterator(NodeT subtreeRoot) {
 			this.subtreeRoot = subtreeRoot;
 			n = subtreeRoot == null ? null : findMin(subtreeRoot);
 		}

@@ -121,7 +121,7 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> iterator() {
-		return (Iterator) new BinarySearchTrees.BSTIterator <>(root);
+		return (Iterator) new BinarySearchTrees.BstIterator <>(root);
 	}
 
 	@Override

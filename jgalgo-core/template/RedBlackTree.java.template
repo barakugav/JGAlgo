@@ -108,7 +108,7 @@ public class RED_BLACK_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> iterator() {
-		return (Iterator) new BinarySearchTrees.BSTIterator<>(root);
+		return (Iterator) new BinarySearchTrees.BstIterator<>(root);
 	}
 
 	@Override
@@ -567,7 +567,7 @@ public class RED_BLACK_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> subTreeIterator(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
-		return (Iterator) (new BinarySearchTrees.BSTIterator<>((Node KEY_VALUE_GENERIC) ref));
+		return (Iterator) (new BinarySearchTrees.BstIterator<>((Node KEY_VALUE_GENERIC) ref));
 	}
 
 	static class Node KEY_VALUE_GENERIC extends BINARY_SEARCH_TREES.Node<KEY_GENERIC_LIST_START Node KEY_VALUE_GENERIC> implements HEAP_REFERENCE KEY_VALUE_GENERIC {

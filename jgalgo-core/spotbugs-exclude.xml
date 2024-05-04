@@ -150,7 +150,7 @@
   <Match>
     <!-- NoSuchElementException will be thrown by Assertions.hasNext(this); -->
     <Or>
-      <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*BinarySearchTrees\$BSTIterator" />
+      <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*BinarySearchTrees\$BstIterator" />
       <Class name="com.jgalgo.internal.ds.HeapBinary$It" />
       <Class name="com.jgalgo.alg.match.MatchingWeightedGabow1990Abstract$Blossom$1$1" />
       <Class name="com.jgalgo.alg.match.MatchingWeightedGabow1990Abstract$Worker$1" />
