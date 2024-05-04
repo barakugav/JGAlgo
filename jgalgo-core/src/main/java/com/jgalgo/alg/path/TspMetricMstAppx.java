@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * @author Barak Ugav
  */
-public class TspMetricMst2Appx extends TspMetricUtils.AbstractImpl {
+public class TspMetricMstAppx extends TspMetricUtils.AbstractImpl {
 
 	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();
 	// /*
@@ -50,7 +50,7 @@ public class TspMetricMst2Appx extends TspMetricUtils.AbstractImpl {
 	/**
 	 * Create a new TSP \(2\)-approximation algorithm.
 	 */
-	public TspMetricMst2Appx() {}
+	public TspMetricMstAppx() {}
 
 	@Override
 	IPath computeShortestTour(IndexGraph g, IWeightFunction w) {

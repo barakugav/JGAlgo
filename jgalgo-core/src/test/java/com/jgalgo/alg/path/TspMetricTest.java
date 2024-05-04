@@ -89,7 +89,7 @@ public class TspMetricTest extends TestBase {
 	private static <V, E> void testMstAppxAndMatchingAppxRandGraph(Graph<V, E> g, WeightFunction<E> distances,
 			long seed) {
 
-		Path<V, E> appxMst = new TspMetricMst2Appx().computeShortestTour(g, distances);
+		Path<V, E> appxMst = new TspMetricMstAppx().computeShortestTour(g, distances);
 		Path<V, E> appxMatch = new TspMetricMatchingAppx().computeShortestTour(g, distances);
 
 		Predicate<Path<V, E>> isPathVisitAllVertices =
@@ -107,7 +107,7 @@ public class TspMetricTest extends TestBase {
 	@Test
 	public void emptyGraph() {
 		Graph<Integer, Integer> g = IntGraph.newUndirected();
-		assertNull(new TspMetricMst2Appx().computeShortestTour(g, e -> 1));
+		assertNull(new TspMetricMstAppx().computeShortestTour(g, e -> 1));
 		assertNull(new TspMetricMatchingAppx().computeShortestTour(g, e -> 1));
 	}
 
@@ -116,7 +116,7 @@ public class TspMetricTest extends TestBase {
 		IntGraph g = IntGraph.newUndirected();
 		g.addVertex(0);
 		g.addVertex(1);
-		assertThrows(IllegalArgumentException.class, () -> new TspMetricMst2Appx().computeShortestTour(g, e -> 1));
+		assertThrows(IllegalArgumentException.class, () -> new TspMetricMstAppx().computeShortestTour(g, e -> 1));
 		assertThrows(IllegalArgumentException.class, () -> new TspMetricMatchingAppx().computeShortestTour(g, e -> 1));
 	}
 
