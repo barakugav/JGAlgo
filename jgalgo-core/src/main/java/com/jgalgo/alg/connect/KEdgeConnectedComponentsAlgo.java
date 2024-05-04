@@ -32,8 +32,8 @@ import com.jgalgo.graph.IntGraph;
  * vertices.
  *
  * <p>
- * To compute the edge connectivity between two specific edges, use {@link MinimumEdgeCutSt2}, as the minimum
- * cardinality edge-cut of a graph is equal to its edge connectivity. To compute the
+ * To compute the edge connectivity between two specific edges, use {@link MinimumEdgeCutSt}, as the minimum cardinality
+ * edge-cut of a graph is equal to its edge connectivity. To compute the
  * <a href="https://mathworld.wolfram.com/EdgeConnectivity.html">edge connectivity</a> of a graph, use
  * {@link MinimumEdgeCutGlobal}, as the minimum global cardinality edge-cut of a graph is equal to its edge
  * connectivity.

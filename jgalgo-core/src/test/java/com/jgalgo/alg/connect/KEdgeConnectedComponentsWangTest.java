@@ -114,7 +114,7 @@ public class KEdgeConnectedComponentsWangTest extends TestBase {
 	}
 
 	private static <V, E> Object2IntMap<V> computeExpectedKEdgeConnectedComponents(Graph<V, E> g, int k) {
-		MinimumEdgeCutSt2 minCutAlgo = MinimumEdgeCutSt2.newInstance();
+		MinimumEdgeCutSt minCutAlgo = MinimumEdgeCutSt.newInstance();
 		final int n = g.vertices().size();
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 		IndexGraphBuilder gb = IndexGraphBuilder.undirected();

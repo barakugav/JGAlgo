@@ -45,7 +45,7 @@ import com.jgalgo.graph.WeightFunction;
  * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    <a href="https://en.wikipedia.org/wiki/Minimum_cut">Wikipedia</a>
- * @see    MinimumEdgeCutSt2
+ * @see    MinimumEdgeCutSt
  * @author Barak Ugav
  */
 public interface MinimumEdgeCutGlobal {

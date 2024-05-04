@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutGlobalAbstract {
 
-	private final MinimumVertexCutSt2EdgeCut minCutStAlgo = new MinimumVertexCutSt2EdgeCut();
+	private final MinimumVertexCutStEdgeCut minCutStAlgo = new MinimumVertexCutStEdgeCut();
 
 	/**
 	 * Create a new instance of the algorithm.
