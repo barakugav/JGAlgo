@@ -19,18 +19,18 @@ package com.jgalgo.alg.match;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 
-public class MatchingWeightedBipartiteSSSPTest extends TestBase {
+public class MatchingWeightedBipartiteSssp2Test extends TestBase {
 
 	@Test
 	public void testRandBipartiteGraphsWeight1() {
 		final long seed = 0x6d2c36b6f7f5d43fL;
-		MatchingBipartiteTestUtils.randBipartiteGraphs(new MatchingWeightedBipartiteSSSP(), seed);
+		MatchingBipartiteTestUtils.randBipartiteGraphs(new MatchingWeightedBipartiteSssp2(), seed);
 	}
 
 	@Test
 	public void testRandBipartiteGraphsWeighted() {
 		final long seed = 0x131359e008ab11acL;
-		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(new MatchingWeightedBipartiteSSSP(), seed);
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(new MatchingWeightedBipartiteSssp2(), seed);
 	}
 
 }

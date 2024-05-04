@@ -43,7 +43,7 @@ import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-public class SSSPPositiveWeightsBench {
+public class Sssp2PositiveWeightsBench {
 
 	List<GraphArgs> graphs;
 	final int graphsNum = 31;
@@ -62,7 +62,7 @@ public class SSSPPositiveWeightsBench {
 	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-	public static class Gnp extends SSSPPositiveWeightsBench {
+	public static class Gnp extends Sssp2PositiveWeightsBench {
 
 		@Param({ "|V|=64 MaxWeight=64", "|V|=512 MaxWeight=50", "|V|=512 MaxWeight=600", "|V|=1600 MaxWeight=200",
 				"|V|=1600 MaxWeight=6000" })
@@ -102,7 +102,7 @@ public class SSSPPositiveWeightsBench {
 	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-	public static class BarabasiAlbert extends SSSPPositiveWeightsBench {
+	public static class BarabasiAlbert extends Sssp2PositiveWeightsBench {
 
 		@Param({ "|V|=64 MaxWeight=64", "|V|=512 MaxWeight=50", "|V|=512 MaxWeight=600", "|V|=4096 MaxWeight=200",
 				"|V|=4096 MaxWeight=6000" })
@@ -142,7 +142,7 @@ public class SSSPPositiveWeightsBench {
 	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-	public static class RecursiveMatrix extends SSSPPositiveWeightsBench {
+	public static class RecursiveMatrix extends Sssp2PositiveWeightsBench {
 
 		@Param({ "|V|=64 |E|=256 MaxWeight=64", "|V|=512 |E|=4096 MaxWeight=50", "|V|=512 |E|=4096 MaxWeight=600",
 				"|V|=4096 |E|=16384 MaxWeight=200", "|V|=4096 |E|=16384 MaxWeight=6000" })

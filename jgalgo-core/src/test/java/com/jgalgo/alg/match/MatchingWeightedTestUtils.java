@@ -57,8 +57,8 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
 			MatchingAlgo validationAlgo =
-					algo instanceof MatchingWeightedBipartiteSSSP ? new MatchingWeightedBipartiteHungarianMethod()
-							: new MatchingWeightedBipartiteSSSP();
+					algo instanceof MatchingWeightedBipartiteSssp2 ? new MatchingWeightedBipartiteHungarianMethod()
+							: new MatchingWeightedBipartiteSssp2();
 			testGraphWeighted(algo, g, w, validationAlgo, rand);
 		});
 	}

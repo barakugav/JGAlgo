@@ -161,7 +161,7 @@ public interface MatchingAlgo {
 						case "bipartite-hungarian-method":
 							return new MatchingWeightedBipartiteHungarianMethod();
 						case "bipartite-sssp":
-							return new MatchingWeightedBipartiteSSSP();
+							return new MatchingWeightedBipartiteSssp2();
 						case "gabow-1990":
 							return new MatchingWeightedGabow1990();
 						case "gabow-1990-simpler":
