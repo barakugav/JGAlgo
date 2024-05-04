@@ -57,7 +57,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface.
  *
- * @see    MinimumVertexCutST
+ * @see    MinimumVertexCutSt2
  * @see    MinimumEdgeCutGlobal
  * @author Barak Ugav
  */

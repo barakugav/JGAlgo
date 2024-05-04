@@ -43,7 +43,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * <p>
  * Algorithms implementing this interface compute <b>all</b> minimum vertex-cuts without terminal vertices. For a single
  * minimum cut global cut, use {@link MinimumVertexCutGlobal}. For the variant with terminal vertices, see
- * {@link MinimumVertexCutST} or {@link MinimumVertexCutAllST}.
+ * {@link MinimumVertexCutSt2} or {@link MinimumVertexCutAllSt2}.
  *
  * <p>
  * The cardinality (unweighted) global minimum vertex-cut is equal to the vertex connectivity of a graph.
@@ -52,8 +52,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    MinimumVertexCutGlobal
- * @see    MinimumVertexCutAllST
- * @see    MinimumVertexCutST
+ * @see    MinimumVertexCutAllSt2
+ * @see    MinimumVertexCutSt2
  * @author Barak Ugav
  */
 public interface MinimumVertexCutAllGlobal {

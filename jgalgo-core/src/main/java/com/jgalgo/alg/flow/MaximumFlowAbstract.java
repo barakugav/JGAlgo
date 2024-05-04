@@ -17,8 +17,8 @@ package com.jgalgo.alg.flow;
 
 import java.util.Collection;
 import com.jgalgo.alg.IVertexBiPartition;
-import com.jgalgo.alg.connect.MinimumEdgeCutST;
-import com.jgalgo.alg.connect.MinimumEdgeCutSTAbstract;
+import com.jgalgo.alg.connect.MinimumEdgeCutSt2;
+import com.jgalgo.alg.connect.MinimumEdgeCutSt2Abstract;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * Abstract class for computing a maximum flow in a graph.
  *
  * <p>
- * This abstract class also implements the {@link MinimumEdgeCutST} interface, and thus can be used to compute the
+ * This abstract class also implements the {@link MinimumEdgeCutSt2} interface, and thus can be used to compute the
  * minimum edge cut of a graph.
  *
  * <p>
@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * @author Barak Ugav
  */
-public abstract class MaximumFlowAbstract extends MinimumEdgeCutSTAbstract implements MaximumFlow {
+public abstract class MaximumFlowAbstract extends MinimumEdgeCutSt2Abstract implements MaximumFlow {
 
 	/**
 	 * Default constructor.
@@ -99,7 +99,7 @@ public abstract class MaximumFlowAbstract extends MinimumEdgeCutSTAbstract imple
 
 	@Override
 	protected IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
-		return (IVertexBiPartition) MinimumEdgeCutST
+		return (IVertexBiPartition) MinimumEdgeCutSt2
 				.newFromMaximumFlow(this)
 				.computeMinimumCut(g, w, Integer.valueOf(source), Integer.valueOf(sink));
 	}
@@ -107,7 +107,7 @@ public abstract class MaximumFlowAbstract extends MinimumEdgeCutSTAbstract imple
 	@Override
 	protected IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, IntCollection sources,
 			IntCollection sinks) {
-		return (IVertexBiPartition) MinimumEdgeCutST.newFromMaximumFlow(this).computeMinimumCut(g, w, sources, sinks);
+		return (IVertexBiPartition) MinimumEdgeCutSt2.newFromMaximumFlow(this).computeMinimumCut(g, w, sources, sinks);
 	}
 
 	protected static IFlow newFlow(IndexGraph g, double[] flow) {

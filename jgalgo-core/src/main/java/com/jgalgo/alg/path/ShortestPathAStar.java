@@ -56,7 +56,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * @see    <a href= "https://en.wikipedia.org/wiki/A*_search_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class ShortestPathAStar implements ShortestPathHeuristicST {
+class ShortestPathAStar implements ShortestPathHeuristicSt2 {
 
 	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 

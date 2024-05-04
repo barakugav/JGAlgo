@@ -124,7 +124,7 @@ class MinimumEdgeCutGlobalStoerWagnerTest extends TestBase {
 			// TODO simply instantiate MaximumFlowEdmondsKarp once it is public API
 			MaximumFlow.Builder builder = MaximumFlow.builder();
 			builder.setOption("impl", "edmonds-karp");
-			MinimumEdgeCutST edmondsKarpAlgo = MinimumEdgeCutST.newFromMaximumFlow(builder.build());
+			MinimumEdgeCutSt2 edmondsKarpAlgo = MinimumEdgeCutSt2.newFromMaximumFlow(builder.build());
 
 			MinimumEdgeCutGlobal validationAlgo = globalMinCutFromStMinCut(edmondsKarpAlgo);
 			VertexBiPartition<V, E> minCutExpected = validationAlgo.computeMinimumCut(g, w);
@@ -134,7 +134,7 @@ class MinimumEdgeCutGlobalStoerWagnerTest extends TestBase {
 		}
 	}
 
-	static MinimumEdgeCutGlobal globalMinCutFromStMinCut(MinimumEdgeCutST stMinCut) {
+	static MinimumEdgeCutGlobal globalMinCutFromStMinCut(MinimumEdgeCutSt2 stMinCut) {
 		return new MinimumEdgeCutGlobalAbstract() {
 			@Override
 			protected IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {

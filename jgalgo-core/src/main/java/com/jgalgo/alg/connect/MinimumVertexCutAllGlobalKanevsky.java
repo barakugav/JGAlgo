@@ -46,7 +46,7 @@ public class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutAllGlobal
 
 	private final MinimumVertexCutGlobal globalConnectivityAlgo = MinimumVertexCutGlobal.newInstance();
 	private final MaximumFlow maxFlowAlgo = MaximumFlow.newInstance();
-	private final MinimumEdgeCutAllSTPicardQueyranne minEdgeCutAllStAlgo = new MinimumEdgeCutAllSTPicardQueyranne();
+	private final MinimumEdgeCutAllSt2PicardQueyranne minEdgeCutAllStAlgo = new MinimumEdgeCutAllSt2PicardQueyranne();
 
 	/**
 	 * Create a new instance of the algorithm.
