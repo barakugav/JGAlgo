@@ -29,7 +29,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  *
  * <p>
  * To answer on queries which does not fall in the same block, the minimum of each block is stored, and
- * {@link RMQStaticPowerOf2Table} is used on the \(O(n / \log n)\) elements, which is linear in total.
+ * {@link Rmq2StaticPowerOf2Table} is used on the \(O(n / \log n)\) elements, which is linear in total.
  *
  * <p>
  * The algorithm required \(O(n)\) preprocessing time and space and answer queries in \(O(1)\) time.
@@ -40,26 +40,26 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  *
  * @author Barak Ugav
  */
-class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
+class Rmq2StaticCartesianTrees extends Rmq2StaticLinearAbstract {
 
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-	RMQStaticCartesianTrees() {}
+	Rmq2StaticCartesianTrees() {}
 
 	@Override
-	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
+	public Rmq2Static.DataStructure preProcessSequence(Rmq2StaticComparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException();
 		Objects.requireNonNull(c);
 		return new PreProcessor(c, n).build();
 	}
 
-	private class PreProcessor extends RMQStaticLinearAbstract.PreProcessor {
+	private class PreProcessor extends Rmq2StaticLinearAbstract.PreProcessor {
 
 		private final byte[] tempNodesArray;
 
-		PreProcessor(RMQStaticComparator c, int n) {
+		PreProcessor(Rmq2StaticComparator c, int n) {
 			super(c, n);
 			tempNodesArray = new byte[blockSize];
 			preProcessInnerBlocks();
@@ -79,7 +79,7 @@ class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 
 		@Override
 		int calcBlockKey(int b) {
-			RMQStaticComparator c = b < blockNum - 1 ? cmpOrig : cmpPadded;
+			Rmq2StaticComparator c = b < blockNum - 1 ? cmpOrig : cmpPadded;
 			byte[] nodes = tempNodesArray;
 			int nodesCount = 0;
 

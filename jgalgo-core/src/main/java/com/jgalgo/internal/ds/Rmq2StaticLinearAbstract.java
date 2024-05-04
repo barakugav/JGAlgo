@@ -21,7 +21,7 @@ import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
-abstract class RMQStaticLinearAbstract implements RMQStatic {
+abstract class Rmq2StaticLinearAbstract implements Rmq2Static {
 
 	/*
 	 * This implementation divides the elements sequence into blocks, for each block calculate the minimum in the block
@@ -36,14 +36,14 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 	 * \(O(n)\) pre processing time, \(O(n)\) space, \(O(1)\) query.
 	 */
 
-	private final RMQStatic outerRMQ = new RMQStaticPowerOf2Table();
+	private final Rmq2Static outerRMQ = new Rmq2StaticPowerOf2Table();
 
 	abstract class PreProcessor extends DsBase {
 
-		final RMQStaticComparator cmpPadded;
+		final Rmq2StaticComparator cmpPadded;
 		final int blockNum;
 
-		PreProcessor(RMQStaticComparator c, int n) {
+		PreProcessor(Rmq2StaticComparator c, int n) {
 			this.n = n;
 			blockSize = getBlockSize(n);
 			blockNum = (int) Math.ceil((double) n / blockSize);
@@ -125,15 +125,15 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 		abstract byte[] calcDemoBlock(int key);
 
-		RMQStatic.DataStructure build() {
+		Rmq2Static.DataStructure build() {
 			return new DataStructure(this);
 		}
 
 	}
 
-	private static class DataStructure extends DsBase implements RMQStatic.DataStructure {
+	private static class DataStructure extends DsBase implements Rmq2Static.DataStructure {
 
-		DataStructure(RMQStaticLinearAbstract.PreProcessor ds) {
+		DataStructure(Rmq2StaticLinearAbstract.PreProcessor ds) {
 			n = ds.n;
 			blockSize = ds.blockSize;
 			blocksRightLeftMinimum = ds.blocksRightLeftMinimum;
@@ -145,7 +145,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-			RMQStatics.checkIndices(i, j, n);
+			Rmq2Statics.checkIndices(i, j, n);
 			if (i == j)
 				return i;
 
@@ -200,10 +200,10 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 		int n;
 		int blockSize;
 		byte[] blocksRightLeftMinimum;
-		RMQStatic.DataStructure xlogxTableDS;
+		Rmq2Static.DataStructure xlogxTableDS;
 		int[] blockToInnerIdx;
 		byte[] innerBlocks;
-		RMQStaticComparator cmpOrig;
+		Rmq2StaticComparator cmpOrig;
 
 		int blockMinimum(int block) {
 			return blockRightMinimum(block, 0);
@@ -236,12 +236,12 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 	}
 
-	private static class PaddedComparator implements RMQStaticComparator {
+	private static class PaddedComparator implements Rmq2StaticComparator {
 
 		final int n;
-		final RMQStaticComparator c;
+		final Rmq2StaticComparator c;
 
-		PaddedComparator(int n, RMQStaticComparator c) {
+		PaddedComparator(int n, Rmq2StaticComparator c) {
 			this.n = n;
 			this.c = c;
 		}

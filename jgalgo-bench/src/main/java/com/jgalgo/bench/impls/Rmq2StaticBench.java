@@ -39,13 +39,13 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.TestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.internal.ds.RMQStatic;
-import com.jgalgo.internal.ds.RMQStaticComparator;
+import com.jgalgo.internal.ds.Rmq2Static;
+import com.jgalgo.internal.ds.Rmq2StaticComparator;
 import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-public class RMQStaticBench {
+public class Rmq2StaticBench {
 
 	@BenchmarkMode(Mode.AverageTime)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -59,7 +59,7 @@ public class RMQStaticBench {
 		public String args;
 		public int n;
 
-		private List<Pair<Integer, RMQStaticComparator>> arrays;
+		private List<Pair<Integer, Rmq2StaticComparator>> arrays;
 		private final int arrsNum = 31;
 		private final AtomicInteger arrIdx = new AtomicInteger();
 
@@ -72,12 +72,12 @@ public class RMQStaticBench {
 			arrays = new ObjectArrayList<>();
 			for (int aIdx = 0; aIdx < arrsNum; aIdx++) {
 				int[] arr = TestUtils.randArray(n, seedGen.nextSeed());
-				arrays.add(Pair.of(Integer.valueOf(n), RMQStaticComparator.ofIntArray(arr)));
+				arrays.add(Pair.of(Integer.valueOf(n), Rmq2StaticComparator.ofIntArray(arr)));
 			}
 		}
 
-		private void benchPreProcess(RMQStatic rmq, Blackhole blackhole) {
-			Pair<Integer, RMQStaticComparator> arr = arrays.get(arrIdx.getAndUpdate(i -> (i + 1) % arrsNum));
+		private void benchPreProcess(Rmq2Static rmq, Blackhole blackhole) {
+			Pair<Integer, Rmq2StaticComparator> arr = arrays.get(arrIdx.getAndUpdate(i -> (i + 1) % arrsNum));
 			rmq.preProcessSequence(arr.second(), arr.first().intValue());
 			blackhole.consume(rmq);
 		}
@@ -111,7 +111,7 @@ public class RMQStaticBench {
 		public String args;
 		public int n;
 
-		private List<Pair<Integer, RMQStaticComparator>> arrays;
+		private List<Pair<Integer, Rmq2StaticComparator>> arrays;
 		private final int arrsNum = 31;
 		private final AtomicInteger arrIdx = new AtomicInteger();
 
@@ -126,14 +126,14 @@ public class RMQStaticBench {
 				int[] arr = new int[n];
 				for (int i : range(1, n))
 					arr[i] = arr[i - 1] + (rand.nextBoolean() ? +1 : -1);
-				arrays.add(Pair.of(Integer.valueOf(n), RMQStaticComparator.ofIntArray(arr)));
+				arrays.add(Pair.of(Integer.valueOf(n), Rmq2StaticComparator.ofIntArray(arr)));
 			}
 		}
 
 		@Benchmark
 		public void benchPreProcess(Blackhole blackhole) {
-			Pair<Integer, RMQStaticComparator> arr = arrays.get(arrIdx.getAndUpdate(i -> (i + 1) % arrsNum));
-			RMQStatic rmq = getAlgo("plus-minus-one");
+			Pair<Integer, Rmq2StaticComparator> arr = arrays.get(arrIdx.getAndUpdate(i -> (i + 1) % arrsNum));
+			Rmq2Static rmq = getAlgo("plus-minus-one");
 			rmq.preProcessSequence(arr.second(), arr.first().intValue());
 			blackhole.consume(rmq);
 		}
@@ -143,7 +143,7 @@ public class RMQStaticBench {
 	public static class Query {
 
 		int n;
-		RMQStatic.DataStructure rmq;
+		Rmq2Static.DataStructure rmq;
 		private long[] queriesAll;
 		private int queryIdx;
 		long[] queries = new long[OperationsPerInvocation];
@@ -154,12 +154,12 @@ public class RMQStaticBench {
 			return TestUtils.randArray(size, seed);
 		}
 
-		Pair<RMQStatic.DataStructure, long[]> createArray(RMQStatic rmq, int n) {
+		Pair<Rmq2Static.DataStructure, long[]> createArray(Rmq2Static rmq, int n) {
 			final SeedGenerator seedGen = new SeedGenerator(0x5b3fba9dd26f2769L);
 
 			int[] arr = randArray(n, seedGen.nextSeed());
 
-			RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQStaticComparator.ofIntArray(arr), n);
+			Rmq2Static.DataStructure rmqDS = rmq.preProcessSequence(Rmq2StaticComparator.ofIntArray(arr), n);
 
 			int queriesNum = n * 53;
 			int[] queries = TestUtils.randArray(queriesNum * 2, 0, n, seedGen.nextSeed());
@@ -180,11 +180,11 @@ public class RMQStaticBench {
 			return Pair.of(rmqDS, queries0);
 		}
 
-		private void setupCreateArray(String args, RMQStatic rmq) {
+		private void setupCreateArray(String args, Rmq2Static rmq) {
 			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 			n = Integer.parseInt(argsMap.get("N"));
 
-			Pair<RMQStatic.DataStructure, long[]> p = createArray(rmq, n);
+			Pair<Rmq2Static.DataStructure, long[]> p = createArray(rmq, n);
 			this.rmq = p.first();
 			queriesAll = p.second();
 			queryIdx = 0;
@@ -330,8 +330,8 @@ public class RMQStaticBench {
 
 	}
 
-	private static RMQStatic getAlgo(String implName) {
-		RMQStatic.Builder builder = RMQStatic.builder();
+	private static Rmq2Static getAlgo(String implName) {
+		Rmq2Static.Builder builder = Rmq2Static.builder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

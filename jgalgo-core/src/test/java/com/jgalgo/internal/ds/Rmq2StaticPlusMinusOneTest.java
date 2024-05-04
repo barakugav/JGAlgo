@@ -19,7 +19,7 @@ package com.jgalgo.internal.ds;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 
-public class RMQStaticPlusMinusOneTest extends TestBase {
+public class Rmq2StaticPlusMinusOneTest extends TestBase {
 
 	@Test
 	public void testRegular() {
@@ -27,9 +27,9 @@ public class RMQStaticPlusMinusOneTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		int[] a = new int[128];
 		int[][] queries = new int[64][];
-		RMQStaticUtils.randRMQDataPlusMinusOne(a, seedGen.nextSeed());
-		RMQStaticUtils.randRMQQueries(a, queries, a.length, seedGen.nextSeed());
-		RMQStaticUtils.testRMQ(new RMQStaticPlusMinusOne(), a, queries);
+		Rmq2StaticUtils.randRMQDataPlusMinusOne(a, seedGen.nextSeed());
+		Rmq2StaticUtils.randRMQQueries(a, queries, a.length, seedGen.nextSeed());
+		Rmq2StaticUtils.testRMQ(new Rmq2StaticPlusMinusOne(), a, queries);
 	}
 
 	@Test
@@ -39,10 +39,10 @@ public class RMQStaticPlusMinusOneTest extends TestBase {
 		for (int n = 64; n <= 256; n++) {
 			int[] a = new int[n];
 			int[][] queries = new int[64][];
-			RMQStaticUtils.randRMQDataPlusMinusOne(a, seedGen.nextSeed());
-			RMQStaticUtils.randRMQQueries(a, queries, a.length, seedGen.nextSeed());
+			Rmq2StaticUtils.randRMQDataPlusMinusOne(a, seedGen.nextSeed());
+			Rmq2StaticUtils.randRMQQueries(a, queries, a.length, seedGen.nextSeed());
 
-			RMQStaticUtils.testRMQ(new RMQStaticPlusMinusOne(), a, queries);
+			Rmq2StaticUtils.testRMQ(new Rmq2StaticPlusMinusOne(), a, queries);
 		}
 	}
 
@@ -52,9 +52,9 @@ public class RMQStaticPlusMinusOneTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		int[] a = new int[128];
 		int[][] queries = new int[64][];
-		RMQStaticUtils.randRMQDataPlusMinusOne(a, seedGen.nextSeed());
-		RMQStaticUtils.randRMQQueries(a, queries, 4, seedGen.nextSeed());
-		RMQStaticUtils.testRMQ(new RMQStaticPlusMinusOne(), a, queries);
+		Rmq2StaticUtils.randRMQDataPlusMinusOne(a, seedGen.nextSeed());
+		Rmq2StaticUtils.randRMQQueries(a, queries, 4, seedGen.nextSeed());
+		Rmq2StaticUtils.testRMQ(new Rmq2StaticPlusMinusOne(), a, queries);
 	}
 
 }

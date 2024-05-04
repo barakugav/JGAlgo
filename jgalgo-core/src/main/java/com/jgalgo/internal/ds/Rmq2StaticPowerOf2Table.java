@@ -30,15 +30,15 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  *
  * @author Barak Ugav
  */
-class RMQStaticPowerOf2Table implements RMQStatic {
+class Rmq2StaticPowerOf2Table implements Rmq2Static {
 
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-	RMQStaticPowerOf2Table() {}
+	Rmq2StaticPowerOf2Table() {}
 
 	@Override
-	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
+	public Rmq2Static.DataStructure preProcessSequence(Rmq2StaticComparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException("Invalid length: " + n);
 		Objects.requireNonNull(c);
@@ -49,12 +49,12 @@ class RMQStaticPowerOf2Table implements RMQStatic {
 		return new DSu32(c, n);
 	}
 
-	private static class DSu32 implements RMQStatic.DataStructure {
+	private static class DSu32 implements Rmq2Static.DataStructure {
 		private final int n;
 		private final int[][] arr;
-		private final RMQStaticComparator c;
+		private final Rmq2StaticComparator c;
 
-		DSu32(RMQStaticComparator c, int n) {
+		DSu32(Rmq2StaticComparator c, int n) {
 			this.n = n;
 			arr = new int[JGAlgoUtils.log2ceil(n + 1) - 1][n - 1];
 			this.c = c;
@@ -76,7 +76,7 @@ class RMQStaticPowerOf2Table implements RMQStatic {
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-			RMQStatics.checkIndices(i, j, n);
+			Rmq2Statics.checkIndices(i, j, n);
 			if (i == j)
 				return i;
 			j++;
@@ -100,13 +100,13 @@ class RMQStaticPowerOf2Table implements RMQStatic {
 		}
 	}
 
-	private static class DSu16 implements RMQStatic.DataStructure {
+	private static class DSu16 implements Rmq2Static.DataStructure {
 		private final short n;
 		private final short[][] arr;
-		private final RMQStaticComparator c;
+		private final Rmq2StaticComparator c;
 		private static final int LIMIT = (1 << (Short.SIZE - 1)) - 1;
 
-		DSu16(RMQStaticComparator c, short n) {
+		DSu16(Rmq2StaticComparator c, short n) {
 			this.n = n;
 			arr = new short[JGAlgoUtils.log2ceil(n + 1) - 1][n - 1];
 			this.c = c;
@@ -128,7 +128,7 @@ class RMQStaticPowerOf2Table implements RMQStatic {
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-			RMQStatics.checkIndices(i, j, n);
+			Rmq2Statics.checkIndices(i, j, n);
 			if (i == j)
 				return i;
 			j++;
@@ -152,13 +152,13 @@ class RMQStaticPowerOf2Table implements RMQStatic {
 		}
 	}
 
-	private static class DSu08 implements RMQStatic.DataStructure {
+	private static class DSu08 implements Rmq2Static.DataStructure {
 		private final byte n;
 		private final byte[][] arr;
-		private final RMQStaticComparator c;
+		private final Rmq2StaticComparator c;
 		private static final int LIMIT = (1 << (Byte.SIZE - 1)) - 1;
 
-		DSu08(RMQStaticComparator c, byte n) {
+		DSu08(Rmq2StaticComparator c, byte n) {
 			this.n = n;
 			arr = new byte[JGAlgoUtils.log2ceil(n + 1) - 1][n - 1];
 			this.c = c;
@@ -180,7 +180,7 @@ class RMQStaticPowerOf2Table implements RMQStatic {
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-			RMQStatics.checkIndices(i, j, n);
+			Rmq2Statics.checkIndices(i, j, n);
 			if (i == j)
 				return i;
 			j++;

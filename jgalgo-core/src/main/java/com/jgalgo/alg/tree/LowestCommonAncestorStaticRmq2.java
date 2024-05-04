@@ -20,8 +20,8 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.internal.ds.RMQStatic;
-import com.jgalgo.internal.ds.RMQStaticComparator;
+import com.jgalgo.internal.ds.Rmq2Static;
+import com.jgalgo.internal.ds.Rmq2StaticComparator;
 import com.jgalgo.internal.util.Assertions;
 
 /**
@@ -30,7 +30,7 @@ import com.jgalgo.internal.util.Assertions;
  * <p>
  * By traversing the tree once and assigning for each vertex a number corresponding to its depth, the LCA query is
  * equivalent to a range minimum query. This RMQ problem is a special case of RMQ, as the different between any pair of
- * consecutive elements is always +1/-1, and {@link RMQStaticPlusMinusOne} can be used.
+ * consecutive elements is always +1/-1, and {@link Rmq2StaticPlusMinusOne} can be used.
  *
  * <p>
  * The algorithm require preprocessing of \(O(n)\) time and space and answer queries in \(O(1)\) time.
@@ -40,15 +40,15 @@ import com.jgalgo.internal.util.Assertions;
  *
  * @author Barak Ugav
  */
-class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
+class LowestCommonAncestorStaticRmq2 extends LowestCommonAncestorStaticAbstract {
 
-	private final RMQStatic rmq;
+	private final Rmq2Static rmq;
 
 	/**
 	 * Create a new static LCA algorithm object.
 	 */
-	LowestCommonAncestorStaticRMQ() {
-		RMQStatic.Builder rmqBuilder = RMQStatic.builder();
+	LowestCommonAncestorStaticRmq2() {
+		Rmq2Static.Builder rmqBuilder = Rmq2Static.builder();
 		rmqBuilder.setOption("impl", "plus-minus-one");
 		rmq = rmqBuilder.build();
 	}
@@ -101,7 +101,7 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 				vToDepthsIdx[v] = i;
 		}
 
-		RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQStaticComparator.ofIntArray(depths), depths.length);
+		Rmq2Static.DataStructure rmqDS = rmq.preProcessSequence(Rmq2StaticComparator.ofIntArray(depths), depths.length);
 		return new DS(n, vs, vToDepthsIdx, rmqDS);
 	}
 
@@ -110,9 +110,9 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 		private final int n;
 		private final int[] vs;
 		private final int[] vToDepthsIdx;
-		private final RMQStatic.DataStructure rmqDS;
+		private final Rmq2Static.DataStructure rmqDS;
 
-		DS(int n, int[] vs, int[] vToDepthsIdx, RMQStatic.DataStructure rmqDS) {
+		DS(int n, int[] vs, int[] vToDepthsIdx, Rmq2Static.DataStructure rmqDS) {
 			this.n = n;
 			this.vs = vs;
 			this.vToDepthsIdx = vToDepthsIdx;

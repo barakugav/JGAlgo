@@ -32,15 +32,15 @@ import java.util.Objects;
  *
  * @author Barak Ugav
  */
-class RMQStaticSimpleLookupTable implements RMQStatic {
+class Rmq2StaticSimpleLookupTable implements Rmq2Static {
 
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-	RMQStaticSimpleLookupTable() {}
+	Rmq2StaticSimpleLookupTable() {}
 
 	@Override
-	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
+	public Rmq2Static.DataStructure preProcessSequence(Rmq2StaticComparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException("Invalid length: " + n);
 		Objects.requireNonNull(c);
@@ -63,13 +63,13 @@ class RMQStaticSimpleLookupTable implements RMQStatic {
 		return (2 * n - i - 1) * i / 2 + j - i - 1;
 	}
 
-	private static class DSu08 implements RMQStatic.DataStructure {
+	private static class DSu08 implements Rmq2Static.DataStructure {
 
 		private final byte n;
 		private final byte[] arr;
 		private static final int LIMIT = 1 << ((Byte.SIZE - 1) / 2);
 
-		DSu08(RMQStaticComparator c, byte n) {
+		DSu08(Rmq2StaticComparator c, byte n) {
 			arr = new byte[arrSize(n)];
 			this.n = n;
 
@@ -85,7 +85,7 @@ class RMQStaticSimpleLookupTable implements RMQStatic {
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-			RMQStatics.checkIndices(i, j, n);
+			Rmq2Statics.checkIndices(i, j, n);
 			if (i == j)
 				return i;
 			return arr[indexOf(n, i, j)];
@@ -97,14 +97,14 @@ class RMQStaticSimpleLookupTable implements RMQStatic {
 		}
 	}
 
-	private static class DSu16 implements RMQStatic.DataStructure {
+	private static class DSu16 implements Rmq2Static.DataStructure {
 
 		private final short n;
 		private final short[] arr;
 
 		private static final int LIMIT = 1 << ((Short.SIZE - 1) / 2);
 
-		DSu16(RMQStaticComparator c, short n) {
+		DSu16(Rmq2StaticComparator c, short n) {
 			arr = new short[arrSize(n)];
 			this.n = n;
 
@@ -120,7 +120,7 @@ class RMQStaticSimpleLookupTable implements RMQStatic {
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-			RMQStatics.checkIndices(i, j, n);
+			Rmq2Statics.checkIndices(i, j, n);
 			if (i == j)
 				return i;
 			return arr[indexOf(n, i, j)];
@@ -132,14 +132,14 @@ class RMQStaticSimpleLookupTable implements RMQStatic {
 		}
 	}
 
-	private static class DSu32 implements RMQStatic.DataStructure {
+	private static class DSu32 implements Rmq2Static.DataStructure {
 
 		private final int n;
 		private final int[] arr;
 
 		private static final int LIMIT = 1 << ((Integer.SIZE - 1) / 2);
 
-		DSu32(RMQStaticComparator c, int n) {
+		DSu32(Rmq2StaticComparator c, int n) {
 			arr = new int[arrSize(n)];
 			this.n = n;
 
@@ -155,7 +155,7 @@ class RMQStaticSimpleLookupTable implements RMQStatic {
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-			RMQStatics.checkIndices(i, j, n);
+			Rmq2Statics.checkIndices(i, j, n);
 			if (i == j)
 				return i;
 			return arr[indexOf(n, i, j)];

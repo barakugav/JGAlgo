@@ -100,7 +100,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 		/* Map an edge it 'tree' to an edge in 'tOrig' */
 		private final int[] edgeRef;
 
-		private final LowestCommonAncestorStatic lcaAlgo = new LowestCommonAncestorStaticRMQ();
+		private final LowestCommonAncestorStatic lcaAlgo = new LowestCommonAncestorStaticRmq2();
 		private int root;
 
 		private final Int2IntFunction getBitCount;
