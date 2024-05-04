@@ -41,9 +41,17 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    <a href= "https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.AbstractImpl {
+public class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceAbstract {
 
-	ShortestPathSingleSourceBellmanFord() {}
+	/**
+	 * Create a Sssp bellman-ford algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link ShortestPathSingleSource#newInstance()} to get a default implementation for the
+	 * {@link ShortestPathSingleSource} interface, or {@link ShortestPathSingleSource#builder()} for more customization
+	 * options.
+	 */
+	public ShortestPathSingleSourceBellmanFord() {}
 
 	/**
 	 * {@inheritDoc}
@@ -51,7 +59,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	protected ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.onlyDirected(g);
 
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
@@ -74,7 +82,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 		 */
 
 		final int n = g.vertices().size();
-		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);
+		IndexResult res = new IndexResult(g, source);
 		res.distances[source] = 0;
 
 		FIFOQueueIntNoReduce modified = new FIFOQueueIntNoReduce();

@@ -29,15 +29,20 @@ import com.jgalgo.internal.util.Assertions;
  * some other vertex is the path with the minimum number of edges. A simple BFS is performed from the source vertex
  * until all vertices that can be reached are reached. The algorithm runs in linear time.
  *
- * @see    Bfs
+ * @see    BfsIter
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.AbstractImpl {
+public class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceAbstract {
 
 	/**
-	 * Construct a new cardinality SSSP algorithm.
+	 * Create a cardinality BFS-based SSSP algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link ShortestPathSingleSource#newInstance()} to get a default implementation for the
+	 * {@link ShortestPathSingleSource} interface, or {@link ShortestPathSingleSource#builder()} for more customization
+	 * options.
 	 */
-	ShortestPathSingleSourceCardinality() {}
+	public ShortestPathSingleSourceCardinality() {}
 
 	/**
 	 * {@inheritDoc}
@@ -46,9 +51,9 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 	 *                                      {@link IWeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	protected ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.onlyCardinality(w);
-		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);
+		IndexResult res = new IndexResult(g, source);
 		for (BfsIter.Int it = BfsIter.newInstance(g, source); it.hasNext();) {
 			int v = it.nextInt();
 			res.distances[v] = it.layer();

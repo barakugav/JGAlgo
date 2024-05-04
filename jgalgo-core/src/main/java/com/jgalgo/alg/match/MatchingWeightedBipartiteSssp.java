@@ -22,6 +22,7 @@ import java.util.Objects;
 import com.jgalgo.alg.bipartite.BipartiteGraphs;
 import com.jgalgo.alg.path.IPath;
 import com.jgalgo.alg.path.ShortestPathSingleSource;
+import com.jgalgo.alg.path.ShortestPathSingleSourceDijkstra;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IWeightsDouble;
@@ -57,12 +58,11 @@ public class MatchingWeightedBipartiteSssp extends MatchingAlgoAbstractBasedMaxi
 	 *
 	 * <p>
 	 * The shortest path algorithm should support non negative floating points weights. The default implementation uses
-	 * Dijkstra's algorithm.
+	 * {@linkplain ShortestPathSingleSourceDijkstra Dijkstra's algorithm}.
 	 *
 	 * @param algo an shortest path algorithm
 	 */
 	public void setSsspAlgo(ShortestPathSingleSource algo) {
-		// TODO change documentation to link to ShortestPathSingleSourceDijkstra
 		ssspPositive = Objects.requireNonNull(algo);
 	}
 

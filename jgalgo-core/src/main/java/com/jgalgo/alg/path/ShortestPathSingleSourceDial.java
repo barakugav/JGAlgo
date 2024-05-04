@@ -47,12 +47,17 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  *
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.AbstractImpl {
+public class ShortestPathSingleSourceDial extends ShortestPathSingleSourceAbstract {
 
 	/**
-	 * Construct a new SSSP algorithm.
+	 * Create a Dial's SSSP algorithm for integer weights.
+	 *
+	 * <p>
+	 * Please prefer using {@link ShortestPathSingleSource#newInstance()} to get a default implementation for the
+	 * {@link ShortestPathSingleSource} interface, or {@link ShortestPathSingleSource#builder()} for more customization
+	 * options.
 	 */
-	ShortestPathSingleSourceDial() {}
+	public ShortestPathSingleSourceDial() {}
 
 	/**
 	 * {@inheritDoc}
@@ -61,7 +66,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	 *                                      {@link IWeightFunctionInt}
 	 */
 	@Override
-	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	protected ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		if (!WeightFunction.isInteger(w))
 			throw new IllegalArgumentException("only int weights are supported");
@@ -82,7 +87,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	 *                     vertex
 	 * @see                #computeShortestPaths(IntGraph, IWeightFunction, int)
 	 */
-	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunctionInt w, int source,
+	protected ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunctionInt w, int source,
 			int maxDistance) {
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		DialHeap heap = new DialHeap(g.vertices().size(), maxDistance);
@@ -122,7 +127,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 			int d = heap.distances[v];
 			distances[v] = d == Integer.MAX_VALUE ? Double.POSITIVE_INFINITY : d;
 		}
-		return new ShortestPathSingleSourceUtils.IndexResult(g, source, distances, backtrack);
+		return new IndexResult(g, source, distances, backtrack);
 	}
 
 	private static class DialHeap {

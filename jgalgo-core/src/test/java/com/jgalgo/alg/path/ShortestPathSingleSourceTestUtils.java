@@ -326,9 +326,9 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		IndexGraph g = IndexGraph.newDirected();
 		g.addVertexInt();
 		assertThrows(IllegalArgumentException.class,
-				() -> new ShortestPathSingleSourceUtils.IndexResult(g, 0, new double[2], new int[1]));
+				() -> new ShortestPathSingleSourceAbstract.IndexResult(g, 0, new double[2], new int[1]));
 		assertThrows(IllegalArgumentException.class,
-				() -> new ShortestPathSingleSourceUtils.IndexResult(g, 0, new double[1], new int[2]));
+				() -> new ShortestPathSingleSourceAbstract.IndexResult(g, 0, new double[1], new int[2]));
 	}
 
 	@Test

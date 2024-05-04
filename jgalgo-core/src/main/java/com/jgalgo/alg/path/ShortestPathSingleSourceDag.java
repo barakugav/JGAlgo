@@ -36,14 +36,19 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * @see    TopologicalOrderAlgo
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.AbstractImpl {
+public class ShortestPathSingleSourceDag extends ShortestPathSingleSourceAbstract {
 
 	private final TopologicalOrderAlgo topoAlg = TopologicalOrderAlgo.newInstance();
 
 	/**
-	 * Construct a new SSSP algorithm.
+	 * Create a SSSP algorithm for directed acyclic graphs (DAG).
+	 *
+	 * <p>
+	 * Please prefer using {@link ShortestPathSingleSource#newInstance()} to get a default implementation for the
+	 * {@link ShortestPathSingleSource} interface, or {@link ShortestPathSingleSource#builder()} for more customization
+	 * options.
 	 */
-	ShortestPathSingleSourceDag() {}
+	public ShortestPathSingleSourceDag() {}
 
 	/**
 	 * {@inheritDoc}
@@ -51,7 +56,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 	 * @throws IllegalArgumentException if graph is not directed or contains cycles
 	 */
 	@Override
-	ShortestPathSingleSourceDag.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	protected ShortestPathSingleSourceDag.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.onlyDirected(g);
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		if (WeightFunction.isInteger(w)) {
@@ -62,7 +67,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 	}
 
 	private ShortestPathSingleSourceDag.IResult computeSsspDouble(IndexGraph g, IWeightFunction w, int source) {
-		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);
+		IndexResult res = new IndexResult(g, source);
 		res.distances[source] = 0;
 
 		TopologicalOrderAlgo.IResult topoOrderRes = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);
@@ -87,7 +92,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 	}
 
 	private ShortestPathSingleSourceDag.IResult computeSsspInt(IndexGraph g, IWeightFunctionInt w, int source) {
-		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);
+		IndexResult res = new IndexResult(g, source);
 		res.distances[source] = 0;
 
 		TopologicalOrderAlgo.IResult topoOrderRes = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);

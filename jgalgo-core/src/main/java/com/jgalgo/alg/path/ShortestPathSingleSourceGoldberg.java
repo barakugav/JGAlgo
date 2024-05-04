@@ -32,9 +32,9 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -56,7 +56,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.AbstractImpl {
+public class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceAbstract {
 
 	private ShortestPathSingleSource positiveSsspAlgo = ShortestPathSingleSource.newInstance();
 	private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();
@@ -66,9 +66,14 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 	private final Diagnostics diagnostics = new Diagnostics();
 
 	/**
-	 * Construct a new SSSP algorithm.
+	 * Create a Goldberg's SSSP algorithm for integer weights, with negative weights.
+	 *
+	 * <p>
+	 * Please prefer using {@link ShortestPathSingleSource#newInstance()} to get a default implementation for the
+	 * {@link ShortestPathSingleSource} interface, or {@link ShortestPathSingleSource#builder()} for more customization
+	 * options.
 	 */
-	ShortestPathSingleSourceGoldberg() {}
+	public ShortestPathSingleSourceGoldberg() {}
 
 	/**
 	 * Set the algorithm used for positive weights graphs.
@@ -90,7 +95,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 	 *                                      {@link IWeightFunctionInt}
 	 */
 	@Override
-	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	protected ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.onlyDirected(g);
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		w = IWeightFunction.replaceNullWeightFunc(w);
@@ -320,8 +325,8 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		int sourcePotential = potential[source];
 		double[] distances;
 		int[] backtrack;
-		if (dijkstraRes instanceof ShortestPathSingleSourceUtils.IndexResult) {
-			ShortestPathSingleSourceUtils.IndexResult res = (ShortestPathSingleSourceUtils.IndexResult) dijkstraRes;
+		if (dijkstraRes instanceof IndexResult) {
+			IndexResult res = (IndexResult) dijkstraRes;
 			distances = res.distances;
 			backtrack = res.backtrack;
 			for (int v : range(n))
@@ -335,7 +340,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 				backtrack[v] = dijkstraRes.backtrackEdge(v);
 			}
 		}
-		return new ShortestPathSingleSourceUtils.IndexResult(g, source, distances, backtrack);
+		return new IndexResult(g, source, distances, backtrack);
 	}
 
 	Object getDiagnostic(String key) {

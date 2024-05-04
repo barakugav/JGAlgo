@@ -20,10 +20,13 @@ import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * Single Source Shortest Path algorithm.
@@ -363,7 +366,115 @@ public interface ShortestPathSingleSource {
 	 * @return a new builder that can build {@link ShortestPathSingleSource} objects
 	 */
 	static ShortestPathSingleSource.Builder builder() {
-		return new ShortestPathSingleSourceUtils.BuilderImpl();
+		return new ShortestPathSingleSource.Builder() {
+
+			private boolean intWeights;
+			private boolean negativeWeights;
+			private double maxDistance = Double.POSITIVE_INFINITY;
+			private boolean dagGraphs;
+			private boolean cardinalityWeight;
+
+			private String impl;
+
+			@Override
+			public ShortestPathSingleSource build() {
+				if (impl != null) {
+					switch (impl) {
+						case "cardinality":
+							return new ShortestPathSingleSourceCardinality();
+						case "dag":
+							return new ShortestPathSingleSourceDag();
+						case "dijkstra":
+							return new ShortestPathSingleSourceDijkstra();
+						case "dial":
+							return new ShortestPathSingleSourceDial();
+						case "bellman-ford":
+							return new ShortestPathSingleSourceBellmanFord();
+						case "goldberg":
+							return new ShortestPathSingleSourceGoldberg();
+						default:
+							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+					}
+				}
+
+				if (cardinalityWeight)
+					return new ShortestPathSingleSourceCardinality();
+				if (dagGraphs)
+					return new ShortestPathSingleSourceDag();
+				if (negativeWeights) {
+					if (intWeights) {
+						return new ShortestPathSingleSourceGoldberg();
+					} else {
+						return new ShortestPathSingleSourceBellmanFord();
+					}
+				} else {
+					final ShortestPathSingleSourceDijkstra ssspDijkstra = new ShortestPathSingleSourceDijkstra();
+
+					if (intWeights && maxDistance < Integer.MAX_VALUE) {
+						return new ShortestPathSingleSourceAbstract() {
+							private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();
+							private final int maxDistance0 = (int) maxDistance;
+
+							@Override
+							public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g,
+									IWeightFunction w, int source) {
+								final int n = g.vertices().size(), m = g.edges().size();
+								int dialWork = n + m + maxDistance0;
+								int dijkstraWork = m + n * JGAlgoUtils.log2ceil(n);
+								if (dialWork < dijkstraWork) {
+									return ssspDial
+											.computeShortestPaths(g, (IWeightFunctionInt) w, source, maxDistance0);
+								} else {
+									return ssspDijkstra.computeShortestPaths(g, w, source);
+								}
+							}
+						};
+					}
+					return ssspDijkstra;
+				}
+			}
+
+			@Override
+			public ShortestPathSingleSource.Builder setIntWeights(boolean enable) {
+				intWeights = enable;
+				return this;
+			}
+
+			@Override
+			public ShortestPathSingleSource.Builder setNegativeWeights(boolean enable) {
+				negativeWeights = enable;
+				return this;
+			}
+
+			@Override
+			public ShortestPathSingleSource.Builder setMaxDistance(double maxDistance) {
+				this.maxDistance = maxDistance;
+				return this;
+			}
+
+			@Override
+			public ShortestPathSingleSource.Builder setDag(boolean dagGraphs) {
+				this.dagGraphs = dagGraphs;
+				return this;
+			}
+
+			@Override
+			public ShortestPathSingleSource.Builder setCardinality(boolean cardinalityWeight) {
+				this.cardinalityWeight = cardinalityWeight;
+				return this;
+			}
+
+			@Override
+			public void setOption(String key, Object value) {
+				switch (key) {
+					case "impl":
+						impl = (String) value;
+						break;
+					default:
+						ShortestPathSingleSource.Builder.super.setOption(key, value);
+				}
+			}
+		};
 	}
 
 	/**

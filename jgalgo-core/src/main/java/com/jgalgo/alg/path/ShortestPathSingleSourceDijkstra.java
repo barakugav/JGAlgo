@@ -42,12 +42,17 @@ import com.jgalgo.internal.util.Assertions;
  * @see    <a href= "https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.AbstractImpl {
+public class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceAbstract {
 
 	/**
-	 * Construct a new SSSP algorithm.
+	 * Create a Dijkstra's SSSP algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link ShortestPathSingleSource#newInstance()} to get a default implementation for the
+	 * {@link ShortestPathSingleSource} interface, or {@link ShortestPathSingleSource#builder()} for more customization
+	 * options.
 	 */
-	ShortestPathSingleSourceDijkstra() {}
+	public ShortestPathSingleSourceDijkstra() {}
 
 	/**
 	 * {@inheritDoc}
@@ -55,9 +60,9 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 	 * @throws IllegalArgumentException if one of the edge weights is negative
 	 */
 	@Override
-	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	protected ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		w = IWeightFunction.replaceNullWeightFunc(w);
-		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);
+		IndexResult res = new IndexResult(g, source);
 		res.distances[source] = 0;
 		IndexHeapDouble heap = IndexHeapDouble.newInstance(res.distances);
 
