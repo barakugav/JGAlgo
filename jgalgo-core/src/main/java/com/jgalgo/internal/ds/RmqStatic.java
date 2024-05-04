@@ -28,7 +28,7 @@ import com.jgalgo.alg.AlgorithmBuilderBase;
  * achieve constant or logarithmic query time.
  *
  * <p>
- * The sequence itself is never passed to the algorithm, rather a {@link Rmq2StaticComparator} which support comparing
+ * The sequence itself is never passed to the algorithm, rather a {@link RmqStaticComparator} which support comparing
  * two elements given their <i>indices</i> only.
  *
  * <p>
@@ -37,7 +37,7 @@ import com.jgalgo.alg.AlgorithmBuilderBase;
  *
  * @author Barak Ugav
  */
-public interface Rmq2Static {
+public interface RmqStatic {
 
 	/**
 	 * Perform a static pre processing of a sequence of elements for future RMQ (Range minimum query) queries.
@@ -46,7 +46,7 @@ public interface Rmq2Static {
 	 * @param  n          the number of elements in the sequence
 	 * @return            a data structure built from the preprocessing, that can answer RMQ queries efficiently
 	 */
-	Rmq2Static.DataStructure preProcessSequence(Rmq2StaticComparator comparator, int n);
+	RmqStatic.DataStructure preProcessSequence(RmqStaticComparator comparator, int n);
 
 	/**
 	 * Data structure result created from a static RMQ pre-processing.
@@ -79,12 +79,12 @@ public interface Rmq2Static {
 	 * Create a new RMQ algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link Rmq2Static} object. The {@link Rmq2Static.Builder} might
+	 * This is the recommended way to instantiate a new {@link RmqStatic} object. The {@link RmqStatic.Builder} might
 	 * support different options to obtain different implementations.
 	 *
-	 * @return a default implementation of {@link Rmq2Static}
+	 * @return a default implementation of {@link RmqStatic}
 	 */
-	static Rmq2Static newInstance() {
+	static RmqStatic newInstance() {
 		return builder().build();
 	}
 
@@ -94,29 +94,29 @@ public interface Rmq2Static {
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
-	 * @return a new builder that can build {@link Rmq2Static} objects
+	 * @return a new builder that can build {@link RmqStatic} objects
 	 */
-	static Rmq2Static.Builder builder() {
-		return new Rmq2Static.Builder() {
+	static RmqStatic.Builder builder() {
+		return new RmqStatic.Builder() {
 			String impl;
 
 			@Override
-			public Rmq2Static build() {
+			public RmqStatic build() {
 				if (impl != null) {
 					switch (impl) {
 						case "simple-lookup-table":
-							return new Rmq2StaticSimpleLookupTable();
+							return new RmqStaticSimpleLookupTable();
 						case "power-of-2-table":
-							return new Rmq2StaticPowerOf2Table();
+							return new RmqStaticPowerOf2Table();
 						case "cartesian-trees":
-							return new Rmq2StaticCartesianTrees();
+							return new RmqStaticCartesianTrees();
 						case "plus-minus-one":
-							return new Rmq2StaticPlusMinusOne();
+							return new RmqStaticPlusMinusOne();
 						default:
 							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 					}
 				}
-				return new Rmq2StaticPowerOf2Table();
+				return new RmqStaticPowerOf2Table();
 			}
 
 			@Override
@@ -126,16 +126,16 @@ public interface Rmq2Static {
 						impl = (String) value;
 						break;
 					default:
-						Rmq2Static.Builder.super.setOption(key, value);
+						RmqStatic.Builder.super.setOption(key, value);
 				}
 			}
 		};
 	}
 
 	/**
-	 * A builder for {@link Rmq2Static} objects.
+	 * A builder for {@link RmqStatic} objects.
 	 *
-	 * @see    Rmq2Static#builder()
+	 * @see    RmqStatic#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {
@@ -145,7 +145,7 @@ public interface Rmq2Static {
 		 *
 		 * @return a new static range minimum queries algorithm
 		 */
-		Rmq2Static build();
+		RmqStatic build();
 	}
 
 }

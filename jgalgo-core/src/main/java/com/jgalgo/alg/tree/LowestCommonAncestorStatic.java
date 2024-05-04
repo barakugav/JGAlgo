@@ -134,7 +134,7 @@ public interface LowestCommonAncestorStatic {
 	 * @return a default implementation of {@link LowestCommonAncestorStatic}
 	 */
 	static LowestCommonAncestorStatic newInstance() {
-		return new LowestCommonAncestorStaticRmq2();
+		return new LowestCommonAncestorStaticRmq();
 	}
 
 }

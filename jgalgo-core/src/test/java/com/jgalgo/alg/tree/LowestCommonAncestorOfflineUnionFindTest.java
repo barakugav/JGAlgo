@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.alg.tree.LowestCommonAncestorStaticRmq2Test.Query;
+import com.jgalgo.alg.tree.LowestCommonAncestorStaticRmqTest.Query;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
@@ -74,8 +74,7 @@ public class LowestCommonAncestorOfflineUnionFindTest extends TestBase {
 			Graph<Integer, Integer> g = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 			Integer root = g.vertices().iterator().next();
-			Query<Integer>[] queries =
-					LowestCommonAncestorStaticRmq2Test.randLcaQueries(g, root, m, seedGen.nextSeed());
+			Query<Integer>[] queries = LowestCommonAncestorStaticRmqTest.randLcaQueries(g, root, m, seedGen.nextSeed());
 			testLCA(g, root, LowestCommonAncestorOfflineUnionFind::new, queries, rand);
 		});
 	}

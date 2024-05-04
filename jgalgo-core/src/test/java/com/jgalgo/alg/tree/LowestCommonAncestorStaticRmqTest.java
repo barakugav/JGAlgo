@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
-public class LowestCommonAncestorStaticRmq2Test extends TestBase {
+public class LowestCommonAncestorStaticRmqTest extends TestBase {
 
 	static class Query<V> {
 		V u;
@@ -123,7 +123,7 @@ public class LowestCommonAncestorStaticRmq2Test extends TestBase {
 			Graph<Integer, Integer> g = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 			Integer root = g.vertices().iterator().next();
 			Query<Integer>[] queries = randLcaQueries(g, root, m, seedGen.nextSeed());
-			testLCA(g, root, LowestCommonAncestorStaticRmq2::new, queries);
+			testLCA(g, root, LowestCommonAncestorStaticRmq::new, queries);
 		});
 	}
 
@@ -138,7 +138,7 @@ public class LowestCommonAncestorStaticRmq2Test extends TestBase {
 		g.addEdge(1, 2);
 		g.addEdge(2, 0);
 
-		LowestCommonAncestorStatic algo = new LowestCommonAncestorStaticRmq2();
+		LowestCommonAncestorStatic algo = new LowestCommonAncestorStaticRmq();
 		assertThrows(IllegalArgumentException.class, () -> algo.preProcessTree(g, 0));
 	}
 

@@ -20,17 +20,17 @@ import java.util.Comparator;
 import java.util.Objects;
 
 /**
- * Comparator used to compare elements in a sequence by {@link Rmq2Static} algorithms.
+ * Comparator used to compare elements in a sequence by {@link RmqStatic} algorithms.
  *
  * <p>
- * When an {@link Rmq2Static} perform a preprocessing, the sequence itself of elements is not passed to it, rather a
+ * When an {@link RmqStatic} perform a preprocessing, the sequence itself of elements is not passed to it, rather a
  * comparator that can compare two elements by their indices. The comparator must remain valid as long as queries are
  * still issued to the RMQ implementation.
  *
  * @author Barak Ugav
  */
 @FunctionalInterface
-public interface Rmq2StaticComparator {
+public interface RmqStaticComparator {
 
 	/**
 	 * Compare the i'th and j'th elements in the sequence.
@@ -51,7 +51,7 @@ public interface Rmq2StaticComparator {
 	 *             ordering}.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	static <E> Rmq2StaticComparator ofObjArray(E[] arr) {
+	static <E> RmqStaticComparator ofObjArray(E[] arr) {
 		Objects.requireNonNull(arr);
 		return (i, j) -> ((Comparable) arr[i]).compareTo(arr[j]);
 	}
@@ -65,7 +65,7 @@ public interface Rmq2StaticComparator {
 	 *                 {@linkplain Comparable natural ordering} of the elements will be used.
 	 * @return     an RMQ comparator that will compare elements in the array using the given comparator
 	 */
-	static <E> Rmq2StaticComparator ofObjArray(E[] arr, Comparator<? super E> c) {
+	static <E> RmqStaticComparator ofObjArray(E[] arr, Comparator<? super E> c) {
 		if (c == null) {
 			return ofObjArray(arr);
 		} else {
@@ -80,7 +80,7 @@ public interface Rmq2StaticComparator {
 	 * @param  arr an array
 	 * @return     an RMQ comparator that will compare elements in the array using {@code Byte.compare()}.
 	 */
-	static Rmq2StaticComparator ofByteArray(byte[] arr) {
+	static RmqStaticComparator ofByteArray(byte[] arr) {
 		Objects.requireNonNull(arr);
 		return (i, j) -> Byte.compare(arr[i], arr[j]);
 	}
@@ -91,7 +91,7 @@ public interface Rmq2StaticComparator {
 	 * @param  arr an array
 	 * @return     an RMQ comparator that will compare elements in the array using {@code Integer.compare()}.
 	 */
-	static Rmq2StaticComparator ofIntArray(int[] arr) {
+	static RmqStaticComparator ofIntArray(int[] arr) {
 		Objects.requireNonNull(arr);
 		return (i, j) -> Integer.compare(arr[i], arr[j]);
 	}

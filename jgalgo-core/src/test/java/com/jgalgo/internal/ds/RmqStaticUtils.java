@@ -21,15 +21,15 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Random;
 import com.jgalgo.internal.util.TestUtils;
 
-class Rmq2StaticUtils extends TestUtils {
+class RmqStaticUtils extends TestUtils {
 
-	private Rmq2StaticUtils() {}
+	private RmqStaticUtils() {}
 
-	static void testRMQ65536(Rmq2Static algo, long seed) {
+	static void testRMQ65536(RmqStatic algo, long seed) {
 		testRMQ(algo, 65536, 4096, seed);
 	}
 
-	static void testRMQ(Rmq2Static algo, int n, int queriesNum, long seed) {
+	static void testRMQ(RmqStatic algo, int n, int queriesNum, long seed) {
 		int[] a = new int[n];
 		int[][] queries = new int[queriesNum][];
 		randRMQDataAndQueries(a, queries, seed);
@@ -37,8 +37,8 @@ class Rmq2StaticUtils extends TestUtils {
 		testRMQ(algo, a, queries);
 	}
 
-	static void testRMQ(Rmq2Static rmq, int a[], int[][] queries) {
-		Rmq2Static.DataStructure rmqDS = rmq.preProcessSequence(Rmq2StaticComparator.ofIntArray(a), a.length);
+	static void testRMQ(RmqStatic rmq, int a[], int[][] queries) {
+		RmqStatic.DataStructure rmqDS = rmq.preProcessSequence(RmqStaticComparator.ofIntArray(a), a.length);
 
 		for (int idx : range(queries.length)) {
 			int i = queries[idx][0];

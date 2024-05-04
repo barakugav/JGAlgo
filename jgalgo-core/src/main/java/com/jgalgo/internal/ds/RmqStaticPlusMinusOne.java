@@ -30,35 +30,35 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  *
  * <p>
  * To answer on queries which does not fall in the same block, the minimum of each block is stored, and
- * {@link Rmq2StaticPowerOf2Table} is used on the \(O(n / \log n)\) elements, which is linear in total.
+ * {@link RmqStaticPowerOf2Table} is used on the \(O(n / \log n)\) elements, which is linear in total.
  *
  * <p>
  * This algorithm is used for the static implementation of the lowest common ancestor algorithm, see
- * {@link LowestCommonAncestorStaticRmq2}.
+ * {@link LowestCommonAncestorStaticRmq}.
  *
  * <p>
  * Based on 'Fast Algorithms for Finding Nearest Common Ancestors' by D. Harel, R. Tarjan (1984).
  *
  * @author Barak Ugav
  */
-class Rmq2StaticPlusMinusOne extends Rmq2StaticLinearAbstract {
+class RmqStaticPlusMinusOne extends RmqStaticLinearAbstract {
 
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-	Rmq2StaticPlusMinusOne() {}
+	RmqStaticPlusMinusOne() {}
 
 	@Override
-	public Rmq2Static.DataStructure preProcessSequence(Rmq2StaticComparator c, int n) {
+	public RmqStatic.DataStructure preProcessSequence(RmqStaticComparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException();
 		Objects.requireNonNull(c);
 		return new PreProcessor(c, n).build();
 	}
 
-	private class PreProcessor extends Rmq2StaticLinearAbstract.PreProcessor {
+	private class PreProcessor extends RmqStaticLinearAbstract.PreProcessor {
 
-		PreProcessor(Rmq2StaticComparator c, int n) {
+		PreProcessor(RmqStaticComparator c, int n) {
 			super(c, n);
 			preProcessInnerBlocks();
 		}
@@ -77,7 +77,7 @@ class Rmq2StaticPlusMinusOne extends Rmq2StaticLinearAbstract {
 
 		@Override
 		int calcBlockKey(int b) {
-			Rmq2StaticComparator c = b < blockNum - 1 ? cmpOrig : cmpPadded;
+			RmqStaticComparator c = b < blockNum - 1 ? cmpOrig : cmpPadded;
 			int key = 0;
 
 			int base = b * blockSize;

@@ -13,26 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.jgalgo.internal.ds;
 
-import org.junit.jupiter.api.Test;
-import com.jgalgo.internal.util.TestBase;
+class RmqStatics {
 
-public class Rmq2StaticPowerOf2TableTest extends TestBase {
-
-	@Test
-	public void testRegularNRange64to256() {
-		final long seed = 0x95ef040f1c1d0dcfL;
-		final SeedGenerator seedGen = new SeedGenerator(seed);
-		for (int n = 64; n <= 256; n++)
-			Rmq2StaticUtils.testRMQ(new Rmq2StaticPowerOf2Table(), n, 1024, seedGen.nextSeed());
-	}
-
-	@Test
-	public void testRegular65536() {
-		final long seed = 0x4505769d28250811L;
-		Rmq2StaticUtils.testRMQ65536(new Rmq2StaticPowerOf2Table(), seed);
+	static void checkIndices(int i, int j, int n) {
+		if (!(0 <= i && i <= j && j < n))
+			throw new IllegalArgumentException("Illegal indices [" + i + "," + j + "]");
 	}
 
 }
