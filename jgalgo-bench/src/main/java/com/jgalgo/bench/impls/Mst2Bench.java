@@ -48,7 +48,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 @Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
-public class MSTBench {
+public class Mst2Bench {
 
 	@Param({ "|V|=200 |E|=1000", "|V|=1600 |E|=10000", "|V|=6000 |E|=25000" })
 	public String args;
