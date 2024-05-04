@@ -249,18 +249,18 @@ public class GraphHashmapMultiTest extends TestBase {
 	}
 
 	@Test
-	public void testUndirectedMST() {
+	public void testUndirectedMst() {
 		final long seed = 0x149c6019ec1655c2L;
 		foreachBoolConfig(selfEdges -> {
-			GraphImplTestUtils.testUndirectedMST(graphImpl(selfEdges), seed);
+			GraphImplTestUtils.testUndirectedMst(graphImpl(selfEdges), seed);
 		});
 	}
 
 	@Test
-	public void testDirectedMDST() {
+	public void testDirectedMdst() {
 		final long seed = 0x27445adceab0986dL;
 		foreachBoolConfig(selfEdges -> {
-			GraphImplTestUtils.testDirectedMDST(graphImpl(selfEdges), seed);
+			GraphImplTestUtils.testDirectedMdst(graphImpl(selfEdges), seed);
 		});
 	}
 

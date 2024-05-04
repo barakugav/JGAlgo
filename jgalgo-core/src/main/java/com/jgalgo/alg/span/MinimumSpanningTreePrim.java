@@ -68,13 +68,13 @@ class MinimumSpanningTreePrim extends MinimumSpanningTrees.AbstractUndirected {
 		if (n == 0)
 			return MinimumSpanningTrees.IndexResult.Empty;
 		if (WeightFunction.isInteger(w)) {
-			return computeMSTInt(g, (IWeightFunctionInt) w);
+			return computeMstInt(g, (IWeightFunctionInt) w);
 		} else {
-			return computeMSTDouble(g, w);
+			return computeMstDouble(g, w);
 		}
 	}
 
-	private static MinimumSpanningTree.IResult computeMSTDouble(IndexGraph g, IWeightFunction w) {
+	private static MinimumSpanningTree.IResult computeMstDouble(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 		IndexHeapDouble heap = IndexHeapDouble.newInstance(n);
 		int[] edgeToV = new int[n];
@@ -122,7 +122,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTrees.AbstractUndirected {
 		return new MinimumSpanningTrees.IndexResult(mstSet);
 	}
 
-	private static MinimumSpanningTree.IResult computeMSTInt(IndexGraph g, IWeightFunctionInt w) {
+	private static MinimumSpanningTree.IResult computeMstInt(IndexGraph g, IWeightFunctionInt w) {
 		final int n = g.vertices().size();
 		IndexHeapInt heap = IndexHeapInt.newInstance(n);
 		int[] edgeToV = new int[n];

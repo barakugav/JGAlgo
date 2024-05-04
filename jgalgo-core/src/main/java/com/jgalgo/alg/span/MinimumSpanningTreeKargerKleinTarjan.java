@@ -76,12 +76,12 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTrees.Abstract
 	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 
-		IntArrayList mst = computeMST(g, w);
+		IntArrayList mst = computeMst(g, w);
 		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
 		return new MinimumSpanningTrees.IndexResult(mstSet);
 	}
 
-	private IntArrayList computeMST(IndexGraph g, IWeightFunction w) {
+	private IntArrayList computeMst(IndexGraph g, IWeightFunction w) {
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return new IntArrayList();
 
@@ -98,7 +98,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTrees.Abstract
 		IWeightsDouble g1W = assignWeightsFromEdgeRef(g1, w, g1Ref);
 
 		/* Compute an MST (actually a forest) F1 in the random subgraph G1 */
-		IntCollection f1Edges = computeMST(g1, g1W);
+		IntCollection f1Edges = computeMst(g1, g1W);
 		Pair<IndexGraph, int[]> f1Res = subGraph(g1, f1Edges, g1Ref);
 		IndexGraph f1 = f1Res.first();
 		int[] f1Ref = f1Res.second();
@@ -111,7 +111,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTrees.Abstract
 		IWeightsDouble g2W = assignWeightsFromEdgeRef(g2, w, g2Ref);
 
 		/* The result is F0 and F2 */
-		IntCollection f2 = computeMST(g2, g2W);
+		IntCollection f2 = computeMst(g2, g2W);
 		for (int eRef : f2)
 			f0.add(g2Ref[eRef]);
 		return f0;

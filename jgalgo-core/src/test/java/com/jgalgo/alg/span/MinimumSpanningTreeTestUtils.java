@@ -59,16 +59,16 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			MinimumSpanningTree.Result<Integer, Integer> mst = algo.computeMinimumSpanningTree(g, w);
-			verifyMST(g, w, mst);
+			verifyMst(g, w, mst);
 		});
 	}
 
-	private static class MSTEdgeComparator<V, E> implements Comparator<E> {
+	private static class MstEdgeComparator<V, E> implements Comparator<E> {
 
 		private final Graph<V, E> g;
 		private final WeightFunction<E> w;
 
-		MSTEdgeComparator(Graph<V, E> g, WeightFunction<E> w) {
+		MstEdgeComparator(Graph<V, E> g, WeightFunction<E> w) {
 			this.g = g;
 			this.w = w;
 		}
@@ -97,7 +97,7 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 
 	}
 
-	private static <V, E> void verifyMST(Graph<V, E> g, WeightFunction<E> w, MinimumSpanningTree.Result<V, E> mst) {
+	private static <V, E> void verifyMst(Graph<V, E> g, WeightFunction<E> w, MinimumSpanningTree.Result<V, E> mst) {
 		assertTrue(MinimumSpanningTree.isSpanningForest(g, mst.edges()));
 		if (WeaklyConnectedComponentsAlgo.newInstance().isWeaklyConnected(g))
 			assertTrue(MinimumSpanningTree.isSpanningTree(g, mst.edges()));
@@ -108,7 +108,7 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 		 */
 		MinimumSpanningTree.Result<V, E> expected = new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w);
 
-		Comparator<E> c = new MSTEdgeComparator<>(g, w);
+		Comparator<E> c = new MstEdgeComparator<>(g, w);
 		Set<E> actualSet = new ObjectAVLTreeSet<>(c);
 		actualSet.addAll(mst.edges());
 

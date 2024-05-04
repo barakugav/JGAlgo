@@ -72,7 +72,7 @@ public class MstBench {
 		}
 	}
 
-	private void benchMST(MinimumSpanningTree algo, Blackhole blackhole) {
+	private void benchMst(MinimumSpanningTree algo, Blackhole blackhole) {
 		Pair<IntGraph, IWeightFunctionInt> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		IntGraph g = gw.first();
 		IWeightFunctionInt w = gw.second();
@@ -82,32 +82,32 @@ public class MstBench {
 
 	@Benchmark
 	public void Boruvka(Blackhole blackhole) {
-		benchMST(getAlgo("boruvka"), blackhole);
+		benchMst(getAlgo("boruvka"), blackhole);
 	}
 
 	@Benchmark
 	public void FredmanTarjan(Blackhole blackhole) {
-		benchMST(getAlgo("fredman-tarjan"), blackhole);
+		benchMst(getAlgo("fredman-tarjan"), blackhole);
 	}
 
 	@Benchmark
 	public void Kruskal(Blackhole blackhole) {
-		benchMST(getAlgo("kruskal"), blackhole);
+		benchMst(getAlgo("kruskal"), blackhole);
 	}
 
 	@Benchmark
 	public void Prim(Blackhole blackhole) {
-		benchMST(getAlgo("prim"), blackhole);
+		benchMst(getAlgo("prim"), blackhole);
 	}
 
 	@Benchmark
 	public void Yao(Blackhole blackhole) {
-		benchMST(getAlgo("yao"), blackhole);
+		benchMst(getAlgo("yao"), blackhole);
 	}
 
 	@Benchmark
 	public void KargerKleinTarjan(Blackhole blackhole) {
-		benchMST(getAlgo("karger-klein-tarjan"), blackhole);
+		benchMst(getAlgo("karger-klein-tarjan"), blackhole);
 	}
 
 	private static MinimumSpanningTree getAlgo(String implName) {

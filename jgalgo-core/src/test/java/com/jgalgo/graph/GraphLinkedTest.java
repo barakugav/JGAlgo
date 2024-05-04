@@ -249,18 +249,18 @@ public class GraphLinkedTest extends TestBase {
 	}
 
 	@Test
-	public void testUndirectedMST() {
+	public void testUndirectedMst() {
 		final long seed = 0xfa13f4e010916dcaL;
 		foreachBoolConfig(selfEdges -> {
-			GraphImplTestUtils.testUndirectedMST(graphImpl(selfEdges), seed);
+			GraphImplTestUtils.testUndirectedMst(graphImpl(selfEdges), seed);
 		});
 	}
 
 	@Test
-	public void testDirectedMDST() {
+	public void testDirectedMdst() {
 		final long seed = 0x62f68fa5a31c6010L;
 		foreachBoolConfig(selfEdges -> {
-			GraphImplTestUtils.testDirectedMDST(graphImpl(selfEdges), seed);
+			GraphImplTestUtils.testDirectedMdst(graphImpl(selfEdges), seed);
 		});
 	}
 

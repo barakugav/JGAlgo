@@ -61,7 +61,7 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTrees.AbstractUndirected
 	 */
 	@Override
 	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
-		return new MinimumSpanningTrees.IndexResult(computeMST(g, w, Integer.MAX_VALUE).mst);
+		return new MinimumSpanningTrees.IndexResult(computeMst(g, w, Integer.MAX_VALUE).mst);
 	}
 
 	static class RunBoruvkaResult {
@@ -79,7 +79,7 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTrees.AbstractUndirected
 	RunBoruvkaResult runBoruvka(IndexGraph g, IWeightFunction w, int numberOfRounds) {
 		if (numberOfRounds <= 0)
 			throw new IllegalArgumentException("number of rounds must be positive");
-		Res mstRes = computeMST(g, w, numberOfRounds);
+		Res mstRes = computeMst(g, w, numberOfRounds);
 
 		IndexGraphBuilder contractedGBuilder = IndexGraphBuilder.undirected();
 		contractedGBuilder.addVertices(range(mstRes.treeNum));
@@ -98,7 +98,7 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTrees.AbstractUndirected
 		return new RunBoruvkaResult(contractedG, mstRes.mst, edgeRef);
 	}
 
-	private static Res computeMST(IndexGraph g, IWeightFunction w, int numberOfRounds) {
+	private static Res computeMst(IndexGraph g, IWeightFunction w, int numberOfRounds) {
 		Assertions.onlyUndirected(g);
 		final int n = g.vertices().size();
 

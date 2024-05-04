@@ -17,9 +17,9 @@
 package com.jgalgo.graph;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
-import java.util.function.Function;
 
 public class GraphLinkedPtrTest extends TestBase {
 
@@ -249,18 +249,18 @@ public class GraphLinkedPtrTest extends TestBase {
 	}
 
 	@Test
-	public void testUndirectedMST() {
+	public void testUndirectedMst() {
 		final long seed = 0x757d2f9883276f90L;
 		foreachBoolConfig(selfEdges -> {
-			GraphImplTestUtils.testUndirectedMST(graphImpl(selfEdges), seed);
+			GraphImplTestUtils.testUndirectedMst(graphImpl(selfEdges), seed);
 		});
 	}
 
 	@Test
-	public void testDirectedMDST() {
+	public void testDirectedMdst() {
 		final long seed = 0x96f07cf342fcb057L;
 		foreachBoolConfig(selfEdges -> {
-			GraphImplTestUtils.testDirectedMDST(graphImpl(selfEdges), seed);
+			GraphImplTestUtils.testDirectedMdst(graphImpl(selfEdges), seed);
 		});
 	}
 

@@ -389,19 +389,19 @@ public interface TreePathMaxima {
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
 	@SuppressWarnings("unchecked")
-	public static <V, E> boolean verifyMST(Graph<V, E> g, WeightFunction<E> w, Collection<E> mstEdges,
+	public static <V, E> boolean verifyMst(Graph<V, E> g, WeightFunction<E> w, Collection<E> mstEdges,
 			TreePathMaxima tpmAlgo) {
 		if (g instanceof IndexGraph) {
 			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 			IntCollection mstEdges0 = IntAdapters.asIntCollection((Collection<Integer>) mstEdges);
-			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w0, mstEdges0, tpmAlgo);
+			return TreePathMaximaUtils.verifyMst((IndexGraph) g, w0, mstEdges0, tpmAlgo);
 
 		} else {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			IntCollection iMstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);
-			return TreePathMaximaUtils.verifyMST(iGraph, iw, iMstEdges, tpmAlgo);
+			return TreePathMaximaUtils.verifyMst(iGraph, iw, iMstEdges, tpmAlgo);
 		}
 	}
 

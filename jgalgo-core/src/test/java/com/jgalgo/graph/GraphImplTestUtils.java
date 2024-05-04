@@ -2926,11 +2926,11 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testUndirectedMST(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
+	static void testUndirectedMst(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		MinimumSpanningTreeTestUtils.testRandGraph(MinimumSpanningTree.newInstance(), graphImpl, seed);
 	}
 
-	static void testDirectedMDST(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
+	static void testDirectedMdst(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		MinimumDirectedSpanningTreeTarjanTest.testRandGraph(MinimumDirectedSpanningTree.newInstance(), graphImpl, seed);
 	}
 

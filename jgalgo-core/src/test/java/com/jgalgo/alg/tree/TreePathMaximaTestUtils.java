@@ -137,7 +137,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		compareActualToExpectedResults(queries, actual, expected, w);
 	}
 
-	static void verifyMSTPositive(TreePathMaxima algo, long seed) {
+	static void verifyMstPositive(TreePathMaxima algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(8, 16).repeat(256);
@@ -151,12 +151,12 @@ public class TreePathMaximaTestUtils extends TestUtils {
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			Collection<Integer> mstEdges = MinimumSpanningTree.newInstance().computeMinimumSpanningTree(g, w).edges();
 
-			boolean isMST = TreePathMaxima.verifyMST(g, w, mstEdges, algo);
-			assertTrue(isMST);
+			boolean isMst = TreePathMaxima.verifyMst(g, w, mstEdges, algo);
+			assertTrue(isMst);
 		});
 	}
 
-	static void verifyMSTNegative(TreePathMaxima algo, long seed) {
+	static void verifyMstNegative(TreePathMaxima algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(8, 16).repeat(256);
@@ -195,8 +195,8 @@ public class TreePathMaximaTestUtils extends TestUtils {
 				}
 			}
 
-			boolean isMST = TreePathMaxima.verifyMST(g, w, mstEdges, algo);
-			assertFalse(isMST, "MST validation failed");
+			boolean isMst = TreePathMaxima.verifyMst(g, w, mstEdges, algo);
+			assertFalse(isMst, "MST validation failed");
 		});
 	}
 

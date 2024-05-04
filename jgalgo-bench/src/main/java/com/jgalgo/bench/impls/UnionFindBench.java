@@ -92,13 +92,13 @@ public class UnionFindBench {
 		}
 	}
 
-	private void benchUnionFindByRunningMSTKruskal(UnionFind.Builder builder, Blackhole blackhole) {
+	private void benchUnionFindByRunningMstKruskal(UnionFind.Builder builder, Blackhole blackhole) {
 		Pair<IndexGraph, int[]> graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		int[] mst = calcMSTKruskal(graph.first(), graph.second(), builder);
+		int[] mst = calcMstKruskal(graph.first(), graph.second(), builder);
 		blackhole.consume(mst);
 	}
 
-	private static int[] calcMSTKruskal(IndexGraph g, int[] edges, UnionFind.Builder ufBuilder) {
+	private static int[] calcMstKruskal(IndexGraph g, int[] edges, UnionFind.Builder ufBuilder) {
 		/* !! assume the edge array is sorted by weight !! */
 		int n = g.vertices().size();
 
@@ -123,13 +123,13 @@ public class UnionFindBench {
 	}
 
 	@Benchmark
-	public void UnionFindArrayMSTKruskal(Blackhole blackhole) {
-		benchUnionFindByRunningMSTKruskal(getAlgo("array"), blackhole);
+	public void UnionFindArrayMstKruskal(Blackhole blackhole) {
+		benchUnionFindByRunningMstKruskal(getAlgo("array"), blackhole);
 	}
 
 	@Benchmark
-	public void UnionFindPtrMSTKruskal(Blackhole blackhole) {
-		benchUnionFindByRunningMSTKruskal(getAlgo("ptr"), blackhole);
+	public void UnionFindPtrMstKruskal(Blackhole blackhole) {
+		benchUnionFindByRunningMstKruskal(getAlgo("ptr"), blackhole);
 	}
 
 	private static UnionFind.Builder getAlgo(String implName) {
