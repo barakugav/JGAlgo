@@ -72,7 +72,7 @@ public class CyclesEnumeratorBench {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void benchMST(CyclesEnumerator algo, Blackhole blackhole) {
+	private void benchCyclesEnumerator(CyclesEnumerator algo, Blackhole blackhole) {
 		IntGraph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		List<IPath> cycles = new ObjectArrayList<>((Iterator) algo.cyclesIter(g));
 		blackhole.consume(cycles);
@@ -80,12 +80,12 @@ public class CyclesEnumeratorBench {
 
 	@Benchmark
 	public void Johnson(Blackhole blackhole) {
-		benchMST(getAlgo("johnson"), blackhole);
+		benchCyclesEnumerator(getAlgo("johnson"), blackhole);
 	}
 
 	@Benchmark
 	public void Tarjan(Blackhole blackhole) {
-		benchMST(getAlgo("tarjan"), blackhole);
+		benchCyclesEnumerator(getAlgo("tarjan"), blackhole);
 	}
 
 	private static CyclesEnumerator getAlgo(String implName) {
