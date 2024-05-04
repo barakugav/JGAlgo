@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RmqStaticPlusMinusOne.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.ds</a> &gt; <span class="el_source">RmqStaticPlusMinusOne.java</span></div><h1>RmqStaticPlusMinusOne.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.ds;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Objects;
+import com.jgalgo.internal.util.JGAlgoUtils;
+
+/**
+ * Static RMQ for sequences for which the different between any pair of consecutive elements is \(\pm 1\).
+ *
+ * &lt;p&gt;
+ * The algorithm divide the sequence into blocks of size \(O(\log n / 2)\), and then create all possible lookup tables
+ * of the sub sequences of the smaller blocks. Because the different between any pair of consecutive elements, the
+ * number of such blocks is \(O(\sqrt{n})\) and the total space and preprocessing time of all these blocks is \(O(n)\).
+ *
+ * &lt;p&gt;
+ * To answer on queries which does not fall in the same block, the minimum of each block is stored, and
+ * {@link RmqStaticPowerOf2Table} is used on the \(O(n / \log n)\) elements, which is linear in total.
+ *
+ * &lt;p&gt;
+ * This algorithm is used for the static implementation of the lowest common ancestor algorithm, see
+ * {@link LowestCommonAncestorStaticRmq}.
+ *
+ * &lt;p&gt;
+ * Based on 'Fast Algorithms for Finding Nearest Common Ancestors' by D. Harel, R. Tarjan (1984).
+ *
+ * @author Barak Ugav
+ */
+class RmqStaticPlusMinusOne extends RmqStaticLinearAbstract {
+
+	/**
+	 * Construct a new static RMQ algorithm object.
+	 */
+<span class="fc" id="L49">	RmqStaticPlusMinusOne() {}</span>
+
+	@Override
+	public RmqStatic.DataStructure preProcessSequence(RmqStaticComparator c, int n) {
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
+<span class="nc" id="L54">			throw new IllegalArgumentException();</span>
+<span class="fc" id="L55">		Objects.requireNonNull(c);</span>
+<span class="fc" id="L56">		return new PreProcessor(c, n).build();</span>
+	}
+
+	private class PreProcessor extends RmqStaticLinearAbstract.PreProcessor {
+
+<span class="fc" id="L61">		PreProcessor(RmqStaticComparator c, int n) {</span>
+<span class="fc" id="L62">			super(c, n);</span>
+<span class="fc" id="L63">			preProcessInnerBlocks();</span>
+<span class="fc" id="L64">		}</span>
+
+		@Override
+		byte getBlockSize(int n) {
+<span class="fc bfc" id="L68" title="All 2 branches covered.">			int s = n &lt;= 1 ? 1 : (int) Math.ceil(JGAlgoUtils.log2((double) n) * 2 / 3);</span>
+			/* choose block size of at least 5, as 2^(5-1) is 16 (small) */
+<span class="fc" id="L70">			return (byte) Math.min(Math.max(s, 5), n);</span>
+		}
+
+		@Override
+		int getBlockKeySize() {
+<span class="nc" id="L75">			return blockSize - 1;</span>
+		}
+
+		@Override
+		int calcBlockKey(int b) {
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			RmqStaticComparator c = b &lt; blockNum - 1 ? cmpOrig : cmpPadded;</span>
+<span class="fc" id="L81">			int key = 0;</span>
+
+<span class="fc" id="L83">			int base = b * blockSize;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">			for (int i = blockSize - 2; i &gt;= 0; i--) {</span>
+<span class="fc" id="L85">				key &lt;&lt;= 1;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">				if (c.compare(base + i + 1, base + i) &lt; 0)</span>
+<span class="fc" id="L87">					key |= 1;</span>
+			}
+
+<span class="fc" id="L90">			return key;</span>
+		}
+
+		@Override
+		byte[] calcDemoBlock(int key) {
+<span class="fc" id="L95">			byte[] demoBlock = new byte[blockSize];</span>
+
+<span class="fc" id="L97">			demoBlock[0] = 0;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">			for (int i : range(1, demoBlock.length))</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">				demoBlock[i] = (byte) (demoBlock[i - 1] + ((key &amp; (1 &lt;&lt; (i - 1))) != 0 ? -1 : 1));</span>
+
+<span class="fc" id="L101">			return demoBlock;</span>
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

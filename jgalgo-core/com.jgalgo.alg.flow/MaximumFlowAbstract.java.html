@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaximumFlowAbstract.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.flow</a> &gt; <span class="el_source">MaximumFlowAbstract.java</span></div><h1>MaximumFlowAbstract.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.flow;
+
+import java.util.Collection;
+import com.jgalgo.alg.IVertexBiPartition;
+import com.jgalgo.alg.connect.MinimumEdgeCutST;
+import com.jgalgo.alg.connect.MinimumEdgeCutSTAbstract;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
+/**
+ * Abstract class for computing a maximum flow in a graph.
+ *
+ * &lt;p&gt;
+ * This abstract class also implements the {@link MinimumEdgeCutST} interface, and thus can be used to compute the
+ * minimum edge cut of a graph.
+ *
+ * &lt;p&gt;
+ * The class implements the interface by solving the problem on the index graph and then maps the results back to the
+ * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ *
+ * @author Barak Ugav
+ */
+public abstract class MaximumFlowAbstract extends MinimumEdgeCutSTAbstract implements MaximumFlow {
+
+	/**
+	 * Default constructor.
+	 */
+<span class="fc" id="L50">	public MaximumFlowAbstract() {}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public &lt;V, E&gt; Flow&lt;V, E&gt; computeMaximumFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity, V source, V sink) {
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L56">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
+<span class="fc" id="L57">			int source0 = ((Integer) source).intValue();</span>
+<span class="fc" id="L58">			int sink0 = ((Integer) sink).intValue();</span>
+<span class="fc" id="L59">			return (Flow&lt;V, E&gt;) computeMaximumFlow((IndexGraph) g, capacity0, source0, sink0);</span>
+
+		} else {
+<span class="fc" id="L62">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L63">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L64">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L65">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
+<span class="fc" id="L66">			int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L67">			int iSink = viMap.idToIndex(sink);</span>
+<span class="fc" id="L68">			IFlow indexFlow = computeMaximumFlow(iGraph, iCapacity, iSource, iSink);</span>
+<span class="fc" id="L69">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public &lt;V, E&gt; Flow&lt;V, E&gt; computeMaximumFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity, Collection&lt;V&gt; sources,
+			Collection&lt;V&gt; sinks) {
+<span class="fc bfc" id="L77" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L78">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
+<span class="fc" id="L79">			IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
+<span class="fc" id="L80">			IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
+<span class="fc" id="L81">			return (Flow&lt;V, E&gt;) computeMaximumFlow((IndexGraph) g, capacity0, sources0, sinks0);</span>
+
+		} else {
+<span class="fc" id="L84">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L85">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L86">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L87">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
+<span class="fc" id="L88">			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);</span>
+<span class="fc" id="L89">			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);</span>
+<span class="fc" id="L90">			IFlow indexFlow = computeMaximumFlow(iGraph, iCapacity, iSources, iSinks);</span>
+<span class="fc" id="L91">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
+		}
+	}
+
+	protected abstract IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink);
+
+	protected abstract IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, IntCollection sources,
+			IntCollection sinks);
+
+	@Override
+	protected IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
+<span class="fc" id="L102">		return (IVertexBiPartition) MinimumEdgeCutST</span>
+<span class="fc" id="L103">				.newFromMaximumFlow(this)</span>
+<span class="fc" id="L104">				.computeMinimumCut(g, w, Integer.valueOf(source), Integer.valueOf(sink));</span>
+	}
+
+	@Override
+	protected IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, IntCollection sources,
+			IntCollection sinks) {
+<span class="fc" id="L110">		return (IVertexBiPartition) MinimumEdgeCutST.newFromMaximumFlow(this).computeMinimumCut(g, w, sources, sinks);</span>
+	}
+
+	protected static IFlow newFlow(IndexGraph g, double[] flow) {
+<span class="fc" id="L114">		return new Flows.IndexFlow(g, flow);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

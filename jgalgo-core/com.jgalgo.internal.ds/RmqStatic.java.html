@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RmqStatic.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.ds</a> &gt; <span class="el_source">RmqStatic.java</span></div><h1>RmqStatic.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.ds;
+
+import com.jgalgo.alg.AlgorithmBuilderBase;
+
+/**
+ * Static Range Minimum Query (RMQ) algorithm.
+ *
+ * &lt;p&gt;
+ * Given a sequence of \(n\) comparable objects we would like to perform pre-processing and than be able to answer
+ * queries of the type: &quot;what is the minimum element in the range \([i, j]\)?&quot; for any indices \(0 \leq i \leq j \leq
+ * n\). Algorithm implementing this interface usually require linear or close to linear processing time and try to
+ * achieve constant or logarithmic query time.
+ *
+ * &lt;p&gt;
+ * The sequence itself is never passed to the algorithm, rather a {@link RmqStaticComparator} which support comparing
+ * two elements given their &lt;i&gt;indices&lt;/i&gt; only.
+ *
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #builder()} may support different options to obtain different implementations.
+ *
+ * @author Barak Ugav
+ */
+public interface RmqStatic {
+
+	/**
+	 * Perform a static pre processing of a sequence of elements for future RMQ (Range minimum query) queries.
+	 *
+	 * @param  comparator comparator used to compare between two elements, see the Comparator definition below
+	 * @param  n          the number of elements in the sequence
+	 * @return            a data structure built from the preprocessing, that can answer RMQ queries efficiently
+	 */
+	RmqStatic.DataStructure preProcessSequence(RmqStaticComparator comparator, int n);
+
+	/**
+	 * Data structure result created from a static RMQ pre-processing.
+	 *
+	 * @author Barak Ugav
+	 */
+	interface DataStructure {
+
+		/**
+		 * Find the minimum element in range [i, j].
+		 *
+		 * @param  i                        index of range start (including)
+		 * @param  j                        index of the range end (including)
+		 * @return                          the index of the minimum element in the range
+		 * @throws IllegalArgumentException if either {@code i} or {@code j} are not in range {@code [0, n)} or if
+		 *                                      {@code i &gt; j}.
+		 */
+		int findMinimumInRange(int i, int j);
+
+		/**
+		 * Get the size of the data structure in bytes.
+		 *
+		 * @return the size of the data structure in bytes
+		 */
+		long sizeInBytes();
+
+	}
+
+	/**
+	 * Create a new RMQ algorithm object.
+	 *
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link RmqStatic} object. The {@link RmqStatic.Builder} might
+	 * support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link RmqStatic}
+	 */
+	static RmqStatic newInstance() {
+<span class="nc" id="L88">		return builder().build();</span>
+	}
+
+	/**
+	 * Create a new static range minimum queries algorithm builder.
+	 *
+	 * &lt;p&gt;
+	 * Use {@link #newInstance()} for a default implementation.
+	 *
+	 * @return a new builder that can build {@link RmqStatic} objects
+	 */
+	static RmqStatic.Builder builder() {
+<span class="fc" id="L100">		return new RmqStatic.Builder() {</span>
+			String impl;
+
+			@Override
+			public RmqStatic build() {
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="pc bpc" id="L106" title="4 of 5 branches missed.">					switch (impl) {</span>
+						case &quot;simple-lookup-table&quot;:
+<span class="nc" id="L108">							return new RmqStaticSimpleLookupTable();</span>
+						case &quot;power-of-2-table&quot;:
+<span class="nc" id="L110">							return new RmqStaticPowerOf2Table();</span>
+						case &quot;cartesian-trees&quot;:
+<span class="nc" id="L112">							return new RmqStaticCartesianTrees();</span>
+						case &quot;plus-minus-one&quot;:
+<span class="fc" id="L114">							return new RmqStaticPlusMinusOne();</span>
+						default:
+<span class="nc" id="L116">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+					}
+				}
+<span class="nc" id="L119">				return new RmqStaticPowerOf2Table();</span>
+			}
+
+			@Override
+			public void setOption(String key, Object value) {
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">				switch (key) {</span>
+					case &quot;impl&quot;:
+<span class="fc" id="L126">						impl = (String) value;</span>
+<span class="fc" id="L127">						break;</span>
+					default:
+<span class="nc" id="L129">						RmqStatic.Builder.super.setOption(key, value);</span>
+				}
+<span class="fc" id="L131">			}</span>
+		};
+	}
+
+	/**
+	 * A builder for {@link RmqStatic} objects.
+	 *
+	 * @see    RmqStatic#builder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends AlgorithmBuilderBase {
+
+		/**
+		 * Create a new static range minimum queries algorithm.
+		 *
+		 * @return a new static range minimum queries algorithm
+		 */
+		RmqStatic build();
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

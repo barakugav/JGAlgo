@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumCostFlowAbstractBasedSupply.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.flow</a> &gt; <span class="el_source">MinimumCostFlowAbstractBasedSupply.java</span></div><h1>MinimumCostFlowAbstractBasedSupply.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.flow;
+
+import static com.jgalgo.internal.util.Range.range;
+import com.jgalgo.graph.EdgeSet;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Fastutil;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
+/**
+ * Abstract class for computing a minimum cost flow in a graph, based on a supply solution.
+ *
+ * &lt;p&gt;
+ * The {@link MinimumCostFlow} interface expose a large number of methods of different variants of the minimum cost flow
+ * problem. This abstract class implements some of these methods by reducing to a single supply problem,
+ * {@link #computeMinCostFlow(IndexGraph, IWeightFunction, IWeightFunction, IWeightFunction)}, which is left to the
+ * subclasses to implement.
+ *
+ * @author Barak Ugav
+ */
+public abstract class MinimumCostFlowAbstractBasedSupply extends MinimumCostFlows.AbstractImpl {
+
+	/**
+	 * Default constructor.
+	 */
+<span class="fc" id="L45">	public MinimumCostFlowAbstractBasedSupply() {}</span>
+
+	@Override
+	protected IFlow computeMinCostMaxFlow(IndexGraph g, IWeightFunction capacity, IWeightFunction cost, int source,
+			int sink) {
+<span class="fc" id="L50">		return computeMinCostMaxFlow(g, capacity, cost, Fastutil.list(source), Fastutil.list(sink));</span>
+	}
+
+	@Override
+	protected IFlow computeMinCostMaxFlow(IndexGraph g, IWeightFunction capacity, IWeightFunction cost,
+			IntCollection sources, IntCollection sinks) {
+<span class="fc" id="L56">		return computeMinCostMaxFlow(g, capacity, cost, null, sources, sinks);</span>
+	}
+
+	@Override
+	protected IFlow computeMinCostMaxFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IWeightFunction costOrig,
+			IWeightFunction lowerBoundOrig, IntCollection sources, IntCollection sinks) {
+<span class="fc" id="L62">		Assertions.onlyDirected(gOrig);</span>
+<span class="fc" id="L63">		Assertions.flowSourcesSinksNotTheSame(sources, sinks);</span>
+
+<span class="pc bpc" id="L65" title="2 of 4 branches missed.">		final boolean integerFlow = WeightFunction.isInteger(capacityOrig) &amp;&amp; WeightFunction.isInteger(lowerBoundOrig);</span>
+<span class="fc" id="L66">		final boolean integerCost = WeightFunction.isInteger(costOrig);</span>
+
+<span class="fc" id="L68">		IndexGraphBuilder builder = IndexGraphBuilder.directed();</span>
+<span class="fc" id="L69">		builder.ensureVertexCapacity(gOrig.vertices().size() + 2);</span>
+<span class="fc" id="L70">		builder.ensureEdgeCapacity(gOrig.edges().size() + sources.size() + sinks.size() + 2);</span>
+
+<span class="fc" id="L72">		builder.addVertices(gOrig.vertices());</span>
+<span class="fc" id="L73">		builder.addEdges(EdgeSet.allOf(gOrig));</span>
+		/* any edge with index smaller than this threshold is an original edge of the graph */
+<span class="fc" id="L75">		final int origEdgesThreshold = builder.edges().size();</span>
+
+<span class="fc" id="L77">		final int source = builder.addVertexInt();</span>
+<span class="fc" id="L78">		final int sink = builder.addVertexInt();</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">		for (int v : sources)</span>
+<span class="fc" id="L80">			builder.addEdge(source, v);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">		for (int v : sinks)</span>
+<span class="fc" id="L82">			builder.addEdge(v, sink);</span>
+
+		/*
+		 * Any edge with index smaller than this threshold and equal or greater than origEdgesThreshold is an edge
+		 * connect source-sources or sinks-sink. Any edge with index greater or equal to this threshold is an edge
+		 * connecting the super source and the super sink.
+		 */
+<span class="fc" id="L89">		final int sourcesSinksThreshold = builder.edges().size();</span>
+
+<span class="fc" id="L91">		builder.addEdge(source, sink);</span>
+<span class="fc" id="L92">		builder.addEdge(sink, source);</span>
+
+<span class="fc" id="L94">		IndexGraph g = builder.build();</span>
+
+<span class="fc" id="L96">		final double hugeCapacity = Flows.hugeCapacity(gOrig, capacityOrig, sources, sinks);</span>
+		IWeightFunction capacity;
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">		if (integerFlow) {</span>
+<span class="fc" id="L99">			IWeightFunctionInt capacityOrigInt = (IWeightFunctionInt) capacityOrig;</span>
+<span class="fc" id="L100">			int hugeCapacityInt = (int) hugeCapacity;</span>
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">			if (hugeCapacityInt != hugeCapacity)</span>
+<span class="nc" id="L102">				throw new AssertionError(&quot;integer overflow&quot;);</span>
+<span class="fc" id="L103">			IWeightFunctionInt capacityInt =</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">					e -&gt; e &lt; origEdgesThreshold ? capacityOrigInt.weightInt(e) : hugeCapacityInt;</span>
+<span class="fc" id="L105">			capacity = capacityInt;</span>
+<span class="fc" id="L106">		} else {</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">			capacity = e -&gt; e &lt; origEdgesThreshold ? capacityOrig.weight(e) : hugeCapacity;</span>
+		}
+
+		IWeightFunction supply;
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">		if (integerFlow) {</span>
+<span class="fc" id="L112">			int hugeCapacityInt = (int) hugeCapacity;</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">			if (hugeCapacityInt != hugeCapacity)</span>
+<span class="nc" id="L114">				throw new AssertionError(&quot;integer overflow&quot;);</span>
+<span class="fc" id="L115">			IWeightFunctionInt supplyInt = v -&gt; {</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">				if (v == source)</span>
+<span class="fc" id="L117">					return hugeCapacityInt;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">				if (v == sink)</span>
+<span class="fc" id="L119">					return -hugeCapacityInt;</span>
+<span class="fc" id="L120">				return 0;</span>
+			};
+<span class="fc" id="L122">			supply = supplyInt;</span>
+<span class="fc" id="L123">		} else {</span>
+<span class="nc" id="L124">			supply = v -&gt; {</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">				if (v == source)</span>
+<span class="nc" id="L126">					return hugeCapacity;</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">				if (v == sink)</span>
+<span class="nc" id="L128">					return -hugeCapacity;</span>
+<span class="nc" id="L129">				return 0;</span>
+			};
+		}
+
+		IWeightFunction cost;
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">		if (integerCost) {</span>
+<span class="fc" id="L135">			IWeightFunctionInt costOrigInt = (IWeightFunctionInt) costOrig;</span>
+<span class="fc" id="L136">			final int hugeCost = hugeCost(gOrig, costOrigInt);</span>
+<span class="fc" id="L137">			IWeightFunctionInt costInt = e -&gt; {</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">				if (e &lt; origEdgesThreshold)</span>
+<span class="fc" id="L139">					return costOrigInt.weightInt(e);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">				if (e &lt; sourcesSinksThreshold)</span>
+<span class="fc" id="L141">					return 0;</span>
+<span class="fc" id="L142">				return hugeCost;</span>
+			};
+<span class="fc" id="L144">			cost = costInt;</span>
+<span class="fc" id="L145">		} else {</span>
+<span class="nc" id="L146">			final double hugeCost = hugeCost(gOrig, costOrig);</span>
+<span class="nc" id="L147">			cost = e -&gt; {</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">				if (e &lt; origEdgesThreshold)</span>
+<span class="nc" id="L149">					return costOrig.weight(e);</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">				if (e &lt; sourcesSinksThreshold)</span>
+<span class="nc" id="L151">					return 0;</span>
+<span class="nc" id="L152">				return hugeCost;</span>
+			};
+		}
+
+		IFlow flow0;
+<span class="fc bfc" id="L157" title="All 2 branches covered.">		if (lowerBoundOrig == null) {</span>
+<span class="fc" id="L158">			flow0 = computeMinCostFlow(g, capacity, cost, supply);</span>
+		} else {
+			IWeightFunction lowerBound;
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">			if (integerFlow) {</span>
+<span class="fc" id="L162">				IWeightFunctionInt lowerBoundOrigInt = (IWeightFunctionInt) lowerBoundOrig;</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">				IWeightFunctionInt lowerBoundInt = e -&gt; e &lt; origEdgesThreshold ? lowerBoundOrigInt.weightInt(e) : 0;</span>
+<span class="fc" id="L164">				lowerBound = lowerBoundInt;</span>
+<span class="fc" id="L165">			} else {</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">				lowerBound = e -&gt; e &lt; origEdgesThreshold ? lowerBoundOrig.weight(e) : 0;</span>
+			}
+<span class="fc" id="L168">			flow0 = computeMinCostFlow(g, capacity, cost, lowerBound, supply);</span>
+		}
+
+<span class="fc" id="L171">		double[] flow = new double[gOrig.edges().size()];</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">		for (int e : range(gOrig.edges().size()))</span>
+<span class="fc" id="L173">			flow[e] = flow0.getFlow(e);</span>
+<span class="fc" id="L174">		return newFlow(gOrig, flow);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

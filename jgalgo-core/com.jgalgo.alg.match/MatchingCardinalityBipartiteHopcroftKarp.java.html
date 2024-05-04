@@ -39,12 +39,12 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardinalityMatchingImpl {
+public class MatchingCardinalityBipartiteHopcroftKarp extends MatchingAlgoAbstractCardinality {
 
 	/**
 	 * Create a new maximum matching object.
 	 */
-<span class="fc" id="L47">	MatchingCardinalityBipartiteHopcroftKarp() {}</span>
+<span class="fc" id="L47">	public MatchingCardinalityBipartiteHopcroftKarp() {}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -54,7 +54,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	IMatching computeMaximumCardinalityMatching(IndexGraph g) {
+	protected IMatching computeMaximumCardinalityMatching(IndexGraph g) {
 <span class="fc" id="L58">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L59">		int n = g.vertices().size();</span>
 
@@ -160,7 +160,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 <span class="fc" id="L160">			es.clear();</span>
 <span class="fc" id="L161">		}</span>
 <span class="fc" id="L162">		Arrays.fill(edges, null);</span>
-<span class="fc" id="L163">		return new Matchings.MatchingImpl(g, matched);</span>
+<span class="fc" id="L163">		return new IndexMatching(g, matched);</span>
 	}
 
 }

@@ -39,12 +39,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	private Flows() {}
 
-	static class FlowImpl implements IFlow {
+	static class IndexFlow implements IFlow {
 
 		private final IndexGraph g;
 		private final double[] flow;
 
-<span class="fc" id="L47">		FlowImpl(IndexGraph g, double[] flow) {</span>
+<span class="fc" id="L47">		IndexFlow(IndexGraph g, double[] flow) {</span>
 <span class="fc" id="L48">			this.g = g;</span>
 <span class="fc" id="L49">			this.flow = flow;</span>
 <span class="fc" id="L50">		}</span>

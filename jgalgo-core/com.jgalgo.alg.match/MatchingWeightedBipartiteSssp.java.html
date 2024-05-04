@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MatchingWeightedBipartiteSssp.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.match</a> &gt; <span class="el_source">MatchingWeightedBipartiteSssp.java</span></div><h1>MatchingWeightedBipartiteSssp.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg.match;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Arrays;
+import java.util.Objects;
+import com.jgalgo.alg.bipartite.BipartiteGraphs;
+import com.jgalgo.alg.path.IPath;
+import com.jgalgo.alg.path.ShortestPathSingleSource;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphFactory;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
+/**
+ * Maximum weighted matching algorithm using {@link ShortestPathSingleSource} for bipartite graphs.
+ *
+ * &lt;p&gt;
+ * The running time of this algorithm is \(O(m n + n^2 \log n)\) and it uses linear space. If a different
+ * {@link ShortestPathSingleSource} algorithm is provided using {@link #setSsspAlgo(ShortestPathSingleSource)} the
+ * running time will be \(O(n)\) times the running time of the shortest path algorithm on a graph of size \(O(n)\).
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L45">public class MatchingWeightedBipartiteSssp extends MatchingAlgoAbstractBasedMaximum {</span>
+
+<span class="fc" id="L47">	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newInstance();</span>
+<span class="fc" id="L48">	private ShortestPathSingleSource ssspNegative = ShortestPathSingleSource.builder().setNegativeWeights(true).build();</span>
+
+	/**
+	 * Create a new maximum weighted matching object.
+	 */
+<span class="fc" id="L53">	public MatchingWeightedBipartiteSssp() {}</span>
+
+	/**
+	 * Set the {@link ShortestPathSingleSource} algorithm used by this algorithm.
+	 *
+	 * &lt;p&gt;
+	 * The shortest path algorithm should support non negative floating points weights. The default implementation uses
+	 * Dijkstra's algorithm.
+	 *
+	 * @param algo an shortest path algorithm
+	 */
+	public void setSsspAlgo(ShortestPathSingleSource algo) {
+		// TODO change documentation to link to ShortestPathSingleSourceDijkstra
+<span class="nc" id="L66">		ssspPositive = Objects.requireNonNull(algo);</span>
+<span class="nc" id="L67">	}</span>
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws NullPointerException     if the bipartiteness vertices weights is not found. See
+	 *                                      {@link BipartiteGraphs#VertexBiPartitionWeightKey}.
+	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
+	 */
+	@Override
+	protected IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L78">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L79">		IWeightsBool partition = Assertions.onlyBipartite(g);</span>
+<span class="fc" id="L80">		Assertions.onlyBipartite(g, partition);</span>
+
+<span class="fc" id="L82">		int[] match = computeMaxMatching(g, w, partition);</span>
+<span class="fc" id="L83">		return new IndexMatching(g, match);</span>
+	}
+
+	private int[] computeMaxMatching(IndexGraph gOrig, IWeightFunction wOrig, IWeightsBool partition) {
+<span class="fc" id="L87">		wOrig = IWeightFunction.replaceNullWeightFunc(wOrig);</span>
+<span class="fc" id="L88">		final int n = gOrig.vertices().size();</span>
+		IndexGraph g = IndexGraphFactory
+<span class="fc" id="L90">				.directed()</span>
+<span class="fc" id="L91">				.allowSelfEdges()</span>
+<span class="fc" id="L92">				.allowParallelEdges()</span>
+<span class="fc" id="L93">				.expectedVerticesNum(n + 2)</span>
+<span class="fc" id="L94">				.expectedEdgesNum(gOrig.edges().size() + n)</span>
+<span class="fc" id="L95">				.newGraph();</span>
+<span class="fc" id="L96">		g.addVertices(gOrig.vertices());</span>
+<span class="fc" id="L97">		final int s = g.addVertexInt(), t = g.addVertexInt();</span>
+<span class="fc" id="L98">		IWeightsDouble w = g.addEdgesWeights(&quot;weight&quot;, double.class);</span>
+
+<span class="fc bfc" id="L100" title="All 2 branches covered.">		for (int e : range(gOrig.edges().size())) {</span>
+<span class="fc" id="L101">			int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">			if (!partition.get(u)) {</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">				assert partition.get(v);</span>
+<span class="nc" id="L104">				int temp = u;</span>
+<span class="nc" id="L105">				u = v;</span>
+<span class="nc" id="L106">				v = temp;</span>
+			}
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">			assert partition.get(u);</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">			assert !partition.get(v);</span>
+
+<span class="fc" id="L111">			double weight = wOrig.weight(e);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			if (weight &gt;= 0) {</span>
+<span class="fc" id="L113">				int e0 = g.addEdge(u, v);</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">				assert e0 == e;</span>
+<span class="fc" id="L115">				w.set(e, weight);</span>
+<span class="fc" id="L116">			} else {</span>
+				/* no reason to match negative edges. we can ignore this edge */
+				/* to match the original graph edges ids, we add a dummy edge */
+<span class="fc" id="L119">				int e0 = g.addEdge(t, t);</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">				assert e0 == e;</span>
+<span class="fc" id="L121">				w.set(e, 0);</span>
+			}
+<span class="fc" id="L123">		}</span>
+
+<span class="fc" id="L125">		int[] match = new int[n];</span>
+<span class="fc" id="L126">		Arrays.fill(match, -1);</span>
+
+<span class="fc" id="L128">		final double maxWeight = range(g.edges().size()).mapToDouble(w::weight).max().orElse(Double.MIN_VALUE);</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">		if (!Double.isFinite(maxWeight))</span>
+<span class="nc" id="L130">			throw new IllegalArgumentException(&quot;non finite weights&quot;);</span>
+<span class="fc" id="L131">		final double RemovedEdgeWeight = maxWeight * n;</span>
+
+		// Negate unmatched edges
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		for (int e : range(g.edges().size()))</span>
+<span class="fc" id="L135">			w.set(e, -w.weight(e));</span>
+		// Connected unmatched vertices to fake vertices s,t
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		for (int u : range(n)) {</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			if (partition.get(u)) {</span>
+<span class="fc" id="L139">				w.set(g.addEdge(s, u), 0);</span>
+			} else {
+<span class="fc" id="L141">				w.set(g.addEdge(u, t), 0);</span>
+			}
+<span class="fc" id="L143">		}</span>
+
+<span class="fc" id="L145">		double[] potential = new double[n + 2];</span>
+<span class="fc" id="L146">		IWeightFunction spWeightFunc = e -&gt; w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
+
+		// Init state may include negative distances, use Bellman Ford to calculate
+		// first potential values
+<span class="fc" id="L150">		ShortestPathSingleSource.IResult sp =</span>
+<span class="fc" id="L151">				(ShortestPathSingleSource.IResult) ssspNegative.computeShortestPaths(g, w, Integer.valueOf(s));</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">		for (int v : range(n + 2))</span>
+<span class="fc" id="L153">			potential[v] = sp.distance(v);</span>
+
+		for (;;) {
+<span class="fc" id="L156">			sp = (ShortestPathSingleSource.IResult) ssspPositive</span>
+<span class="fc" id="L157">					.computeShortestPaths(g, spWeightFunc, Integer.valueOf(s));</span>
+<span class="fc" id="L158">			IPath augPath = sp.getPath(t);</span>
+<span class="fc" id="L159">			double augPathWeight = -(sp.distance(t) + potential[t]);</span>
+<span class="pc bpc" id="L160" title="1 of 6 branches missed.">			if (augPath == null || augPathWeight &gt;= RemovedEdgeWeight || augPathWeight &lt; 0)</span>
+<span class="fc" id="L161">				break;</span>
+
+			// avoid using augPath.iterator() as we modify the graph during iteration
+<span class="fc" id="L164">			IntIterator it = new IntArrayList(augPath.edges()).iterator();</span>
+			// 'remove' edge from S to new matched vertex
+<span class="fc" id="L166">			w.set(it.nextInt(), RemovedEdgeWeight);</span>
+			for (;;) {
+<span class="fc" id="L168">				int matchedEdge = it.nextInt();</span>
+
+				// Reverse newly matched edge
+<span class="fc" id="L171">				g.reverseEdge(matchedEdge);</span>
+<span class="fc" id="L172">				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = matchedEdge;</span>
+<span class="fc" id="L173">				w.set(matchedEdge, -w.weight(matchedEdge));</span>
+
+<span class="fc" id="L175">				int unmatchedEdge = it.nextInt();</span>
+
+<span class="fc bfc" id="L177" title="All 2 branches covered.">				if (!it.hasNext()) {</span>
+					// 'remove' edge from new matched vertex to T
+<span class="fc" id="L179">					w.set(unmatchedEdge, RemovedEdgeWeight);</span>
+<span class="fc" id="L180">					break;</span>
+				}
+
+				// Reverse newly unmatched edge
+<span class="fc" id="L184">				g.reverseEdge(unmatchedEdge);</span>
+<span class="fc" id="L185">				w.set(unmatchedEdge, -w.weight(unmatchedEdge));</span>
+<span class="fc" id="L186">			}</span>
+
+			// Update potential based on the distances
+<span class="fc bfc" id="L189" title="All 2 branches covered.">			for (int u : range(n))</span>
+<span class="fc" id="L190">				potential[u] += sp.distance(u);</span>
+<span class="fc" id="L191">		}</span>
+
+<span class="fc" id="L193">		return match;</span>
+	}
+
+	@Override
+	protected IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">		if (!WeightFunction.isCardinality(w))</span>
+<span class="nc" id="L199">			throw new UnsupportedOperationException(&quot;weighted perfect matching is not supported by this algorithm&quot;);</span>
+<span class="fc" id="L200">		return computeMaximumWeightedMatching(g, null);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

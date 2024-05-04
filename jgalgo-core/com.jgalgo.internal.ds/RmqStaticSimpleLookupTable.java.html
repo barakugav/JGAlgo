@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RmqStaticSimpleLookupTable.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.ds</a> &gt; <span class="el_source">RmqStaticSimpleLookupTable.java</span></div><h1>RmqStaticSimpleLookupTable.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.ds;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Objects;
+
+/**
+ * Naive lookup table for RMQ queries.
+ *
+ * &lt;p&gt;
+ * For a sequence of size \(n\), a lookup table of size \(O(n^2)\) will be constructed, such that for each two indices
+ * \(i,j\) the index of the minimum element in the range \([i,j]\) can be simply accessed from the table in \(O(1)\)
+ * time.
+ *
+ * &lt;p&gt;
+ * This algorithm require \(O(n^2)\) pre processing time and space, and answer queries in \(O(1)\).
+ *
+ * @author Barak Ugav
+ */
+class RmqStaticSimpleLookupTable implements RmqStatic {
+
+	/**
+	 * Construct a new static RMQ algorithm object.
+	 */
+<span class="fc" id="L40">	RmqStaticSimpleLookupTable() {}</span>
+
+	@Override
+	public RmqStatic.DataStructure preProcessSequence(RmqStaticComparator c, int n) {
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
+<span class="nc" id="L45">			throw new IllegalArgumentException(&quot;Invalid length: &quot; + n);</span>
+<span class="fc" id="L46">		Objects.requireNonNull(c);</span>
+
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (n &lt;= DSu08.LIMIT)</span>
+<span class="fc" id="L49">			return new DSu08(c, (byte) n);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		else if (n &lt;= DSu16.LIMIT)</span>
+<span class="fc" id="L51">			return new DSu16(c, (short) n);</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">		else if (n &lt;= DSu32.LIMIT)</span>
+<span class="fc" id="L53">			return new DSu32(c, n);</span>
+		else
+<span class="nc" id="L55">			throw new IllegalArgumentException(&quot;N too big (&quot; + n + &quot;)&quot;);</span>
+	}
+
+	private static int arrSize(int n) {
+<span class="fc" id="L59">		return n * (n - 1) / 2;</span>
+	}
+
+	private static int indexOf(int n, int i, int j) {
+<span class="fc" id="L63">		return (2 * n - i - 1) * i / 2 + j - i - 1;</span>
+	}
+
+	private static class DSu08 implements RmqStatic.DataStructure {
+
+		private final byte n;
+		private final byte[] arr;
+		private static final int LIMIT = 1 &lt;&lt; ((Byte.SIZE - 1) / 2);
+
+<span class="fc" id="L72">		DSu08(RmqStaticComparator c, byte n) {</span>
+<span class="fc" id="L73">			arr = new byte[arrSize(n)];</span>
+<span class="fc" id="L74">			this.n = n;</span>
+
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 1; i++)</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : (byte) (i + 1);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 2; i++) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				for (byte j = (byte) (i + 2); j &lt; n; j++) {</span>
+<span class="fc" id="L80">					byte m = arr[indexOf(n, i, j - 1)];</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
+				}
+			}
+<span class="fc" id="L84">		}</span>
+
+		@Override
+		public int findMinimumInRange(int i, int j) {
+<span class="fc" id="L88">			RmqStatics.checkIndices(i, j, n);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L90">				return i;</span>
+<span class="fc" id="L91">			return arr[indexOf(n, i, j)];</span>
+		}
+
+		@Override
+		public long sizeInBytes() {
+<span class="nc" id="L96">			return 1 + 8 + arr.length;</span>
+		}
+	}
+
+	private static class DSu16 implements RmqStatic.DataStructure {
+
+		private final short n;
+		private final short[] arr;
+
+		private static final int LIMIT = 1 &lt;&lt; ((Short.SIZE - 1) / 2);
+
+<span class="fc" id="L107">		DSu16(RmqStaticComparator c, short n) {</span>
+<span class="fc" id="L108">			arr = new short[arrSize(n)];</span>
+<span class="fc" id="L109">			this.n = n;</span>
+
+<span class="fc bfc" id="L111" title="All 2 branches covered.">			for (short i = 0; i &lt; n - 1; i++)</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : (short) (i + 1);</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			for (short i = 0; i &lt; n - 2; i++) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">				for (short j = (short) (i + 2); j &lt; n; j++) {</span>
+<span class="fc" id="L115">					short m = arr[indexOf(n, i, j - 1)];</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
+				}
+			}
+<span class="fc" id="L119">		}</span>
+
+		@Override
+		public int findMinimumInRange(int i, int j) {
+<span class="fc" id="L123">			RmqStatics.checkIndices(i, j, n);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L125">				return i;</span>
+<span class="fc" id="L126">			return arr[indexOf(n, i, j)];</span>
+		}
+
+		@Override
+		public long sizeInBytes() {
+<span class="nc" id="L131">			return 2 + 8 + 2 * arr.length;</span>
+		}
+	}
+
+	private static class DSu32 implements RmqStatic.DataStructure {
+
+		private final int n;
+		private final int[] arr;
+
+		private static final int LIMIT = 1 &lt;&lt; ((Integer.SIZE - 1) / 2);
+
+<span class="fc" id="L142">		DSu32(RmqStaticComparator c, int n) {</span>
+<span class="fc" id="L143">			arr = new int[arrSize(n)];</span>
+<span class="fc" id="L144">			this.n = n;</span>
+
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			for (int i : range(n - 1))</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : i + 1;</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">			for (int i : range(n - 2)) {</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">				for (int j : range(i + 2, n)) {</span>
+<span class="fc" id="L150">					int m = arr[indexOf(n, i, j - 1)];</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
+<span class="fc" id="L152">				}</span>
+<span class="fc" id="L153">			}</span>
+<span class="fc" id="L154">		}</span>
+
+		@Override
+		public int findMinimumInRange(int i, int j) {
+<span class="fc" id="L158">			RmqStatics.checkIndices(i, j, n);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L160">				return i;</span>
+<span class="fc" id="L161">			return arr[indexOf(n, i, j)];</span>
+		}
+
+		@Override
+		public long sizeInBytes() {
+<span class="nc" id="L166">			return 4 + 8 + 4 * arr.length;</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
