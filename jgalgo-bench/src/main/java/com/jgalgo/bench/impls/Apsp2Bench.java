@@ -48,7 +48,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 @Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
-public class APSPBench {
+public class Apsp2Bench {
 
 	@Param({ "|V|=64 |E|=256", "|V|=200 |E|=1200", "|V|=512 |E|=4096" })
 	public String args;
