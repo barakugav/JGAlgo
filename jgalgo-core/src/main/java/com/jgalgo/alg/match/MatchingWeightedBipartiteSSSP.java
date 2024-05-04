@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  *
  * @author Barak Ugav
  */
-class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImpl {
+public class MatchingWeightedBipartiteSSSP extends MatchingAlgoAbstractBasedMaximum {
 
 	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newInstance();
 	private ShortestPathSingleSource ssspNegative = ShortestPathSingleSource.builder().setNegativeWeights(true).build();
@@ -50,18 +50,19 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-	MatchingWeightedBipartiteSSSP() {}
+	public MatchingWeightedBipartiteSSSP() {}
 
 	/**
 	 * Set the {@link ShortestPathSingleSource} algorithm used by this algorithm.
 	 *
 	 * <p>
 	 * The shortest path algorithm should support non negative floating points weights. The default implementation uses
-	 * {@link ShortestPathSingleSourceDijkstra}.
+	 * Dijkstra's algorithm.
 	 *
 	 * @param algo an shortest path algorithm
 	 */
 	public void setSsspAlgo(ShortestPathSingleSource algo) {
+		// TODO change documentation to link to ShortestPathSingleSourceDijkstra
 		ssspPositive = Objects.requireNonNull(algo);
 	}
 
@@ -73,13 +74,13 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
+	protected IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 		IWeightsBool partition = Assertions.onlyBipartite(g);
 		Assertions.onlyBipartite(g, partition);
 
 		int[] match = computeMaxMatching(g, w, partition);
-		return new Matchings.MatchingImpl(g, match);
+		return new IndexMatching(g, match);
 	}
 
 	private int[] computeMaxMatching(IndexGraph gOrig, IWeightFunction wOrig, IWeightsBool partition) {
@@ -193,7 +194,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 	}
 
 	@Override
-	IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
+	protected IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 		if (!WeightFunction.isCardinality(w))
 			throw new UnsupportedOperationException("weighted perfect matching is not supported by this algorithm");
 		return computeMaximumWeightedMatching(g, null);

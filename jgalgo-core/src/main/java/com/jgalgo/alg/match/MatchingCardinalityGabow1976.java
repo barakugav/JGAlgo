@@ -43,15 +43,15 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-class MatchingCardinalityGabow1976 extends Matchings.AbstractCardinalityMatchingImpl {
+public class MatchingCardinalityGabow1976 extends MatchingAlgoAbstractCardinality {
 
 	/**
 	 * Create a new maximum matching object.
 	 */
-	MatchingCardinalityGabow1976() {}
+	public MatchingCardinalityGabow1976() {}
 
 	@Override
-	IMatching computeMaximumCardinalityMatching(IndexGraph g) {
+	protected IMatching computeMaximumCardinalityMatching(IndexGraph g) {
 		Assertions.onlyUndirected(g);
 		int n = g.vertices().size();
 
@@ -199,7 +199,7 @@ class MatchingCardinalityGabow1976 extends Matchings.AbstractCardinalityMatching
 			uf.clear();
 		}
 
-		return new Matchings.MatchingImpl(g, matched);
+		return new IndexMatching(g, matched);
 	}
 
 	private static int findPath(IndexGraph g, int s, int t, Bitmap isEven, int[] match, int[] parent, int[] bridge,

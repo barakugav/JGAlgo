@@ -39,12 +39,12 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardinalityMatchingImpl {
+public class MatchingCardinalityBipartiteHopcroftKarp extends MatchingAlgoAbstractCardinality {
 
 	/**
 	 * Create a new maximum matching object.
 	 */
-	MatchingCardinalityBipartiteHopcroftKarp() {}
+	public MatchingCardinalityBipartiteHopcroftKarp() {}
 
 	/**
 	 * {@inheritDoc}
@@ -54,7 +54,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	IMatching computeMaximumCardinalityMatching(IndexGraph g) {
+	protected IMatching computeMaximumCardinalityMatching(IndexGraph g) {
 		Assertions.onlyUndirected(g);
 		int n = g.vertices().size();
 
@@ -160,7 +160,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 			es.clear();
 		}
 		Arrays.fill(edges, null);
-		return new Matchings.MatchingImpl(g, matched);
+		return new IndexMatching(g, matched);
 	}
 
 }

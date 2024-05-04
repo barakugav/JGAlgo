@@ -182,6 +182,26 @@
     </Or>
   </Match>
   <Match>
+    <!-- The function is documented, the given values are not copied and the user should not use them again -->
+    <Class name="com.jgalgo.alg.match.MatchingAlgoAbstract$IndexMatching" />
+    <Constructor />
+    <!-- <Or>
+      <Local name="g" />
+      <Local name="matched" />
+    </Or> -->
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- The returned values are immutables -->
+    <Class name="com.jgalgo.alg.match.MatchingAlgoAbstract$IndexMatching" />
+    <Or>
+      <Method name="edges" />
+      <Method name="matchedVertices" />
+      <Method name="unmatchedVertices" />
+    </Or>
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
     <!-- The immutable array set should not copy the array, it assumed the array will not be used
     again by the user -->
     <Class name="com.jgalgo.internal.util.ImmutableIntArraySet" />

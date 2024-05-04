@@ -38,12 +38,12 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  *
  * @author Barak Ugav
  */
-class MatchingWeightedGabow1990 extends MatchingWeightedGabow1990Abstract {
+public class MatchingWeightedGabow1990 extends MatchingWeightedGabow1990Abstract {
 
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-	MatchingWeightedGabow1990() {}
+	public MatchingWeightedGabow1990() {}
 
 	@Override
 	Worker newWorker(IndexGraph gOrig, IWeightFunction w, DebugPrinter debugPrint) {

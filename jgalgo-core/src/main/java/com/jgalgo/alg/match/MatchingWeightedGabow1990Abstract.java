@@ -46,19 +46,19 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 
-abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaximumMatchingImpl {
+abstract class MatchingWeightedGabow1990Abstract extends MatchingAlgoAbstractBasedMaximum {
 
 	final DebugPrinter debugPrintManager = new DebugPrinter(false);
 
 	@Override
-	IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
+	protected IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 		return newWorker(g, w, debugPrintManager).computeMaxMatching(false);
 
 	}
 
 	@Override
-	IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
+	protected IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 		if (WeightFunction.isCardinality(w)) {
 			return computeMaximumWeightedMatching(g, null);
 		} else {
@@ -679,7 +679,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 				if (u > v)
 					matched[u] = matched[v] = edgeVal.get(e).e;
 			}
-			return new Matchings.MatchingImpl(gOrig, matched);
+			return new IndexMatching(gOrig, matched);
 		}
 
 		abstract void makeEven(Blossom V);
