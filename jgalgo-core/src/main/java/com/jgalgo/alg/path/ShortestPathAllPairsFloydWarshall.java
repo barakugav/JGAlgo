@@ -45,16 +45,8 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		w = IWeightFunction.replaceNullWeightFunc(w);
-		return g.isDirected() ? computeApspDirected(g, w) : computeApspUndirected(g, w);
-	}
+		final boolean directed = g.isDirected();
 
-	@Override
-	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
-			IWeightFunction w) {
-		return computeAllShortestPaths(g, w);
-	}
-
-	private static ShortestPathAllPairs.IResult computeApspUndirected(IndexGraph g, IWeightFunction w) {
 		ShortestPathAllPairsUtils.IndexResult.AllVertices res =
 				new ShortestPathAllPairsUtils.IndexResult.AllVertices(g);
 		for (int e : range(g.edges().size())) {
@@ -64,21 +56,22 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 			if (ew < 0) {
 				if (u == v) {
 					throw new NegativeCycleException(g, IPath.valueOf(g, u, u, Fastutil.list(e)));
-				} else {
+				} else if (!directed) {
 					throw new NegativeCycleException(g, IPath.valueOf(g, u, u, Fastutil.list(e, e)));
 				}
 			}
 			if (ew < res.distance(u, v)) {
 				res.setDistance(u, v, ew);
 				res.setEdgeTo(u, v, e);
-				res.setEdgeTo(v, u, e);
+				if (!directed)
+					res.setEdgeTo(v, u, e);
 			}
 		}
 		int n = g.vertices().size();
 		for (int k : range(n)) {
 			/* Calc shortest path between each pair (u,v) by using vertices 1,2,..,k */
 			for (int u : range(n)) {
-				for (int v : range(u + 1, n)) {
+				for (int v : range(directed ? 0 : u + 1, n)) {
 					double duk = res.distance(u, k);
 					if (duk == Double.POSITIVE_INFINITY)
 						continue;
@@ -91,50 +84,13 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 					if (dis < res.distance(u, v)) {
 						res.setDistance(u, v, dis);
 						res.setEdgeTo(u, v, res.getEdgeTo(u, k));
-						res.setEdgeTo(v, u, res.getEdgeTo(v, k));
+						if (!directed)
+							res.setEdgeTo(v, u, res.getEdgeTo(v, k));
 					}
 				}
 			}
-		}
-		return res;
-	}
-
-	private static ShortestPathAllPairs.IResult computeApspDirected(IndexGraph g, IWeightFunction w) {
-		ShortestPathAllPairsUtils.IndexResult.AllVertices res =
-				new ShortestPathAllPairsUtils.IndexResult.AllVertices(g);
-		for (int e : range(g.edges().size())) {
-			int u = g.edgeSource(e);
-			int v = g.edgeTarget(e);
-			double ew = w.weight(e);
-			if (u == v) {
-				if (ew < 0)
-					throw new NegativeCycleException(g, IPath.valueOf(g, u, u, Fastutil.list(e)));
-				continue;
-			}
-			if (ew < res.distance(u, v)) {
-				res.setDistance(u, v, ew);
-				res.setEdgeTo(u, v, e);
-			}
-		}
-		int n = g.vertices().size();
-		for (int k : range(n)) {
-			/* Calc shortest path between each pair (u,v) by using vertices 1,2,..,k */
-			for (int u : range(n)) {
-				for (int v : range(n)) {
-					double duk = res.distance(u, k);
-					if (duk == Double.POSITIVE_INFINITY)
-						continue;
-					double dkv = res.distance(k, v);
-					if (dkv == Double.POSITIVE_INFINITY)
-						continue;
-					double dis = duk + dkv;
-					if (dis < res.distance(u, v)) {
-						res.setDistance(u, v, dis);
-						res.setEdgeTo(u, v, res.getEdgeTo(u, k));
-					}
-				}
-			}
-			detectNegCycle(res, n, k);
+			if (directed)
+				detectNegCycle(res, n, k);
 		}
 		return res;
 	}
@@ -152,6 +108,12 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 				throw new NegativeCycleException(res.g, IPath.valueOf(res.g, u, u, negCycle));
 			}
 		}
+	}
+
+	@Override
+	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+			IWeightFunction w) {
+		return computeAllShortestPaths(g, w);
 	}
 
 }
