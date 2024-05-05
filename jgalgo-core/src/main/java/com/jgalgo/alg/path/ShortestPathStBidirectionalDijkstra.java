@@ -28,10 +28,31 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 
-class ShortestPathStBidirectionalDijkstra extends ShortestPathSts.AbstractImpl {
+/**
+ * Compute the shortest path between a source and a target using bidirectional Dijkstra's algorithm.
+ *
+ * <p>
+ * Different from the {@linkplain ShortestPathSingleSourceDijkstra single source algorithm of Dijkstra}, this algorithm
+ * uses two heaps and growing trees originated from the source and target vertices, instead of a single one. The
+ * algorithm terminate (roughly) when the two trees meet. In practice, this algorithm can be much faster than the single
+ * source algorithm, especially for large graphs.
+ *
+ * @author Barak Ugav
+ */
+public class ShortestPathStBidirectionalDijkstra extends ShortestPathStAbstract {
+
+	/**
+	 * Create a algorithm for computing a shortest path between a source and a target.
+	 *
+	 * <p>
+	 * Please prefer using {@link ShortestPathSt#newInstance()} to get a default implementation for the
+	 * {@link ShortestPathSt} interface.
+	 */
+	public ShortestPathStBidirectionalDijkstra() {}
 
 	@Override
-	ObjectDoublePair<IPath> computeShortestPathAndWeight(IndexGraph g, IWeightFunction w, int source, int target) {
+	protected ObjectDoublePair<IPath> computeShortestPathAndWeight(IndexGraph g, IWeightFunction w, int source,
+			int target) {
 		if (!g.vertices().contains(source))
 			throw NoSuchVertexException.ofIndex(source);
 		if (!g.vertices().contains(target))

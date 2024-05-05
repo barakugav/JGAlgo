@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg.path;
 
+import com.jgalgo.alg.traversal.BfsIter;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -30,10 +31,34 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 
-class ShortestPathStBidirectionalBfs extends ShortestPathSts.AbstractImpl {
+/**
+ * Compute the shortest path between a source and a target using bidirectional breadth-first search.
+ *
+ * <p>
+ * The algorithm can be used with cardinality weight functions only, similar to
+ * {@link ShortestPathSingleSourceCardinality}. Different from the single source algorithm, this algorithm uses two BFS
+ * originated from the source and target vertices, instead of a single BFS. The algorithm terminate (roughly) when the
+ * two BFS trees meet. In practice, this algorithm can be much faster than the single source algorithm, especially for
+ * large graphs.
+ *
+ * @see    BfsIter
+ * @author Barak Ugav
+ */
+public class ShortestPathStBidirectionalBfs extends ShortestPathStAbstract {
+
+	/**
+	 * Create a algorithm for computing a shortest path between a source and a target with respect to a cardinality
+	 * weight function.
+	 *
+	 * <p>
+	 * Please prefer using {@link ShortestPathSt#newInstance()} to get a default implementation for the
+	 * {@link ShortestPathSt} interface.
+	 */
+	public ShortestPathStBidirectionalBfs() {}
 
 	@Override
-	ObjectDoublePair<IPath> computeShortestPathAndWeight(IndexGraph g, IWeightFunction w, int source, int target) {
+	protected ObjectDoublePair<IPath> computeShortestPathAndWeight(IndexGraph g, IWeightFunction w, int source,
+			int target) {
 		if (!g.vertices().contains(source))
 			throw NoSuchVertexException.ofIndex(source);
 		if (!g.vertices().contains(target))
