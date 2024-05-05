@@ -281,4 +281,11 @@
     <!-- <Local name="graph" /> -->
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
+  <Match>
+    <!-- The function is documented, the graph should not be modified during the lifetime of the result object -->
+    <Class name="com.jgalgo.alg.path.ShortestPathAllPairsAbstract$IndexResult" />
+    <Constructor />
+    <Local name="g" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
 </FindBugsFilter>

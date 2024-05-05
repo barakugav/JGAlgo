@@ -34,20 +34,24 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.AbstractImpl {
+public class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsAbstract {
 
 	/**
-	 * Create a new APSP algorithm object.
+	 * Create a APSP algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link ShortestPathAllPairs#newInstance()} to get a default implementation for the
+	 * {@link ShortestPathAllPairs} interface, or {@link ShortestPathAllPairs#builder()} for more customization options.
 	 */
-	ShortestPathAllPairsFloydWarshall() {}
+	public ShortestPathAllPairsFloydWarshall() {}
 
 	@Override
-	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
+	protected ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		final boolean directed = g.isDirected();
 
-		ShortestPathAllPairsUtils.IndexResult res = new ShortestPathAllPairsUtils.IndexResult(g);
+		ShortestPathAllPairsAbstract.IndexResult res = new ShortestPathAllPairsAbstract.IndexResult(g);
 		for (int e : range(g.edges().size())) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
@@ -94,7 +98,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 		return res;
 	}
 
-	private static void detectNegCycle(ShortestPathAllPairsUtils.IndexResult res, int n, int k) {
+	private static void detectNegCycle(ShortestPathAllPairsAbstract.IndexResult res, int n, int k) {
 		for (int u : range(n)) {
 			double d1 = res.distance(u, k);
 			double d2 = res.distance(k, u);
@@ -110,7 +114,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 	}
 
 	@Override
-	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+	protected ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w) {
 		return computeAllShortestPaths(g, w);
 	}

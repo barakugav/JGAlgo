@@ -48,16 +48,20 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl {
+public class ShortestPathAllPairsJohnson extends ShortestPathAllPairsAbstract {
 
 	private ShortestPathSingleSource negativeSssp = ShortestPathSingleSource.builder().setNegativeWeights(true).build();
 	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
 
 	/**
-	 * Create a new APSP algorithm object.
+	 * Create a APSP algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link ShortestPathAllPairs#newInstance()} to get a default implementation for the
+	 * {@link ShortestPathAllPairs} interface, or {@link ShortestPathAllPairs#builder()} for more customization options.
 	 */
-	ShortestPathAllPairsJohnson() {}
+	public ShortestPathAllPairsJohnson() {}
 
 	/**
 	 * {@inheritDoc}
@@ -65,12 +69,12 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
+	protected ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
 		return computeSubsetShortestPaths0(g, g.vertices(), w, true);
 	}
 
 	@Override
-	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+	protected ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w) {
 		return computeSubsetShortestPaths0(g, verticesSubset, w, false);
 	}
@@ -108,7 +112,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			boolean allVertices) {
 		final int verticesSubsetSize = verticesSubset.size();
 		final ShortestPathSingleSource.IResult[] ssspResults = new ShortestPathSingleSource.IResult[verticesSubsetSize];
-		int[] vToSubsetIdx = ShortestPathAllPairsUtils.IndexResultVerticesSubsetFromSssp
+		int[] vToSubsetIdx = ShortestPathAllPairsAbstract.IndexResultVerticesSubsetFromSssp
 				.indexVerticesSubset(g, allVertices ? null : verticesSubset);
 
 		ForkJoinPool pool = JGAlgoUtils.getPool();

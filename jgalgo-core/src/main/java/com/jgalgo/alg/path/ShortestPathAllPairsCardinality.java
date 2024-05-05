@@ -41,24 +41,28 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see    ShortestPathSingleSourceCardinality
  * @author Barak Ugav
  */
-class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.AbstractImpl {
+public class ShortestPathAllPairsCardinality extends ShortestPathAllPairsAbstract {
 
 	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
 
 	/**
-	 * Create a new APSP algorithm object.
+	 * Create a APSP algorithm for cardinality weight function only.
+	 *
+	 * <p>
+	 * Please prefer using {@link ShortestPathAllPairs#newInstance()} to get a default implementation for the
+	 * {@link ShortestPathAllPairs} interface, or {@link ShortestPathAllPairs#builder()} for more customization options.
 	 */
-	ShortestPathAllPairsCardinality() {}
+	public ShortestPathAllPairsCardinality() {}
 
 	@Override
-	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
+	protected ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyCardinality(w);
 		return computeSubsetCardinalityShortestPaths(g, g.vertices(), true);
 	}
 
 	@Override
-	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+	protected ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w) {
 		Assertions.onlyCardinality(w);
 		return computeSubsetCardinalityShortestPaths(g, verticesSubset, false);
@@ -68,7 +72,7 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 			boolean allVertices) {
 		final int verticesSubsetSize = verticesSubset.size();
 		final ShortestPathSingleSource.IResult[] ssspResults = new ShortestPathSingleSource.IResult[verticesSubsetSize];
-		int[] vToSubsetIdx = ShortestPathAllPairsUtils.IndexResultVerticesSubsetFromSssp
+		int[] vToSubsetIdx = ShortestPathAllPairsAbstract.IndexResultVerticesSubsetFromSssp
 				.indexVerticesSubset(g, allVertices ? null : verticesSubset);
 
 		ForkJoinPool pool = JGAlgoUtils.getPool();
@@ -100,9 +104,9 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 		}
 
 		if (allVertices) {
-			return ShortestPathAllPairsUtils.IndexResult.fromSsspResult(g, ssspResults);
+			return ShortestPathAllPairsAbstract.IndexResult.fromSsspResult(g, ssspResults);
 		} else {
-			return new ShortestPathAllPairsUtils.IndexResultVerticesSubsetFromSssp(ssspResults, vToSubsetIdx);
+			return new ShortestPathAllPairsAbstract.IndexResultVerticesSubsetFromSssp(ssspResults, vToSubsetIdx);
 		}
 	}
 

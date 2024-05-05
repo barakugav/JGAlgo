@@ -36,59 +36,71 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-class ShortestPathAllPairsUtils {
+/**
+ * Abstract class for computing shortest path between all pairs in a graph.
+ *
+ * <p>
+ * The class implements the interface by solving the problem on the index graph and then maps the results back to the
+ * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ *
+ * @author Barak Ugav
+ */
+public abstract class ShortestPathAllPairsAbstract implements ShortestPathAllPairs {
 
-	private ShortestPathAllPairsUtils() {}
+	/**
+	 * Default constructor.
+	 */
+	public ShortestPathAllPairsAbstract() {}
 
-	abstract static class AbstractImpl implements ShortestPathAllPairs {
+	@SuppressWarnings("unchecked")
+	@Override
+	public <V, E> ShortestPathAllPairs.Result<V, E> computeAllShortestPaths(Graph<V, E> g, WeightFunction<E> w) {
+		if (g instanceof IndexGraph) {
+			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+			return (ShortestPathAllPairs.Result<V, E>) computeAllShortestPaths((IndexGraph) g, w0);
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> ShortestPathAllPairs.Result<V, E> computeAllShortestPaths(Graph<V, E> g, WeightFunction<E> w) {
-			if (g instanceof IndexGraph) {
-				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-				return (ShortestPathAllPairs.Result<V, E>) computeAllShortestPaths((IndexGraph) g, w0);
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-				ShortestPathAllPairs.IResult indexResult =
-						NegativeCycleException.runAndConvertException(g, () -> computeAllShortestPaths(iGraph, iw));
-				return resultFromIndexResult(g, indexResult);
-			}
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			ShortestPathAllPairs.IResult indexResult =
+					NegativeCycleException.runAndConvertException(g, () -> computeAllShortestPaths(iGraph, iw));
+			return resultFromIndexResult(g, indexResult);
 		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> ShortestPathAllPairs.Result<V, E> computeSubsetShortestPaths(Graph<V, E> g,
-				Collection<V> verticesSubset, WeightFunction<E> w) {
-			if (g instanceof IndexGraph) {
-				IntCollection verticesSubset0 = IntAdapters.asIntCollection((Collection<Integer>) verticesSubset);
-				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-				return (ShortestPathAllPairs.Result<V, E>) computeSubsetShortestPaths((IndexGraph) g, verticesSubset0,
-						w0);
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-				IntCollection iVerticesSubset = IndexIdMaps.idToIndexCollection(verticesSubset, viMap);
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-				ShortestPathAllPairs.IResult indexResult = NegativeCycleException
-						.runAndConvertException(g, () -> computeSubsetShortestPaths(iGraph, iVerticesSubset, iw));
-				return resultFromIndexResult(g, indexResult);
-			}
-		}
-
-		abstract ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w);
-
-		abstract ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
-				IWeightFunction w);
-
 	}
 
-	static class IndexResult implements ShortestPathAllPairs.IResult {
+	@SuppressWarnings("unchecked")
+	@Override
+	public <V, E> ShortestPathAllPairs.Result<V, E> computeSubsetShortestPaths(Graph<V, E> g,
+			Collection<V> verticesSubset, WeightFunction<E> w) {
+		if (g instanceof IndexGraph) {
+			IntCollection verticesSubset0 = IntAdapters.asIntCollection((Collection<Integer>) verticesSubset);
+			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+			return (ShortestPathAllPairs.Result<V, E>) computeSubsetShortestPaths((IndexGraph) g, verticesSubset0, w0);
+
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+			IntCollection iVerticesSubset = IndexIdMaps.idToIndexCollection(verticesSubset, viMap);
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			ShortestPathAllPairs.IResult indexResult = NegativeCycleException
+					.runAndConvertException(g, () -> computeSubsetShortestPaths(iGraph, iVerticesSubset, iw));
+			return resultFromIndexResult(g, indexResult);
+		}
+	}
+
+	protected abstract ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w);
+
+	protected abstract ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g,
+			IntCollection verticesSubset, IWeightFunction w);
+
+	/**
+	 * The result object for the shortest path between all pairs of vertices in an index graph.
+	 *
+	 * @author Barak Ugav
+	 */
+	protected static class IndexResult implements ShortestPathAllPairs.IResult {
 
 		final IndexGraph g;
 		private final boolean directed;
@@ -96,7 +108,13 @@ class ShortestPathAllPairsUtils {
 		private final int[][] edges;
 		private final double[] distances;
 
-		IndexResult(IndexGraph g) {
+		/**
+		 * Create a new result object for the given graph.
+		 *
+		 * @param g the graph on which the shortest paths were computed. Should not be modified during the lifetime of
+		 *              this object
+		 */
+		public IndexResult(IndexGraph g) {
 			this.g = g;
 			directed = g.isDirected();
 			n = g.vertices().size();
@@ -190,15 +208,15 @@ class ShortestPathAllPairsUtils {
 			return res;
 		}
 
-		int getEdgeTo(int source, int target) {
+		public int getEdgeTo(int source, int target) {
 			return edges[source][target];
 		}
 
-		void setEdgeTo(int source, int target, int edge) {
+		public void setEdgeTo(int source, int target, int edge) {
 			edges[source][target] = edge;
 		}
 
-		void setDistance(int source, int target, double distance) {
+		public void setDistance(int source, int target, double distance) {
 			if (!directed && source == target)
 				return;
 			distances[index(source, target)] = distance;
