@@ -108,14 +108,15 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			boolean allVertices) {
 		final int verticesSubsetSize = verticesSubset.size();
 		final ShortestPathSingleSource.IResult[] ssspResults = new ShortestPathSingleSource.IResult[verticesSubsetSize];
-		int[] vToResIdx = ShortestPathAllPairsUtils.vToResIdx(g, allVertices ? null : verticesSubset);
+		int[] vToSubsetIdx = ShortestPathAllPairsUtils.IndexResultVerticesSubsetFromSssp
+				.indexVerticesSubset(g, allVertices ? null : verticesSubset);
 
 		ForkJoinPool pool = JGAlgoUtils.getPool();
 		if (verticesSubsetSize < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
 			/* sequential */
 			ShortestPathSingleSource sssp = ShortestPathSingleSource.newInstance();
 			for (int source : verticesSubset)
-				ssspResults[vToResIdx[source]] =
+				ssspResults[vToSubsetIdx[source]] =
 						(ShortestPathSingleSource.IResult) sssp.computeShortestPaths(g, w, Integer.valueOf(source));
 
 		} else {
@@ -127,8 +128,8 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 				final int source0 = source;
 				tasks
 						.add(JGAlgoUtils
-								.recursiveAction(
-										() -> ssspResults[vToResIdx[source0]] = (ShortestPathSingleSource.IResult) sssp
+								.recursiveAction(() -> ssspResults[vToSubsetIdx[source0]] =
+										(ShortestPathSingleSource.IResult) sssp
 												.get()
 												.computeShortestPaths(g, w, Integer.valueOf(source0))));
 			}
@@ -141,7 +142,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		if (allVertices) {
 			return new Res.AllVertices(ssspResults);
 		} else {
-			return new Res.VerticesSubset(ssspResults, vToResIdx);
+			return new Res.VerticesSubset(ssspResults, vToSubsetIdx);
 		}
 	}
 
@@ -231,11 +232,11 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 		private static class VerticesSubset extends Res {
 
-			final int[] vToResIdx;
+			final int[] vToSubsetIdx;
 
-			VerticesSubset(ShortestPathSingleSource.IResult[] ssspResults, int[] vToResIdx) {
+			VerticesSubset(ShortestPathSingleSource.IResult[] ssspResults, int[] vToSubsetIdx) {
 				super(ssspResults);
-				this.vToResIdx = vToResIdx;
+				this.vToSubsetIdx = vToSubsetIdx;
 			}
 
 			@Override
@@ -253,8 +254,8 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			}
 
 			private int resultIdx(int vertex) {
-				Assertions.checkVertex(vertex, vToResIdx.length);
-				int idx = vToResIdx[vertex];
+				Assertions.checkVertex(vertex, vToSubsetIdx.length);
+				int idx = vToSubsetIdx[vertex];
 				if (idx < 0)
 					throw new IllegalArgumentException("no results for vertex " + vertex);
 				return idx;

@@ -47,8 +47,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		final boolean directed = g.isDirected();
 
-		ShortestPathAllPairsUtils.IndexResult.AllVertices res =
-				new ShortestPathAllPairsUtils.IndexResult.AllVertices(g);
+		ShortestPathAllPairsUtils.IndexResult res = new ShortestPathAllPairsUtils.IndexResult(g);
 		for (int e : range(g.edges().size())) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
@@ -95,7 +94,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 		return res;
 	}
 
-	private static void detectNegCycle(ShortestPathAllPairsUtils.IndexResult.AllVertices res, int n, int k) {
+	private static void detectNegCycle(ShortestPathAllPairsUtils.IndexResult res, int n, int k) {
 		for (int u : range(n)) {
 			double d1 = res.distance(u, k);
 			double d2 = res.distance(k, u);

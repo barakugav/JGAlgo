@@ -68,14 +68,15 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 			boolean allVertices) {
 		final int verticesSubsetSize = verticesSubset.size();
 		final ShortestPathSingleSource.IResult[] ssspResults = new ShortestPathSingleSource.IResult[verticesSubsetSize];
-		int[] vToResIdx = ShortestPathAllPairsUtils.vToResIdx(g, allVertices ? null : verticesSubset);
+		int[] vToSubsetIdx = ShortestPathAllPairsUtils.IndexResultVerticesSubsetFromSssp
+				.indexVerticesSubset(g, allVertices ? null : verticesSubset);
 
 		ForkJoinPool pool = JGAlgoUtils.getPool();
 		if (verticesSubsetSize < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
 			/* sequential */
 			ShortestPathSingleSource sssp = ShortestPathSingleSource.builder().setCardinality(true).build();
 			for (int source : verticesSubset)
-				ssspResults[vToResIdx[source]] =
+				ssspResults[vToSubsetIdx[source]] =
 						(ShortestPathSingleSource.IResult) sssp.computeShortestPaths(g, null, Integer.valueOf(source));
 
 		} else {
@@ -87,8 +88,8 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 				final int source0 = source;
 				tasks
 						.add(JGAlgoUtils
-								.recursiveAction(
-										() -> ssspResults[vToResIdx[source0]] = (ShortestPathSingleSource.IResult) sssp
+								.recursiveAction(() -> ssspResults[vToSubsetIdx[source0]] =
+										(ShortestPathSingleSource.IResult) sssp
 												.get()
 												.computeShortestPaths(g, null, Integer.valueOf(source0))));
 			}
@@ -99,9 +100,9 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 		}
 
 		if (allVertices) {
-			return new ShortestPathAllPairsUtils.IndexResultFromSssp.AllVertices(ssspResults);
+			return ShortestPathAllPairsUtils.IndexResult.fromSsspResult(g, ssspResults);
 		} else {
-			return new ShortestPathAllPairsUtils.IndexResultFromSssp.VerticesSubset(ssspResults, vToResIdx);
+			return new ShortestPathAllPairsUtils.IndexResultVerticesSubsetFromSssp(ssspResults, vToSubsetIdx);
 		}
 	}
 

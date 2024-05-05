@@ -20,7 +20,6 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
-import com.jgalgo.alg.path.ShortestPathSingleSource.IResult;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -89,180 +88,211 @@ class ShortestPathAllPairsUtils {
 
 	}
 
-	static int[] vToResIdx(IndexGraph g, IntCollection verticesSubset) {
-		int[] vToResIdx = new int[g.vertices().size()];
-		Arrays.fill(vToResIdx, -1);
-		boolean allVertices = verticesSubset == null;
-		if (allVertices) {
-			for (int v : range(g.vertices().size()))
-				vToResIdx[v] = v;
-		} else {
-			int resIdx = 0;
-			for (int v : verticesSubset)
-				vToResIdx[v] = resIdx++;
-		}
-		return vToResIdx;
-	}
+	static class IndexResult implements ShortestPathAllPairs.IResult {
 
-	abstract static class IndexResult implements ShortestPathAllPairs.IResult {
+		final IndexGraph g;
+		private final boolean directed;
+		private final int n;
+		private final int[][] edges;
+		private final double[] distances;
 
-		private IndexResult() {}
-
-		abstract void setDistance(int source, int target, double distance);
-
-		abstract int getEdgeTo(int source, int target);
-
-		abstract void setEdgeTo(int source, int target, int edge);
-
-		static class AllVertices extends IndexResult {
-
-			final IndexGraph g;
-			private final boolean directed;
-			private final int n;
-			private final int[][] edges;
-			private final double[] distances;
-
-			AllVertices(IndexGraph g) {
-				this.g = g;
-				directed = g.isDirected();
-				n = g.vertices().size();
-				edges = new int[n][n];
-				BigArrays.fill(edges, -1);
-				if (directed) {
-					distances = new double[n * n];
-				} else {
-					distances = new double[n * (n - 1) / 2];
-				}
-				Arrays.fill(distances, Double.POSITIVE_INFINITY);
-				if (directed)
-					for (int v : range(n))
-						setDistance(v, v, 0);
+		IndexResult(IndexGraph g) {
+			this.g = g;
+			directed = g.isDirected();
+			n = g.vertices().size();
+			edges = new int[n][n];
+			BigArrays.fill(edges, -1);
+			if (directed) {
+				distances = new double[n * n];
+			} else {
+				distances = new double[n * (n - 1) / 2];
 			}
-
-			@Override
-			int getEdgeTo(int source, int target) {
-				return edges[source][target];
-			}
-
-			@Override
-			void setEdgeTo(int source, int target, int edge) {
-				edges[source][target] = edge;
-			}
-
-			@Override
-			void setDistance(int source, int target, double distance) {
-				distances[index(source, target)] = distance;
-			}
-
-			@Override
-			public double distance(int source, int target) {
-				Assertions.checkVertex(source, n);
-				Assertions.checkVertex(target, n);
-				return source != target ? distances[index(source, target)] : 0;
-			}
-
-			private int index(int u, int v) {
-				if (directed) {
-					return u * n + v;
-				} else {
-					assert u != v;
-					if (u > v) {
-						int temp = u;
-						u = v;
-						v = temp;
-					}
-					/* index mapping assume always u < v (strictly!) */
-					return (2 * n - u - 1) * u / 2 + v - u - 1;
-				}
-			}
-
-			@Override
-			public IPath getPath(int source, int target) {
-				if (distance(source, target) == Double.POSITIVE_INFINITY)
-					return null;
-				IntList path = new IntArrayList();
-				if (directed) {
-					for (int v = source; v != target;) {
-						int e = getEdgeTo(v, target);
-						assert e >= 0;
-						assert v == g.edgeSource(e);
-						path.add(e);
-						v = g.edgeTarget(e);
-					}
-				} else {
-					for (int v = source; v != target;) {
-						int e = getEdgeTo(v, target);
-						assert e >= 0;
-						path.add(e);
-						v = g.edgeEndpoint(e, v);
-					}
-				}
-				return IPath.valueOf(g, source, target, path);
-			}
+			Arrays.fill(distances, Double.POSITIVE_INFINITY);
+			if (directed)
+				for (int v : range(n))
+					setDistance(v, v, 0);
 		}
 
+		public static IndexResult fromSsspResult(IndexGraph g, ShortestPathSingleSource.IResult[] ssspResults) {
+			final int n = g.vertices().size();
+			final boolean directed = g.isDirected();
+			IndexResult res = new IndexResult(g);
+			assert ssspResults.length == n;
+
+			final boolean knownSsspRes =
+					Arrays.stream(ssspResults).allMatch(r -> r instanceof ShortestPathSingleSourceAbstract.IndexResult);
+			if (knownSsspRes) {
+				for (int u : range(n)) {
+					ShortestPathSingleSourceAbstract.IndexResult uRes =
+							(ShortestPathSingleSourceAbstract.IndexResult) ssspResults[u];
+					for (int v : range(directed ? 0 : u + 1, n))
+						res.setDistance(u, v, uRes.distances[v]);
+				}
+				for (int s : range(n)) {
+					ShortestPathSingleSourceAbstract.IndexResult sRes =
+							(ShortestPathSingleSourceAbstract.IndexResult) ssspResults[s];
+					for (int vFirst : range(n)) {
+						if (s == vFirst) {
+							res.setEdgeTo(s, s, -1);
+							continue;
+						}
+						if (sRes.backtrack[vFirst] < 0)
+							continue;
+						for (int v = vFirst;;) {
+							int e = sRes.backtrack[v];
+							assert e >= 0;
+							v = g.edgeEndpoint(e, v);
+							if (v == s) {
+								final int sTowardV = e;
+								for (v = vFirst;;) {
+									res.setEdgeTo(s, v, sTowardV);
+									v = g.edgeEndpoint(sRes.backtrack[v], v);
+									if (v == s)
+										break;
+								}
+								break;
+							}
+						}
+					}
+				}
+
+			} else {
+				for (int u : range(n))
+					for (int v : range(directed ? 0 : u + 1, n))
+						res.setDistance(u, v, ssspResults[u].distance(v));
+				for (int s : range(n)) {
+					ShortestPathSingleSource.IResult sRes = ssspResults[s];
+					for (int vFirst : range(n)) {
+						if (s == vFirst) {
+							res.setEdgeTo(s, s, -1);
+							continue;
+						}
+						if (sRes.backtrackEdge(vFirst) < 0)
+							continue;
+						for (int v = vFirst;;) {
+							int e = sRes.backtrackEdge(v);
+							assert e >= 0;
+							v = g.edgeEndpoint(e, v);
+							if (v == s) {
+								final int sTowardV = e;
+								for (v = vFirst;;) {
+									res.setEdgeTo(s, v, sTowardV);
+									v = g.edgeEndpoint(sRes.backtrackEdge(v), v);
+									if (v == s)
+										break;
+								}
+								break;
+							}
+						}
+					}
+				}
+			}
+			return res;
+		}
+
+		int getEdgeTo(int source, int target) {
+			return edges[source][target];
+		}
+
+		void setEdgeTo(int source, int target, int edge) {
+			edges[source][target] = edge;
+		}
+
+		void setDistance(int source, int target, double distance) {
+			if (!directed && source == target)
+				return;
+			distances[index(source, target)] = distance;
+		}
+
+		@Override
+		public double distance(int source, int target) {
+			Assertions.checkVertex(source, n);
+			Assertions.checkVertex(target, n);
+			return source != target ? distances[index(source, target)] : 0;
+		}
+
+		private int index(int u, int v) {
+			if (directed) {
+				return u * n + v;
+			} else {
+				assert u != v;
+				if (u > v) {
+					int temp = u;
+					u = v;
+					v = temp;
+				}
+				/* index mapping assume always u < v (strictly!) */
+				return (2 * n - u - 1) * u / 2 + v - u - 1;
+			}
+		}
+
+		@Override
+		public IPath getPath(int source, int target) {
+			if (distance(source, target) == Double.POSITIVE_INFINITY)
+				return null;
+			IntList path = new IntArrayList();
+			if (directed) {
+				for (int v = source; v != target;) {
+					int e = getEdgeTo(v, target);
+					assert e >= 0;
+					assert v == g.edgeSource(e);
+					path.add(e);
+					v = g.edgeTarget(e);
+				}
+			} else {
+				for (int v = source; v != target;) {
+					int e = getEdgeTo(v, target);
+					assert e >= 0;
+					path.add(e);
+					v = g.edgeEndpoint(e, v);
+				}
+			}
+			return IPath.valueOf(g, source, target, path);
+		}
 	}
 
-	abstract static class IndexResultFromSssp implements ShortestPathAllPairs.IResult {
+	static class IndexResultVerticesSubsetFromSssp implements ShortestPathAllPairs.IResult {
 
 		final ShortestPathSingleSource.IResult[] ssspResults;
+		final int[] vToSubsetIdx;
 
-		IndexResultFromSssp(ShortestPathSingleSource.IResult[] ssspResults) {
+		IndexResultVerticesSubsetFromSssp(ShortestPathSingleSource.IResult[] ssspResults, int[] vToSubsetIdx) {
 			this.ssspResults = ssspResults;
+			this.vToSubsetIdx = vToSubsetIdx;
 		}
 
-		static class AllVertices extends IndexResultFromSssp {
-
-			AllVertices(IResult[] ssspResults) {
-				super(ssspResults);
-			}
-
-			@Override
-			public double distance(int source, int target) {
-				Assertions.checkVertex(source, ssspResults.length);
-				return ssspResults[source].distance(target);
-			}
-
-			@Override
-			public IPath getPath(int source, int target) {
-				Assertions.checkVertex(source, ssspResults.length);
-				return ssspResults[source].getPath(target);
-			}
-
+		@Override
+		public double distance(int source, int target) {
+			int sourceIdx = resultIdx(source);
+			resultIdx(target); /* checks that target is in the subset */
+			return ssspResults[sourceIdx].distance(target);
 		}
 
-		static class VerticesSubset extends IndexResultFromSssp {
-
-			final int[] vToResIdx;
-
-			VerticesSubset(ShortestPathSingleSource.IResult[] ssspResults, int[] vToResIdx) {
-				super(ssspResults);
-				this.vToResIdx = vToResIdx;
-			}
-
-			@Override
-			public double distance(int source, int target) {
-				int sourceIdx = resultIdx(source);
-				resultIdx(target); /* checks that target is in the subset */
-				return ssspResults[sourceIdx].distance(target);
-			}
-
-			@Override
-			public IPath getPath(int source, int target) {
-				int sourceIdx = resultIdx(source);
-				resultIdx(target); /* checks that target is in the subset */
-				return ssspResults[sourceIdx].getPath(target);
-			}
-
-			private int resultIdx(int vertex) {
-				Assertions.checkVertex(vertex, vToResIdx.length);
-				int idx = vToResIdx[vertex];
-				if (idx < 0)
-					throw new IllegalArgumentException("no results for vertex " + vertex);
-				return idx;
-			}
+		@Override
+		public IPath getPath(int source, int target) {
+			int sourceIdx = resultIdx(source);
+			resultIdx(target); /* checks that target is in the subset */
+			return ssspResults[sourceIdx].getPath(target);
 		}
 
+		private int resultIdx(int vertex) {
+			Assertions.checkVertex(vertex, vToSubsetIdx.length);
+			int idx = vToSubsetIdx[vertex];
+			if (idx < 0)
+				throw new IllegalArgumentException("no results for vertex " + vertex);
+			return idx;
+		}
+
+		static int[] indexVerticesSubset(IndexGraph g, IntCollection verticesSubset) {
+			if (verticesSubset == null)
+				return range(g.vertices().size()).toIntArray();
+			int[] vToSubsetIdx = new int[g.vertices().size()];
+			Arrays.fill(vToSubsetIdx, -1);
+			int resIdx = 0;
+			for (int v : verticesSubset)
+				vToSubsetIdx[v] = resIdx++;
+			return vToSubsetIdx;
+		}
 	}
 
 	private static class ObjResultFromIndexResult<V, E> implements ShortestPathAllPairs.Result<V, E> {
