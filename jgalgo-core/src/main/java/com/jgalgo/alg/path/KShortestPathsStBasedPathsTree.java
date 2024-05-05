@@ -61,10 +61,15 @@ import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
  *
  * @author Barak Ugav
  */
-abstract class KShortestPathsStPathsTreeBased extends KShortestPathsSts.AbstractImpl {
+public abstract class KShortestPathsStBasedPathsTree extends KShortestPathsStAbstract {
+
+	/**
+	 * Default constructor.
+	 */
+	public KShortestPathsStBasedPathsTree() {}
 
 	@Override
-	public List<IPath> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
+	protected List<IPath> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
 		if (!g.vertices().contains(source) || !g.vertices().contains(target))
 			throw new IllegalArgumentException("source or target not in graph");
 		if (k < 1)
@@ -349,10 +354,19 @@ abstract class KShortestPathsStPathsTreeBased extends KShortestPathsSts.Abstract
 
 	}
 
-	abstract ShortestPathSubroutine newShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target,
+	protected abstract ShortestPathSubroutine newShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target,
 			Bitmap edgesMask);
 
-	static class FastReplacementAlgoResult {
+	/**
+	 * A result object for the best deviation path computation in a shortest path subroutine.
+	 *
+	 * <p>
+	 * This object is used when there is an attempt to compute the best deviation path in a single step. If the attempt
+	 * fails, the algorithm falls back to computing a deviation path from each possible deviation point.
+	 *
+	 * @author Barak Ugav
+	 */
+	protected static class FastReplacementAlgoResult {
 		final boolean success;
 		final ObjectDoublePair<IntList> value;
 
@@ -361,16 +375,25 @@ abstract class KShortestPathsStPathsTreeBased extends KShortestPathsSts.Abstract
 			this.value = value;
 		}
 
-		static FastReplacementAlgoResult ofSuccess(ObjectDoublePair<IntList> value) {
+		public static FastReplacementAlgoResult ofSuccess(ObjectDoublePair<IntList> value) {
 			return new FastReplacementAlgoResult(true, value);
 		}
 
-		static FastReplacementAlgoResult ofFailure() {
+		public static FastReplacementAlgoResult ofFailure() {
 			return new FastReplacementAlgoResult(false, null);
 		}
 	}
 
-	abstract static class ShortestPathSubroutine {
+	/**
+	 * A subroutine for computing the best deviation path for a node in the paths tree.
+	 *
+	 * <p>
+	 * The subroutine compute a single shortest path from a source vertex to a target vertex in a graph, with some
+	 * masked edges. It is used to compute the best deviation path for a node in the paths tree.
+	 *
+	 * @author Barak Ugav
+	 */
+	protected abstract static class ShortestPathSubroutine {
 
 		final IndexGraph g;
 		final IWeightFunction w;
@@ -385,8 +408,26 @@ abstract class KShortestPathsStPathsTreeBased extends KShortestPathsSts.Abstract
 		final BitmapSet visitedS;
 		final BitmapSet visitedT;
 
-		ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target, Bitmap edgesMask, IndexHeapDouble heapS,
-				IndexHeapDouble heapT) {
+		/**
+		 * Constructs a new shortest path subroutine.
+		 *
+		 * <p>
+		 * The subroutine compute a single shortest path from a source vertex to a target vertex in a graph, with some
+		 * masked edges. It is used to compute the best deviation path for a node in the paths tree.
+		 *
+		 * @param g         the graph, should not be modified for the lifetime of the subroutine
+		 * @param w         an edge weight function
+		 * @param target    the target vertex. The target is fixed, and a source is provided for each subroutine call
+		 * @param edgesMask a mask of edges to exclude from the graph, used to force the shortest path to avoid some
+		 *                      edges or vertices. The reference is stored to the given object, and the caller should
+		 *                      modify the mask as needed before calling the subroutine
+		 * @param heapS     a heap for the source side. This argument is provided so the caller can reuse the heap and
+		 *                      the distances array
+		 * @param heapT     a heap for the target side. This argument is provided so the caller can reuse the heap and
+		 *                      the distances array
+		 */
+		public ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target, Bitmap edgesMask,
+				IndexHeapDouble heapS, IndexHeapDouble heapT) {
 			this.g = g;
 			this.w = w;
 			this.target = target;
@@ -403,7 +444,7 @@ abstract class KShortestPathsStPathsTreeBased extends KShortestPathsSts.Abstract
 			visitedT = new BitmapSet(n);
 		}
 
-		ObjectDoublePair<IntList> computeShortestPathSt(int source) {
+		public ObjectDoublePair<IntList> computeShortestPathSt(int source) {
 			final ObjectDoublePair<IntList> res = computeShortestPathSt0(source);
 			heapS.clear();
 			heapT.clear();
@@ -519,7 +560,8 @@ abstract class KShortestPathsStPathsTreeBased extends KShortestPathsSts.Abstract
 			return ObjectDoublePair.of(path, mu);
 		}
 
-		List<ObjectDoublePair<IntList>> computeAllDeviationsPaths(int source, IntList prevSp, int maxDeviationPoint) {
+		public List<ObjectDoublePair<IntList>> computeAllDeviationsPaths(int source, IntList prevSp,
+				int maxDeviationPoint) {
 			assert IPath.isPath(g, source, target, prevSp);
 
 			List<ObjectDoublePair<IntList>> paths = new ArrayList<>(maxDeviationPoint);
@@ -541,7 +583,8 @@ abstract class KShortestPathsStPathsTreeBased extends KShortestPathsSts.Abstract
 			return paths;
 		}
 
-		abstract FastReplacementAlgoResult computeBestDeviationPath(int source, IntList prevSp, int maxDeviationPoint);
+		public abstract FastReplacementAlgoResult computeBestDeviationPath(int source, IntList prevSp,
+				int maxDeviationPoint);
 
 	}
 

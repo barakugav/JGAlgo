@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * Yen's algorithm for computing the K shortest paths between two vertices in a graph.
  *
  * <p>
- * This implementation is based on the paths compressed tree (the {@linkplain KShortestPathsStPathsTreeBased base
+ * This implementation is based on the paths compressed tree (the {@linkplain KShortestPathsStBasedPathsTree base
  * class}), which looks very different from the original algorithm, but it is indeed the same algorithm. This way of
  * maintaining the paths is more efficient than the original algorithm, and improvements such as Lawler's are not
  * necessary.
@@ -36,15 +36,24 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * @see    <a href="https://en.wikipedia.org/wiki/Yen%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class KShortestPathsStYen extends KShortestPathsStPathsTreeBased {
+public class KShortestPathsStYen extends KShortestPathsStBasedPathsTree {
+
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link KShortestPathsSt#newInstance()} to get a default implementation for the
+	 * {@link KShortestPathsSt} interface.
+	 */
+	public KShortestPathsStYen() {}
 
 	@Override
-	KShortestPathsStPathsTreeBased.ShortestPathSubroutine newShortestPathSubroutine(IndexGraph g, IWeightFunction w,
-			int target, Bitmap edgesMask) {
+	protected KShortestPathsStBasedPathsTree.ShortestPathSubroutine newShortestPathSubroutine(IndexGraph g,
+			IWeightFunction w, int target, Bitmap edgesMask) {
 		return ShortestPathSubroutine.newInstance(g, w, target, edgesMask);
 	}
 
-	private static class ShortestPathSubroutine extends KShortestPathsStPathsTreeBased.ShortestPathSubroutine {
+	private static class ShortestPathSubroutine extends KShortestPathsStBasedPathsTree.ShortestPathSubroutine {
 
 		ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target, Bitmap edgesMask, IndexHeapDouble heapS,
 				IndexHeapDouble heapT) {
@@ -59,7 +68,7 @@ class KShortestPathsStYen extends KShortestPathsStPathsTreeBased {
 		}
 
 		@Override
-		FastReplacementAlgoResult computeBestDeviationPath(int source, IntList prevSp, int maxDeviationPoint) {
+		public FastReplacementAlgoResult computeBestDeviationPath(int source, IntList prevSp, int maxDeviationPoint) {
 			/*
 			 * Always fall back to computing a deviation path from all possible deviation points. the base class fall
 			 * back algorithm is actually Yen's algorithm.

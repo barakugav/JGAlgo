@@ -269,4 +269,16 @@
     </Or>
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
+  <Match>
+    <!-- The function is documented -->
+    <!-- The input graph should not be modified, it is an input to the algorithm -->
+    <!-- the mask SHOULD be modified by the caller before calling the subroutine -->
+    <Class name="com.jgalgo.alg.path.KShortestPathsStBasedPathsTree$ShortestPathSubroutine" />
+    <Constructor />
+    <Or>
+      <Local name="g" />
+      <Local name="edgesMask" />
+    </Or>
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
 </FindBugsFilter>

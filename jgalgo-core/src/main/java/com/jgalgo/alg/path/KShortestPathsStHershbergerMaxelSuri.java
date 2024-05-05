@@ -53,19 +53,28 @@ import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
  *
  * @author Barak Ugav
  */
-class KShortestPathsStHershbergerMaxelSuri extends KShortestPathsStPathsTreeBased {
+class KShortestPathsStHershbergerMaxelSuri extends KShortestPathsStBasedPathsTree {
 
 	private int fastReplacementThreshold = 50;
 
+	/**
+	 * Create a new instance of the algorithm.
+	 *
+	 * <p>
+	 * Please prefer using {@link KShortestPathsSt#newInstance()} to get a default implementation for the
+	 * {@link KShortestPathsSt} interface.
+	 */
+	public KShortestPathsStHershbergerMaxelSuri() {}
+
 	@Override
-	public List<IPath> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
+	protected List<IPath> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
 		Assertions.onlyDirected(g);
 		return super.computeKShortestPaths(g, w, source, target, k);
 	}
 
 	@Override
-	KShortestPathsStPathsTreeBased.ShortestPathSubroutine newShortestPathSubroutine(IndexGraph g, IWeightFunction w,
-			int target, Bitmap edgesMask) {
+	protected KShortestPathsStBasedPathsTree.ShortestPathSubroutine newShortestPathSubroutine(IndexGraph g,
+			IWeightFunction w, int target, Bitmap edgesMask) {
 		final int n = g.vertices().size();
 		double[] sDistances = new double[n];
 		double[] tDistances = new double[n];
@@ -86,7 +95,7 @@ class KShortestPathsStHershbergerMaxelSuri extends KShortestPathsStPathsTreeBase
 		fastReplacementThreshold = threshold;
 	}
 
-	private class ShortestPathSubroutine extends KShortestPathsStPathsTreeBased.ShortestPathSubroutine {
+	private class ShortestPathSubroutine extends KShortestPathsStBasedPathsTree.ShortestPathSubroutine {
 
 		/* Fast replacement algorithm data structures */
 		private final IndexHeap heap;
@@ -196,7 +205,7 @@ class KShortestPathsStHershbergerMaxelSuri extends KShortestPathsStPathsTreeBase
 		}
 
 		@Override
-		FastReplacementAlgoResult computeBestDeviationPath(int source, IntList prevSp, int maxDeviationPoint) {
+		public FastReplacementAlgoResult computeBestDeviationPath(int source, IntList prevSp, int maxDeviationPoint) {
 			if (maxDeviationPoint < fastReplacementThreshold)
 				return FastReplacementAlgoResult.ofFailure();
 
