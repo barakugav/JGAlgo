@@ -72,7 +72,7 @@ public class ApspBench {
 		}
 	}
 
-	private void benchAPSPPositiveWeights(ShortestPathAllPairs algo, Blackhole blackhole) {
+	private void benchApspPositiveWeights(ShortestPathAllPairs algo, Blackhole blackhole) {
 		Pair<IntGraph, IWeightFunctionInt> graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		ShortestPathAllPairs.IResult result =
 				(ShortestPathAllPairs.IResult) algo.computeAllShortestPaths(graph.first(), graph.second());
@@ -81,12 +81,12 @@ public class ApspBench {
 
 	@Benchmark
 	public void FloydWarshall(Blackhole blackhole) {
-		benchAPSPPositiveWeights(getAlgo("floyd-warshall"), blackhole);
+		benchApspPositiveWeights(getAlgo("floyd-warshall"), blackhole);
 	}
 
 	@Benchmark
 	public void Johnson(Blackhole blackhole) {
-		benchAPSPPositiveWeights(getAlgo("johnson"), blackhole);
+		benchApspPositiveWeights(getAlgo("johnson"), blackhole);
 	}
 
 	private static ShortestPathAllPairs getAlgo(String implName) {

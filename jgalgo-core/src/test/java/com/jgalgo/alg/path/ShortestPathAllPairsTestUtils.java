@@ -45,7 +45,7 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 
 	private ShortestPathAllPairsTestUtils() {}
 
-	static void testAPSPPositive(ShortestPathAllPairs algo, boolean directed, boolean allVertices, long seed) {
+	static void testApspPositive(ShortestPathAllPairs algo, boolean directed, boolean allVertices, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
@@ -57,11 +57,11 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 			g = maybeIndexGraph(g, rand);
 			Collection<Integer> verticesSubset = verticesSubset(g, allVertices, seedGen.nextSeed());
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			testAPSP(g, verticesSubset, allVertices, w, algo, new ShortestPathSingleSourceDijkstra());
+			testApsp(g, verticesSubset, allVertices, w, algo, new ShortestPathSingleSourceDijkstra());
 		});
 	}
 
-	static void testAPSPCardinality(ShortestPathAllPairs algo, boolean directed, boolean allVertices, long seed) {
+	static void testApspCardinality(ShortestPathAllPairs algo, boolean directed, boolean allVertices, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
@@ -72,11 +72,11 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 			Collection<Integer> verticesSubset = verticesSubset(g, allVertices, seedGen.nextSeed());
-			testAPSP(g, verticesSubset, allVertices, null, algo, new ShortestPathSingleSourceDijkstra());
+			testApsp(g, verticesSubset, allVertices, null, algo, new ShortestPathSingleSourceDijkstra());
 		});
 	}
 
-	static void testAPSPDirectedNegative(ShortestPathAllPairs algo, boolean allVertices, long seed) {
+	static void testApspDirectedNegative(ShortestPathAllPairs algo, boolean allVertices, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
@@ -88,7 +88,7 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 			g = maybeIndexGraph(g, rand);
 			Collection<Integer> verticesSubset = verticesSubset(g, allVertices, seedGen.nextSeed());
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
-			testAPSP(g, verticesSubset, allVertices, w, algo, new ShortestPathSingleSourceGoldberg());
+			testApsp(g, verticesSubset, allVertices, w, algo, new ShortestPathSingleSourceGoldberg());
 		});
 	}
 
@@ -103,7 +103,7 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 		return subset;
 	}
 
-	static void testAPSP(Graph<Integer, Integer> g, Collection<Integer> verticesSubset, boolean allVertices,
+	static void testApsp(Graph<Integer, Integer> g, Collection<Integer> verticesSubset, boolean allVertices,
 			WeightFunction<Integer> w, ShortestPathAllPairs algo, ShortestPathSingleSource validationAlgo) {
 		final Random rand = new Random(0xd5106f1aa2b4b738L);
 
@@ -237,10 +237,10 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 				.edges(IdBuilderInt.defaultBuilder())
 				.generate();
 
-		testAPSP(g, g.vertices(), true, null, algo, new ShortestPathSingleSourceDijkstra());
-		testAPSP(g, g.vertices(), true, e -> 78 + e.intValue(), algo, new ShortestPathSingleSourceDijkstra());
-		testAPSP(g, range(5), false, null, algo, new ShortestPathSingleSourceDijkstra());
-		testAPSP(g, range(5), false, e -> 78 + e.intValue(), algo, new ShortestPathSingleSourceDijkstra());
+		testApsp(g, g.vertices(), true, null, algo, new ShortestPathSingleSourceDijkstra());
+		testApsp(g, g.vertices(), true, e -> 78 + e.intValue(), algo, new ShortestPathSingleSourceDijkstra());
+		testApsp(g, range(5), false, null, algo, new ShortestPathSingleSourceDijkstra());
+		testApsp(g, range(5), false, e -> 78 + e.intValue(), algo, new ShortestPathSingleSourceDijkstra());
 	}
 
 }

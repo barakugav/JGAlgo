@@ -20,9 +20,9 @@ import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import com.jgalgo.internal.util.Fastutil;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -45,7 +45,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		w = IWeightFunction.replaceNullWeightFunc(w);
-		return g.isDirected() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);
+		return g.isDirected() ? computeApspDirected(g, w) : computeApspUndirected(g, w);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 		return computeAllShortestPaths(g, w);
 	}
 
-	private static ShortestPathAllPairs.IResult computeAPSPUndirected(IndexGraph g, IWeightFunction w) {
+	private static ShortestPathAllPairs.IResult computeApspUndirected(IndexGraph g, IWeightFunction w) {
 		ShortestPathAllPairsUtils.IndexResult.AllVertices res = new ShortestPathAllPairsUtils.IndexResult.Undirected(g);
 		for (int e : range(g.edges().size())) {
 			int u = g.edgeSource(e);
@@ -98,7 +98,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 		return res;
 	}
 
-	private static ShortestPathAllPairs.IResult computeAPSPDirected(IndexGraph g, IWeightFunction w) {
+	private static ShortestPathAllPairs.IResult computeApspDirected(IndexGraph g, IWeightFunction w) {
 		ShortestPathAllPairsUtils.IndexResult.AllVertices res = new ShortestPathAllPairsUtils.IndexResult.Directed(g);
 		for (int e : range(g.edges().size())) {
 			int u = g.edgeSource(e);

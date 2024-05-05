@@ -91,7 +91,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 		if (!negWeight) {
 			/* No negative weights, no need for potential */
-			Res res = computeAPSPPositive(g, verticesSubset, w, allVertices);
+			Res res = computeApspPositive(g, verticesSubset, w, allVertices);
 			res.potential = new double[n];
 			return res;
 		}
@@ -99,12 +99,12 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		double[] potential = calcPotential(g, w);
 		IWeightFunction wPotential = ShortestPathUtils.potentialWeightFunc(g, w, potential);
 
-		Res res = computeAPSPPositive(g, verticesSubset, wPotential, allVertices);
+		Res res = computeApspPositive(g, verticesSubset, wPotential, allVertices);
 		res.potential = potential;
 		return res;
 	}
 
-	private Res computeAPSPPositive(IndexGraph g, IntCollection verticesSubset, IWeightFunction w,
+	private Res computeApspPositive(IndexGraph g, IntCollection verticesSubset, IWeightFunction w,
 			boolean allVertices) {
 		final int verticesSubsetSize = verticesSubset.size();
 		final ShortestPathSingleSource.IResult[] ssspResults = new ShortestPathSingleSource.IResult[verticesSubsetSize];
