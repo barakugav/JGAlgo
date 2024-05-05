@@ -45,9 +45,17 @@ public class NegativeCycleException extends RuntimeException {
 	 */
 	private final Path<?, ?> cycle;
 
-	<V, E> NegativeCycleException(Graph<V, E> g, Path<V, E> cycle) {
+	/**
+	 * Create a new instance of the exception.
+	 *
+	 * @param <V>   the vertices type
+	 * @param <E>   the edges type
+	 * @param graph the graph on which the negative cycle was detected
+	 * @param cycle the negative cycle that was found in the graph
+	 */
+	public <V, E> NegativeCycleException(Graph<V, E> graph, Path<V, E> cycle) {
 		super("Negative cycle detected in graph during shortest path computation");
-		this.graph = Objects.requireNonNull(g);
+		this.graph = Objects.requireNonNull(graph);
 		this.cycle = Objects.requireNonNull(cycle);
 	}
 

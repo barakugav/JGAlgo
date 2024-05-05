@@ -281,4 +281,11 @@
     </Or>
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
+  <Match>
+    <!-- The stored graph is not a state of the exception -->
+    <Class name="com.jgalgo.alg.path.NegativeCycleException" />
+    <Constructor />
+    <!-- <Local name="graph" /> -->
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
 </FindBugsFilter>
