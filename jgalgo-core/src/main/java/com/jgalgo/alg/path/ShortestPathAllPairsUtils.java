@@ -231,15 +231,15 @@ class ShortestPathAllPairsUtils {
 
 	}
 
-	abstract static class IndexResultFromSSSP implements ShortestPathAllPairs.IResult {
+	abstract static class IndexResultFromSssp implements ShortestPathAllPairs.IResult {
 
 		final ShortestPathSingleSource.IResult[] ssspResults;
 
-		IndexResultFromSSSP(ShortestPathSingleSource.IResult[] ssspResults) {
+		IndexResultFromSssp(ShortestPathSingleSource.IResult[] ssspResults) {
 			this.ssspResults = ssspResults;
 		}
 
-		static class AllVertices extends IndexResultFromSSSP {
+		static class AllVertices extends IndexResultFromSssp {
 
 			AllVertices(IResult[] ssspResults) {
 				super(ssspResults);
@@ -259,7 +259,7 @@ class ShortestPathAllPairsUtils {
 
 		}
 
-		static class VerticesSubset extends IndexResultFromSSSP {
+		static class VerticesSubset extends IndexResultFromSssp {
 
 			final int[] vToResIdx;
 

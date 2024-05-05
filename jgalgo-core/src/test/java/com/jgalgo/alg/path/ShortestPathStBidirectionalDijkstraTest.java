@@ -32,37 +32,37 @@ public class ShortestPathStBidirectionalDijkstraTest extends TestBase {
 	@Test
 	public void testRandGraphDirectedPositive() {
 		final long seed = 0x6cc179f14ce846ebL;
-		ShortestPathSingleSourceTestUtils.testSSSPPositive(sssp(), true, seed);
+		ShortestPathSingleSourceTestUtils.testSsspPositive(sssp(), true, seed);
 	}
 
 	@Test
-	public void testSSSPUndirectedPositive() {
+	public void testSsspUndirectedPositive() {
 		final long seed = 0xc1b8a406eeebf0b3L;
-		ShortestPathSingleSourceTestUtils.testSSSPPositive(sssp(), false, seed);
+		ShortestPathSingleSourceTestUtils.testSsspPositive(sssp(), false, seed);
 	}
 
 	@Test
 	public void testRandGraphDirectedPositiveInt() {
 		final long seed = 0xa8f5fd9715bf8077L;
-		ShortestPathSingleSourceTestUtils.testSSSPDirectedPositiveInt(sssp(), seed);
+		ShortestPathSingleSourceTestUtils.testSsspDirectedPositiveInt(sssp(), seed);
 	}
 
 	@Test
-	public void testSSSPUndirectedPositiveInt() {
+	public void testSsspUndirectedPositiveInt() {
 		final long seed = 0xbebff4437c47bf83L;
-		ShortestPathSingleSourceTestUtils.testSSSPUndirectedPositiveInt(sssp(), seed);
+		ShortestPathSingleSourceTestUtils.testSsspUndirectedPositiveInt(sssp(), seed);
 	}
 
 	@Test
-	public void testSSSPUndirectedCardinality() {
+	public void testSsspUndirectedCardinality() {
 		final long seed = 0x306bceca7951ff3bL;
-		ShortestPathSingleSourceTestUtils.testSSSPCardinality(sssp(), false, seed);
+		ShortestPathSingleSourceTestUtils.testSsspCardinality(sssp(), false, seed);
 	}
 
 	@Test
-	public void testSSSPDirectedCardinality() {
+	public void testSsspDirectedCardinality() {
 		final long seed = 0xf0938b03455c55aeL;
-		ShortestPathSingleSourceTestUtils.testSSSPCardinality(sssp(), true, seed);
+		ShortestPathSingleSourceTestUtils.testSsspCardinality(sssp(), true, seed);
 	}
 
 	@SuppressWarnings("boxing")

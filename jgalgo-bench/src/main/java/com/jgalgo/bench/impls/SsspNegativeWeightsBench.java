@@ -50,7 +50,7 @@ public class SsspNegativeWeightsBench {
 	final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
-	void benchSSSP(ShortestPathSingleSource algo, Blackhole blackhole) {
+	void benchSssp(ShortestPathSingleSource algo, Blackhole blackhole) {
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		try {
 			ShortestPathSingleSource.IResult result = (ShortestPathSingleSource.IResult) algo
@@ -93,12 +93,12 @@ public class SsspNegativeWeightsBench {
 
 		@Benchmark
 		public void BellmanFord(Blackhole blackhole) {
-			benchSSSP(getAlgo("bellman-ford"), blackhole);
+			benchSssp(getAlgo("bellman-ford"), blackhole);
 		}
 
 		@Benchmark
 		public void Goldberg(Blackhole blackhole) {
-			benchSSSP(getAlgo("goldberg"), blackhole);
+			benchSssp(getAlgo("goldberg"), blackhole);
 		}
 	}
 
@@ -134,12 +134,12 @@ public class SsspNegativeWeightsBench {
 
 		@Benchmark
 		public void BellmanFord(Blackhole blackhole) {
-			benchSSSP(getAlgo("bellman-ford"), blackhole);
+			benchSssp(getAlgo("bellman-ford"), blackhole);
 		}
 
 		@Benchmark
 		public void Goldberg(Blackhole blackhole) {
-			benchSSSP(getAlgo("goldberg"), blackhole);
+			benchSssp(getAlgo("goldberg"), blackhole);
 		}
 	}
 
@@ -176,12 +176,12 @@ public class SsspNegativeWeightsBench {
 
 		@Benchmark
 		public void BellmanFord(Blackhole blackhole) {
-			benchSSSP(getAlgo("bellman-ford"), blackhole);
+			benchSssp(getAlgo("bellman-ford"), blackhole);
 		}
 
 		@Benchmark
 		public void Goldberg(Blackhole blackhole) {
-			benchSSSP(getAlgo("goldberg"), blackhole);
+			benchSssp(getAlgo("goldberg"), blackhole);
 		}
 	}
 

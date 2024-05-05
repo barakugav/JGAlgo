@@ -25,15 +25,15 @@ public class ShortestPathStBidirectionalBfsTest extends TestBase {
 	}
 
 	@Test
-	public void testSSSPUndirectedCardinality() {
+	public void testSsspUndirectedCardinality() {
 		final long seed = 0x29450d7627d0f2acL;
-		ShortestPathSingleSourceTestUtils.testSSSPCardinality(sssp(), false, seed);
+		ShortestPathSingleSourceTestUtils.testSsspCardinality(sssp(), false, seed);
 	}
 
 	@Test
-	public void testSSSPDirectedCardinality() {
+	public void testSsspDirectedCardinality() {
 		final long seed = 0x8e50e159747d137cL;
-		ShortestPathSingleSourceTestUtils.testSSSPCardinality(sssp(), true, seed);
+		ShortestPathSingleSourceTestUtils.testSsspCardinality(sssp(), true, seed);
 	}
 
 }

@@ -24,18 +24,18 @@ public class ShortestPathSingleSourceGoldbergTest extends TestBase {
 	@Test
 	public void testRandGraphPositiveInt() {
 		final long seed = 0x502218b82d4ab25aL;
-		ShortestPathSingleSourceTestUtils.testSSSPDirectedPositiveInt(new ShortestPathSingleSourceGoldberg(), seed);
+		ShortestPathSingleSourceTestUtils.testSsspDirectedPositiveInt(new ShortestPathSingleSourceGoldberg(), seed);
 	}
 
 	@Test
 	public void testRandGraphNegativeInt() {
 		final long seed = 0x15f829173b4f088bL;
-		ShortestPathSingleSourceTestUtils.testSSSPDirectedNegativeInt(new ShortestPathSingleSourceGoldberg(), seed);
+		ShortestPathSingleSourceTestUtils.testSsspDirectedNegativeInt(new ShortestPathSingleSourceGoldberg(), seed);
 	}
 
 	@Test
-	public void testSSSPDirectedCardinality() {
+	public void testSsspDirectedCardinality() {
 		final long seed = 0x30a5e66dc18d88b3L;
-		ShortestPathSingleSourceTestUtils.testSSSPCardinality(new ShortestPathSingleSourceGoldberg(), true, seed);
+		ShortestPathSingleSourceTestUtils.testSsspCardinality(new ShortestPathSingleSourceGoldberg(), true, seed);
 	}
 }

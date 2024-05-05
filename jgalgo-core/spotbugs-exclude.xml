@@ -89,13 +89,6 @@
     <Bug pattern="FL_FLOATS_AS_LOOP_COUNTERS" />
   </Match>
   <Match>
-    <!-- intentional -->
-    <Class name="com.jgalgo.alg.path.SSSPDial$DialHeap" />
-    <Method name="extractMin" />
-    <Field name="scanIdx" />
-    <Bug pattern="SA_FIELD_SELF_ASSIGNMENT" />
-  </Match>
-  <Match>
     <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
     <Or>
       <Class name="com.jgalgo.graph.DataContainer$Obj" />

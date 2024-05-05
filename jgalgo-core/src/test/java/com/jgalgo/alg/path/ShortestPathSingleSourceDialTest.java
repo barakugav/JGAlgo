@@ -24,25 +24,25 @@ public class ShortestPathSingleSourceDialTest extends TestBase {
 	@Test
 	public void testRandGraphDirectedPositiveInt() {
 		final long seed = 0x1ecd0cadb4951d87L;
-		ShortestPathSingleSourceTestUtils.testSSSPDirectedPositiveInt(new ShortestPathSingleSourceDial(), seed);
+		ShortestPathSingleSourceTestUtils.testSsspDirectedPositiveInt(new ShortestPathSingleSourceDial(), seed);
 	}
 
 	@Test
 	public void testRandGraphUndirectedPositiveInt() {
 		final long seed = 0xadc83d79349e7784L;
-		ShortestPathSingleSourceTestUtils.testSSSPUndirectedPositiveInt(new ShortestPathSingleSourceDial(), seed);
+		ShortestPathSingleSourceTestUtils.testSsspUndirectedPositiveInt(new ShortestPathSingleSourceDial(), seed);
 	}
 
 	@Test
-	public void testSSSPUndirectedCardinality() {
+	public void testSsspUndirectedCardinality() {
 		final long seed = 0xaf3606c2a17e51f6L;
-		ShortestPathSingleSourceTestUtils.testSSSPCardinality(new ShortestPathSingleSourceDial(), false, seed);
+		ShortestPathSingleSourceTestUtils.testSsspCardinality(new ShortestPathSingleSourceDial(), false, seed);
 	}
 
 	@Test
-	public void testSSSPDirectedCardinality() {
+	public void testSsspDirectedCardinality() {
 		final long seed = 0x248003d317888444L;
-		ShortestPathSingleSourceTestUtils.testSSSPCardinality(new ShortestPathSingleSourceDial(), true, seed);
+		ShortestPathSingleSourceTestUtils.testSsspCardinality(new ShortestPathSingleSourceDial(), true, seed);
 	}
 
 }

@@ -37,7 +37,7 @@ class ShortestPathAllPairsFloydWarshallTest extends TestBase {
 	}
 
 	@Test
-	public void testSSSPUndirectedPositive() {
+	public void testSsspUndirectedPositive() {
 		final long seed = 0x307fc7bb8684a8b5L;
 		ShortestPathAllPairsTestUtils.testAPSPPositive(algo(), false, true, seed);
 	}
@@ -67,7 +67,7 @@ class ShortestPathAllPairsFloydWarshallTest extends TestBase {
 	}
 
 	@Test
-	public void testSSSPUndirectedPositiveVerticesSubset() {
+	public void testSsspUndirectedPositiveVerticesSubset() {
 		final long seed = 0xc3387b0aa27e9e2eL;
 		ShortestPathAllPairsTestUtils.testAPSPPositive(algo(), false, false, seed);
 	}

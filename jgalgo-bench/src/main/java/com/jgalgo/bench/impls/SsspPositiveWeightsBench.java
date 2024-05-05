@@ -49,7 +49,7 @@ public class SsspPositiveWeightsBench {
 	final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
-	void benchSSSP(ShortestPathSingleSource algo, Blackhole blackhole) {
+	void benchSssp(ShortestPathSingleSource algo, Blackhole blackhole) {
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		ShortestPathSingleSource.IResult result = (ShortestPathSingleSource.IResult) algo
 				.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));
@@ -87,12 +87,12 @@ public class SsspPositiveWeightsBench {
 
 		@Benchmark
 		public void Dijkstra(Blackhole blackhole) {
-			benchSSSP(getAlgo("dijkstra"), blackhole);
+			benchSssp(getAlgo("dijkstra"), blackhole);
 		}
 
 		@Benchmark
 		public void Dial(Blackhole blackhole) {
-			benchSSSP(getAlgo("dial"), blackhole);
+			benchSssp(getAlgo("dial"), blackhole);
 		}
 	}
 
@@ -127,12 +127,12 @@ public class SsspPositiveWeightsBench {
 
 		@Benchmark
 		public void Dijkstra(Blackhole blackhole) {
-			benchSSSP(getAlgo("dijkstra"), blackhole);
+			benchSssp(getAlgo("dijkstra"), blackhole);
 		}
 
 		@Benchmark
 		public void Dial(Blackhole blackhole) {
-			benchSSSP(getAlgo("dial"), blackhole);
+			benchSssp(getAlgo("dial"), blackhole);
 		}
 	}
 
@@ -168,12 +168,12 @@ public class SsspPositiveWeightsBench {
 
 		@Benchmark
 		public void Dijkstra(Blackhole blackhole) {
-			benchSSSP(getAlgo("dijkstra"), blackhole);
+			benchSssp(getAlgo("dijkstra"), blackhole);
 		}
 
 		@Benchmark
 		public void Dial(Blackhole blackhole) {
-			benchSSSP(getAlgo("dial"), blackhole);
+			benchSssp(getAlgo("dial"), blackhole);
 		}
 	}
 

@@ -99,9 +99,9 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 		}
 
 		if (allVertices) {
-			return new ShortestPathAllPairsUtils.IndexResultFromSSSP.AllVertices(ssspResults);
+			return new ShortestPathAllPairsUtils.IndexResultFromSssp.AllVertices(ssspResults);
 		} else {
-			return new ShortestPathAllPairsUtils.IndexResultFromSSSP.VerticesSubset(ssspResults, vToResIdx);
+			return new ShortestPathAllPairsUtils.IndexResultFromSssp.VerticesSubset(ssspResults, vToResIdx);
 		}
 	}
 

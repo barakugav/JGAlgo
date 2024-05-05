@@ -24,13 +24,13 @@ public class ShortestPathSingleSourceBellmanFordTest extends TestBase {
 	@Test
 	public void testRandGraphPositiveInt() {
 		final long seed = 0x89d12d4775fd2b7fL;
-		ShortestPathSingleSourceTestUtils.testSSSPDirectedPositiveInt(new ShortestPathSingleSourceBellmanFord(), seed);
+		ShortestPathSingleSourceTestUtils.testSsspDirectedPositiveInt(new ShortestPathSingleSourceBellmanFord(), seed);
 	}
 
 	@Test
 	public void testRandGraphNegativeInt() {
 		final long seed = 0x5a4758f2d75f9448L;
-		ShortestPathSingleSourceTestUtils.testSSSPDirectedNegativeInt(new ShortestPathSingleSourceBellmanFord(), seed);
+		ShortestPathSingleSourceTestUtils.testSsspDirectedNegativeInt(new ShortestPathSingleSourceBellmanFord(), seed);
 	}
 
 }

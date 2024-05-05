@@ -48,16 +48,16 @@ public class ShortestPathAStarTest extends TestBase {
 		final long seed = 0x4c6096c679a03079L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		ShortestPathSingleSourceTestUtils
-				.testSSSPPositiveInt(AStarAsSSSPWithNoHeuristic(seedGen.nextSeed()), true, seedGen.nextSeed(),
+				.testSsspPositiveInt(AStarAsSsspWithNoHeuristic(seedGen.nextSeed()), true, seedGen.nextSeed(),
 						SsspPhases);
 	}
 
 	@Test
-	public void testSSSPUndirectedNoHeuristic() {
+	public void testSsspUndirectedNoHeuristic() {
 		final long seed = 0x97997bc1c8243730L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		ShortestPathSingleSourceTestUtils
-				.testSSSPPositiveInt(AStarAsSSSPWithNoHeuristic(seedGen.nextSeed()), false, seedGen.nextSeed(),
+				.testSsspPositiveInt(AStarAsSsspWithNoHeuristic(seedGen.nextSeed()), false, seedGen.nextSeed(),
 						SsspPhases);
 	}
 
@@ -66,16 +66,16 @@ public class ShortestPathAStarTest extends TestBase {
 		final long seed = 0xf84561a561971620L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		ShortestPathSingleSourceTestUtils
-				.testSSSPPositiveInt(AStarAsSSSPWithPerfectHeuristic(seedGen.nextSeed()), true, seedGen.nextSeed(),
+				.testSsspPositiveInt(AStarAsSsspWithPerfectHeuristic(seedGen.nextSeed()), true, seedGen.nextSeed(),
 						SsspPhases);
 	}
 
 	@Test
-	public void testSSSPUndirectedPerfectHeuristic() {
+	public void testSsspUndirectedPerfectHeuristic() {
 		final long seed = 0xf33456751c101f3bL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		ShortestPathSingleSourceTestUtils
-				.testSSSPPositiveInt(AStarAsSSSPWithPerfectHeuristic(seedGen.nextSeed()), false, seedGen.nextSeed(),
+				.testSsspPositiveInt(AStarAsSsspWithPerfectHeuristic(seedGen.nextSeed()), false, seedGen.nextSeed(),
 						SsspPhases);
 	}
 
@@ -84,21 +84,21 @@ public class ShortestPathAStarTest extends TestBase {
 		final long seed = 0xb5366e9088af7540L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		ShortestPathSingleSourceTestUtils
-				.testSSSPPositiveInt(AStarAsSSSPWithRandAdmissibleHeuristic(seedGen.nextSeed()), true,
+				.testSsspPositiveInt(AStarAsSsspWithRandAdmissibleHeuristic(seedGen.nextSeed()), true,
 						seedGen.nextSeed(), SsspPhases);
 	}
 
 	@Test
-	public void testSSSPUndirectedRandAdmissibleHeuristic() {
+	public void testSsspUndirectedRandAdmissibleHeuristic() {
 		final long seed = 0x7a8fb412a411ca7bL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		ShortestPathSingleSourceTestUtils
-				.testSSSPPositiveInt(AStarAsSSSPWithRandAdmissibleHeuristic(seedGen.nextSeed()), false,
+				.testSsspPositiveInt(AStarAsSsspWithRandAdmissibleHeuristic(seedGen.nextSeed()), false,
 						seedGen.nextSeed(), SsspPhases);
 	}
 
-	private static ShortestPathSingleSource AStarAsSSSPWithNoHeuristic(long seed) {
-		return AStarAsSSSP(new HeuristicBuilder() {
+	private static ShortestPathSingleSource AStarAsSsspWithNoHeuristic(long seed) {
+		return AStarAsSssp(new HeuristicBuilder() {
 			@Override
 			public <V, E> ToDoubleFunction<V> buildHeuristic(HeuristicParams<V, E> params) {
 				return v -> 0;
@@ -106,8 +106,8 @@ public class ShortestPathAStarTest extends TestBase {
 		}, seed);
 	}
 
-	private static ShortestPathSingleSource AStarAsSSSPWithPerfectHeuristic(long seed) {
-		return AStarAsSSSP(new HeuristicBuilder() {
+	private static ShortestPathSingleSource AStarAsSsspWithPerfectHeuristic(long seed) {
+		return AStarAsSssp(new HeuristicBuilder() {
 			@Override
 			public <V, E> ToDoubleFunction<V> buildHeuristic(HeuristicParams<V, E> params) {
 				Graph<V, E> g = params.g;
@@ -121,9 +121,9 @@ public class ShortestPathAStarTest extends TestBase {
 		}, seed);
 	}
 
-	private static ShortestPathSingleSource AStarAsSSSPWithRandAdmissibleHeuristic(long seed) {
+	private static ShortestPathSingleSource AStarAsSsspWithRandAdmissibleHeuristic(long seed) {
 		Random rand = new Random(seed);
-		return AStarAsSSSP(new HeuristicBuilder() {
+		return AStarAsSssp(new HeuristicBuilder() {
 			@Override
 			public <V, E> ToDoubleFunction<V> buildHeuristic(HeuristicParams<V, E> params) {
 				Graph<V, E> g = params.g;
@@ -164,7 +164,7 @@ public class ShortestPathAStarTest extends TestBase {
 
 	}
 
-	private static ShortestPathSingleSource AStarAsSSSP(HeuristicBuilder vHeuristicBuilder, long seed) {
+	private static ShortestPathSingleSource AStarAsSssp(HeuristicBuilder vHeuristicBuilder, long seed) {
 		Random rand = new Random(seed);
 		return new ShortestPathSingleSource() {
 			@SuppressWarnings("unchecked")

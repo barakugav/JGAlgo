@@ -47,24 +47,24 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 
 	private ShortestPathSingleSourceTestUtils() {}
 
-	public static void testSSSPDirectedPositiveInt(ShortestPathSingleSource algo, long seed) {
-		testSSSPPositiveInt(algo, true, seed);
+	public static void testSsspDirectedPositiveInt(ShortestPathSingleSource algo, long seed) {
+		testSsspPositiveInt(algo, true, seed);
 	}
 
-	public static void testSSSPUndirectedPositiveInt(ShortestPathSingleSource algo, long seed) {
-		testSSSPPositiveInt(algo, false, seed);
+	public static void testSsspUndirectedPositiveInt(ShortestPathSingleSource algo, long seed) {
+		testSsspPositiveInt(algo, false, seed);
 	}
 
-	private static void testSSSPPositiveInt(ShortestPathSingleSource algo, boolean directed, long seed) {
+	private static void testSsspPositiveInt(ShortestPathSingleSource algo, boolean directed, long seed) {
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32).repeat(128);
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 4096).repeat(8);
 		tester.addPhase().withArgs(4096, 16384).repeat(1);
-		testSSSPPositiveInt(algo, directed, seed, tester);
+		testSsspPositiveInt(algo, directed, seed, tester);
 	}
 
-	static void testSSSPPositiveInt(ShortestPathSingleSource algo, boolean directed, long seed, PhasedTester tester) {
+	static void testSsspPositiveInt(ShortestPathSingleSource algo, boolean directed, long seed, PhasedTester tester) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 
@@ -81,7 +81,7 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		});
 	}
 
-	static void testSSSPPositive(ShortestPathSingleSource algo, boolean directed, long seed) {
+	static void testSsspPositive(ShortestPathSingleSource algo, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
@@ -169,7 +169,7 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		});
 	}
 
-	static void testSSSPCardinality(ShortestPathSingleSource algo, boolean directed, long seed) {
+	static void testSsspCardinality(ShortestPathSingleSource algo, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
@@ -188,7 +188,7 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		});
 	}
 
-	static void testSSSPDirectedNegativeInt(ShortestPathSingleSource algo, long seed) {
+	static void testSsspDirectedNegativeInt(ShortestPathSingleSource algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(4, 8).repeat(512);

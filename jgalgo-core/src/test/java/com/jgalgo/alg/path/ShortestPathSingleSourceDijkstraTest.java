@@ -26,37 +26,37 @@ public class ShortestPathSingleSourceDijkstraTest extends TestBase {
 	@Test
 	public void testRandGraphDirectedPositive() {
 		final long seed = 0xb387c17b735d1f85L;
-		ShortestPathSingleSourceTestUtils.testSSSPPositive(new ShortestPathSingleSourceDijkstra(), true, seed);
+		ShortestPathSingleSourceTestUtils.testSsspPositive(new ShortestPathSingleSourceDijkstra(), true, seed);
 	}
 
 	@Test
-	public void testSSSPUndirectedPositive() {
+	public void testSsspUndirectedPositive() {
 		final long seed = 0x67693af00925a538L;
-		ShortestPathSingleSourceTestUtils.testSSSPPositive(new ShortestPathSingleSourceDijkstra(), false, seed);
+		ShortestPathSingleSourceTestUtils.testSsspPositive(new ShortestPathSingleSourceDijkstra(), false, seed);
 	}
 
 	@Test
 	public void testRandGraphDirectedPositiveInt() {
 		final long seed = 0x4c6096c679a03079L;
-		ShortestPathSingleSourceTestUtils.testSSSPDirectedPositiveInt(new ShortestPathSingleSourceDijkstra(), seed);
+		ShortestPathSingleSourceTestUtils.testSsspDirectedPositiveInt(new ShortestPathSingleSourceDijkstra(), seed);
 	}
 
 	@Test
-	public void testSSSPUndirectedPositiveInt() {
+	public void testSsspUndirectedPositiveInt() {
 		final long seed = 0x97997bc1c8243730L;
-		ShortestPathSingleSourceTestUtils.testSSSPUndirectedPositiveInt(new ShortestPathSingleSourceDijkstra(), seed);
+		ShortestPathSingleSourceTestUtils.testSsspUndirectedPositiveInt(new ShortestPathSingleSourceDijkstra(), seed);
 	}
 
 	@Test
-	public void testSSSPUndirectedCardinality() {
+	public void testSsspUndirectedCardinality() {
 		final long seed = 0x72e22f78446fa4f2L;
-		ShortestPathSingleSourceTestUtils.testSSSPCardinality(new ShortestPathSingleSourceDijkstra(), false, seed);
+		ShortestPathSingleSourceTestUtils.testSsspCardinality(new ShortestPathSingleSourceDijkstra(), false, seed);
 	}
 
 	@Test
-	public void testSSSPDirectedCardinality() {
+	public void testSsspDirectedCardinality() {
 		final long seed = 0x1dbbeb00978a3c46L;
-		ShortestPathSingleSourceTestUtils.testSSSPCardinality(new ShortestPathSingleSourceDijkstra(), true, seed);
+		ShortestPathSingleSourceTestUtils.testSsspCardinality(new ShortestPathSingleSourceDijkstra(), true, seed);
 	}
 
 	@SuppressWarnings("boxing")

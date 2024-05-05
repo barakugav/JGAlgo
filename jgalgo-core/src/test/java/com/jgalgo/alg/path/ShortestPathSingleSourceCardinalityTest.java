@@ -24,15 +24,15 @@ import com.jgalgo.internal.util.TestBase;
 public class ShortestPathSingleSourceCardinalityTest extends TestBase {
 
 	@Test
-	public void testSSSPUndirectedCardinality() {
+	public void testSsspUndirectedCardinality() {
 		final long seed = 0x1c2a5c66014ee5a2L;
-		ShortestPathSingleSourceTestUtils.testSSSPCardinality(new ShortestPathSingleSourceCardinality(), false, seed);
+		ShortestPathSingleSourceTestUtils.testSsspCardinality(new ShortestPathSingleSourceCardinality(), false, seed);
 	}
 
 	@Test
-	public void testSSSPDirectedCardinality() {
+	public void testSsspDirectedCardinality() {
 		final long seed = 0xf03c60e86faad030L;
-		ShortestPathSingleSourceTestUtils.testSSSPCardinality(new ShortestPathSingleSourceCardinality(), true, seed);
+		ShortestPathSingleSourceTestUtils.testSsspCardinality(new ShortestPathSingleSourceCardinality(), true, seed);
 	}
 
 	@SuppressWarnings("boxing")

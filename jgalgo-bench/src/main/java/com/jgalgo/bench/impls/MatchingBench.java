@@ -241,7 +241,7 @@ public class MatchingBench {
 		}
 
 		@Benchmark
-		public void BipartiteSSSP(Blackhole blackhole) {
+		public void BipartiteSssp(Blackhole blackhole) {
 			benchAlgo(getAlgo("bipartite-sssp"), blackhole);
 		}
 
