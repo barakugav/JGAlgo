@@ -114,16 +114,29 @@ class ShortestPathAllPairsUtils {
 
 		abstract void setEdgeTo(int source, int target, int edge);
 
-		abstract static class AllVertices extends IndexResult {
+		static class AllVertices extends IndexResult {
 
 			final IndexGraph g;
+			private final boolean directed;
+			private final int n;
 			private final int[][] edges;
+			private final double[] distances;
 
 			AllVertices(IndexGraph g) {
 				this.g = g;
-				int n = g.vertices().size();
+				directed = g.isDirected();
+				n = g.vertices().size();
 				edges = new int[n][n];
 				BigArrays.fill(edges, -1);
+				if (directed) {
+					distances = new double[n * n];
+				} else {
+					distances = new double[n * (n - 1) / 2];
+				}
+				Arrays.fill(distances, Double.POSITIVE_INFINITY);
+				if (directed)
+					for (int v : range(n))
+						setDistance(v, v, 0);
 			}
 
 			@Override
@@ -134,30 +147,6 @@ class ShortestPathAllPairsUtils {
 			@Override
 			void setEdgeTo(int source, int target, int edge) {
 				edges[source][target] = edge;
-			}
-		}
-
-		static class Undirected extends AllVertices {
-
-			private final int n;
-			private final double[] distances;
-
-			Undirected(IndexGraph g) {
-				super(g);
-				n = g.vertices().size();
-				distances = new double[n * (n - 1) / 2];
-				Arrays.fill(distances, Double.POSITIVE_INFINITY);
-			}
-
-			private int index(int u, int v) {
-				assert u != v;
-				if (u > v) {
-					int temp = u;
-					u = v;
-					v = temp;
-				}
-				/* index mapping assume always u < v (strictly!) */
-				return (2 * n - u - 1) * u / 2 + v - u - 1;
 			}
 
 			@Override
@@ -172,45 +161,19 @@ class ShortestPathAllPairsUtils {
 				return source != target ? distances[index(source, target)] : 0;
 			}
 
-			@Override
-			public IPath getPath(int source, int target) {
-				if (distance(source, target) == Double.POSITIVE_INFINITY)
-					return null;
-				IntList path = new IntArrayList();
-				for (int v = source; v != target;) {
-					int e = getEdgeTo(v, target);
-					assert e >= 0;
-					path.add(e);
-					v = g.edgeEndpoint(e, v);
+			private int index(int u, int v) {
+				if (directed) {
+					return u * n + v;
+				} else {
+					assert u != v;
+					if (u > v) {
+						int temp = u;
+						u = v;
+						v = temp;
+					}
+					/* index mapping assume always u < v (strictly!) */
+					return (2 * n - u - 1) * u / 2 + v - u - 1;
 				}
-				return IPath.valueOf(g, source, target, path);
-			}
-		}
-
-		static class Directed extends AllVertices {
-			private final double[][] distances;
-
-			Directed(IndexGraph g) {
-				super(g);
-				int n = g.vertices().size();
-				distances = new double[n][n];
-				for (int v : range(n)) {
-					Arrays.fill(distances[v], Double.POSITIVE_INFINITY);
-					setDistance(v, v, 0);
-				}
-			}
-
-			@Override
-			void setDistance(int source, int target, double distance) {
-				distances[source][target] = distance;
-			}
-
-			@Override
-			public double distance(int source, int target) {
-				final int n = distances.length;
-				Assertions.checkVertex(source, n);
-				Assertions.checkVertex(target, n);
-				return distances[source][target];
 			}
 
 			@Override
@@ -218,12 +181,21 @@ class ShortestPathAllPairsUtils {
 				if (distance(source, target) == Double.POSITIVE_INFINITY)
 					return null;
 				IntList path = new IntArrayList();
-				for (int v = source; v != target;) {
-					int e = getEdgeTo(v, target);
-					assert e >= 0;
-					assert v == g.edgeSource(e);
-					path.add(e);
-					v = g.edgeTarget(e);
+				if (directed) {
+					for (int v = source; v != target;) {
+						int e = getEdgeTo(v, target);
+						assert e >= 0;
+						assert v == g.edgeSource(e);
+						path.add(e);
+						v = g.edgeTarget(e);
+					}
+				} else {
+					for (int v = source; v != target;) {
+						int e = getEdgeTo(v, target);
+						assert e >= 0;
+						path.add(e);
+						v = g.edgeEndpoint(e, v);
+					}
 				}
 				return IPath.valueOf(g, source, target, path);
 			}
