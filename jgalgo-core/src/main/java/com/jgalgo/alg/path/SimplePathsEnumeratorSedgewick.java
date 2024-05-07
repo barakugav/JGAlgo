@@ -35,10 +35,19 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
  *
  * @author Barak Ugav
  */
-class SimplePathsEnumeratorSedgewick extends SimplePathsEnumerators.AbstractImpl {
+public class SimplePathsEnumeratorSedgewick extends SimplePathsEnumeratorAbstract {
+
+	/**
+	 * Create a algorithm for enumerating over all simple paths between a source and target vertices.
+	 *
+	 * <p>
+	 * Please prefer using {@link SimplePathsEnumerator#newInstance()} to get a default implementation for the
+	 * {@link SimplePathsEnumerator} interface.
+	 */
+	public SimplePathsEnumeratorSedgewick() {}
 
 	@Override
-	Iterator<IPath> simplePathsIter(IndexGraph g, int source, int target) {
+	protected Iterator<IPath> simplePathsIter(IndexGraph g, int source, int target) {
 		if (source == target)
 			return ObjectIterators.singleton(IPath.valueOf(g, source, target, Fastutil.list()));
 		return new Iterator<>() {
