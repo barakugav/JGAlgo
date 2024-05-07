@@ -17,10 +17,10 @@
 package com.jgalgo.alg.path;
 
 import static com.jgalgo.internal.util.Range.range;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 import org.junit.jupiter.api.Test;
@@ -89,8 +89,8 @@ public class TspMetricTest extends TestBase {
 	private static <V, E> void testMstAppxAndMatchingAppxRandGraph(Graph<V, E> g, WeightFunction<E> distances,
 			long seed) {
 
-		Path<V, E> appxMst = new TspMetricMstAppx().computeShortestTour(g, distances);
-		Path<V, E> appxMatch = new TspMetricMatchingAppx().computeShortestTour(g, distances);
+		Path<V, E> appxMst = new TspMetricMstAppx().computeShortestTour(g, distances).get();
+		Path<V, E> appxMatch = new TspMetricMatchingAppx().computeShortestTour(g, distances).get();
 
 		Predicate<Path<V, E>> isPathVisitAllVertices =
 				path -> new HashSet<>(path.vertices()).size() == g.vertices().size();
@@ -107,8 +107,8 @@ public class TspMetricTest extends TestBase {
 	@Test
 	public void emptyGraph() {
 		Graph<Integer, Integer> g = IntGraph.newUndirected();
-		assertNull(new TspMetricMstAppx().computeShortestTour(g, e -> 1));
-		assertNull(new TspMetricMatchingAppx().computeShortestTour(g, e -> 1));
+		assertEquals(Optional.empty(), new TspMetricMstAppx().computeShortestTour(g, e -> 1));
+		assertEquals(Optional.empty(), new TspMetricMatchingAppx().computeShortestTour(g, e -> 1));
 	}
 
 	@Test
@@ -116,8 +116,8 @@ public class TspMetricTest extends TestBase {
 		IntGraph g = IntGraph.newUndirected();
 		g.addVertex(0);
 		g.addVertex(1);
-		assertThrows(IllegalArgumentException.class, () -> new TspMetricMstAppx().computeShortestTour(g, e -> 1));
-		assertThrows(IllegalArgumentException.class, () -> new TspMetricMatchingAppx().computeShortestTour(g, e -> 1));
+		assertEquals(Optional.empty(), new TspMetricMstAppx().computeShortestTour(g, e -> 1));
+		assertEquals(Optional.empty(), new TspMetricMatchingAppx().computeShortestTour(g, e -> 1));
 	}
 
 }

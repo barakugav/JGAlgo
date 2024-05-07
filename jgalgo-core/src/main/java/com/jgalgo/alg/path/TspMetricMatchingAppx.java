@@ -17,6 +17,7 @@
 package com.jgalgo.alg.path;
 
 import static com.jgalgo.internal.util.Range.range;
+import java.util.Optional;
 import com.jgalgo.alg.match.IMatching;
 import com.jgalgo.alg.match.MatchingAlgo;
 import com.jgalgo.alg.span.MinimumSpanningTree;
@@ -33,11 +34,17 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * The running of this algorithm is \(O(n^3)\) and it achieve \(3/2\)-approximation to the optimal TSP solution.
  *
  * <p>
+ * This algorithm can only accept graphs and weight functions that satisfy the metric condition: every three vertices
+ * \(u,v,w\) should satisfy \(d((u,v)) + d((v,w)) \leq d((u,w))$ where \(d(\cdot)\) is the distance of the shortest path
+ * between two vertices. This condition is not validated for performance reason, but graphs that do not satisfy this
+ * condition will result in an undefined behaviour.
+ *
+ * <p>
  * Based on 'Worst-Case Analysis of a New Heuristic for the Travelling Salesman Problem' by Nicos Christofides (1976).
  *
  * @author Barak Ugav
  */
-public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
+public class TspMetricMatchingAppx extends TspAbstract {
 
 	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();
 	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();
@@ -48,18 +55,17 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 	public TspMetricMatchingAppx() {}
 
 	@Override
-	IPath computeShortestTour(IndexGraph g, IWeightFunction w) {
-		final int n = g.vertices().size();
-		if (n == 0)
-			return null;
+	protected Optional<IPath> computeShortestTour(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 		Assertions.noParallelEdges(g, "parallel edges are not supported");
-		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
+		final int n = g.vertices().size();
+		if (n == 0)
+			return Optional.empty();
 
 		/* Calculate MST */
 		IntCollection mst = ((MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(g, w)).edges();
 		if (mst.size() < n - 1)
-			throw new IllegalArgumentException("graph is not connected");
+			return Optional.empty(); // graph is not connected
 
 		/*
 		 * Build graph for the matching calculation, containing only vertices with odd degree from the MST
@@ -110,8 +116,7 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 
 		IPath cycle = TspMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);
 
-		/* Convert cycle of edges to list of vertices */
-		return cycle;
+		return Optional.of(cycle);
 	}
 
 }

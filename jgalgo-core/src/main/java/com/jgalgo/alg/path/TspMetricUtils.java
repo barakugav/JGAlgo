@@ -17,14 +17,8 @@
 package com.jgalgo.alg.path;
 
 import com.jgalgo.alg.euler.EulerianTourAlgo;
-import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
-import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -70,28 +64,6 @@ class TspMetricUtils {
 		IPath cycle0 = IPath.valueOf(g, firstVertex, lastVertex, cycle);
 		assert g.vertices().equals(new IntOpenHashSet(cycle0.vertices()));
 		return cycle0;
-	}
-
-	abstract static class AbstractImpl implements TspMetric {
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> Path<V, E> computeShortestTour(Graph<V, E> g, WeightFunction<E> w) {
-			if (g instanceof IndexGraph) {
-				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-				return (Path<V, E>) computeShortestTour((IndexGraph) g, w0);
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-				IPath indexPath = computeShortestTour(iGraph, iw);
-				return Path.pathFromIndexPath(g, indexPath);
-			}
-		}
-
-		abstract IPath computeShortestTour(IndexGraph g, IWeightFunction w);
-
 	}
 
 }
