@@ -288,4 +288,15 @@
     <Local name="g" />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
+  <Match>
+    <!-- The function is documented, the arguments should not be used by the caller after constructing the result -->
+    <Class name="com.jgalgo.alg.path.VoronoiAlgoAbstract$IndexResult" />
+    <Constructor />
+    <!-- <Or>
+      <Local name="distances" />
+      <Local name="backtrack" />
+      <Local name="sites" />
+    </Or> -->
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
 </FindBugsFilter>

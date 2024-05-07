@@ -24,10 +24,36 @@ import com.jgalgo.internal.ds.IndexHeapDouble;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
-class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
+/**
+ * Variant of Dijkstra algorithm that starts at multiple vertices and compute the Voronoi cells.
+ *
+ * <p>
+ * The algorithm uses a variant of {@linkplain ShortestPathSingleSourceDijkstra Dijkstra's shortest path algorithm} that
+ * grows a forest rooted at the given site vertices, rather than a single tree rooted at a source vertex. This can also
+ * be achieved by a reduction to the single source variant: create a new graph identical to the input graph, and add an
+ * additional auxiliary vertex connected to all the site vertices with zero weight edges, than compute the shortest path
+ * tree for the new vertex. This approach runs in the same asymptotic complexity, but suffer for the real world
+ * additional work of creating a new graph.
+ *
+ * <p>
+ * The overall running time of this algorithm is \(O(m + n \log n)\) and it uses a linear space, same as the single
+ * source Dijkstra algorithm.
+ *
+ * @author Barak Ugav
+ */
+public class VoronoiAlgoDijkstra extends VoronoiAlgoAbstract {
+
+	/**
+	 * Create a algorithm for computing the Voronoi cells in a graph.
+	 *
+	 * <p>
+	 * Please prefer using {@link VoronoiAlgo#newInstance()} to get a default implementation for the {@link VoronoiAlgo}
+	 * interface.
+	 */
+	public VoronoiAlgoDijkstra() {}
 
 	@Override
-	VoronoiAlgo.IResult computeVoronoiCells(IndexGraph g, IntCollection sites, IWeightFunction w) {
+	protected VoronoiAlgo.IResult computeVoronoiCells(IndexGraph g, IntCollection sites, IWeightFunction w) {
 		if (sites.isEmpty())
 			throw new IllegalArgumentException("no sites provided");
 		w = IWeightFunction.replaceNullWeightFunc(w);
@@ -85,7 +111,7 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 		}
 		int blockNum = sitesArr.length + (hasUnreachable ? 1 : 0);
 
-		return new VoronoiAlgos.ResultImpl(g, cell, blockNum, distance, backtrack, sitesArr);
+		return new VoronoiAlgoAbstract.IndexResult(g, cell, blockNum, distance, backtrack, sitesArr);
 	}
 
 }

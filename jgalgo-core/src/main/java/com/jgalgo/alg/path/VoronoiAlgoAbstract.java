@@ -33,42 +33,72 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
-class VoronoiAlgos {
+/**
+ * Abstract class for computing the Voronoi cells in a graph given a set of site vertices.
+ *
+ * <p>
+ * The class implements the interface by solving the problem on the index graph and then maps the results back to the
+ * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ *
+ * @author Barak Ugav
+ */
+public abstract class VoronoiAlgoAbstract implements VoronoiAlgo {
 
-	abstract static class AbstractImpl implements VoronoiAlgo {
+	/**
+	 * Default constructor.
+	 */
+	public VoronoiAlgoAbstract() {}
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> VoronoiAlgo.Result<V, E> computeVoronoiCells(Graph<V, E> g, Collection<V> sites,
-				WeightFunction<E> w) {
-			if (g instanceof IndexGraph) {
-				IntCollection sites0 = IntAdapters.asIntCollection((Collection<Integer>) sites);
-				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-				return (VoronoiAlgo.Result<V, E>) computeVoronoiCells((IndexGraph) g, sites0, w0);
+	@SuppressWarnings("unchecked")
+	@Override
+	public <V, E> VoronoiAlgo.Result<V, E> computeVoronoiCells(Graph<V, E> g, Collection<V> sites,
+			WeightFunction<E> w) {
+		if (g instanceof IndexGraph) {
+			IntCollection sites0 = IntAdapters.asIntCollection((Collection<Integer>) sites);
+			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+			return (VoronoiAlgo.Result<V, E>) computeVoronoiCells((IndexGraph) g, sites0, w0);
 
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-				IntCollection iSites = IndexIdMaps.idToIndexCollection(sites, viMap);
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-				VoronoiAlgo.IResult indexResult = computeVoronoiCells(iGraph, iSites, iw);
-				return resultFromIndexResult(g, indexResult);
-			}
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+			IntCollection iSites = IndexIdMaps.idToIndexCollection(sites, viMap);
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			VoronoiAlgo.IResult indexResult = computeVoronoiCells(iGraph, iSites, iw);
+			return resultFromIndexResult(g, indexResult);
 		}
-
-		abstract VoronoiAlgo.IResult computeVoronoiCells(IndexGraph g, IntCollection sites, IWeightFunction w);
-
 	}
 
-	static class ResultImpl implements VoronoiAlgo.IResult {
+	protected abstract VoronoiAlgo.IResult computeVoronoiCells(IndexGraph g, IntCollection sites, IWeightFunction w);
+
+	/**
+	 * A result object for the Voronoi cells computation in an index graph.
+	 *
+	 * @author Barak Ugav
+	 */
+	protected static class IndexResult implements VoronoiAlgo.IResult {
 
 		private final IVertexPartition partition;
 		private final double[] distance;
 		private final int[] backtrack;
 		private final int[] sites;
 
-		ResultImpl(IndexGraph g, int[] vertexToBlock, int blockNum, double[] distance, int[] backtrack, int[] sites) {
+		/**
+		 * Create a new result object for the Voronoi cells computation in an index graph.
+		 *
+		 * <p>
+		 * All the arguments are NOT CLONED and are used as is. The caller should not use these arrays after creating
+		 * the result object.
+		 *
+		 * @param g             the index graph
+		 * @param vertexToBlock an array mapping each vertex (index) to its block index
+		 * @param blockNum      the number of blocks
+		 * @param distance      an array mapping vertices (indices) to their distance from their closest site
+		 * @param backtrack     an array mapping vertices (indices) to the edge that led their closest site to them
+		 * @param sites         an array mapping block indices to their site vertex (index)
+		 */
+		public IndexResult(IndexGraph g, int[] vertexToBlock, int blockNum, double[] distance, int[] backtrack,
+				int[] sites) {
 			partition = IVertexPartition.fromArray(g, vertexToBlock, blockNum);
 			this.distance = Objects.requireNonNull(distance);
 			this.backtrack = Objects.requireNonNull(backtrack);
@@ -129,7 +159,7 @@ class VoronoiAlgos {
 		}
 	}
 
-	static class ObjResultFromIndexResult<V, E> implements VoronoiAlgo.Result<V, E> {
+	private static class ObjResultFromIndexResult<V, E> implements VoronoiAlgo.Result<V, E> {
 
 		private final VoronoiAlgo.IResult indexRes;
 		private final IndexIdMap<V> viMap;
@@ -170,7 +200,7 @@ class VoronoiAlgos {
 		}
 	}
 
-	static class IntResultFromIndexResult implements VoronoiAlgo.IResult {
+	private static class IntResultFromIndexResult implements VoronoiAlgo.IResult {
 
 		private final VoronoiAlgo.IResult indexRes;
 		private final IndexIntIdMap viMap;
