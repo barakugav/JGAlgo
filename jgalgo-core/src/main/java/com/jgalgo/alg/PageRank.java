@@ -118,7 +118,7 @@ class PageRank {
 
 		}
 
-		return new VertexScoringImpl.ResultImpl(scores);
+		return new VertexScoringImpl.IndexResult(scores);
 	}
 
 	private static class Predecessors {

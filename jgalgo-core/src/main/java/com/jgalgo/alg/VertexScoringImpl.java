@@ -23,11 +23,11 @@ import com.jgalgo.graph.IntGraph;
 
 class VertexScoringImpl {
 
-	static class ResultImpl implements IVertexScoring {
+	static class IndexResult implements IVertexScoring {
 
 		private final double[] scores;
 
-		ResultImpl(double[] scores) {
+		IndexResult(double[] scores) {
 			this.scores = scores;
 		}
 
