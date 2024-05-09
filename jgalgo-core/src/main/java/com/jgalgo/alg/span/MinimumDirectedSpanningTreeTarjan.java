@@ -48,15 +48,19 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  *
  * @author Barak Ugav
  */
-class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTrees.AbstractDirected {
+public class MinimumDirectedSpanningTreeTarjan extends MinimumDirectedSpanningTreeAbstract {
 
 	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();
 
 	/**
 	 * Construct a new MDST algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link MinimumDirectedSpanningTree#newInstance()} to get a default implementation for the
+	 * {@link MinimumDirectedSpanningTree} interface.
 	 */
-	MinimumDirectedSpanningTreeTarjan() {}
+	public MinimumDirectedSpanningTreeTarjan() {}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -68,7 +72,8 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTrees.AbstractDir
 	}
 
 	@Override
-	MinimumSpanningTree.IResult computeMinimumDirectedSpanningTree(IndexGraph g, IWeightFunction w, int root) {
+	protected MinimumSpanningTree.IResult computeMinimumDirectedSpanningTree(IndexGraph g, IWeightFunction w,
+			int root) {
 		Assertions.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return MinimumSpanningTrees.IndexResult.Empty;
@@ -84,7 +89,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTrees.AbstractDir
 			}
 			ContractedGraph contractedGraph = contract(g, null, w, artificialEdgesThreshold);
 			int[] mdstEdges = expand(g, contractedGraph, root, artificialEdgesThreshold);
-			return new MinimumSpanningTrees.IndexResult(mdstEdges);
+			return newIndexResult(mdstEdges);
 
 		} else {
 			/* not all vertices are reachable from the root, operate on the subgraph of these vertices */
@@ -121,7 +126,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTrees.AbstractDir
 			int[] mdstEdges = expand(g, contractedGraph, root, artificialEdgesThreshold);
 			for (int i : range(mdstEdges.length))
 				mdstEdges[i] = edgeRef[mdstEdges[i]];
-			return new MinimumSpanningTrees.IndexResult(mdstEdges);
+			return newIndexResult(mdstEdges);
 		}
 	}
 

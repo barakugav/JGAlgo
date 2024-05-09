@@ -41,14 +41,18 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class MinimumSpanningTreeYao extends MinimumSpanningTrees.AbstractUndirected {
+public class MinimumSpanningTreeYao extends MinimumSpanningTreeAbstract {
 
 	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;
 
 	/**
 	 * Construct a new MST algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link MinimumSpanningTree#newInstance()} to get a default implementation for the
+	 * {@link MinimumSpanningTree} interface.
 	 */
-	MinimumSpanningTreeYao() {}
+	public MinimumSpanningTreeYao() {}
 
 	/**
 	 * {@inheritDoc}
@@ -56,7 +60,7 @@ class MinimumSpanningTreeYao extends MinimumSpanningTrees.AbstractUndirected {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	protected MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 		int n = g.vertices().size();
 
@@ -169,7 +173,7 @@ class MinimumSpanningTreeYao extends MinimumSpanningTrees.AbstractUndirected {
 		}
 
 		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
-		return new MinimumSpanningTrees.IndexResult(mstSet);
+		return newIndexResult(mstSet);
 	}
 
 	private int[][][] partitionEdgesToBuckets(IndexGraph g, IWeightFunction w) {

@@ -30,6 +30,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightsObj;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.WeightFunction;
@@ -97,12 +98,9 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			int[] mstIndex = mst.intStream().map(e -> g.indexGraphEdgesMap().idToIndex(edgeRef.get(e))).toArray();
 			MinimumSpanningTree.IResult indexRes = new MinimumSpanningTrees.IndexResult(mstIndex);
 
-			if (g instanceof IntGraph) {
-				return (MinimumSpanningTree.Result<V, E>) new MinimumSpanningTrees.IntResultFromIndexResult(
-						(IntGraph) g, indexRes);
-			} else {
-				return new MinimumSpanningTrees.ObjResultFromIndexResult<>(g, indexRes);
-			}
+			if (g instanceof IndexGraph)
+				return (MinimumSpanningTree.Result<V, E>) indexRes;
+			return MinimumSpanningTrees.resultFromIndexResult(g, indexRes);
 		}
 	}
 

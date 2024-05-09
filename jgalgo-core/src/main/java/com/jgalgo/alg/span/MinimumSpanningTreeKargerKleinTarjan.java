@@ -52,8 +52,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTrees.AbstractUndirected
-		implements RandomizedAlgorithm {
+public class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeAbstract implements RandomizedAlgorithm {
 
 	private final Random rand = new Random();
 	private final WeaklyConnectedComponentsAlgo ccAlg = WeaklyConnectedComponentsAlgo.newInstance();
@@ -61,6 +60,15 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTrees.Abstract
 	private final TreePathMaxima tpm = TreePathMaxima.newInstance();
 
 	private final AllocatedMemory allocatedMem = new AllocatedMemory();
+
+	/**
+	 * Create a new MST algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link MinimumSpanningTree#newInstance()} to get a default implementation for the
+	 * {@link MinimumSpanningTree} interface.
+	 */
+	public MinimumSpanningTreeKargerKleinTarjan() {}
 
 	@Override
 	public void setSeed(long seed) {
@@ -73,12 +81,12 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTrees.Abstract
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	protected MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 
 		IntArrayList mst = computeMst(g, w);
 		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
-		return new MinimumSpanningTrees.IndexResult(mstSet);
+		return newIndexResult(mstSet);
 	}
 
 	private IntArrayList computeMst(IndexGraph g, IWeightFunction w) {

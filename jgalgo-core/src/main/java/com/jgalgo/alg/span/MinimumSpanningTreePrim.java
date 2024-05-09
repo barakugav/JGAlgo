@@ -49,12 +49,16 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    <a href="https://en.wikipedia.org/wiki/Prim%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MinimumSpanningTreePrim extends MinimumSpanningTrees.AbstractUndirected {
+public class MinimumSpanningTreePrim extends MinimumSpanningTreeAbstract {
 
 	/**
 	 * Construct a new MST algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link MinimumSpanningTree#newInstance()} to get a default implementation for the
+	 * {@link MinimumSpanningTree} interface.
 	 */
-	MinimumSpanningTreePrim() {}
+	public MinimumSpanningTreePrim() {}
 
 	/**
 	 * {@inheritDoc}
@@ -62,7 +66,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTrees.AbstractUndirected {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	protected MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 		int n = g.vertices().size();
 		if (n == 0)
@@ -119,7 +123,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTrees.AbstractUndirected {
 			}
 		}
 		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
-		return new MinimumSpanningTrees.IndexResult(mstSet);
+		return newIndexResult(mstSet);
 	}
 
 	private static MinimumSpanningTree.IResult computeMstInt(IndexGraph g, IWeightFunctionInt w) {
@@ -167,7 +171,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTrees.AbstractUndirected {
 			}
 		}
 		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
-		return new MinimumSpanningTrees.IndexResult(mstSet);
+		return newIndexResult(mstSet);
 	}
 
 }

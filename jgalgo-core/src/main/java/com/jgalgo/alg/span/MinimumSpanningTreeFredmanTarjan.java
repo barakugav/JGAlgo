@@ -50,14 +50,18 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTrees.AbstractUndirected {
+public class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeAbstract {
 
 	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 
 	/**
 	 * Construct a new MST algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link MinimumSpanningTree#newInstance()} to get a default implementation for the
+	 * {@link MinimumSpanningTree} interface.
 	 */
-	MinimumSpanningTreeFredmanTarjan() {}
+	public MinimumSpanningTreeFredmanTarjan() {}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -74,7 +78,7 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTrees.AbstractUndi
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	protected MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.onlyUndirected(g);
 		int n = g.vertices().size(), m = g.edges().size();
 		if (n == 0)
@@ -230,7 +234,7 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTrees.AbstractUndi
 		}
 
 		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
-		return new MinimumSpanningTrees.IndexResult(mstSet);
+		return newIndexResult(mstSet);
 	}
 
 }
