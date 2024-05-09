@@ -49,13 +49,22 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
+public class SteinerTreeMehlhorn extends SteinerTreeAlgoAbstract {
 
 	private final VoronoiAlgo voronoiAlgo = VoronoiAlgo.newInstance();
 	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();
 
+	/**
+	 * Construct a new Steiner tree algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link SteinerTreeAlgo#newInstance()} to get a default implementation for the
+	 * {@link SteinerTreeAlgo} interface.
+	 */
+	public SteinerTreeMehlhorn() {}
+
 	@Override
-	SteinerTreeAlgo.IResult computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals) {
+	public SteinerTreeAlgo.IResult computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals) {
 		Assertions.onlyUndirected(g);
 		final int n = g.vertices().size();
 		if (terminals.isEmpty())
@@ -213,7 +222,7 @@ class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 		for (int e3 : g5Edges)
 			g5[g5EdgeIdx++] = g3EdgeRef[e3];
 
-		return new SteinerTrees.IndexResult(ImmutableIntArraySet.withNaiveContains(g5));
+		return new SteinerTreeAlgoAbstract.IndexResult(ImmutableIntArraySet.withNaiveContains(g5));
 	}
 
 }

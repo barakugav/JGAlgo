@@ -299,4 +299,10 @@
     </Or> -->
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
+  <Match>
+    <!-- The returned object is immutable -->
+    <Class name="com.jgalgo.alg.span.SteinerTreeAlgoAbstract$IndexResult" />
+    <Method name="edges" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
 </FindBugsFilter>

@@ -34,47 +34,61 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
-class SteinerTrees {
+/**
+ * Abstract class for computing Steiner trees in graphs.
+ *
+ * <p>
+ * The class implements the interface by solving the problem on the index graph and then maps the results back to the
+ * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ *
+ * @author Barak Ugav
+ */
+public abstract class SteinerTreeAlgoAbstract implements SteinerTreeAlgo {
 
-	private SteinerTrees() {}
+	/**
+	 * Default constructor.
+	 */
+	public SteinerTreeAlgoAbstract() {}
 
-	abstract static class AbstractImpl implements SteinerTreeAlgo {
+	@SuppressWarnings("unchecked")
+	@Override
+	public <V, E> SteinerTreeAlgo.Result<V, E> computeSteinerTree(Graph<V, E> g, WeightFunction<E> w,
+			Collection<V> terminals) {
+		if (g instanceof IndexGraph) {
+			IntCollection terminals0 = IntAdapters.asIntCollection((Collection<Integer>) terminals);
+			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+			return (SteinerTreeAlgo.Result<V, E>) computeSteinerTree((IndexGraph) g, w0, terminals0);
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> SteinerTreeAlgo.Result<V, E> computeSteinerTree(Graph<V, E> g, WeightFunction<E> w,
-				Collection<V> terminals) {
-			if (g instanceof IndexGraph) {
-				IntCollection terminals0 = IntAdapters.asIntCollection((Collection<Integer>) terminals);
-				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-				return (SteinerTreeAlgo.Result<V, E>) computeSteinerTree((IndexGraph) g, w0, terminals0);
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IntCollection iTerminals = IndexIdMaps.idToIndexCollection(terminals, viMap);
 
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-				IntCollection iTerminals = IndexIdMaps.idToIndexCollection(terminals, viMap);
-
-				SteinerTreeAlgo.IResult indexResult = computeSteinerTree(iGraph, iw, iTerminals);
-				return resultFromIndexResult(g, indexResult);
-			}
+			SteinerTreeAlgo.IResult indexResult = computeSteinerTree(iGraph, iw, iTerminals);
+			return resultFromIndexResult(g, indexResult);
 		}
-
-		abstract SteinerTreeAlgo.IResult computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals);
-
 	}
 
-	static class IndexResult implements SteinerTreeAlgo.IResult {
+	protected abstract SteinerTreeAlgo.IResult computeSteinerTree(IndexGraph g, IWeightFunction w,
+			IntCollection terminals);
+
+	/**
+	 * A result object for the Steiner tree computation in an index graph.
+	 *
+	 * @author Barak Ugav
+	 */
+	protected static class IndexResult implements SteinerTreeAlgo.IResult {
 
 		private final IntSet edges;
 		static final SteinerTreeAlgo.IResult Empty = new IndexResult(IntArrays.EMPTY_ARRAY);
 
-		IndexResult(IntSet edges) {
+		public IndexResult(IntSet edges) {
 			this.edges = IntSets.unmodifiable(Objects.requireNonNull(edges));
 		}
 
-		IndexResult(int[] edges) {
+		public IndexResult(int[] edges) {
 			this.edges = ImmutableIntArraySet.withNaiveContains(edges);
 		}
 
