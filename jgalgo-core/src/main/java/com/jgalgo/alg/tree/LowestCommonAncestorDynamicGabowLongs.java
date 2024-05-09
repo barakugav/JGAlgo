@@ -21,7 +21,7 @@ import java.util.Objects;
 import com.jgalgo.alg.tree.LowestCommonAncestorDynamicGabowSimple.CharacteristicAncestors;
 
 /**
- * Gabow linear dynamic LCA data structure.
+ * Gabow linear dynamic LCA data structure with 64bit word operations.
  *
  * <p>
  * The algorithm use {@link LowestCommonAncestorDynamicGabowSimple} as a base, but uses two layers of bit tricks to
@@ -45,7 +45,7 @@ import com.jgalgo.alg.tree.LowestCommonAncestorDynamicGabowSimple.Characteristic
  *
  * @author Barak Ugav
  */
-class LowestCommonAncestorDynamicGabowLongs implements LowestCommonAncestorDynamic {
+public class LowestCommonAncestorDynamicGabowLongs implements LowestCommonAncestorDynamic {
 
 	/*
 	 * implementation note: in the original paper, Gabow stated to use look tables for the bit tricks (lsb, msb). It's
@@ -61,8 +61,12 @@ class LowestCommonAncestorDynamicGabowLongs implements LowestCommonAncestorDynam
 
 	/**
 	 * Create a new dynamic LCA data structure that contains zero vertices.
+	 *
+	 * <p>
+	 * Please prefer using {@link LowestCommonAncestorDynamic#newInstance()} to get a default implementation for the
+	 * {@link LowestCommonAncestorDynamic} interface.
 	 */
-	LowestCommonAncestorDynamicGabowLongs() {
+	public LowestCommonAncestorDynamicGabowLongs() {
 		lca0 = new LowestCommonAncestorDynamicGabowSimple();
 	}
 

@@ -41,7 +41,7 @@ import java.util.Objects;
  *
  * @author Barak Ugav
  */
-class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDynamic {
+public class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDynamic {
 
 	private int verticesNum;
 	private final CharacteristicAncestors reusedResultObj = new CharacteristicAncestors(null, null, null);
@@ -56,8 +56,12 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 
 	/**
 	 * Create a new dynamic LCA data structure that contains zero vertices.
+	 *
+	 * <p>
+	 * Please prefer using {@link LowestCommonAncestorDynamic#newInstance()} to get a default implementation for the
+	 * {@link LowestCommonAncestorDynamic} interface.
 	 */
-	LowestCommonAncestorDynamicGabowSimple() {
+	public LowestCommonAncestorDynamicGabowSimple() {
 		verticesNum = 0;
 	}
 
