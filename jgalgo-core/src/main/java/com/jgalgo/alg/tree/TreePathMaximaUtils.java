@@ -130,11 +130,11 @@ class TreePathMaximaUtils {
 		}
 	}
 
-	static class ResultImpl implements TreePathMaxima.IResult {
+	static class IndexResult implements TreePathMaxima.IResult {
 
 		private final int[] res;
 
-		ResultImpl(int[] res) {
+		IndexResult(int[] res) {
 			this.res = res;
 		}
 

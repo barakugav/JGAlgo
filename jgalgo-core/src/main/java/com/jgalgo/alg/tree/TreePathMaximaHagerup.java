@@ -178,7 +178,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 						: /* va >= 0 */ edgeRef[va];
 			}
 
-			return new TreePathMaximaUtils.ResultImpl(res);
+			return new TreePathMaximaUtils.IndexResult(res);
 		}
 
 		private int[][] calcAnswersPerVertex(int[] q) {
