@@ -35,35 +35,55 @@ import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-class TreePathMaximaUtils {
+/**
+ * Abstract class for TPM computations.
+ *
+ * <p>
+ * The class implements the interface by solving the problem on the index graph and then maps the results back to the
+ * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ *
+ * @author Barak Ugav
+ */
+public abstract class TreePathMaximaAbstract implements TreePathMaxima {
 
-	abstract static class AbstractImpl implements TreePathMaxima {
+	/**
+	 * Default constructor.
+	 */
+	public TreePathMaximaAbstract() {}
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> TreePathMaxima.Result<V, E> computeHeaviestEdgeInTreePaths(Graph<V, E> tree, WeightFunction<E> w,
-				TreePathMaxima.Queries<V, E> queries) {
-			if (tree instanceof IndexGraph && queries instanceof TreePathMaxima.IQueries) {
-				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-				TreePathMaxima.IQueries queries0 = (TreePathMaxima.IQueries) queries;
-				return (TreePathMaxima.Result<V, E>) computeHeaviestEdgeInTreePaths((IndexGraph) tree, w0, queries0);
+	@SuppressWarnings("unchecked")
+	@Override
+	public <V, E> TreePathMaxima.Result<V, E> computeHeaviestEdgeInTreePaths(Graph<V, E> tree, WeightFunction<E> w,
+			TreePathMaxima.Queries<V, E> queries) {
+		if (tree instanceof IndexGraph && queries instanceof TreePathMaxima.IQueries) {
+			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+			TreePathMaxima.IQueries queries0 = (TreePathMaxima.IQueries) queries;
+			return (TreePathMaxima.Result<V, E>) computeHeaviestEdgeInTreePaths((IndexGraph) tree, w0, queries0);
 
-			} else {
-				IndexGraph iGraph = tree.indexGraph();
-				IndexIdMap<E> eiMap = tree.indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-				TreePathMaxima.IQueries iQueries = indexQueriesFromQueries(tree, queries);
-				TreePathMaxima.IResult indexResult = computeHeaviestEdgeInTreePaths(iGraph, iw, iQueries);
-				return resultFromIndexResult(tree, indexResult);
-			}
+		} else {
+			IndexGraph iGraph = tree.indexGraph();
+			IndexIdMap<E> eiMap = tree.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			TreePathMaxima.IQueries iQueries = indexQueriesFromQueries(tree, queries);
+			TreePathMaxima.IResult indexResult = computeHeaviestEdgeInTreePaths(iGraph, iw, iQueries);
+			return resultFromIndexResult(tree, indexResult);
 		}
-
-		abstract TreePathMaxima.IResult computeHeaviestEdgeInTreePaths(IndexGraph tree, IWeightFunction w,
-				TreePathMaxima.IQueries queries);
-
 	}
 
-	static class ObjQueriesImpl<V, E> implements TreePathMaxima.Queries<V, E> {
+	protected abstract TreePathMaxima.IResult computeHeaviestEdgeInTreePaths(IndexGraph tree, IWeightFunction w,
+			TreePathMaxima.IQueries queries);
+
+	@SuppressWarnings("unchecked")
+	static <V, E> TreePathMaxima.Queries<V, E> newQueries(Graph<V, E> g) {
+		Objects.requireNonNull(g);
+		if (g instanceof IntGraph) {
+			return (TreePathMaxima.Queries<V, E>) new IntQueriesImpl();
+		} else {
+			return new ObjQueriesImpl<>();
+		}
+	}
+
+	private static class ObjQueriesImpl<V, E> implements TreePathMaxima.Queries<V, E> {
 		private final List<V> qs;
 
 		ObjQueriesImpl() {
@@ -97,7 +117,7 @@ class TreePathMaximaUtils {
 		}
 	}
 
-	static class IntQueriesImpl implements TreePathMaxima.IQueries {
+	private static class IntQueriesImpl implements TreePathMaxima.IQueries {
 		private final LongList qs;
 
 		IntQueriesImpl() {
@@ -150,7 +170,7 @@ class TreePathMaximaUtils {
 
 	}
 
-	static class IndexQueriesFromObjQueries<V, E> implements TreePathMaxima.IQueries {
+	private static class IndexQueriesFromObjQueries<V, E> implements TreePathMaxima.IQueries {
 		private final TreePathMaxima.Queries<V, E> qs;
 		private final IndexIdMap<V> viMap;
 
@@ -185,7 +205,7 @@ class TreePathMaximaUtils {
 		}
 	}
 
-	static class IndexQueriesFromIntQueries implements TreePathMaxima.IQueries {
+	private static class IndexQueriesFromIntQueries implements TreePathMaxima.IQueries {
 		private final TreePathMaxima.IQueries qs;
 		private final IndexIntIdMap viMap;
 
@@ -303,7 +323,7 @@ class TreePathMaximaUtils {
 		if (!Trees.isTree(mst))
 			return false;
 
-		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance();
+		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance(mst);
 		for (int e : range(g.edges().size())) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);

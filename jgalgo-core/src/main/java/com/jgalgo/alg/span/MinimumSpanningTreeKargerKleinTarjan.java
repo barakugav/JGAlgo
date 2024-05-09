@@ -250,7 +250,7 @@ public class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeAbs
 				int oldLen = tpmQueries.length;
 				tpmQueries = Arrays.copyOf(tpmQueries, treeCount);
 				for (int tIdx : range(oldLen, treeCount))
-					tpmQueries[tIdx] = TreePathMaxima.IQueries.newInstance();
+					tpmQueries[tIdx] = TreePathMaxima.IQueries.newInstance(IndexGraph.newUndirected());
 			}
 			if (tpmResults.length < treeCount)
 				tpmResults = Arrays.copyOf(tpmResults, treeCount);

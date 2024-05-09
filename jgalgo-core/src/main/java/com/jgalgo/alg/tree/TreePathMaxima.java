@@ -93,10 +93,11 @@ public interface TreePathMaxima {
 		 *
 		 * @param  <V> the vertices type
 		 * @param  <E> the edges type
+		 * @param  g   the graph on which the TMP computation will be performed
 		 * @return     a new queries container
 		 */
-		static <V, E> TreePathMaxima.Queries<V, E> newInstance() {
-			return new TreePathMaximaUtils.ObjQueriesImpl<>();
+		static <V, E> TreePathMaxima.Queries<V, E> newInstance(Graph<V, E> g) {
+			return TreePathMaximaAbstract.newQueries(g);
 		}
 
 		/**
@@ -156,10 +157,11 @@ public interface TreePathMaxima {
 		/**
 		 * Create an empty queries container.
 		 *
-		 * @return a new queries container
+		 * @param  g the graph on which the TMP computation will be performed
+		 * @return   a new queries container
 		 */
-		static TreePathMaxima.IQueries newInstance() {
-			return new TreePathMaximaUtils.IntQueriesImpl();
+		static TreePathMaxima.IQueries newInstance(IntGraph g) {
+			return (TreePathMaxima.IQueries) TreePathMaximaAbstract.newQueries(g);
 		}
 
 		/**
@@ -394,14 +396,14 @@ public interface TreePathMaxima {
 		if (g instanceof IndexGraph) {
 			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 			IntCollection mstEdges0 = IntAdapters.asIntCollection((Collection<Integer>) mstEdges);
-			return TreePathMaximaUtils.verifyMst((IndexGraph) g, w0, mstEdges0, tpmAlgo);
+			return TreePathMaximaAbstract.verifyMst((IndexGraph) g, w0, mstEdges0, tpmAlgo);
 
 		} else {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			IntCollection iMstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);
-			return TreePathMaximaUtils.verifyMst(iGraph, iw, iMstEdges, tpmAlgo);
+			return TreePathMaximaAbstract.verifyMst(iGraph, iw, iMstEdges, tpmAlgo);
 		}
 	}
 

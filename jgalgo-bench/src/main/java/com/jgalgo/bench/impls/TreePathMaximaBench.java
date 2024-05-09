@@ -111,7 +111,7 @@ public class TreePathMaximaBench {
 
 	private static TreePathMaxima.IQueries generateRandQueries(IntGraph tree, int m, long seed) {
 		Random rand = new Random(seed);
-		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance();
+		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance(tree);
 		for (int q = 0; q < m; q++) {
 			int u, v;
 			do {

@@ -75,7 +75,7 @@ public class TreePathMaximaHagerupTest extends TestBase {
 		g.addEdge(1, 2);
 		g.addEdge(2, 0);
 
-		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance();
+		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance(g);
 		queries.addQuery(0, 1);
 
 		TreePathMaxima algo = new TreePathMaximaHagerup();

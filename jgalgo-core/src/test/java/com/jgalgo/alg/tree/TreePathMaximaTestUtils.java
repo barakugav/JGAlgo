@@ -31,7 +31,6 @@ import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.TestUtils;
@@ -63,14 +62,8 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		return res;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <V, E> TreePathMaxima.Queries<V, E> generateAllPossibleQueries(Graph<V, E> tree) {
-		TreePathMaxima.Queries<V, E> queries;
-		if (tree instanceof IntGraph) {
-			queries = TreePathMaxima.Queries.newInstance();
-		} else {
-			queries = (TreePathMaxima.Queries<V, E>) TreePathMaxima.IQueries.newInstance();
-		}
+		TreePathMaxima.Queries<V, E> queries = TreePathMaxima.Queries.newInstance(tree);
 		List<V> vs = new ArrayList<>(tree.vertices());
 		for (int i : range(vs.size()))
 			for (int j : range(i + 1, vs.size()))
@@ -78,15 +71,9 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		return queries;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static <V, E> TreePathMaxima.Queries<V, E> generateRandQueries(Graph<V, E> tree, int m, long seed) {
 		Random rand = new Random(seed);
-		TreePathMaxima.Queries<V, E> queries;
-		if (tree instanceof IntGraph) {
-			queries = TreePathMaxima.Queries.newInstance();
-		} else {
-			queries = (TreePathMaxima.Queries<V, E>) TreePathMaxima.IQueries.newInstance();
-		}
+		TreePathMaxima.Queries<V, E> queries = TreePathMaxima.Queries.newInstance(tree);
 		for (int q = 0; q < m; q++) {
 			V i, j;
 			do {

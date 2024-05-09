@@ -50,14 +50,18 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
+public class TreePathMaximaHagerup extends TreePathMaximaAbstract {
 
 	private boolean useBitsLookupTables = false;
 
 	/**
 	 * Create a new TPM object.
+	 *
+	 * <p>
+	 * Please prefer using {@link TreePathMaxima#newInstance()} to get a default implementation for the
+	 * {@link TreePathMaxima} interface.
 	 */
-	TreePathMaximaHagerup() {}
+	public TreePathMaximaHagerup() {}
 
 	/**
 	 * Enable/disable the use of bits lookup tables.
@@ -80,7 +84,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 	}
 
 	@Override
-	TreePathMaxima.IResult computeHeaviestEdgeInTreePaths(IndexGraph tree, IWeightFunction w,
+	protected TreePathMaxima.IResult computeHeaviestEdgeInTreePaths(IndexGraph tree, IWeightFunction w,
 			TreePathMaxima.IQueries queries) {
 		Assertions.onlyUndirected(tree);
 		Assertions.onlyTree(tree);
@@ -178,7 +182,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 						: /* va >= 0 */ edgeRef[va];
 			}
 
-			return new TreePathMaximaUtils.IndexResult(res);
+			return new TreePathMaximaAbstract.IndexResult(res);
 		}
 
 		private int[][] calcAnswersPerVertex(int[] q) {
