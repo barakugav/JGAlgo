@@ -252,11 +252,11 @@ class LowestCommonAncestorOfflineUtils {
 		}
 	}
 
-	static class ResultImpl implements LowestCommonAncestorOffline.IResult {
+	static class IndexResult implements LowestCommonAncestorOffline.IResult {
 
 		private final int[] res;
 
-		ResultImpl(int[] res) {
+		IndexResult(int[] res) {
 			this.res = res;
 		}
 

@@ -132,6 +132,6 @@ class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUt
 			int parent = stack.topInt();
 			ufRoot[uf.union(parent, u)] = parent;
 		}
-		return new LowestCommonAncestorOfflineUtils.ResultImpl(res);
+		return new LowestCommonAncestorOfflineUtils.IndexResult(res);
 	}
 }
