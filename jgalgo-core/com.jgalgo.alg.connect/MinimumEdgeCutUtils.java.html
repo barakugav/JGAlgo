@@ -111,8 +111,8 @@ class MinimumEdgeCutUtils {
 <span class="fc" id="L111">		return IVertexBiPartition.fromBitmap(g, visited);</span>
 	}
 
-	static MinimumEdgeCutST buildFromMaxFlow(MaximumFlow maxFlowAlg) {
-<span class="fc" id="L115">		return new MinimumEdgeCutSTAbstract() {</span>
+	static MinimumEdgeCutSt buildFromMaxFlow(MaximumFlow maxFlowAlg) {
+<span class="fc" id="L115">		return new MinimumEdgeCutStAbstract() {</span>
 
 			@Override
 			public IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {

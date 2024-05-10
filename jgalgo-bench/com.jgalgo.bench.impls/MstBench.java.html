@@ -72,7 +72,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		}
 <span class="fc" id="L73">	}</span>
 
-	private void benchMST(MinimumSpanningTree algo, Blackhole blackhole) {
+	private void benchMst(MinimumSpanningTree algo, Blackhole blackhole) {
 <span class="fc" id="L76">		Pair&lt;IntGraph, IWeightFunctionInt&gt; gw = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
 <span class="fc" id="L77">		IntGraph g = gw.first();</span>
 <span class="fc" id="L78">		IWeightFunctionInt w = gw.second();</span>
@@ -82,32 +82,32 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	@Benchmark
 	public void Boruvka(Blackhole blackhole) {
-<span class="fc" id="L85">		benchMST(getAlgo(&quot;boruvka&quot;), blackhole);</span>
+<span class="fc" id="L85">		benchMst(getAlgo(&quot;boruvka&quot;), blackhole);</span>
 <span class="fc" id="L86">	}</span>
 
 	@Benchmark
 	public void FredmanTarjan(Blackhole blackhole) {
-<span class="fc" id="L90">		benchMST(getAlgo(&quot;fredman-tarjan&quot;), blackhole);</span>
+<span class="fc" id="L90">		benchMst(getAlgo(&quot;fredman-tarjan&quot;), blackhole);</span>
 <span class="fc" id="L91">	}</span>
 
 	@Benchmark
 	public void Kruskal(Blackhole blackhole) {
-<span class="fc" id="L95">		benchMST(getAlgo(&quot;kruskal&quot;), blackhole);</span>
+<span class="fc" id="L95">		benchMst(getAlgo(&quot;kruskal&quot;), blackhole);</span>
 <span class="fc" id="L96">	}</span>
 
 	@Benchmark
 	public void Prim(Blackhole blackhole) {
-<span class="fc" id="L100">		benchMST(getAlgo(&quot;prim&quot;), blackhole);</span>
+<span class="fc" id="L100">		benchMst(getAlgo(&quot;prim&quot;), blackhole);</span>
 <span class="fc" id="L101">	}</span>
 
 	@Benchmark
 	public void Yao(Blackhole blackhole) {
-<span class="fc" id="L105">		benchMST(getAlgo(&quot;yao&quot;), blackhole);</span>
+<span class="fc" id="L105">		benchMst(getAlgo(&quot;yao&quot;), blackhole);</span>
 <span class="fc" id="L106">	}</span>
 
 	@Benchmark
 	public void KargerKleinTarjan(Blackhole blackhole) {
-<span class="fc" id="L110">		benchMST(getAlgo(&quot;karger-klein-tarjan&quot;), blackhole);</span>
+<span class="fc" id="L110">		benchMst(getAlgo(&quot;karger-klein-tarjan&quot;), blackhole);</span>
 <span class="fc" id="L111">	}</span>
 
 	private static MinimumSpanningTree getAlgo(String implName) {

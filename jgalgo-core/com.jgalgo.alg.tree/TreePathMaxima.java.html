@@ -93,10 +93,11 @@ public interface TreePathMaxima {
 		 *
 		 * @param  &lt;V&gt; the vertices type
 		 * @param  &lt;E&gt; the edges type
+		 * @param  g   the graph on which the TMP computation will be performed
 		 * @return     a new queries container
 		 */
-		static &lt;V, E&gt; TreePathMaxima.Queries&lt;V, E&gt; newInstance() {
-<span class="fc" id="L99">			return new TreePathMaximaUtils.ObjQueriesImpl&lt;&gt;();</span>
+		static &lt;V, E&gt; TreePathMaxima.Queries&lt;V, E&gt; newInstance(Graph&lt;V, E&gt; g) {
+<span class="fc" id="L100">			return TreePathMaximaAbstract.newQueries(g);</span>
 		}
 
 		/**
@@ -156,10 +157,11 @@ public interface TreePathMaxima {
 		/**
 		 * Create an empty queries container.
 		 *
-		 * @return a new queries container
+		 * @param  g the graph on which the TMP computation will be performed
+		 * @return   a new queries container
 		 */
-		static TreePathMaxima.IQueries newInstance() {
-<span class="fc" id="L162">			return new TreePathMaximaUtils.IntQueriesImpl();</span>
+		static TreePathMaxima.IQueries newInstance(IntGraph g) {
+<span class="fc" id="L164">			return (TreePathMaxima.IQueries) TreePathMaximaAbstract.newQueries(g);</span>
 		}
 
 		/**
@@ -178,8 +180,8 @@ public interface TreePathMaxima {
 		@Deprecated
 		@Override
 		default void addQuery(Integer u, Integer v) {
-<span class="fc" id="L181">			addQuery(u.intValue(), v.intValue());</span>
-<span class="fc" id="L182">		}</span>
+<span class="fc" id="L183">			addQuery(u.intValue(), v.intValue());</span>
+<span class="fc" id="L184">		}</span>
 
 		/**
 		 * Get a query source by index.
@@ -202,7 +204,7 @@ public interface TreePathMaxima {
 		@Deprecated
 		@Override
 		default Integer getQuerySource(int idx) {
-<span class="fc" id="L205">			return Integer.valueOf(getQuerySourceInt(idx));</span>
+<span class="fc" id="L207">			return Integer.valueOf(getQuerySourceInt(idx));</span>
 		}
 
 		/**
@@ -226,7 +228,7 @@ public interface TreePathMaxima {
 		@Deprecated
 		@Override
 		default Integer getQueryTarget(int idx) {
-<span class="fc" id="L229">			return Integer.valueOf(getQueryTargetInt(idx));</span>
+<span class="fc" id="L231">			return Integer.valueOf(getQueryTargetInt(idx));</span>
 		}
 	}
 
@@ -299,7 +301,7 @@ public interface TreePathMaxima {
 		@Deprecated
 		@Override
 		default Integer getHeaviestEdge(int queryIdx) {
-<span class="fc" id="L302">			return Integer.valueOf(getHeaviestEdgeInt(queryIdx));</span>
+<span class="fc" id="L304">			return Integer.valueOf(getHeaviestEdgeInt(queryIdx));</span>
 		}
 	}
 
@@ -313,7 +315,7 @@ public interface TreePathMaxima {
 	 * @return a default implementation of {@link TreePathMaxima}
 	 */
 	static TreePathMaxima newInstance() {
-<span class="fc" id="L316">		return builder().build();</span>
+<span class="fc" id="L318">		return builder().build();</span>
 	}
 
 	/**
@@ -325,27 +327,27 @@ public interface TreePathMaxima {
 	 * @return a new builder that can build {@link TreePathMaxima} objects
 	 */
 	static TreePathMaxima.Builder builder() {
-<span class="fc" id="L328">		return new TreePathMaxima.Builder() {</span>
+<span class="fc" id="L330">		return new TreePathMaxima.Builder() {</span>
 
 			boolean bitsLookupTablesEnable;
 
 			@Override
 			public TreePathMaxima build() {
-<span class="fc" id="L334">				TreePathMaximaHagerup tpm = new TreePathMaximaHagerup();</span>
-<span class="fc" id="L335">				tpm.setBitsLookupTablesEnable(bitsLookupTablesEnable);</span>
-<span class="fc" id="L336">				return tpm;</span>
+<span class="fc" id="L336">				TreePathMaximaHagerup tpm = new TreePathMaximaHagerup();</span>
+<span class="fc" id="L337">				tpm.setBitsLookupTablesEnable(bitsLookupTablesEnable);</span>
+<span class="fc" id="L338">				return tpm;</span>
 			}
 
 			@Override
 			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L341" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L343" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;bits-lookup-tables-enable&quot;:
-<span class="nc" id="L343">						bitsLookupTablesEnable = ((Boolean) value).booleanValue();</span>
-<span class="nc" id="L344">						break;</span>
+<span class="nc" id="L345">						bitsLookupTablesEnable = ((Boolean) value).booleanValue();</span>
+<span class="nc" id="L346">						break;</span>
 					default:
-<span class="nc" id="L346">						TreePathMaxima.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L348">						TreePathMaxima.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L348">			}</span>
+<span class="nc" id="L350">			}</span>
 
 		};
 	}
@@ -389,19 +391,19 @@ public interface TreePathMaxima {
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
-	public static &lt;V, E&gt; boolean verifyMST(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, Collection&lt;E&gt; mstEdges,
+	public static &lt;V, E&gt; boolean verifyMst(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, Collection&lt;E&gt; mstEdges,
 			TreePathMaxima tpmAlgo) {
-<span class="pc bpc" id="L394" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L395">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="nc" id="L396">			IntCollection mstEdges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) mstEdges);</span>
-<span class="nc" id="L397">			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w0, mstEdges0, tpmAlgo);</span>
+<span class="pc bpc" id="L396" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L397">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="nc" id="L398">			IntCollection mstEdges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) mstEdges);</span>
+<span class="nc" id="L399">			return TreePathMaximaAbstract.verifyMst((IndexGraph) g, w0, mstEdges0, tpmAlgo);</span>
 
 		} else {
-<span class="fc" id="L400">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L401">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L402">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L403">			IntCollection iMstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);</span>
-<span class="fc" id="L404">			return TreePathMaximaUtils.verifyMST(iGraph, iw, iMstEdges, tpmAlgo);</span>
+<span class="fc" id="L402">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L403">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L404">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L405">			IntCollection iMstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);</span>
+<span class="fc" id="L406">			return TreePathMaximaAbstract.verifyMst(iGraph, iw, iMstEdges, tpmAlgo);</span>
 		}
 	}
 

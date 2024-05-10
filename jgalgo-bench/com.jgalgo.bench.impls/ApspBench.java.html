@@ -72,7 +72,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		}
 <span class="fc" id="L73">	}</span>
 
-	private void benchAPSPPositiveWeights(ShortestPathAllPairs algo, Blackhole blackhole) {
+	private void benchApspPositiveWeights(ShortestPathAllPairs algo, Blackhole blackhole) {
 <span class="fc" id="L76">		Pair&lt;IntGraph, IWeightFunctionInt&gt; graph = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
 <span class="fc" id="L77">		ShortestPathAllPairs.IResult result =</span>
 <span class="fc" id="L78">				(ShortestPathAllPairs.IResult) algo.computeAllShortestPaths(graph.first(), graph.second());</span>
@@ -81,12 +81,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	@Benchmark
 	public void FloydWarshall(Blackhole blackhole) {
-<span class="fc" id="L84">		benchAPSPPositiveWeights(getAlgo(&quot;floyd-warshall&quot;), blackhole);</span>
+<span class="fc" id="L84">		benchApspPositiveWeights(getAlgo(&quot;floyd-warshall&quot;), blackhole);</span>
 <span class="fc" id="L85">	}</span>
 
 	@Benchmark
 	public void Johnson(Blackhole blackhole) {
-<span class="fc" id="L89">		benchAPSPPositiveWeights(getAlgo(&quot;johnson&quot;), blackhole);</span>
+<span class="fc" id="L89">		benchApspPositiveWeights(getAlgo(&quot;johnson&quot;), blackhole);</span>
 <span class="fc" id="L90">	}</span>
 
 	private static ShortestPathAllPairs getAlgo(String implName) {

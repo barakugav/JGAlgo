@@ -96,7 +96,7 @@ import com.jgalgo.internal.util.Assertions;
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	@Override
 	public Iterator&lt;ObjObjReferenceableHeap.Ref &lt;K, V&gt;&gt; iterator() {
-<span class="fc" id="L99">		return (Iterator) new BinarySearchTrees.BSTIterator&lt;&gt;(root);</span>
+<span class="fc" id="L99">		return (Iterator) new BinarySearchTrees.BstIterator&lt;&gt;(root);</span>
 	}
 
 	@Override
@@ -555,7 +555,7 @@ import com.jgalgo.internal.util.Assertions;
 	 */
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	Iterator&lt;ObjObjReferenceableHeap.Ref &lt;K, V&gt;&gt; subTreeIterator(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref) {
-<span class="fc" id="L558">		return (Iterator) (new BinarySearchTrees.BSTIterator&lt;&gt;((Node &lt;K, V&gt;) ref));</span>
+<span class="fc" id="L558">		return (Iterator) (new BinarySearchTrees.BstIterator&lt;&gt;((Node &lt;K, V&gt;) ref));</span>
 	}
 
 	static class Node &lt;K, V&gt; extends ObjBinarySearchTrees.Node&lt;K,  Node &lt;K, V&gt;&gt; implements ObjObjReferenceableHeap.Ref &lt;K, V&gt; {

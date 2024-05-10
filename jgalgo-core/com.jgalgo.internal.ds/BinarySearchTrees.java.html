@@ -217,12 +217,12 @@ import com.jgalgo.internal.util.Assertions;
 		}
 	}
 
-	static class BSTIterator&lt;NodeT extends Node&lt;NodeT&gt;&gt; implements Iterator&lt;NodeT&gt; {
+	static class BstIterator&lt;NodeT extends Node&lt;NodeT&gt;&gt; implements Iterator&lt;NodeT&gt; {
 
 		private final NodeT subtreeRoot;
 		private NodeT n;
 
-<span class="fc" id="L225">		BSTIterator(NodeT subtreeRoot) {</span>
+<span class="fc" id="L225">		BstIterator(NodeT subtreeRoot) {</span>
 <span class="fc" id="L226">			this.subtreeRoot = subtreeRoot;</span>
 <span class="fc bfc" id="L227" title="All 2 branches covered.">			n = subtreeRoot == null ? null : findMin(subtreeRoot);</span>
 <span class="fc" id="L228">		}</span>

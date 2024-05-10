@@ -22,6 +22,7 @@ import java.util.Objects;
 import com.jgalgo.alg.bipartite.BipartiteGraphs;
 import com.jgalgo.alg.path.IPath;
 import com.jgalgo.alg.path.ShortestPathSingleSource;
+import com.jgalgo.alg.path.ShortestPathSingleSourceDijkstra;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IWeightsDouble;
@@ -42,27 +43,26 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L45">public class MatchingWeightedBipartiteSssp extends MatchingAlgoAbstractBasedMaximum {</span>
+<span class="fc" id="L46">public class MatchingWeightedBipartiteSssp extends MatchingAlgoAbstractBasedMaximum {</span>
 
-<span class="fc" id="L47">	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newInstance();</span>
-<span class="fc" id="L48">	private ShortestPathSingleSource ssspNegative = ShortestPathSingleSource.builder().setNegativeWeights(true).build();</span>
+<span class="fc" id="L48">	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newInstance();</span>
+<span class="fc" id="L49">	private ShortestPathSingleSource ssspNegative = ShortestPathSingleSource.builder().setNegativeWeights(true).build();</span>
 
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-<span class="fc" id="L53">	public MatchingWeightedBipartiteSssp() {}</span>
+<span class="fc" id="L54">	public MatchingWeightedBipartiteSssp() {}</span>
 
 	/**
 	 * Set the {@link ShortestPathSingleSource} algorithm used by this algorithm.
 	 *
 	 * &lt;p&gt;
 	 * The shortest path algorithm should support non negative floating points weights. The default implementation uses
-	 * Dijkstra's algorithm.
+	 * {@linkplain ShortestPathSingleSourceDijkstra Dijkstra's algorithm}.
 	 *
 	 * @param algo an shortest path algorithm
 	 */
 	public void setSsspAlgo(ShortestPathSingleSource algo) {
-		// TODO change documentation to link to ShortestPathSingleSourceDijkstra
 <span class="nc" id="L66">		ssspPositive = Objects.requireNonNull(algo);</span>
 <span class="nc" id="L67">	}</span>
 

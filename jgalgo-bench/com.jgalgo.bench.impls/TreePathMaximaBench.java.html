@@ -111,7 +111,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	private static TreePathMaxima.IQueries generateRandQueries(IntGraph tree, int m, long seed) {
 <span class="fc" id="L113">		Random rand = new Random(seed);</span>
-<span class="fc" id="L114">		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance();</span>
+<span class="fc" id="L114">		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance(tree);</span>
 <span class="fc bfc" id="L115" title="All 2 branches covered.">		for (int q = 0; q &lt; m; q++) {</span>
 			int u, v;
 			do {

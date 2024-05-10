@@ -29,15 +29,20 @@ import com.jgalgo.internal.util.Assertions;
  * some other vertex is the path with the minimum number of edges. A simple BFS is performed from the source vertex
  * until all vertices that can be reached are reached. The algorithm runs in linear time.
  *
- * @see    Bfs
+ * @see    BfsIter
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.AbstractImpl {
+public class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceAbstract {
 
 	/**
-	 * Construct a new cardinality SSSP algorithm.
+	 * Create a cardinality BFS-based SSSP algorithm.
+	 *
+	 * &lt;p&gt;
+	 * Please prefer using {@link ShortestPathSingleSource#newInstance()} to get a default implementation for the
+	 * {@link ShortestPathSingleSource} interface, or {@link ShortestPathSingleSource#builder()} for more customization
+	 * options.
 	 */
-<span class="fc" id="L40">	ShortestPathSingleSourceCardinality() {}</span>
+<span class="fc" id="L45">	public ShortestPathSingleSourceCardinality() {}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -46,15 +51,15 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 	 *                                      {@link IWeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
-<span class="fc" id="L50">		Assertions.onlyCardinality(w);</span>
-<span class="fc" id="L51">		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">		for (BfsIter.Int it = BfsIter.newInstance(g, source); it.hasNext();) {</span>
-<span class="fc" id="L53">			int v = it.nextInt();</span>
-<span class="fc" id="L54">			res.distances[v] = it.layer();</span>
-<span class="fc" id="L55">			res.backtrack[v] = it.lastEdgeInt();</span>
-<span class="fc" id="L56">		}</span>
-<span class="fc" id="L57">		return res;</span>
+	protected ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+<span class="fc" id="L55">		Assertions.onlyCardinality(w);</span>
+<span class="fc" id="L56">		IndexResult res = new IndexResult(g, source);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		for (BfsIter.Int it = BfsIter.newInstance(g, source); it.hasNext();) {</span>
+<span class="fc" id="L58">			int v = it.nextInt();</span>
+<span class="fc" id="L59">			res.distances[v] = it.layer();</span>
+<span class="fc" id="L60">			res.backtrack[v] = it.lastEdgeInt();</span>
+<span class="fc" id="L61">		}</span>
+<span class="fc" id="L62">		return res;</span>
 	}
 
 }

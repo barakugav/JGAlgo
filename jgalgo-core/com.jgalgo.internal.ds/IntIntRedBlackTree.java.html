@@ -81,7 +81,7 @@ import com.jgalgo.internal.util.Assertions;
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	@Override
 	public Iterator&lt;IntIntReferenceableHeap.Ref &gt; iterator() {
-<span class="fc" id="L84">		return (Iterator) new BinarySearchTrees.BSTIterator&lt;&gt;(root);</span>
+<span class="fc" id="L84">		return (Iterator) new BinarySearchTrees.BstIterator&lt;&gt;(root);</span>
 	}
 
 	@Override
@@ -540,7 +540,7 @@ import com.jgalgo.internal.util.Assertions;
 	 */
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	Iterator&lt;IntIntReferenceableHeap.Ref &gt; subTreeIterator(IntIntReferenceableHeap.Ref  ref) {
-<span class="nc" id="L543">		return (Iterator) (new BinarySearchTrees.BSTIterator&lt;&gt;((Node ) ref));</span>
+<span class="nc" id="L543">		return (Iterator) (new BinarySearchTrees.BstIterator&lt;&gt;((Node ) ref));</span>
 	}
 
 	static class Node  extends IntBinarySearchTrees.Node&lt; Node &gt; implements IntIntReferenceableHeap.Ref  {

@@ -50,7 +50,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L50">	final int graphsNum = 31;</span>
 <span class="fc" id="L51">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
 
-	void benchSSSP(ShortestPathSingleSource algo, Blackhole blackhole) {
+	void benchSssp(ShortestPathSingleSource algo, Blackhole blackhole) {
 <span class="fc" id="L54">		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
 		try {
 <span class="fc" id="L56">			ShortestPathSingleSource.IResult result = (ShortestPathSingleSource.IResult) algo</span>
@@ -93,12 +93,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Benchmark
 		public void BellmanFord(Blackhole blackhole) {
-<span class="fc" id="L96">			benchSSSP(getAlgo(&quot;bellman-ford&quot;), blackhole);</span>
+<span class="fc" id="L96">			benchSssp(getAlgo(&quot;bellman-ford&quot;), blackhole);</span>
 <span class="fc" id="L97">		}</span>
 
 		@Benchmark
 		public void Goldberg(Blackhole blackhole) {
-<span class="fc" id="L101">			benchSSSP(getAlgo(&quot;goldberg&quot;), blackhole);</span>
+<span class="fc" id="L101">			benchSssp(getAlgo(&quot;goldberg&quot;), blackhole);</span>
 <span class="fc" id="L102">		}</span>
 	}
 
@@ -134,12 +134,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Benchmark
 		public void BellmanFord(Blackhole blackhole) {
-<span class="fc" id="L137">			benchSSSP(getAlgo(&quot;bellman-ford&quot;), blackhole);</span>
+<span class="fc" id="L137">			benchSssp(getAlgo(&quot;bellman-ford&quot;), blackhole);</span>
 <span class="fc" id="L138">		}</span>
 
 		@Benchmark
 		public void Goldberg(Blackhole blackhole) {
-<span class="fc" id="L142">			benchSSSP(getAlgo(&quot;goldberg&quot;), blackhole);</span>
+<span class="fc" id="L142">			benchSssp(getAlgo(&quot;goldberg&quot;), blackhole);</span>
 <span class="fc" id="L143">		}</span>
 	}
 
@@ -176,12 +176,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Benchmark
 		public void BellmanFord(Blackhole blackhole) {
-<span class="fc" id="L179">			benchSSSP(getAlgo(&quot;bellman-ford&quot;), blackhole);</span>
+<span class="fc" id="L179">			benchSssp(getAlgo(&quot;bellman-ford&quot;), blackhole);</span>
 <span class="fc" id="L180">		}</span>
 
 		@Benchmark
 		public void Goldberg(Blackhole blackhole) {
-<span class="fc" id="L184">			benchSSSP(getAlgo(&quot;goldberg&quot;), blackhole);</span>
+<span class="fc" id="L184">			benchSssp(getAlgo(&quot;goldberg&quot;), blackhole);</span>
 <span class="fc" id="L185">		}</span>
 	}
 

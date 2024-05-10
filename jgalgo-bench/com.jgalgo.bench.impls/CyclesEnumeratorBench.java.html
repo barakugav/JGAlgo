@@ -72,7 +72,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L72">	}</span>
 
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
-	private void benchMST(CyclesEnumerator algo, Blackhole blackhole) {
+	private void benchCyclesEnumerator(CyclesEnumerator algo, Blackhole blackhole) {
 <span class="fc" id="L76">		IntGraph g = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
 <span class="fc" id="L77">		List&lt;IPath&gt; cycles = new ObjectArrayList&lt;&gt;((Iterator) algo.cyclesIter(g));</span>
 <span class="fc" id="L78">		blackhole.consume(cycles);</span>
@@ -80,12 +80,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	@Benchmark
 	public void Johnson(Blackhole blackhole) {
-<span class="fc" id="L83">		benchMST(getAlgo(&quot;johnson&quot;), blackhole);</span>
+<span class="fc" id="L83">		benchCyclesEnumerator(getAlgo(&quot;johnson&quot;), blackhole);</span>
 <span class="fc" id="L84">	}</span>
 
 	@Benchmark
 	public void Tarjan(Blackhole blackhole) {
-<span class="fc" id="L88">		benchMST(getAlgo(&quot;tarjan&quot;), blackhole);</span>
+<span class="fc" id="L88">		benchCyclesEnumerator(getAlgo(&quot;tarjan&quot;), blackhole);</span>
 <span class="fc" id="L89">	}</span>
 
 	private static CyclesEnumerator getAlgo(String implName) {

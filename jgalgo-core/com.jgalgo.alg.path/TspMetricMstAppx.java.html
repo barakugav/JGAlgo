@@ -17,6 +17,7 @@
 package com.jgalgo.alg.path;
 
 import static com.jgalgo.internal.util.Range.range;
+import java.util.Optional;
 import com.jgalgo.alg.span.MinimumSpanningTree;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -25,47 +26,46 @@ import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
- * TSP \(2\)-approximation using MST.
+ * Metric TSP \(2\)-approximation using minimum spanning trees.
  *
  * &lt;p&gt;
- * An MST of a graph weight is less or equal to the optimal TSP tour. By doubling each edge in such MST and finding an
- * Eulerian tour on these edges a tour was found with weight at most \(2\) times the optimal TSP tour. In addition,
- * shortcuts are used if vertices are repeated in the initial Eulerian tour - this is possible only in the metric
- * special case.
+ * An MST weight of a graph is less or equal to the optimal TSP tour weight. By doubling each edge in such an MST and
+ * finding an Eulerian tour on these edges a tour can be found with weight at most \(2\) times the optimal TSP tour
+ * weight. In addition, shortcuts are used if vertices are repeated in the initial Eulerian tour - this is possible only
+ * in the metric special case.
+ *
+ * &lt;p&gt;
+ * This algorithm can only accept graphs and weight functions that satisfy the metric condition: every three vertices
+ * \(u,v,w\) should satisfy \(d((u,v)) + d((v,w)) \leq d((u,w))$ where \(d(\cdot)\) is the distance of the shortest path
+ * between two vertices. This condition is not validated for performance reason, but graphs that do not satisfy this
+ * condition will result in an undefined behaviour.
  *
  * &lt;p&gt;
  * The running of this algorithm is \(O(n^2)\) and it achieve \(2\)-approximation to the optimal TSP solution.
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L41">public class TspMetricMstAppx extends TspMetricUtils.AbstractImpl {</span>
+<span class="fc" id="L48">public class TspMetricMstAppx extends TspAbstract {</span>
 
-<span class="fc" id="L43">	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();</span>
-	// /*
-	// * If true, the algorithm will validate the distance table and check the metric constrain is satisfied. This
-	// * increases the running time to O(n^3)
-	// */
-	// private static final boolean VALIDATE_METRIC = true;
+<span class="fc" id="L50">	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();</span>
 
 	/**
 	 * Create a new TSP \(2\)-approximation algorithm.
 	 */
-<span class="fc" id="L53">	public TspMetricMstAppx() {}</span>
+<span class="fc" id="L55">	public TspMetricMstAppx() {}</span>
 
 	@Override
-	IPath computeShortestTour(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L57">		final int n = g.vertices().size();</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">		if (n == 0)</span>
-<span class="fc" id="L59">			return null;</span>
-<span class="fc" id="L60">		Assertions.onlyUndirected(g);</span>
-<span class="fc" id="L61">		Assertions.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
-		// if (VALIDATE_METRIC)
-		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
+	protected Optional&lt;IPath&gt; computeShortestTour(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L59">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L60">		Assertions.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
+<span class="fc" id="L61">		final int n = g.vertices().size();</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		if (n == 0)</span>
+<span class="fc" id="L63">			return Optional.empty();</span>
 
 		/* Calculate MST */
 <span class="fc" id="L66">		IntCollection mst = ((MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(g, w)).edges();</span>
 <span class="fc bfc" id="L67" title="All 2 branches covered.">		if (mst.size() &lt; n - 1)</span>
-<span class="fc" id="L68">			throw new IllegalArgumentException(&quot;graph is not connected&quot;);</span>
+<span class="fc" id="L68">			return Optional.empty(); // graph is not connected</span>
 
 		/* Build a graph with each MST edge duplicated */
 <span class="fc" id="L71">		IndexGraphBuilder g1Builder = IndexGraphBuilder.undirected();</span>
@@ -82,9 +82,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L82">		IPath cycle = TspMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);</span>
 <span class="pc bpc" id="L83" title="1 of 2 branches missed.">		assert cycle.edges().size() == n;</span>
 <span class="pc bpc" id="L84" title="1 of 2 branches missed.">		assert cycle.isCycle();</span>
-
-		/* Convert cycle of edges to list of vertices */
-<span class="fc" id="L87">		return cycle;</span>
+<span class="fc" id="L85">		return Optional.of(cycle);</span>
 	}
 
 }

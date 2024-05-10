@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ShortestPathStBidirectionalDijkstra.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.path</a> &gt; <span class="el_source">ShortestPathStBidirectionalDijkstra.java</span></div><h1>ShortestPathStBidirectionalDijkstra.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.path;
+
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.NoSuchVertexException;
+import com.jgalgo.internal.ds.DoubleIntReferenceableHeap;
+import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
+
+/**
+ * Compute the shortest path between a source and a target using bidirectional Dijkstra's algorithm.
+ *
+ * &lt;p&gt;
+ * Different from the {@linkplain ShortestPathSingleSourceDijkstra single source algorithm of Dijkstra}, this algorithm
+ * uses two heaps and growing trees originated from the source and target vertices, instead of a single one. The
+ * algorithm terminate (roughly) when the two trees meet. In practice, this algorithm can be much faster than the single
+ * source algorithm, especially for large graphs.
+ *
+ * @author Barak Ugav
+ */
+public class ShortestPathStBidirectionalDijkstra extends ShortestPathStAbstract {
+
+	/**
+	 * Create a algorithm for computing a shortest path between a source and a target.
+	 *
+	 * &lt;p&gt;
+	 * Please prefer using {@link ShortestPathSt#newInstance()} to get a default implementation for the
+	 * {@link ShortestPathSt} interface.
+	 */
+<span class="fc" id="L51">	public ShortestPathStBidirectionalDijkstra() {}</span>
+
+	@Override
+	protected ObjectDoublePair&lt;IPath&gt; computeShortestPathAndWeight(IndexGraph g, IWeightFunction w, int source,
+			int target) {
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if (!g.vertices().contains(source))</span>
+<span class="nc" id="L57">			throw NoSuchVertexException.ofIndex(source);</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">		if (!g.vertices().contains(target))</span>
+<span class="nc" id="L59">			throw NoSuchVertexException.ofIndex(target);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">		if (source == target)</span>
+<span class="fc" id="L61">			return ObjectDoublePair.of(IPath.valueOf(g, source, target, IntLists.emptyList()), 0.0);</span>
+<span class="fc" id="L62">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
+
+<span class="fc" id="L64">		DoubleIntReferenceableHeap heapS = DoubleIntReferenceableHeap.newInstance();</span>
+<span class="fc" id="L65">		DoubleIntReferenceableHeap heapT = DoubleIntReferenceableHeap.newInstance();</span>
+
+<span class="fc" id="L67">		Int2ObjectMap&lt;Info&gt; infoS = new Int2ObjectOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L68">		Int2ObjectMap&lt;Info&gt; infoT = new Int2ObjectOpenHashMap&lt;&gt;();</span>
+
+<span class="fc" id="L70">		int middle = -1;</span>
+<span class="fc" id="L71">		double mu = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L72">		infoS.put(source, new Info());</span>
+<span class="fc" id="L73">		infoT.put(target, new Info());</span>
+<span class="fc" id="L74">		heapS.insert(.0, source);</span>
+<span class="fc" id="L75">		heapT.insert(.0, target);</span>
+<span class="fc bfc" id="L76" title="All 4 branches covered.">		while (heapS.isNotEmpty() &amp;&amp; heapT.isNotEmpty()) {</span>
+
+<span class="fc" id="L78">			DoubleIntReferenceableHeap.Ref min = heapS.extractMin();</span>
+<span class="fc" id="L79">			double uDistanceS = min.key();</span>
+<span class="fc" id="L80">			int uS = min.value();</span>
+<span class="fc" id="L81">			Info uInfoS = infoS.get(uS);</span>
+<span class="fc" id="L82">			uInfoS.heapPtr = null;</span>
+<span class="fc" id="L83">			uInfoS.markVisited();</span>
+<span class="fc" id="L84">			uInfoS.distance = uDistanceS;</span>
+
+<span class="fc" id="L86">			min = heapT.extractMin();</span>
+<span class="fc" id="L87">			double uDistanceT = min.key();</span>
+<span class="fc" id="L88">			int uT = min.value();</span>
+<span class="fc" id="L89">			Info uInfoT = infoT.get(uT);</span>
+<span class="fc" id="L90">			uInfoT.heapPtr = null;</span>
+<span class="fc" id="L91">			uInfoT.markVisited();</span>
+<span class="fc" id="L92">			uInfoT.distance = uDistanceT;</span>
+
+<span class="fc bfc" id="L94" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L95">				int e = eit.nextInt();</span>
+<span class="fc" id="L96">				int v = eit.targetInt();</span>
+<span class="fc" id="L97">				Info vInfoS = infoS.computeIfAbsent(v, k -&gt; new Info());</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">				if (vInfoS.isVisited())</span>
+<span class="fc" id="L99">					continue;</span>
+<span class="fc" id="L100">				double ew = w.weight(e);</span>
+<span class="fc" id="L101">				Assertions.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L102">				double vDistance = uDistanceS + ew;</span>
+<span class="fc" id="L103">				Info vInfoT = infoT.get(v);</span>
+<span class="fc bfc" id="L104" title="All 4 branches covered.">				if (vInfoT != null &amp;&amp; vInfoT.isVisited()) {</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">					if (mu &gt; vDistance + vInfoT.distance) {</span>
+<span class="fc" id="L106">						mu = vDistance + vInfoT.distance;</span>
+<span class="fc" id="L107">						middle = v;</span>
+					}
+				}
+
+<span class="fc" id="L111">				DoubleIntReferenceableHeap.Ref vPtr = vInfoS.heapPtr;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">				if (vPtr == null) {</span>
+<span class="fc" id="L113">					vInfoS.heapPtr = heapS.insert(vDistance, v);</span>
+<span class="fc" id="L114">					vInfoS.backtrack = e;</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">				} else if (vDistance &lt; vPtr.key()) {</span>
+<span class="fc" id="L116">					heapS.decreaseKey(vPtr, vDistance);</span>
+<span class="fc" id="L117">					vInfoS.backtrack = e;</span>
+				}
+<span class="fc" id="L119">			}</span>
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(uT).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L122">				int e = eit.nextInt();</span>
+<span class="fc" id="L123">				int v = eit.sourceInt();</span>
+<span class="fc" id="L124">				Info vInfoT = infoT.computeIfAbsent(v, k -&gt; new Info());</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">				if (vInfoT.isVisited())</span>
+<span class="fc" id="L126">					continue;</span>
+<span class="fc" id="L127">				double ew = w.weight(e);</span>
+<span class="fc" id="L128">				Assertions.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L129">				double vDistance = uDistanceT + ew;</span>
+<span class="fc" id="L130">				Info vInfoS = infoS.get(v);</span>
+<span class="fc bfc" id="L131" title="All 4 branches covered.">				if (vInfoS != null &amp;&amp; vInfoS.isVisited()) {</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">					if (mu &gt; vDistance + vInfoS.distance) {</span>
+<span class="fc" id="L133">						mu = vDistance + vInfoS.distance;</span>
+<span class="fc" id="L134">						middle = v;</span>
+					}
+				}
+
+<span class="fc" id="L138">				DoubleIntReferenceableHeap.Ref vPtr = vInfoT.heapPtr;</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">				if (vPtr == null) {</span>
+<span class="fc" id="L140">					vInfoT.heapPtr = heapT.insert(vDistance, v);</span>
+<span class="fc" id="L141">					vInfoT.backtrack = e;</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">				} else if (vDistance &lt; vPtr.key()) {</span>
+<span class="fc" id="L143">					heapT.decreaseKey(vPtr, vDistance);</span>
+<span class="fc" id="L144">					vInfoT.backtrack = e;</span>
+				}
+<span class="fc" id="L146">			}</span>
+
+<span class="fc bfc" id="L148" title="All 2 branches covered.">			if (uDistanceS + uDistanceT &gt;= mu)</span>
+<span class="fc" id="L149">				break;</span>
+<span class="fc" id="L150">		}</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">		if (middle &lt; 0)</span>
+<span class="fc" id="L152">			return null;</span>
+
+<span class="fc" id="L154">		IntArrayList path = new IntArrayList();</span>
+
+		/* add edges from source to middle */
+<span class="fc bfc" id="L157" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">			for (int u = middle, e; u != source; u = g.edgeSource(e))</span>
+<span class="fc" id="L159">				path.add(e = infoS.get(u).backtrack);</span>
+		} else {
+<span class="fc bfc" id="L161" title="All 2 branches covered.">			for (int u = middle, e; u != source; u = g.edgeEndpoint(e, u))</span>
+<span class="fc" id="L162">				path.add(e = infoS.get(u).backtrack);</span>
+		}
+<span class="fc" id="L164">		IntArrays.reverse(path.elements(), 0, path.size());</span>
+
+		/* add edges from middle to target */
+<span class="fc bfc" id="L167" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">			for (int u = middle, e; u != target; u = g.edgeTarget(e))</span>
+<span class="fc" id="L169">				path.add(e = infoT.get(u).backtrack);</span>
+		} else {
+<span class="fc bfc" id="L171" title="All 2 branches covered.">			for (int u = middle, e; u != target; u = g.edgeEndpoint(e, u))</span>
+<span class="fc" id="L172">				path.add(e = infoT.get(u).backtrack);</span>
+		}
+<span class="fc" id="L174">		return ObjectDoublePair.of(IPath.valueOf(g, source, target, path), mu);</span>
+	}
+
+<span class="fc" id="L177">	static class Info {</span>
+<span class="fc" id="L178">		int backtrack = -1;</span>
+<span class="fc" id="L179">		double distance = Double.POSITIVE_INFINITY;</span>
+		DoubleIntReferenceableHeap.Ref heapPtr;
+
+		void markVisited() {
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">			assert heapPtr != VisitedMark : &quot;already visited&quot;;</span>
+<span class="fc" id="L184">			heapPtr = VisitedMark;</span>
+<span class="fc" id="L185">		}</span>
+
+		boolean isVisited() {
+<span class="fc bfc" id="L188" title="All 2 branches covered.">			return heapPtr == VisitedMark;</span>
+		}
+
+<span class="fc" id="L191">		private static final DoubleIntReferenceableHeap.Ref VisitedMark =</span>
+<span class="fc" id="L192">				DoubleIntReferenceableHeap.newInstance().insert(0.0, 0);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

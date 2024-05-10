@@ -70,7 +70,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		}
 <span class="fc" id="L71">	}</span>
 
-	private void benchAPSPPositiveWeights(StronglyConnectedComponentsAlgo algo, Blackhole blackhole) {
+	private void benchApspPositiveWeights(StronglyConnectedComponentsAlgo algo, Blackhole blackhole) {
 <span class="fc" id="L74">		IntGraph graph = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
 <span class="fc" id="L75">		IVertexPartition result = (IVertexPartition) algo.findStronglyConnectedComponents(graph);</span>
 <span class="fc" id="L76">		blackhole.consume(result);</span>
@@ -78,12 +78,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	@Benchmark
 	public void pathBasedDfs(Blackhole blackhole) {
-<span class="fc" id="L81">		benchAPSPPositiveWeights(getAlgo(&quot;path-based&quot;), blackhole);</span>
+<span class="fc" id="L81">		benchApspPositiveWeights(getAlgo(&quot;path-based&quot;), blackhole);</span>
 <span class="fc" id="L82">	}</span>
 
 	@Benchmark
 	public void Tarjan(Blackhole blackhole) {
-<span class="fc" id="L86">		benchAPSPPositiveWeights(getAlgo(&quot;tarjan&quot;), blackhole);</span>
+<span class="fc" id="L86">		benchApspPositiveWeights(getAlgo(&quot;tarjan&quot;), blackhole);</span>
 <span class="fc" id="L87">	}</span>
 
 	private static StronglyConnectedComponentsAlgo getAlgo(String implName) {

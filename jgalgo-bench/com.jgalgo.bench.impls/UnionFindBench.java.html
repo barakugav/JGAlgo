@@ -92,13 +92,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		}
 <span class="fc" id="L93">	}</span>
 
-	private void benchUnionFindByRunningMSTKruskal(UnionFind.Builder builder, Blackhole blackhole) {
+	private void benchUnionFindByRunningMstKruskal(UnionFind.Builder builder, Blackhole blackhole) {
 <span class="fc" id="L96">		Pair&lt;IndexGraph, int[]&gt; graph = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
-<span class="fc" id="L97">		int[] mst = calcMSTKruskal(graph.first(), graph.second(), builder);</span>
+<span class="fc" id="L97">		int[] mst = calcMstKruskal(graph.first(), graph.second(), builder);</span>
 <span class="fc" id="L98">		blackhole.consume(mst);</span>
 <span class="fc" id="L99">	}</span>
 
-	private static int[] calcMSTKruskal(IndexGraph g, int[] edges, UnionFind.Builder ufBuilder) {
+	private static int[] calcMstKruskal(IndexGraph g, int[] edges, UnionFind.Builder ufBuilder) {
 		/* !! assume the edge array is sorted by weight !! */
 <span class="fc" id="L103">		int n = g.vertices().size();</span>
 
@@ -123,13 +123,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	}
 
 	@Benchmark
-	public void UnionFindArrayMSTKruskal(Blackhole blackhole) {
-<span class="fc" id="L127">		benchUnionFindByRunningMSTKruskal(getAlgo(&quot;array&quot;), blackhole);</span>
+	public void UnionFindArrayMstKruskal(Blackhole blackhole) {
+<span class="fc" id="L127">		benchUnionFindByRunningMstKruskal(getAlgo(&quot;array&quot;), blackhole);</span>
 <span class="fc" id="L128">	}</span>
 
 	@Benchmark
-	public void UnionFindPtrMSTKruskal(Blackhole blackhole) {
-<span class="fc" id="L132">		benchUnionFindByRunningMSTKruskal(getAlgo(&quot;ptr&quot;), blackhole);</span>
+	public void UnionFindPtrMstKruskal(Blackhole blackhole) {
+<span class="fc" id="L132">		benchUnionFindByRunningMstKruskal(getAlgo(&quot;ptr&quot;), blackhole);</span>
 <span class="fc" id="L133">	}</span>
 
 	private static UnionFind.Builder getAlgo(String implName) {

@@ -49,7 +49,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L49">	final int graphsNum = 31;</span>
 <span class="fc" id="L50">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
 
-	void benchSSSP(ShortestPathSingleSource algo, Blackhole blackhole) {
+	void benchSssp(ShortestPathSingleSource algo, Blackhole blackhole) {
 <span class="fc" id="L53">		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
 <span class="fc" id="L54">		ShortestPathSingleSource.IResult result = (ShortestPathSingleSource.IResult) algo</span>
 <span class="fc" id="L55">				.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));</span>
@@ -87,12 +87,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Benchmark
 		public void Dijkstra(Blackhole blackhole) {
-<span class="fc" id="L90">			benchSSSP(getAlgo(&quot;dijkstra&quot;), blackhole);</span>
+<span class="fc" id="L90">			benchSssp(getAlgo(&quot;dijkstra&quot;), blackhole);</span>
 <span class="fc" id="L91">		}</span>
 
 		@Benchmark
 		public void Dial(Blackhole blackhole) {
-<span class="fc" id="L95">			benchSSSP(getAlgo(&quot;dial&quot;), blackhole);</span>
+<span class="fc" id="L95">			benchSssp(getAlgo(&quot;dial&quot;), blackhole);</span>
 <span class="fc" id="L96">		}</span>
 	}
 
@@ -127,12 +127,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Benchmark
 		public void Dijkstra(Blackhole blackhole) {
-<span class="fc" id="L130">			benchSSSP(getAlgo(&quot;dijkstra&quot;), blackhole);</span>
+<span class="fc" id="L130">			benchSssp(getAlgo(&quot;dijkstra&quot;), blackhole);</span>
 <span class="fc" id="L131">		}</span>
 
 		@Benchmark
 		public void Dial(Blackhole blackhole) {
-<span class="fc" id="L135">			benchSSSP(getAlgo(&quot;dial&quot;), blackhole);</span>
+<span class="fc" id="L135">			benchSssp(getAlgo(&quot;dial&quot;), blackhole);</span>
 <span class="fc" id="L136">		}</span>
 	}
 
@@ -168,12 +168,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Benchmark
 		public void Dijkstra(Blackhole blackhole) {
-<span class="fc" id="L171">			benchSSSP(getAlgo(&quot;dijkstra&quot;), blackhole);</span>
+<span class="fc" id="L171">			benchSssp(getAlgo(&quot;dijkstra&quot;), blackhole);</span>
 <span class="fc" id="L172">		}</span>
 
 		@Benchmark
 		public void Dial(Blackhole blackhole) {
-<span class="fc" id="L176">			benchSSSP(getAlgo(&quot;dial&quot;), blackhole);</span>
+<span class="fc" id="L176">			benchSssp(getAlgo(&quot;dial&quot;), blackhole);</span>
 <span class="fc" id="L177">		}</span>
 	}
 

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SteinerTreeAlgoAbstract.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.span</a> &gt; <span class="el_source">SteinerTreeAlgoAbstract.java</span></div><h1>SteinerTreeAlgoAbstract.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.span;
+
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
+
+/**
+ * Abstract class for computing Steiner trees in graphs.
+ *
+ * &lt;p&gt;
+ * The class implements the interface by solving the problem on the index graph and then maps the results back to the
+ * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L46">public abstract class SteinerTreeAlgoAbstract implements SteinerTreeAlgo {</span>
+
+	/**
+	 * Default constructor.
+	 */
+<span class="fc" id="L51">	public SteinerTreeAlgoAbstract() {}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public &lt;V, E&gt; SteinerTreeAlgo.Result&lt;V, E&gt; computeSteinerTree(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w,
+			Collection&lt;V&gt; terminals) {
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L58">			IntCollection terminals0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) terminals);</span>
+<span class="fc" id="L59">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L60">			return (SteinerTreeAlgo.Result&lt;V, E&gt;) computeSteinerTree((IndexGraph) g, w0, terminals0);</span>
+
+		} else {
+<span class="fc" id="L63">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L64">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L65">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L66">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L67">			IntCollection iTerminals = IndexIdMaps.idToIndexCollection(terminals, viMap);</span>
+
+<span class="fc" id="L69">			SteinerTreeAlgo.IResult indexResult = computeSteinerTree(iGraph, iw, iTerminals);</span>
+<span class="fc" id="L70">			return resultFromIndexResult(g, indexResult);</span>
+		}
+	}
+
+	protected abstract SteinerTreeAlgo.IResult computeSteinerTree(IndexGraph g, IWeightFunction w,
+			IntCollection terminals);
+
+	/**
+	 * A result object for the Steiner tree computation in an index graph.
+	 *
+	 * @author Barak Ugav
+	 */
+	protected static class IndexResult implements SteinerTreeAlgo.IResult {
+
+		private final IntSet edges;
+<span class="fc" id="L85">		static final SteinerTreeAlgo.IResult Empty = new IndexResult(IntArrays.EMPTY_ARRAY);</span>
+
+<span class="fc" id="L87">		public IndexResult(IntSet edges) {</span>
+<span class="fc" id="L88">			this.edges = IntSets.unmodifiable(Objects.requireNonNull(edges));</span>
+<span class="fc" id="L89">		}</span>
+
+<span class="fc" id="L91">		public IndexResult(int[] edges) {</span>
+<span class="fc" id="L92">			this.edges = ImmutableIntArraySet.withNaiveContains(edges);</span>
+<span class="fc" id="L93">		}</span>
+
+		@Override
+		public IntSet edges() {
+<span class="fc" id="L97">			return edges;</span>
+		}
+
+		@Override
+		public String toString() {
+<span class="nc" id="L102">			return edges().toString();</span>
+		}
+
+	}
+
+	private static class ObjResultFromIndexResult&lt;V, E&gt; implements SteinerTreeAlgo.Result&lt;V, E&gt; {
+
+		private final SteinerTreeAlgo.IResult indexRes;
+		private final IndexIdMap&lt;E&gt; eiMap;
+
+<span class="fc" id="L112">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, SteinerTreeAlgo.IResult res) {</span>
+<span class="fc" id="L113">			this.indexRes = Objects.requireNonNull(res);</span>
+<span class="fc" id="L114">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L115">		}</span>
+
+		@Override
+		public Set&lt;E&gt; edges() {
+<span class="fc" id="L119">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
+		}
+	}
+
+	private static class IntResultFromIndexResult implements SteinerTreeAlgo.IResult {
+
+		private final SteinerTreeAlgo.IResult indexRes;
+		private final IndexIntIdMap eiMap;
+
+<span class="fc" id="L128">		IntResultFromIndexResult(IntGraph g, SteinerTreeAlgo.IResult res) {</span>
+<span class="fc" id="L129">			this.indexRes = Objects.requireNonNull(res);</span>
+<span class="fc" id="L130">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L131">		}</span>
+
+		@Override
+		public IntSet edges() {
+<span class="fc" id="L135">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private static &lt;V, E&gt; SteinerTreeAlgo.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
+			SteinerTreeAlgo.IResult indexResult) {
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L144">			return (SteinerTreeAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
+		} else {
+<span class="fc" id="L146">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -49,12 +49,16 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Prim%27s_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-<span class="fc" id="L52">class MinimumSpanningTreePrim extends MinimumSpanningTrees.AbstractUndirected {</span>
+<span class="fc" id="L52">public class MinimumSpanningTreePrim extends MinimumSpanningTreeAbstract {</span>
 
 	/**
 	 * Construct a new MST algorithm object.
+	 *
+	 * &lt;p&gt;
+	 * Please prefer using {@link MinimumSpanningTree#newInstance()} to get a default implementation for the
+	 * {@link MinimumSpanningTree} interface.
 	 */
-<span class="fc" id="L57">	MinimumSpanningTreePrim() {}</span>
+<span class="fc" id="L61">	public MinimumSpanningTreePrim() {}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -62,112 +66,112 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L66">		Assertions.onlyUndirected(g);</span>
-<span class="fc" id="L67">		int n = g.vertices().size();</span>
-<span class="pc bpc" id="L68" title="1 of 2 branches missed.">		if (n == 0)</span>
-<span class="nc" id="L69">			return MinimumSpanningTrees.IndexResult.Empty;</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">		if (WeightFunction.isInteger(w)) {</span>
-<span class="fc" id="L71">			return computeMSTInt(g, (IWeightFunctionInt) w);</span>
+	protected MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L70">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L71">		int n = g.vertices().size();</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">		if (n == 0)</span>
+<span class="nc" id="L73">			return MinimumSpanningTrees.IndexResult.Empty;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">		if (WeightFunction.isInteger(w)) {</span>
+<span class="fc" id="L75">			return computeMstInt(g, (IWeightFunctionInt) w);</span>
 		} else {
-<span class="fc" id="L73">			return computeMSTDouble(g, w);</span>
+<span class="fc" id="L77">			return computeMstDouble(g, w);</span>
 		}
 	}
 
-	private static MinimumSpanningTree.IResult computeMSTDouble(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L78">		final int n = g.vertices().size();</span>
-<span class="fc" id="L79">		IndexHeapDouble heap = IndexHeapDouble.newInstance(n);</span>
-<span class="fc" id="L80">		int[] edgeToV = new int[n];</span>
-<span class="fc" id="L81">		Bitmap visited = new Bitmap(n);</span>
+	private static MinimumSpanningTree.IResult computeMstDouble(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L82">		final int n = g.vertices().size();</span>
+<span class="fc" id="L83">		IndexHeapDouble heap = IndexHeapDouble.newInstance(n);</span>
+<span class="fc" id="L84">		int[] edgeToV = new int[n];</span>
+<span class="fc" id="L85">		Bitmap visited = new Bitmap(n);</span>
 
-<span class="fc" id="L83">		IntArrayList mst = new IntArrayList(n - 1);</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">		for (int root : range(n)) {</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (visited.get(root))</span>
-<span class="fc" id="L86">				continue;</span>
+<span class="fc" id="L87">		IntArrayList mst = new IntArrayList(n - 1);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		for (int root : range(n)) {</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">			if (visited.get(root))</span>
+<span class="fc" id="L90">				continue;</span>
 
-<span class="fc" id="L88">			treeLoop: for (int u = root;;) {</span>
-<span class="fc" id="L89">				visited.set(u);</span>
+<span class="fc" id="L92">			treeLoop: for (int u = root;;) {</span>
+<span class="fc" id="L93">				visited.set(u);</span>
 
 				/* decrease edges keys if a better one is found */
-<span class="fc bfc" id="L92" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L93">					int e = eit.nextInt();</span>
-<span class="fc" id="L94">					int v = eit.targetInt();</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">					if (visited.get(v))</span>
-<span class="fc" id="L96">						continue;</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L97">					int e = eit.nextInt();</span>
+<span class="fc" id="L98">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L100">						continue;</span>
 
-<span class="fc" id="L98">					double ew = w.weight(e);</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">					if (!heap.isInserted(v)) {</span>
-<span class="fc" id="L100">						heap.insert(v, ew);</span>
-<span class="fc" id="L101">						edgeToV[v] = e;</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">					} else if (ew &lt; heap.key(v)) {</span>
-<span class="fc" id="L103">						heap.decreaseKey(v, ew);</span>
-<span class="fc" id="L104">						edgeToV[v] = e;</span>
+<span class="fc" id="L102">					double ew = w.weight(e);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">					if (!heap.isInserted(v)) {</span>
+<span class="fc" id="L104">						heap.insert(v, ew);</span>
+<span class="fc" id="L105">						edgeToV[v] = e;</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">					} else if (ew &lt; heap.key(v)) {</span>
+<span class="fc" id="L107">						heap.decreaseKey(v, ew);</span>
+<span class="fc" id="L108">						edgeToV[v] = e;</span>
 					}
-<span class="fc" id="L106">				}</span>
+<span class="fc" id="L110">				}</span>
 
 				/* find next lightest edge */
-<span class="fc bfc" id="L109" title="All 2 branches covered.">				if (heap.isEmpty())</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">				if (heap.isEmpty())</span>
 					/* reached all vertices from current root, continue to next tree */
-<span class="fc" id="L111">					break treeLoop;</span>
-<span class="fc" id="L112">				int v = heap.extractMin();</span>
-<span class="pc bpc" id="L113" title="1 of 2 branches missed.">				assert !visited.get(v);</span>
-<span class="fc" id="L114">				int e = edgeToV[v];</span>
+<span class="fc" id="L115">					break treeLoop;</span>
+<span class="fc" id="L116">				int v = heap.extractMin();</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">				assert !visited.get(v);</span>
+<span class="fc" id="L118">				int e = edgeToV[v];</span>
 
 				/* add lightest edge to MST */
-<span class="fc" id="L117">				mst.add(e);</span>
-<span class="fc" id="L118">				u = v;</span>
-<span class="fc" id="L119">			}</span>
-<span class="fc" id="L120">		}</span>
-<span class="fc" id="L121">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
-<span class="fc" id="L122">		return new MinimumSpanningTrees.IndexResult(mstSet);</span>
+<span class="fc" id="L121">				mst.add(e);</span>
+<span class="fc" id="L122">				u = v;</span>
+<span class="fc" id="L123">			}</span>
+<span class="fc" id="L124">		}</span>
+<span class="fc" id="L125">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
+<span class="fc" id="L126">		return newIndexResult(mstSet);</span>
 	}
 
-	private static MinimumSpanningTree.IResult computeMSTInt(IndexGraph g, IWeightFunctionInt w) {
-<span class="fc" id="L126">		final int n = g.vertices().size();</span>
-<span class="fc" id="L127">		IndexHeapInt heap = IndexHeapInt.newInstance(n);</span>
-<span class="fc" id="L128">		int[] edgeToV = new int[n];</span>
-<span class="fc" id="L129">		Bitmap visited = new Bitmap(n);</span>
+	private static MinimumSpanningTree.IResult computeMstInt(IndexGraph g, IWeightFunctionInt w) {
+<span class="fc" id="L130">		final int n = g.vertices().size();</span>
+<span class="fc" id="L131">		IndexHeapInt heap = IndexHeapInt.newInstance(n);</span>
+<span class="fc" id="L132">		int[] edgeToV = new int[n];</span>
+<span class="fc" id="L133">		Bitmap visited = new Bitmap(n);</span>
 
-<span class="fc" id="L131">		IntArrayList mst = new IntArrayList(n - 1);</span>
-<span class="fc bfc" id="L132" title="All 2 branches covered.">		for (int root : range(n)) {</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">			if (visited.get(root))</span>
-<span class="fc" id="L134">				continue;</span>
+<span class="fc" id="L135">		IntArrayList mst = new IntArrayList(n - 1);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">		for (int root : range(n)) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			if (visited.get(root))</span>
+<span class="fc" id="L138">				continue;</span>
 
-<span class="fc" id="L136">			treeLoop: for (int u = root;;) {</span>
-<span class="fc" id="L137">				visited.set(u);</span>
+<span class="fc" id="L140">			treeLoop: for (int u = root;;) {</span>
+<span class="fc" id="L141">				visited.set(u);</span>
 
 				/* decrease edges keys if a better one is found */
-<span class="fc bfc" id="L140" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L141">					int e = eit.nextInt();</span>
-<span class="fc" id="L142">					int v = eit.targetInt();</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">					if (visited.get(v))</span>
-<span class="fc" id="L144">						continue;</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L145">					int e = eit.nextInt();</span>
+<span class="fc" id="L146">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L148">						continue;</span>
 
-<span class="fc" id="L146">					int ew = w.weightInt(e);</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">					if (!heap.isInserted(v)) {</span>
-<span class="fc" id="L148">						heap.insert(v, ew);</span>
-<span class="fc" id="L149">						edgeToV[v] = e;</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">					} else if (ew &lt; heap.key(v)) {</span>
-<span class="fc" id="L151">						heap.decreaseKey(v, ew);</span>
-<span class="fc" id="L152">						edgeToV[v] = e;</span>
+<span class="fc" id="L150">					int ew = w.weightInt(e);</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">					if (!heap.isInserted(v)) {</span>
+<span class="fc" id="L152">						heap.insert(v, ew);</span>
+<span class="fc" id="L153">						edgeToV[v] = e;</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">					} else if (ew &lt; heap.key(v)) {</span>
+<span class="fc" id="L155">						heap.decreaseKey(v, ew);</span>
+<span class="fc" id="L156">						edgeToV[v] = e;</span>
 					}
-<span class="fc" id="L154">				}</span>
+<span class="fc" id="L158">				}</span>
 
 				/* find next lightest edge */
-<span class="fc bfc" id="L157" title="All 2 branches covered.">				if (heap.isEmpty())</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">				if (heap.isEmpty())</span>
 					/* reached all vertices from current root, continue to next tree */
-<span class="fc" id="L159">					break treeLoop;</span>
-<span class="fc" id="L160">				int v = heap.extractMin();</span>
-<span class="pc bpc" id="L161" title="1 of 2 branches missed.">				assert !visited.get(v);</span>
-<span class="fc" id="L162">				int e = edgeToV[v];</span>
+<span class="fc" id="L163">					break treeLoop;</span>
+<span class="fc" id="L164">				int v = heap.extractMin();</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">				assert !visited.get(v);</span>
+<span class="fc" id="L166">				int e = edgeToV[v];</span>
 
 				/* add lightest edge to MST */
-<span class="fc" id="L165">				mst.add(e);</span>
-<span class="fc" id="L166">				u = v;</span>
-<span class="fc" id="L167">			}</span>
-<span class="fc" id="L168">		}</span>
-<span class="fc" id="L169">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
-<span class="fc" id="L170">		return new MinimumSpanningTrees.IndexResult(mstSet);</span>
+<span class="fc" id="L169">				mst.add(e);</span>
+<span class="fc" id="L170">				u = v;</span>
+<span class="fc" id="L171">			}</span>
+<span class="fc" id="L172">		}</span>
+<span class="fc" id="L173">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
+<span class="fc" id="L174">		return newIndexResult(mstSet);</span>
 	}
 
 }

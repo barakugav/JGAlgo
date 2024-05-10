@@ -36,14 +36,19 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * @see    TopologicalOrderAlgo
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.AbstractImpl {
+public class ShortestPathSingleSourceDag extends ShortestPathSingleSourceAbstract {
 
 <span class="fc" id="L41">	private final TopologicalOrderAlgo topoAlg = TopologicalOrderAlgo.newInstance();</span>
 
 	/**
-	 * Construct a new SSSP algorithm.
+	 * Create a SSSP algorithm for directed acyclic graphs (DAG).
+	 *
+	 * &lt;p&gt;
+	 * Please prefer using {@link ShortestPathSingleSource#newInstance()} to get a default implementation for the
+	 * {@link ShortestPathSingleSource} interface, or {@link ShortestPathSingleSource#builder()} for more customization
+	 * options.
 	 */
-<span class="fc" id="L46">	ShortestPathSingleSourceDag() {}</span>
+<span class="fc" id="L51">	public ShortestPathSingleSourceDag() {}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -51,64 +56,64 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 	 * @throws IllegalArgumentException if graph is not directed or contains cycles
 	 */
 	@Override
-	ShortestPathSingleSourceDag.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
-<span class="fc" id="L55">		Assertions.onlyDirected(g);</span>
-<span class="fc" id="L56">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">		if (WeightFunction.isInteger(w)) {</span>
-<span class="fc" id="L58">			return computeSsspInt(g, (IWeightFunctionInt) w, source);</span>
+	protected ShortestPathSingleSourceDag.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+<span class="fc" id="L60">		Assertions.onlyDirected(g);</span>
+<span class="fc" id="L61">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		if (WeightFunction.isInteger(w)) {</span>
+<span class="fc" id="L63">			return computeSsspInt(g, (IWeightFunctionInt) w, source);</span>
 		} else {
-<span class="fc" id="L60">			return computeSsspDouble(g, w, source);</span>
+<span class="fc" id="L65">			return computeSsspDouble(g, w, source);</span>
 		}
 	}
 
 	private ShortestPathSingleSourceDag.IResult computeSsspDouble(IndexGraph g, IWeightFunction w, int source) {
-<span class="fc" id="L65">		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);</span>
-<span class="fc" id="L66">		res.distances[source] = 0;</span>
+<span class="fc" id="L70">		IndexResult res = new IndexResult(g, source);</span>
+<span class="fc" id="L71">		res.distances[source] = 0;</span>
 
-<span class="fc" id="L68">		TopologicalOrderAlgo.IResult topoOrderRes = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);</span>
-<span class="fc" id="L69">		IntList topoOrder = topoOrderRes.orderedVertices();</span>
-<span class="fc" id="L70">		int sourceTopoIndex = topoOrder.indexOf(source);</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">		for (IntIterator uit = topoOrder.listIterator(sourceTopoIndex); uit.hasNext();) {</span>
-<span class="fc" id="L72">			int u = uit.nextInt();</span>
-<span class="fc" id="L73">			double uDistance = res.distances[u];</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">			if (uDistance == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L75">				continue;</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L77">				int e = eit.nextInt();</span>
-<span class="fc" id="L78">				int v = eit.targetInt();</span>
-<span class="fc" id="L79">				double d = uDistance + w.weight(e);</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
-<span class="fc" id="L81">					res.distances[v] = d;</span>
-<span class="fc" id="L82">					res.backtrack[v] = e;</span>
+<span class="fc" id="L73">		TopologicalOrderAlgo.IResult topoOrderRes = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);</span>
+<span class="fc" id="L74">		IntList topoOrder = topoOrderRes.orderedVertices();</span>
+<span class="fc" id="L75">		int sourceTopoIndex = topoOrder.indexOf(source);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		for (IntIterator uit = topoOrder.listIterator(sourceTopoIndex); uit.hasNext();) {</span>
+<span class="fc" id="L77">			int u = uit.nextInt();</span>
+<span class="fc" id="L78">			double uDistance = res.distances[u];</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">			if (uDistance == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L80">				continue;</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L82">				int e = eit.nextInt();</span>
+<span class="fc" id="L83">				int v = eit.targetInt();</span>
+<span class="fc" id="L84">				double d = uDistance + w.weight(e);</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
+<span class="fc" id="L86">					res.distances[v] = d;</span>
+<span class="fc" id="L87">					res.backtrack[v] = e;</span>
 				}
-<span class="fc" id="L84">			}</span>
-<span class="fc" id="L85">		}</span>
-<span class="fc" id="L86">		return res;</span>
+<span class="fc" id="L89">			}</span>
+<span class="fc" id="L90">		}</span>
+<span class="fc" id="L91">		return res;</span>
 	}
 
 	private ShortestPathSingleSourceDag.IResult computeSsspInt(IndexGraph g, IWeightFunctionInt w, int source) {
-<span class="fc" id="L90">		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);</span>
-<span class="fc" id="L91">		res.distances[source] = 0;</span>
+<span class="fc" id="L95">		IndexResult res = new IndexResult(g, source);</span>
+<span class="fc" id="L96">		res.distances[source] = 0;</span>
 
-<span class="fc" id="L93">		TopologicalOrderAlgo.IResult topoOrderRes = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);</span>
-<span class="fc" id="L94">		IntList topoOrder = topoOrderRes.orderedVertices();</span>
-<span class="fc" id="L95">		int sourceTopoIndex = topoOrder.indexOf(source);</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		for (IntIterator uit = topoOrder.listIterator(sourceTopoIndex); uit.hasNext();) {</span>
-<span class="fc" id="L97">			int u = uit.nextInt();</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">			if (res.distances[u] == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L99">				continue;</span>
-<span class="fc" id="L100">			int uDistance = (int) res.distances[u];</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L102">				int e = eit.nextInt();</span>
-<span class="fc" id="L103">				int v = eit.targetInt();</span>
-<span class="fc" id="L104">				int d = uDistance + w.weightInt(e);</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">				if (d &lt; (int) res.distances[v]) {</span>
-<span class="fc" id="L106">					res.distances[v] = d;</span>
-<span class="fc" id="L107">					res.backtrack[v] = e;</span>
+<span class="fc" id="L98">		TopologicalOrderAlgo.IResult topoOrderRes = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);</span>
+<span class="fc" id="L99">		IntList topoOrder = topoOrderRes.orderedVertices();</span>
+<span class="fc" id="L100">		int sourceTopoIndex = topoOrder.indexOf(source);</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">		for (IntIterator uit = topoOrder.listIterator(sourceTopoIndex); uit.hasNext();) {</span>
+<span class="fc" id="L102">			int u = uit.nextInt();</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (res.distances[u] == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L104">				continue;</span>
+<span class="fc" id="L105">			int uDistance = (int) res.distances[u];</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L107">				int e = eit.nextInt();</span>
+<span class="fc" id="L108">				int v = eit.targetInt();</span>
+<span class="fc" id="L109">				int d = uDistance + w.weightInt(e);</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">				if (d &lt; (int) res.distances[v]) {</span>
+<span class="fc" id="L111">					res.distances[v] = d;</span>
+<span class="fc" id="L112">					res.backtrack[v] = e;</span>
 				}
-<span class="fc" id="L109">			}</span>
-<span class="fc" id="L110">		}</span>
-<span class="fc" id="L111">		return res;</span>
+<span class="fc" id="L114">			}</span>
+<span class="fc" id="L115">		}</span>
+<span class="fc" id="L116">		return res;</span>
 	}
 
 }
