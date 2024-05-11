@@ -107,7 +107,7 @@ public interface BiConnectedComponentsAlgo {
 		 * Get the edges contained in a single bi-connected component.
 		 *
 		 * <p>
-		 * An edge \((u,v)\) is said to bi contained in a bi-connected component \(B\) if both \(u\) and \(v\) are in
+		 * An edge \((u,v)\) is said to be contained in a bi-connected component \(B\) if both \(u\) and \(v\) are in
 		 * \(B\).
 		 *
 		 * @param  biccIdx                   an index of a bi-connected component
@@ -145,8 +145,12 @@ public interface BiConnectedComponentsAlgo {
 		 * Get the graph of the bi-connected components.
 		 *
 		 * <p>
-		 * The vertices of the graph are the bi-connected components indices, and there is an edge between two
-		 * bi-connected components if they share a (cut) vertex. There are no cycles in the graph, namely its a forest.
+		 * The vertices of the graph are the bi-connected components, and there is an edge between two bi-connected
+		 * components if they share a (cut) vertex. There are no cycles in the graph, namely its a forest.
+		 *
+		 * <p>
+		 * The vertex of each bi-connected component is assigned the index of the bi-connected component. The edges are
+		 * assigned arbitrary unique integers identifiers.
 		 *
 		 * @return the graph of the bi-connected components
 		 */

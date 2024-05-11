@@ -58,7 +58,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		tester.addPhase().withArgs(165, 666).repeat(1);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());
-			testUGraph(BiConnectedComponentsAlgo.newInstance(), g);
+			testUGraph(new BiConnectedComponentsAlgoHopcroftTarjan(), g);
 		});
 	}
 

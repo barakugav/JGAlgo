@@ -33,9 +33,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * Hopcroft-Tarjan algorithm for bi-connected components.
  *
  * <p>
- * The algorithm performs a DFS and look for edges from vertices with greater depth to vertices with lower depth,
- * indicating for to separates paths between them: one using the DFS tree, and the other using the edge. The algorithm
- * runs in linear time and space.
+ * The algorithm performs a DFS and look for edges from vertices with greater depth to vertices with lower depth. Each
+ * such edge indicate there are two separates paths between the edge endpoints: one using the DFS tree, and the other
+ * using the edge itself. If there are two disjoint paths between a pair of vertices, they must be in the same
+ * bi-connected component, as the removal of any single vertex will not disconnect them.
+ *
+ * <p>
+ * The algorithm runs in linear time and space.
  *
  * <p>
  * Based on 'Algorithm 447: efficient algorithms for graph manipulation' by Hopcroft, J. and Tarjan, R. 1973.
@@ -68,11 +72,9 @@ public class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponen
 
 		Arrays.fill(depths, -1);
 
-		var biccVerticesFromBiccEdgesState = new Object() {
-			Bitmap visited = new Bitmap(n);
-		};
+		Bitmap biccVerticesFromBiccEdgesVisited = new Bitmap(n);
 		Function<int[], int[]> biccVerticesFromBiccEdges = biccsEdges -> {
-			Bitmap visited = biccVerticesFromBiccEdgesState.visited;
+			Bitmap visited = biccVerticesFromBiccEdgesVisited;
 			assert visited.isEmpty();
 			int biccVerticesCount = 0;
 			for (int e : biccsEdges)
