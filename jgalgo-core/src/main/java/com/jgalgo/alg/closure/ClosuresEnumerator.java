@@ -16,7 +16,6 @@
 package com.jgalgo.alg.closure;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import com.jgalgo.alg.path.IPath;
 import com.jgalgo.alg.path.Path;
@@ -24,18 +23,23 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * An algorithm that enumerate all the closure subsets in a directed graph.
  *
  * <p>
- * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that no edges leave
- * \(C\) to \(V \setminus C\). There might be exponentially many closures in a graph, and algorithms implementing this
- * interface enumerate over all of them (use an {@link Iterator} avoiding storing all of them in memory).
+ * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that there are no
+ * edges from \(C\) to \(V \setminus C\).
  *
  * <p>
- * For undirected graphs, the closure subsets are simply the weakly connected components.
+ * There may be exponentially many closures in a graph, therefore all implementations of this interface use some
+ * heuristic to speed up the process but run in exponential time in the worst case. The algorithm returns an iterator
+ * over the closures, so that the caller can iterate over them without storing them all in memory. Avoid using this
+ * algorithm on very large graphs.
+ *
+ * <p>
+ * For undirected graphs, the closure subsets are simply the weakly connected components, and algorithms implementing
+ * this interface will throw an exception if the graph is not directed.
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface.
@@ -49,9 +53,9 @@ public interface ClosuresEnumerator {
 	 * Iterate over all closures in the given graph.
 	 *
 	 * <p>
-	 * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that no edges
-	 * leave \(C\) to \(V \setminus C\). Although the empty set of vertices is consider a colure, it is not returned by
-	 * this method.
+	 * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that there are no
+	 * edges from \(C\) to \(V \setminus C\). Although the empty set of vertices is considered a colure, it is not
+	 * returned by this method.
 	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned iterator will iterate over {@link IntSet} objects.
@@ -63,27 +67,6 @@ public interface ClosuresEnumerator {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	<V, E> Iterator<Set<V>> closuresIter(Graph<V, E> g);
-
-	/**
-	 * Find all closures in the given graph.
-	 *
-	 * <p>
-	 * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that no edges
-	 * leave \(C\) to \(V \setminus C\). Although the empty set of vertices is consider a colure, it is not returned by
-	 * this method.
-	 *
-	 * <p>
-	 * If {@code g} is {@link IntGraph}, the returned list will contain {@link IntSet} objects.
-	 *
-	 * @param  <V>                      the vertices type
-	 * @param  <E>                      the edges type
-	 * @param  g                        a directed graph
-	 * @return                          a list of all closures in the graph
-	 * @throws IllegalArgumentException if the graph is not directed
-	 */
-	default <V, E> List<Set<V>> allClosures(Graph<V, E> g) {
-		return new ObjectArrayList<>(closuresIter(g));
-	}
 
 	/**
 	 * Create a new closure enumeration algorithm.
@@ -98,11 +81,11 @@ public interface ClosuresEnumerator {
 	}
 
 	/**
-	 * Check whether the given set is a closure in the given graph.
+	 * Check whether the given set of vertices is a closure in the given graph.
 	 *
 	 * <p>
-	 * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that no edges
-	 * leave \(C\) to \(V \setminus C\). The empty set of vertices is considered a closure.
+	 * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that there are no
+	 * edges from \(C\) to \(V \setminus C\). The empty set of vertices is considered a closure.
 	 *
 	 * @param  <V> the vertices type
 	 * @param  <E> the edges type

@@ -32,6 +32,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class ClosuresEnumeratorSchrageBakerTest extends TestBase {
@@ -71,7 +72,7 @@ public class ClosuresEnumeratorSchrageBakerTest extends TestBase {
 	}
 
 	private static <V, E> void testClosuresAlgo(Graph<V, E> g, ClosuresEnumerator algo) {
-		List<Set<V>> closures = algo.allClosures(g);
+		List<Set<V>> closures = new ObjectArrayList<>(algo.closuresIter(g));
 
 		for (Set<V> closure : closures)
 			assertTrue(ClosuresEnumerator.isClosure(g, closure));
@@ -129,7 +130,8 @@ public class ClosuresEnumeratorSchrageBakerTest extends TestBase {
 		g.addEdge(1, 0, 0);
 		g.addEdge(1, 2, 1);
 
-		assertThrows(IllegalArgumentException.class, () -> ClosuresEnumerator.newInstance().allClosures(g));
+		assertThrows(IllegalArgumentException.class,
+				() -> new ObjectArrayList<>(ClosuresEnumerator.newInstance().closuresIter(g)));
 	}
 
 }
