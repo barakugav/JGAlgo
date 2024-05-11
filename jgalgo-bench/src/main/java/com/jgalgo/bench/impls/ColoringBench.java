@@ -34,8 +34,10 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.IVertexPartition;
-import com.jgalgo.alg.RandomizedAlgorithm;
 import com.jgalgo.alg.color.ColoringAlgo;
+import com.jgalgo.alg.color.ColoringDSatur;
+import com.jgalgo.alg.color.ColoringGreedy;
+import com.jgalgo.alg.color.ColoringRecursiveLargestFirst;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -79,26 +81,19 @@ public class ColoringBench {
 
 	@Benchmark
 	public void Greedy(Blackhole blackhole) {
-		final long seed = 0xefeae78aba502d4aL;
-		ColoringAlgo algo = getAlgo("greedy");
-		((RandomizedAlgorithm) algo).setSeed(seed);
+		ColoringGreedy algo = new ColoringGreedy();
+		algo.setSeed(0xefeae78aba502d4aL);
 		benchColoring(algo, blackhole);
 	}
 
 	@Benchmark
 	public void DSatur(Blackhole blackhole) {
-		benchColoring(getAlgo("dsatur"), blackhole);
+		benchColoring(new ColoringDSatur(), blackhole);
 	}
 
 	@Benchmark
 	public void RecursiveLargestFirst(Blackhole blackhole) {
-		benchColoring(getAlgo("rlf"), blackhole);
-	}
-
-	private static ColoringAlgo getAlgo(String implName) {
-		ColoringAlgo.Builder builder = ColoringAlgo.builder();
-		builder.setOption("impl", implName);
-		return builder.build();
+		benchColoring(new ColoringRecursiveLargestFirst(), blackhole);
 	}
 
 }

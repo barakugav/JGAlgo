@@ -19,7 +19,6 @@ package com.jgalgo.alg.color;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
-import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.alg.IVertexPartition;
 import com.jgalgo.alg.VertexPartition;
 import com.jgalgo.graph.Graph;
@@ -31,8 +30,8 @@ import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
 
 /**
- * An algorithm that assign a color to each vertex in a graph while avoiding identical color for any pair of adjacent
- * vertices.
+ * An algorithm that assign a color to each vertex in a graph such that the endpoints of each edge have different
+ * colors.
  *
  * <p>
  * Given a graph \(G=(V,E)\) a valid coloring is a function \(C:v \rightarrow c\) for any vertex \(v\) in \(V\) where
@@ -41,11 +40,12 @@ import com.jgalgo.internal.util.IntAdapters;
  * optimal results for special cases.
  *
  * <p>
- * Each color is represented as an integer in range \([0, \textit{colorsNum})\).
+ * There is not special result object for this interface, rather the result is a {@link VertexPartition}. Each 'block'
+ * in the partition is a color, and the vertices in the block are the vertices that have the same color. The number of
+ * blocks is the number of different colors used in the coloring.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * <pre> {@code
  * Graph<String, Integer> g = Graph.newUndirected();
@@ -77,7 +77,7 @@ import com.jgalgo.internal.util.IntAdapters;
 public interface ColoringAlgo {
 
 	/**
-	 * Assign a color to each vertex of the given graph, resulting in a valid coloring.
+	 * Assign a color to each vertex of the given graph, while minimizing the number of different colors.
 	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned object is {@link IVertexPartition}.
@@ -155,71 +155,12 @@ public interface ColoringAlgo {
 	 * Create a new coloring algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link ColoringAlgo} object. The {@link ColoringAlgo.Builder}
-	 * might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link ColoringAlgo} object.
 	 *
 	 * @return a default implementation of {@link ColoringAlgo}
 	 */
 	static ColoringAlgo newInstance() {
-		return builder().build();
-	}
-
-	/**
-	 * Create a new coloring algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link ColoringAlgo} objects
-	 */
-	static ColoringAlgo.Builder builder() {
-		return new ColoringAlgo.Builder() {
-			String impl;
-
-			@Override
-			public ColoringAlgo build() {
-				if (impl != null) {
-					switch (impl) {
-						case "greedy":
-							return new ColoringGreedy();
-						case "dsatur":
-							return new ColoringDSatur();
-						case "rlf":
-							return new ColoringRecursiveLargestFirst();
-						default:
-							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-					}
-				}
-				return new ColoringDSatur();
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					default:
-						ColoringAlgo.Builder.super.setOption(key, value);
-				}
-			}
-		};
-	}
-
-	/**
-	 * A builder for {@link ColoringAlgo} objects.
-	 *
-	 * @see    ColoringAlgo#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for coloring computation.
-		 *
-		 * @return a new coloring algorithm
-		 */
-		ColoringAlgo build();
+		return new ColoringDSatur();
 	}
 
 }
