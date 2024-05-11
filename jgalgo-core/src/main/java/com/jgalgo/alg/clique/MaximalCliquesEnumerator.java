@@ -31,6 +31,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * vertex.
  *
  * <p>
+ * There may be exponentially many maximal cliques in a graph, therefore all implementations of this interface use some
+ * heuristic to speed up the process but run in exponential time in the worst case. The algorithm returns an iterator
+ * over the cliques, so that the user can iterate over them without storing them all in memory. Avoid using this
+ * algorithm on very large graphs.
+ *
+ * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #builder()} may support different options to obtain different implementations.
  *
@@ -40,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * for (Iterator<Set<String>> it = maxCliquesAlgo.maximalCliquesIter(g); it.hasNext();) {
  *	Set<String> clique = it.next();
- *	System.out.println("Clique in the graph:");
+ *	System.out.println("Maximal clique in the graph:");
  *	for (String v : clique)
  *		System.out.println("\t" + v);
  * }
@@ -52,6 +58,9 @@ public interface MaximalCliquesEnumerator {
 
 	/**
 	 * Iterate over all maximal cliques in a graph.
+	 *
+	 * <p>
+	 * The input graph should not be changed during the iteration.
 	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned iterator will be iterate over {@link IntSet}.
