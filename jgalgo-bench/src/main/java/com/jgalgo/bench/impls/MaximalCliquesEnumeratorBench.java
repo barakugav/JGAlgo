@@ -36,6 +36,8 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.clique.MaximalCliquesEnumerator;
+import com.jgalgo.alg.clique.MaximalCliquesEnumeratorBronKerbosch;
+import com.jgalgo.alg.clique.MaximalCliquesEnumeratorBronKerboschPivot;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -86,12 +88,12 @@ public class MaximalCliquesEnumeratorBench {
 
 		@Benchmark
 		public void BronKerbosch(Blackhole blackhole) {
-			benchMaximalCliques(getAlgo("bron-kerbosch"), blackhole);
+			benchMaximalCliques(new MaximalCliquesEnumeratorBronKerbosch(), blackhole);
 		}
 
 		@Benchmark
 		public void BronKerboschPivot(Blackhole blackhole) {
-			benchMaximalCliques(getAlgo("bron-kerbosch-pivot"), blackhole);
+			benchMaximalCliques(new MaximalCliquesEnumeratorBronKerboschPivot(), blackhole);
 		}
 	}
 
@@ -121,12 +123,12 @@ public class MaximalCliquesEnumeratorBench {
 
 		@Benchmark
 		public void BronKerbosch(Blackhole blackhole) {
-			benchMaximalCliques(getAlgo("bron-kerbosch"), blackhole);
+			benchMaximalCliques(new MaximalCliquesEnumeratorBronKerbosch(), blackhole);
 		}
 
 		@Benchmark
 		public void BronKerboschPivot(Blackhole blackhole) {
-			benchMaximalCliques(getAlgo("bron-kerbosch-pivot"), blackhole);
+			benchMaximalCliques(new MaximalCliquesEnumeratorBronKerboschPivot(), blackhole);
 		}
 	}
 
@@ -157,19 +159,13 @@ public class MaximalCliquesEnumeratorBench {
 
 		@Benchmark
 		public void BronKerbosch(Blackhole blackhole) {
-			benchMaximalCliques(getAlgo("bron-kerbosch"), blackhole);
+			benchMaximalCliques(new MaximalCliquesEnumeratorBronKerbosch(), blackhole);
 		}
 
 		@Benchmark
 		public void BronKerboschPivot(Blackhole blackhole) {
-			benchMaximalCliques(getAlgo("bron-kerbosch-pivot"), blackhole);
+			benchMaximalCliques(new MaximalCliquesEnumeratorBronKerboschPivot(), blackhole);
 		}
-	}
-
-	private static MaximalCliquesEnumerator getAlgo(String implName) {
-		MaximalCliquesEnumerator.Builder builder = MaximalCliquesEnumerator.builder();
-		builder.setOption("impl", implName);
-		return builder.build();
 	}
 
 	static Pair<IntCollection, IntCollection> chooseMultiSourceMultiSink(IntGraph g, Random rand) {
