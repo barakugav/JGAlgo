@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * A partition of the vertices of an int graph.
  *
  * <p>
- * This interface is a specific version of {@link VertexPartition} for {@link IntGraph}.
+ * This interface is a specification of {@link VertexPartition} for {@link IntGraph}.
  *
  * <p>
  * A partition of a set is a division of the set into a number of disjoint subsets, such that their union is the

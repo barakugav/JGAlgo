@@ -21,7 +21,7 @@ import it.unimi.dsi.fastutil.ints.IntIterable;
  * Weight function that maps graph edges or vertices of {@link IntGraph} to integer weights.
  *
  * <p>
- * This interface is a specific version of {@link IWeightFunction} for {@link IntGraph}.
+ * This interface is a specification of {@link IWeightFunction} for {@link IntGraph}.
  *
  * <p>
  * Some algorithms implementations support only integers weights, or run faster in such a case. This interface is the

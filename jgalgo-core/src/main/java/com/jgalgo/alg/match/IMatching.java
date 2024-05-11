@@ -22,7 +22,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * A matching in a {@link IntGraph}.
  *
  * <p>
- * This interface is a specific version of {@link Matching} for {@link IntGraph}. For the full documentation see
+ * This interface is a specification of {@link Matching} for {@link IntGraph}. For the full documentation see
  * {@link Matching}.
  *
  * @see    MatchingAlgo

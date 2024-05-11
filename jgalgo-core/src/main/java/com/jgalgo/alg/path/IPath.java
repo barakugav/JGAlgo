@@ -24,8 +24,8 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.Fastutil;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -36,8 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * A path of edges in an int graph.
  *
  * <p>
- * This interface is a specific version of {@link Path} for {@link IntGraph}. For the full documentation see
- * {@link Path}.
+ * This interface is a specification of {@link Path} for {@link IntGraph}. For the full documentation see {@link Path}.
  *
  * @author Barak Ugav
  */

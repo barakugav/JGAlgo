@@ -23,7 +23,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * Iterator used to iterate over int graph edges.
  *
  * <p>
- * This interface is a specific version of {@link EdgeIter} for {@link IntGraph}.
+ * This interface is a specification of {@link EdgeIter} for {@link IntGraph}.
  *
  * <p>
  * Each {@code int} returned by {@link #nextInt()} is an ID of an edge iterated by the iterator. The source and target

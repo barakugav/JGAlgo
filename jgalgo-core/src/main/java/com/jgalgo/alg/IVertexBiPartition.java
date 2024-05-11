@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * A partition of the vertices of an int graph into two blocks.
  *
  * <p>
- * This interface is a specific version of {@link VertexBiPartition} for {@link IntGraph}. See {@link VertexBiPartition}
+ * This interface is a specification of {@link VertexBiPartition} for {@link IntGraph}. See {@link VertexBiPartition}
  * for the complete documentation.
  *
  * @author Barak Ugav

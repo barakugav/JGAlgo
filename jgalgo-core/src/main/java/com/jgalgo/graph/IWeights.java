@@ -24,7 +24,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Weights of {@linkplain IntGraph int graph} vertices or edges.
  *
  * <p>
- * This interface is a specific version of {@link Weights} for {@link IntGraph}.
+ * This interface is a specification of {@link Weights} for {@link IntGraph}.
  *
  * <p>
  * A weights object associated with the edges (vertices) of a graph support getting and setting a weight value for each

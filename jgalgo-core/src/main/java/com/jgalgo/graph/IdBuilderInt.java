@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * at a time.
  *
  * <p>
- * This interface is a specific version of {@link IdBuilder} for {@link IntGraph}.
+ * This interface is a specification of {@link IdBuilder} for {@link IntGraph}.
  *
  * @author Barak Ugav
  */

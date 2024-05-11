@@ -21,7 +21,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * A mapping between {@link IntGraph} IDs to {@link IndexGraph} indices.
  *
  * <p>
- * This interface is a specific version of {@link IndexIdMap} for {@link IntGraph}.
+ * This interface is a specification of {@link IndexIdMap} for {@link IntGraph}.
  *
  * <p>
  * A regular graph contains vertices and edges which are identified by a fixed {@code int} IDs. An {@link IndexGraph}
