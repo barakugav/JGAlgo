@@ -37,10 +37,10 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 	private final boolean isAllowSelfEdges;
 	private final boolean isAllowParallelEdges;
-	private final DataContainer.Manager verticesInternalContainers;
-	private final DataContainer.Manager edgesInternalContainers;
-	private final WeightsImpl.IndexMutable.Manager verticesUserWeights;
-	private final WeightsImpl.IndexMutable.Manager edgesUserWeights;
+	private final DataContainer.Manager verticesContainersManager;
+	private final DataContainer.Manager edgesContainersManager;
+	private final WeightsImpl.IndexMutable.Manager verticesWeights;
+	private final WeightsImpl.IndexMutable.Manager edgesWeights;
 
 	private final DataContainer.Long edgeEndpointsContainer;
 
@@ -48,10 +48,10 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		super(capabilities.isDirected, 0, 0);
 		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
 		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
-		verticesInternalContainers = new DataContainer.Manager(expectedVerticesNum);
-		edgesInternalContainers = new DataContainer.Manager(expectedEdgesNum);
-		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedVerticesNum, true);
-		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum, false);
+		verticesContainersManager = new DataContainer.Manager(expectedVerticesNum);
+		edgesContainersManager = new DataContainer.Manager(expectedEdgesNum);
+		verticesWeights = new WeightsImpl.IndexMutable.Manager(expectedVerticesNum, true);
+		edgesWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum, false);
 
 		edgeEndpointsContainer = newEdgesLongContainer(DefaultEndpoints, newArr -> edgeEndpoints = newArr);
 	}
@@ -67,23 +67,23 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 			Assertions.onlyUndirected(g);
 		}
 
-		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), true);
-		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), false);
+		verticesWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), true);
+		edgesWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), false);
 		if (copyVerticesWeights) {
 			for (String key : g.verticesWeightsKeys())
-				verticesUserWeights
+				verticesWeights
 						.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.verticesWeights(key), vertices, true));
 		}
 		if (copyEdgesWeights) {
 			for (String key : g.edgesWeightsKeys())
-				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.edgesWeights(key), edges, false));
+				edgesWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.edgesWeights(key), edges, false));
 		}
 
 		/* internal data containers should be copied manually */
-		// verticesInternalContainers = g.verticesInternalContainers.copy(vertices);
-		// edgesInternalContainers = g.edgesInternalContainers.copy(edges);
-		verticesInternalContainers = new DataContainer.Manager(vertices.size());
-		edgesInternalContainers = new DataContainer.Manager(edges.size());
+		// verticesContainersManager = g.verticesContainersManager.copy(vertices);
+		// edgesContainersManager = g.edgesContainersManager.copy(edges);
+		verticesContainersManager = new DataContainer.Manager(vertices.size());
+		edgesContainersManager = new DataContainer.Manager(edges.size());
 
 		if (g instanceof GraphBaseMutable) {
 			GraphBaseMutable g0 = (GraphBaseMutable) g;
@@ -109,10 +109,10 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		super(capabilities.isDirected, builder.vertices.size, builder.edges.size);
 		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
 		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
-		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(builder.verticesUserWeights, vertices);
-		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(builder.edgesUserWeights, edges);
-		verticesInternalContainers = new DataContainer.Manager(vertices.size());
-		edgesInternalContainers = new DataContainer.Manager(edges.size());
+		verticesWeights = new WeightsImpl.IndexMutable.Manager(builder.verticesWeights, vertices);
+		edgesWeights = new WeightsImpl.IndexMutable.Manager(builder.edgesWeights, edges);
+		verticesContainersManager = new DataContainer.Manager(vertices.size());
+		edgesContainersManager = new DataContainer.Manager(edges.size());
 
 		final int m = edges.size();
 		edgeEndpointsContainer = newEdgesLongContainer(DefaultEndpoints, newArr -> edgeEndpoints = newArr);
@@ -236,14 +236,14 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	}
 
 	void removeVertexLast(int vertex) {
-		verticesUserWeights.clearElement(vertex);
+		verticesWeights.clearElement(vertex);
 		vertices0().removeIdx(vertex);
 	}
 
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
 		// internal weights are handled manually
-		// verticesInternalContainers.swapElements(removedIdx, swappedIdx);
-		verticesUserWeights.swapAndClear(removedIdx, swappedIdx);
+		// verticesContainersManager.swapElements(removedIdx, swappedIdx);
+		verticesWeights.swapAndClear(removedIdx, swappedIdx);
 		vertices0().swapAndRemove(removedIdx, swappedIdx);
 	}
 
@@ -463,7 +463,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	private boolean rollBackEdge;
 
 	void removeEdgeLast(int edge) {
-		edgesUserWeights.clearElement(edge);
+		edgesWeights.clearElement(edge);
 		if (rollBackEdge) {
 			edges0().rollBackAdd(edge);
 		} else {
@@ -474,8 +474,8 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
 		// internal weights are handled manually
-		// edgesInternalContainers.swapElements(removedIdx, swappedIdx);
-		edgesUserWeights.swapAndClear(removedIdx, swappedIdx);
+		// edgesContainersManager.swapElements(removedIdx, swappedIdx);
+		edgesWeights.swapAndClear(removedIdx, swappedIdx);
 		edges0().swapAndRemove(removedIdx, swappedIdx);
 		swapAndClear(edgeEndpoints, removedIdx, swappedIdx, DefaultEndpoints);
 	}
@@ -567,59 +567,59 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		clearEdges();
 		vertices.clear();
 		// internal weights are handled manually
-		// verticesInternalContainers.clearContainers();
-		verticesUserWeights.clearContainers();
+		// verticesContainersManager.clearContainers();
+		verticesWeights.clearContainers();
 	}
 
 	@Override
 	public void clearEdges() {
 		edges.clear();
 		// internal weights are handled manually
-		// edgesInternalContainers.clearContainers();
-		edgesUserWeights.clearContainers();
+		// edgesContainersManager.clearContainers();
+		edgesWeights.clearContainers();
 		edgeEndpointsContainer.clear();
 	}
 
 	@Override
 	public void ensureVertexCapacity(int vertexCapacity) {
-		verticesInternalContainers.ensureCapacity(vertexCapacity);
-		verticesUserWeights.ensureCapacity(vertexCapacity);
+		verticesContainersManager.ensureCapacity(vertexCapacity);
+		verticesWeights.ensureCapacity(vertexCapacity);
 	}
 
 	@Override
 	public void ensureEdgeCapacity(int edgeCapacity) {
-		edgesInternalContainers.ensureCapacity(edgeCapacity);
-		edgesUserWeights.ensureCapacity(edgeCapacity);
+		edgesContainersManager.ensureCapacity(edgeCapacity);
+		edgesWeights.ensureCapacity(edgeCapacity);
 	}
 
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT verticesWeights(String key) {
-		return verticesUserWeights.getWeights(key);
+		return verticesWeights.getWeights(key);
 	}
 
 	@Override
 	public Set<String> verticesWeightsKeys() {
-		return verticesUserWeights.weightsKeys();
+		return verticesWeights.weightsKeys();
 	}
 
 	@Override
 	public void removeVerticesWeights(String key) {
-		verticesUserWeights.removeWeights(key);
+		verticesWeights.removeWeights(key);
 	}
 
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT edgesWeights(String key) {
-		return edgesUserWeights.getWeights(key);
+		return edgesWeights.getWeights(key);
 	}
 
 	@Override
 	public Set<String> edgesWeightsKeys() {
-		return edgesUserWeights.weightsKeys();
+		return edgesWeights.weightsKeys();
 	}
 
 	@Override
 	public void removeEdgesWeights(String key) {
-		edgesUserWeights.removeWeights(key);
+		edgesWeights.removeWeights(key);
 	}
 
 	<T> DataContainer.Obj<T> newVerticesContainer(T defVal, T[] emptyArr, Consumer<T[]> onArrayAlloc) {
@@ -660,12 +660,12 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	}
 
 	private <ContainerT extends DataContainer> ContainerT addVerticesContainer(ContainerT container) {
-		verticesInternalContainers.addContainer(container);
+		verticesContainersManager.addContainer(container);
 		return container;
 	}
 
 	private <ContainerT extends DataContainer> ContainerT addEdgesContainer(ContainerT container) {
-		edgesInternalContainers.addContainer(container);
+		edgesContainersManager.addContainer(container);
 		return container;
 	}
 
@@ -673,7 +673,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
 			T defVal) {
 		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, true, type, defVal);
-		verticesUserWeights.addWeights(key, weights);
+		verticesWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;
 		return weights0;
@@ -683,7 +683,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
 			T defVal) {
 		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, false, type, defVal);
-		edgesUserWeights.addWeights(key, weights);
+		edgesWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;
 		return weights0;

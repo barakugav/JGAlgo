@@ -154,8 +154,8 @@ public interface IVertexPartition extends VertexPartition<Integer, Integer> {
 	 * @param  g             the graph
 	 * @param  vertexToBlock an array of size \(n\) where \(n\) is the number of vertices in the graph, in which each
 	 *                           element is the block index of the corresponding vertex. The array is not copied, and it
-	 *                           is assumed that the user of this function will not modify the array after calling this
-	 *                           function
+	 *                           is assumed that the caller of this function will not modify the array after calling
+	 *                           this function
 	 * @param  blocksNum     the number of blocks
 	 * @return               a new vertex partition
 	 */

@@ -23,8 +23,8 @@ import com.jgalgo.alg.path.ShortestPathSingleSource;
  * <p>
  * Algorithms such as {@link ShortestPathSingleSource} define their own builder as an inner interface, for example
  * {@link ShortestPathSingleSource.Builder}. These builder interfaces extend this interface. This base interface does
- * not contain methods which are useful to the user, rather its used for the {@link #setOption(String, Object)} method
- * which is used internally for debugging and benchmarking.
+ * not contain useful public API methods, rather it contains a single method, {@link #setOption(String, Object)} which
+ * is used internally for debugging and benchmarking.
  *
  * @author Barak Ugav
  */

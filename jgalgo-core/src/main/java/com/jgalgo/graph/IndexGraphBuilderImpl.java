@@ -32,8 +32,8 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	final GraphElementSet.Mutable edges;
 	private long[] endpoints = LongArrays.EMPTY_ARRAY;
 
-	final WeightsImpl.IndexMutable.Manager verticesUserWeights;
-	final WeightsImpl.IndexMutable.Manager edgesUserWeights;
+	final WeightsImpl.IndexMutable.Manager verticesWeights;
+	final WeightsImpl.IndexMutable.Manager edgesWeights;
 
 	IndexGraphFactoryImpl.MutableImpl mutableImpl;
 	IndexGraphFactoryImpl.ImmutableImpl immutableImpl;
@@ -50,8 +50,8 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		this.directed = directed;
 		vertices = GraphElementSet.Mutable.ofVertices(0);
 		edges = GraphElementSet.Mutable.ofEdges(0);
-		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(0, true);
-		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(0, false);
+		verticesWeights = new WeightsImpl.IndexMutable.Manager(0, true);
+		edgesWeights = new WeightsImpl.IndexMutable.Manager(0, false);
 		setDefaultImpls();
 	}
 
@@ -88,15 +88,15 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			}
 		}
 
-		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), true);
-		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), false);
+		verticesWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), true);
+		edgesWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), false);
 		if (copyVerticesWeights)
 			for (String key : g.verticesWeightsKeys())
-				verticesUserWeights
+				verticesWeights
 						.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.verticesWeights(key), vertices, true));
 		if (copyEdgesWeights)
 			for (String key : g.edgesWeightsKeys())
-				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.edgesWeights(key), edges, false));
+				edgesWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.edgesWeights(key), edges, false));
 
 		setDefaultImpls();
 	}
@@ -127,7 +127,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	@Override
 	public int addVertexInt() {
 		int u = vertices.add();
-		verticesUserWeights.ensureCapacity(u + 1);
+		verticesWeights.ensureCapacity(u + 1);
 		return u;
 	}
 
@@ -138,7 +138,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 					+ this.vertices.size + " but was " + vertices);
 
 		this.vertices.addAll(vertices.size());
-		verticesUserWeights.ensureCapacity(this.vertices.size);
+		verticesWeights.ensureCapacity(this.vertices.size);
 	}
 
 	@Override
@@ -264,13 +264,13 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public void ensureVertexCapacity(int verticesNum) {
-		verticesUserWeights.ensureCapacity(verticesNum);
+		verticesWeights.ensureCapacity(verticesNum);
 	}
 
 	@Override
 	public void ensureEdgeCapacity(int edgesNum) {
 		copyOnWriteFromLastGraph();
-		edgesUserWeights.ensureCapacity(edgesNum);
+		edgesWeights.ensureCapacity(edgesNum);
 		if (edgesNum > endpoints.length)
 			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, edgesNum)));
 	}
@@ -279,8 +279,8 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	public void clear() {
 		vertices.clear();
 		edges.clear();
-		verticesUserWeights.clearContainers();
-		edgesUserWeights.clearContainers();
+		verticesWeights.clearContainers();
+		edgesWeights.clearContainers();
 		if (lastImmutableGraph != null) {
 			lastImmutableGraph = null;
 			lastImmutableVerticesReIndexingMap = null;
@@ -392,7 +392,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT verticesWeights(String key) {
-		return verticesUserWeights.getWeights(key);
+		return verticesWeights.getWeights(key);
 	}
 
 	@Override
@@ -400,7 +400,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			T defVal) {
 		copyOnWriteFromLastGraph();
 		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, true, type, defVal);
-		verticesUserWeights.addWeights(key, weights);
+		verticesWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;
 		return weights0;
@@ -408,12 +408,12 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public Set<String> verticesWeightsKeys() {
-		return verticesUserWeights.weightsKeys();
+		return verticesWeights.weightsKeys();
 	}
 
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT edgesWeights(String key) {
-		return edgesUserWeights.getWeights(key);
+		return edgesWeights.getWeights(key);
 	}
 
 	@Override
@@ -421,7 +421,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			T defVal) {
 		copyOnWriteFromLastGraph();
 		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, false, type, defVal);
-		edgesUserWeights.addWeights(key, weights);
+		edgesWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;
 		return weights0;
@@ -429,7 +429,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public Set<String> edgesWeightsKeys() {
-		return edgesUserWeights.weightsKeys();
+		return edgesWeights.weightsKeys();
 	}
 
 	long[] stealEndpointsArray() {

@@ -32,8 +32,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * <p>
  * There may be exponentially many maximal independent sets in a graph, therefore all implementations of this interface
  * use some heuristic to speed up the process but run in exponential time in the worst case. The algorithm returns an
- * iterator over the independent sets, so that the user can iterate over them without storing them all in memory. Avoid
- * using this algorithm on very large graphs.
+ * iterator over the independent sets, so that the caller can iterate over them without storing them all in memory.
+ * Avoid using this algorithm on very large graphs.
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface.

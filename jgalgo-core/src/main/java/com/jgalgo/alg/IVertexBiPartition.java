@@ -185,7 +185,7 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition<
 	 * @param  g      the index graph
 	 * @param  bitmap a bitmap where {@code true} means the vertex is contained in the left block and {@code false}
 	 *                    means the vertex is contained in the right block. The bitmap is not copied, and it is assumed
-	 *                    the user of this function will not modify the bitmap after calling this function
+	 *                    the caller of this function will not modify the bitmap after calling this function
 	 * @return        a new vertex bi-partition
 	 */
 	static IVertexBiPartition fromBitmap(IndexGraph g, Bitmap bitmap) {

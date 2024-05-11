@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * <p>
  * There may be exponentially many maximal cliques in a graph, therefore all implementations of this interface use some
  * heuristic to speed up the process but run in exponential time in the worst case. The algorithm returns an iterator
- * over the cliques, so that the user can iterate over them without storing them all in memory. Avoid using this
+ * over the cliques, so that the caller can iterate over them without storing them all in memory. Avoid using this
  * algorithm on very large graphs.
  *
  * <p>

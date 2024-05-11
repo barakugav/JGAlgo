@@ -302,7 +302,7 @@ public class IsomorphismTesterVf2 extends IsomorphismTesterAbstract {
 		}
 
 		private boolean isFeasibleMatchVertices(int v1, int v2) {
-			/* check user custom matcher */
+			/* check custom matcher */
 			if (!canMatchVertices(v1, v2))
 				return false;
 
@@ -600,7 +600,7 @@ public class IsomorphismTesterVf2 extends IsomorphismTesterAbstract {
 		}
 
 		private boolean isFeasibleMatchVertices(int v1, int v2) {
-			/* check user custom matcher */
+			/* check custom matcher */
 			if (!canMatchVertices(v1, v2))
 				return false;
 

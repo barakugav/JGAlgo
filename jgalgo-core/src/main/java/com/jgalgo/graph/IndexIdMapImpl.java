@@ -113,7 +113,7 @@ class IndexIdMapImpl<K> implements IndexIdMap<K> {
 		return new IndexIdMapImpl<>(indicesSet, idToIndex, indexToId, isVertices, immutable);
 	}
 
-	/* This object should not be used again. Responsibility of the user (of this class). */
+	/* This object should not be used again. Responsibility of the caller. */
 	IndexIdMapImpl<K> intoImmutable(Optional<IndexGraphBuilder.ReIndexingMap> reIndexing) {
 		if (reIndexing.isPresent()) {
 			IndexGraphBuilder.ReIndexingMap reIndexing0 = reIndexing.get();

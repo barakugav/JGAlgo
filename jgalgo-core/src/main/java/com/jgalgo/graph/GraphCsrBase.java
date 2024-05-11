@@ -35,8 +35,8 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 
 	final int[] edgesOutBegin;
 
-	final Map<String, WeightsImpl.IndexImmutable<?>> verticesUserWeights;
-	final Map<String, WeightsImpl.IndexImmutable<?>> edgesUserWeights;
+	final Map<String, WeightsImpl.IndexImmutable<?>> verticesWeights;
+	final Map<String, WeightsImpl.IndexImmutable<?>> edgesWeights;
 
 	private boolean containsSelfEdges;
 	private boolean containsSelfEdgesValid;
@@ -134,48 +134,47 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 		assert edgesOutBegin.length == n + 1;
 
 		if (copyVerticesWeights && inputCsrGraph.isPresent()) {
-			verticesUserWeights = inputCsrGraph.get().verticesUserWeights;
+			verticesWeights = inputCsrGraph.get().verticesWeights;
 
 		} else if (copyVerticesWeights) {
 			Set<String> verticesWeightsKeys =
-					graphOrBuilder.map(IndexGraph::verticesWeightsKeys, b -> b.verticesUserWeights.weightsKeys());
+					graphOrBuilder.map(IndexGraph::verticesWeightsKeys, b -> b.verticesWeights.weightsKeys());
 			Function<String, IWeights<?>> getWeights = graphOrBuilder
-					.map(g -> key -> (IWeights<?>) g.verticesWeights(key), b -> b.verticesUserWeights::getWeights);
+					.map(g -> key -> (IWeights<?>) g.verticesWeights(key), b -> b.verticesWeights::getWeights);
 
-			WeightsImpl.IndexImmutable.Builder verticesUserWeightsBuilder =
+			WeightsImpl.IndexImmutable.Builder verticesWeightsBuilder =
 					new WeightsImpl.IndexImmutable.Builder(vertices, true);
 			for (String key : verticesWeightsKeys)
-				verticesUserWeightsBuilder.copyAndAddWeights(key, getWeights.apply(key));
-			verticesUserWeights = verticesUserWeightsBuilder.build();
+				verticesWeightsBuilder.copyAndAddWeights(key, getWeights.apply(key));
+			verticesWeights = verticesWeightsBuilder.build();
 
 		} else {
-			verticesUserWeights = Map.of();
+			verticesWeights = Map.of();
 		}
 
 		if (copyEdgesWeights && inputCsrGraph.isPresent()) {
 			assert edgesReIndexing.isEmpty();
-			edgesUserWeights = inputCsrGraph.get().edgesUserWeights;
+			edgesWeights = inputCsrGraph.get().edgesWeights;
 
 		} else if (copyEdgesWeights) {
 			Set<String> edgesWeightsKeys =
-					graphOrBuilder.map(IndexGraph::edgesWeightsKeys, b -> b.edgesUserWeights.weightsKeys());
-			Function<String, IWeights<?>> getWeights = graphOrBuilder
-					.map(g -> key -> (IWeights<?>) g.edgesWeights(key), b -> b.edgesUserWeights::getWeights);
+					graphOrBuilder.map(IndexGraph::edgesWeightsKeys, b -> b.edgesWeights.weightsKeys());
+			Function<String, IWeights<?>> getWeights =
+					graphOrBuilder.map(g -> key -> (IWeights<?>) g.edgesWeights(key), b -> b.edgesWeights::getWeights);
 
-			WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder =
+			WeightsImpl.IndexImmutable.Builder edgesWeightsBuilder =
 					new WeightsImpl.IndexImmutable.Builder(edges, false);
 			if (edgesReIndexing.isEmpty()) {
 				for (String key : edgesWeightsKeys)
-					edgesUserWeightsBuilder.copyAndAddWeights(key, getWeights.apply(key));
+					edgesWeightsBuilder.copyAndAddWeights(key, getWeights.apply(key));
 			} else {
 				for (String key : edgesWeightsKeys)
-					edgesUserWeightsBuilder
-							.copyAndAddWeightsReindexed(key, getWeights.apply(key), edgesReIndexing.get());
+					edgesWeightsBuilder.copyAndAddWeightsReindexed(key, getWeights.apply(key), edgesReIndexing.get());
 			}
-			edgesUserWeights = edgesUserWeightsBuilder.build();
+			edgesWeights = edgesWeightsBuilder.build();
 
 		} else {
-			edgesUserWeights = Map.of();
+			edgesWeights = Map.of();
 		}
 
 		inputGraph.ifPresent(this::updateContainsSelfAndParallelEdgesFromCopiedGraph);
@@ -196,8 +195,8 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			edgesOutBegin = gCsr.edgesOutBegin;
 			edgeEndpoints = gCsr.edgeEndpoints;
 
-			verticesUserWeights = copyVerticesWeights ? gCsr.verticesUserWeights : Map.of();
-			edgesUserWeights = copyEdgesWeights ? gCsr.edgesUserWeights : Map.of();
+			verticesWeights = copyVerticesWeights ? gCsr.verticesWeights : Map.of();
+			edgesWeights = copyEdgesWeights ? gCsr.edgesWeights : Map.of();
 
 		} else {
 			edgesOutBegin = new int[n + 1];
@@ -205,18 +204,18 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			for (int e : range(m))
 				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 
-			WeightsImpl.IndexImmutable.Builder verticesUserWeightsBuilder =
+			WeightsImpl.IndexImmutable.Builder verticesWeightsBuilder =
 					new WeightsImpl.IndexImmutable.Builder(vertices, true);
-			WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder =
+			WeightsImpl.IndexImmutable.Builder edgesWeightsBuilder =
 					new WeightsImpl.IndexImmutable.Builder(edges, false);
 			if (copyVerticesWeights)
 				for (String key : g.verticesWeightsKeys())
-					verticesUserWeightsBuilder.copyAndAddWeights(key, (IWeights<?>) g.verticesWeights(key));
+					verticesWeightsBuilder.copyAndAddWeights(key, (IWeights<?>) g.verticesWeights(key));
 			if (copyEdgesWeights)
 				for (String key : g.edgesWeightsKeys())
-					edgesUserWeightsBuilder.copyAndAddWeights(key, (IWeights<?>) g.edgesWeights(key));
-			verticesUserWeights = verticesUserWeightsBuilder.build();
-			edgesUserWeights = edgesUserWeightsBuilder.build();
+					edgesWeightsBuilder.copyAndAddWeights(key, (IWeights<?>) g.edgesWeights(key));
+			verticesWeights = verticesWeightsBuilder.build();
+			edgesWeights = edgesWeightsBuilder.build();
 		}
 
 		updateContainsSelfAndParallelEdgesFromCopiedGraph(g);
@@ -370,12 +369,12 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT verticesWeights(String key) {
-		return (WeightsT) verticesUserWeights.get(key);
+		return (WeightsT) verticesWeights.get(key);
 	}
 
 	@Override
 	public Set<String> verticesWeightsKeys() {
-		return verticesUserWeights.keySet();
+		return verticesWeights.keySet();
 	}
 
 	@Override
@@ -386,12 +385,12 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT edgesWeights(String key) {
-		return (WeightsT) edgesUserWeights.get(key);
+		return (WeightsT) edgesWeights.get(key);
 	}
 
 	@Override
 	public Set<String> edgesWeightsKeys() {
-		return edgesUserWeights.keySet();
+		return edgesWeights.keySet();
 	}
 
 	@Override
@@ -429,9 +428,9 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 
 	@Override
 	public IndexGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		if (verticesUserWeights.isEmpty())
+		if (verticesWeights.isEmpty())
 			copyVerticesWeights = true;
-		if (edgesUserWeights.isEmpty())
+		if (edgesWeights.isEmpty())
 			copyEdgesWeights = true;
 		if (copyVerticesWeights && copyEdgesWeights)
 			return this;
