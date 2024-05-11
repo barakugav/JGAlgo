@@ -31,15 +31,18 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * A greedy coloring algorithm with random vertices order.
  *
  * <p>
- * The algorithm examine the vertices in random order and assign for each vertex the minimum (integer) color which is
+ * The algorithm examine the vertices in a random order and assign for each vertex the minimum (integer) color which is
  * not used by its neighbors.
  *
  * <p>
  * The algorithm runs in linear time, assuming the number of colors is constant.
  *
  * <p>
- * Note that the result is an approximate for the minimum number of colors, as finding an optimal coloring is an NP-hard
- * problem.
+ * For deterministic behavior, set the seed using {@link #setSeed(long)}.
+ *
+ * <p>
+ * Note that the result is an approximation for the minimum number of colors, as finding an optimal coloring is an
+ * NP-hard problem.
  *
  * @see    <a href="https://en.wikipedia.org/wiki/Greedy_coloring">Wikipedia</a>
  * @author Barak Ugav
@@ -69,7 +72,6 @@ public class ColoringGreedy extends ColoringAlgoAbstract implements RandomizedAl
 
 		final int n = g.vertices().size();
 		int[] colors = new int[n];
-		int colorsNum = 0;
 		Arrays.fill(colors, -1);
 		int[] order = range(n).toIntArray();
 		IntArrays.shuffle(order, rand);
@@ -84,9 +86,9 @@ public class ColoringGreedy extends ColoringAlgoAbstract implements RandomizedAl
 				if (c >= 0)
 					usedColors.set(c);
 			}
-			int color = colors[u] = usedColors.nextClearBit(0);
-			colorsNum = Math.max(colorsNum, color + 1);
+			colors[u] = usedColors.nextClearBit(0);
 		}
+		int colorsNum = Arrays.stream(colors).max().orElse(-1) + 1;
 		return IVertexPartition.fromArray(g, colors, colorsNum);
 	}
 

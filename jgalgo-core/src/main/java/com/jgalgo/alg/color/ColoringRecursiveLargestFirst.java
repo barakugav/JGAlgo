@@ -39,8 +39,8 @@ import com.jgalgo.internal.util.Bitmap;
  * The algorithm runs in time \(O(n m)\).
  *
  * <p>
- * Note that the result is an approximate for the minimum number of colors, as finding an optimal coloring is an NP-hard
- * problem.
+ * Note that the result is an approximation for the minimum number of colors, as finding an optimal coloring is an
+ * NP-hard problem.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Recursive_largest_first_algorithm">Wikipedia</a>
  * @author Barak Ugav

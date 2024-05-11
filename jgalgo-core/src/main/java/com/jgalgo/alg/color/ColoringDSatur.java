@@ -33,15 +33,15 @@ import com.jgalgo.internal.util.Assertions;
  * <p>
  * The Saturation Degree (D-Satur) coloring algorithm is a greedy algorithm, namely it examine the vertices in some
  * order and assign for each vertex the minimum (integer) color which is not used by its neighbors. It differ from other
- * greedy coloring algorithms by the order of the vertices: the next vertex to be colored is the vertex with the highest
- * number of colors in its neighborhood (called saturation degree).
+ * greedy coloring algorithms by the order it examine the vertices: the next vertex to be colored is the vertex with the
+ * highest number of colors in its neighborhood (adjacent vertices), also called saturation degree.
  *
  * <p>
  * The algorithm runs in \(O(m \log n)\) time assuming the number of colors is constant.
  *
  * <p>
- * Note that the result is an approximate for the minimum number of colors, as finding an optimal coloring is an NP-hard
- * problem.
+ * Note that the result is an approximation for the minimum number of colors, as finding an optimal coloring is an
+ * NP-hard problem.
  *
  * @see    <a href="https://en.wikipedia.org/wiki/DSatur">Wikipedia</a>
  * @author Barak Ugav
