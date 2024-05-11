@@ -25,9 +25,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Algorithm for enumerating over all maximal independent sets in a graph.
  *
  * <p>
- * An independent set is a subset of vertices of an graph such that there are no edges between any pair of vertices in
+ * An independent set is a subset of vertices of a graph such that there are no edges between any pair of vertices in
  * the set. Self edges are allowed within an independent set, namely they are ignored. A maximal independent set is an
  * independent set that cannot be extended by including one more vertex.
+ *
+ * <p>
+ * There may be exponentially many maximal independent sets in a graph, therefore all implementations of this interface
+ * use some heuristic to speed up the process but run in exponential time in the worst case. The algorithm returns an
+ * iterator over the independent sets, so that the user can iterate over them without storing them all in memory. Avoid
+ * using this algorithm on very large graphs.
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface.
@@ -38,7 +44,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * for (Iterator<Set<String>> it = independentSetsAlgo.maximalIndependentSetsIter(g); it.hasNext();) {
  *	Set<String> independentSet = it.next();
- *	System.out.println("Independent set in the graph:");
+ *	System.out.println("Maximal independent set in the graph:");
  *	for (String v : independentSet)
  *		System.out.println("\t" + v);
  * }
@@ -50,6 +56,9 @@ public interface MaximalIndependentSetsEnumerator {
 
 	/**
 	 * Iterate over all maximal independent sets in a graph.
+	 *
+	 * <p>
+	 * The input graph should not be changed during the iteration.
 	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned iterator will be iterate over {@link IntSet}.
