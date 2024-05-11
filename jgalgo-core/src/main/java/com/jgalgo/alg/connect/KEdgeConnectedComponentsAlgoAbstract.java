@@ -24,8 +24,9 @@ import com.jgalgo.graph.IndexGraph;
  * Abstract class for k-edge connected components algorithms.
  *
  * <p>
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
