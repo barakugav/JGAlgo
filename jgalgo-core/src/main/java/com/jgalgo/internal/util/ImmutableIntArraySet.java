@@ -19,7 +19,6 @@ import static com.jgalgo.internal.util.Range.range;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.IntPredicate;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -32,10 +31,10 @@ public final class ImmutableIntArraySet extends AbstractIntSet {
 
 	final int[] arr;
 	final int from, to, size;
-	private final IntPredicate containsFunc;
+	private final ContainsPredicate containsFunc;
 	private int hashCode = 0;
 
-	private ImmutableIntArraySet(int[] arr, int from, int to, IntPredicate containsFunc) {
+	private ImmutableIntArraySet(int[] arr, int from, int to, ContainsPredicate containsFunc) {
 		Assertions.checkArrayFromTo(from, to, arr.length);
 		this.arr = Objects.requireNonNull(arr);
 		this.from = from;
@@ -46,11 +45,11 @@ public final class ImmutableIntArraySet extends AbstractIntSet {
 		assert new IntOpenHashSet(this).size() == size : "Duplicate elements in array";
 	}
 
-	public static IntSet newInstance(int[] arr, IntPredicate containsFunc) {
+	public static IntSet newInstance(int[] arr, ContainsPredicate containsFunc) {
 		return newInstance(arr, 0, arr.length, containsFunc);
 	}
 
-	public static IntSet newInstance(int[] arr, int from, int to, IntPredicate containsFunc) {
+	public static IntSet newInstance(int[] arr, int from, int to, ContainsPredicate containsFunc) {
 		return new ImmutableIntArraySet(arr, from, to, Objects.requireNonNull(containsFunc));
 	}
 
@@ -95,7 +94,7 @@ public final class ImmutableIntArraySet extends AbstractIntSet {
 
 	@Override
 	public boolean contains(int key) {
-		return containsFunc != null ? containsFunc.test(key) : range(from, to).anyMatch(i -> key == arr[i]);
+		return containsFunc != null ? containsFunc.contains(key) : range(from, to).anyMatch(i -> key == arr[i]);
 	}
 
 	@Override
@@ -155,6 +154,11 @@ public final class ImmutableIntArraySet extends AbstractIntSet {
 	@Override
 	public IntIterator iterator() {
 		return IntIterators.wrap(arr, from, to - from);
+	}
+
+	@FunctionalInterface
+	public static interface ContainsPredicate {
+		boolean contains(int key);
 	}
 
 }
