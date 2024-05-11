@@ -49,110 +49,112 @@ public class MaximalCliquesEnumeratorBronKerbosch extends MaximalCliquesEnumerat
 	@Override
 	protected Iterator<IntSet> maximalCliquesIter(IndexGraph g) {
 		Assertions.onlyUndirected(g);
+		return new Iter(g);
+	}
 
-		return new Iterator<>() {
+	private static class Iter implements Iterator<IntSet> {
 
-			final int n = g.vertices().size();
-			final Bitmap edges;
+		private final int n;
+		private final Bitmap edges;
 
-			final IntList currentClique = new IntArrayList();
-			final Stack<IntList> potentialStack = new ObjectArrayList<>();
-			final Stack<IntList> excludedStack = new ObjectArrayList<>();
-			boolean hasNextClique;
+		private final IntList currentClique = new IntArrayList();
+		private final Stack<IntList> potentialStack = new ObjectArrayList<>();
+		private final Stack<IntList> excludedStack = new ObjectArrayList<>();
+		private boolean hasNextClique;
 
-			{
-				edges = new Bitmap(n * n);
-				for (int e : range(g.edges().size())) {
-					int u = g.edgeSource(e);
-					int v = g.edgeTarget(e);
-					if (u == v)
-						continue;
-					edges.set(u * n + v);
-					edges.set(v * n + u);
-				}
-				potentialStack.push(new IntArrayList(g.vertices()));
-				excludedStack.push(new IntArrayList());
-
-				findNextClique();
+		Iter(IndexGraph g) {
+			n = g.vertices().size();
+			edges = new Bitmap(n * n);
+			for (int e : range(g.edges().size())) {
+				int u = g.edgeSource(e);
+				int v = g.edgeTarget(e);
+				if (u == v)
+					continue;
+				edges.set(u * n + v);
+				edges.set(v * n + u);
 			}
+			potentialStack.push(new IntArrayList(g.vertices()));
+			excludedStack.push(new IntArrayList());
 
-			private boolean containsEdge(int u, int v) {
-				return edges.get(u * n + v);
-			}
+			findNextClique();
+		}
 
-			@Override
-			public boolean hasNext() {
-				return hasNextClique;
-			}
+		private boolean containsEdge(int u, int v) {
+			return edges.get(u * n + v);
+		}
 
-			@Override
-			public IntSet next() {
-				Assertions.hasNext(this);
-				IntSet ret = ImmutableIntArraySet.withNaiveContains(currentClique.toIntArray());
-				removeLastInsertedVertex(potentialStack.top(), excludedStack.top());
-				findNextClique();
-				return ret;
-			}
+		@Override
+		public boolean hasNext() {
+			return hasNextClique;
+		}
 
-			private void findNextClique() {
-				IntList potential = potentialStack.top();
-				IntList excluded = excludedStack.top();
+		@Override
+		public IntSet next() {
+			Assertions.hasNext(this);
+			IntSet ret = ImmutableIntArraySet.withNaiveContains(currentClique.toIntArray());
+			removeLastInsertedVertex(potentialStack.top(), excludedStack.top());
+			findNextClique();
+			return ret;
+		}
 
-				recursionLoop: for (;;) {
-					assert !potential.isEmpty() || !excluded.isEmpty();
+		private void findNextClique() {
+			IntList potential = potentialStack.top();
+			IntList excluded = excludedStack.top();
 
-					while (!potential.isEmpty()) {
-						int v = potential.getInt(potential.size() - 1);
+			recursionLoop: for (;;) {
+				assert !potential.isEmpty() || !excluded.isEmpty();
 
-						currentClique.add(v);
-						IntList nextPotential = new IntArrayList();
-						for (int u : potential)
-							if (containsEdge(u, v))
-								nextPotential.add(u);
-						IntList nextExcluded = new IntArrayList();
-						for (int u : excluded)
-							if (containsEdge(u, v))
-								nextExcluded.add(u);
-						if (nextPotential.isEmpty() && nextExcluded.isEmpty()) {
-							hasNextClique = true;
-							return;
-						}
+				while (!potential.isEmpty()) {
+					int v = potential.getInt(potential.size() - 1);
 
-						boolean skip = false;
-						excludedLoop: for (int w : excluded) {
-							for (int u : potential)
-								if (!containsEdge(u, w))
-									continue excludedLoop;
-							skip = true;
-							break;
-						}
-						if (!skip) {
-							potentialStack.push(potential = nextPotential);
-							excludedStack.push(excluded = nextExcluded);
-							continue recursionLoop;
-						}
-						removeLastInsertedVertex(potential, excluded);
-					}
-
-					potentialStack.pop();
-					excludedStack.pop();
-					if (potentialStack.isEmpty()) {
-						hasNextClique = false;
+					currentClique.add(v);
+					IntList nextPotential = new IntArrayList();
+					for (int u : potential)
+						if (containsEdge(u, v))
+							nextPotential.add(u);
+					IntList nextExcluded = new IntArrayList();
+					for (int u : excluded)
+						if (containsEdge(u, v))
+							nextExcluded.add(u);
+					if (nextPotential.isEmpty() && nextExcluded.isEmpty()) {
+						hasNextClique = true;
 						return;
 					}
-					potential = potentialStack.top();
-					excluded = excludedStack.top();
+
+					boolean skip = false;
+					excludedLoop: for (int w : excluded) {
+						for (int u : potential)
+							if (!containsEdge(u, w))
+								continue excludedLoop;
+						skip = true;
+						break;
+					}
+					if (!skip) {
+						potentialStack.push(potential = nextPotential);
+						excludedStack.push(excluded = nextExcluded);
+						continue recursionLoop;
+					}
 					removeLastInsertedVertex(potential, excluded);
 				}
-			}
 
-			private void removeLastInsertedVertex(IntList potential, IntList excluded) {
-				int v = currentClique.removeInt(currentClique.size() - 1); /* R.remove(v); */
-				int lastPotential = potential.removeInt(potential.size() - 1); /* P.remove(v); */
-				assert lastPotential == v;
-				excluded.add(v);
+				potentialStack.pop();
+				excludedStack.pop();
+				if (potentialStack.isEmpty()) {
+					hasNextClique = false;
+					return;
+				}
+				potential = potentialStack.top();
+				excluded = excludedStack.top();
+				removeLastInsertedVertex(potential, excluded);
 			}
-		};
+		}
+
+		private void removeLastInsertedVertex(IntList potential, IntList excluded) {
+			int v = currentClique.removeInt(currentClique.size() - 1); /* R.remove(v); */
+			int lastPotential = potential.removeInt(potential.size() - 1); /* P.remove(v); */
+			assert lastPotential == v;
+			excluded.add(v);
+		}
 	}
 
 }
