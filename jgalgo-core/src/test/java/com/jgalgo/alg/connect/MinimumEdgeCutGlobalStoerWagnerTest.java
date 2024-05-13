@@ -27,7 +27,7 @@ import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.alg.IVertexBiPartition;
 import com.jgalgo.alg.VertexBiPartition;
-import com.jgalgo.alg.flow.MaximumFlow;
+import com.jgalgo.alg.flow.MaximumFlowEdmondsKarp;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
@@ -121,12 +121,7 @@ class MinimumEdgeCutGlobalStoerWagnerTest extends TestBase {
 			assertTrue(minCutWeight <= bestCutWeight, "failed to find minimum cut: " + bestCut);
 
 		} else {
-			// TODO simply instantiate MaximumFlowEdmondsKarp once it is public API
-			MaximumFlow.Builder builder = MaximumFlow.builder();
-			builder.setOption("impl", "edmonds-karp");
-			MinimumEdgeCutSt edmondsKarpAlgo = MinimumEdgeCutSt.newFromMaximumFlow(builder.build());
-
-			MinimumEdgeCutGlobal validationAlgo = globalMinCutFromStMinCut(edmondsKarpAlgo);
+			MinimumEdgeCutGlobal validationAlgo = globalMinCutFromStMinCut(new MaximumFlowEdmondsKarp());
 			VertexBiPartition<V, E> minCutExpected = validationAlgo.computeMinimumCut(g, w);
 			double minCutWeightExpected = w.weightSum(minCutExpected.crossEdges());
 

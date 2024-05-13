@@ -25,7 +25,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.ToDoubleFunction;
 import com.jgalgo.alg.VertexBiPartition;
-import com.jgalgo.alg.flow.MaximumFlow;
+import com.jgalgo.alg.flow.MaximumFlowEdmondsKarp;
+import com.jgalgo.alg.flow.MaximumFlowPushRelabel;
 import com.jgalgo.alg.flow.MaximumFlowTestUtils;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
@@ -165,12 +166,8 @@ public class MinimumEdgeCutStTestUtils extends TestUtils {
 			assertTrue(minCutWeight <= bestCutWeight + eps, "failed to find minimum cut: " + bestCut);
 
 		} else {
-			// TODO simply instantiate MaximumFlowEdmondsKarp and MaximumFlowPushRelabel once it is public API
-			MaximumFlow.Builder builder = MaximumFlow.builder();
-			builder.setOption("impl", "edmonds-karp");
-			MinimumEdgeCutSt edmondsKarpAlgo = MinimumEdgeCutSt.newFromMaximumFlow(builder.build());
-			builder.setOption("impl", "push-relabel-highest-first");
-			MinimumEdgeCutSt pushRelabelAlgo = MinimumEdgeCutSt.newFromMaximumFlow(builder.build());
+			MinimumEdgeCutSt edmondsKarpAlgo = new MaximumFlowEdmondsKarp();
+			MinimumEdgeCutSt pushRelabelAlgo = MaximumFlowPushRelabel.newInstanceHighestFirst();
 
 			MinimumEdgeCutSt validationAlgo =
 					alg.getClass().equals(pushRelabelAlgo.getClass()) ? edmondsKarpAlgo : pushRelabelAlgo;
@@ -222,12 +219,8 @@ public class MinimumEdgeCutStTestUtils extends TestUtils {
 			assertTrue(minCutWeight <= bestCutWeight + eps, "failed to find minimum cut: " + bestCut);
 
 		} else {
-			// TODO simply instantiate MaximumFlowEdmondsKarp and MaximumFlowPushRelabel once it is public API
-			MaximumFlow.Builder builder = MaximumFlow.builder();
-			builder.setOption("impl", "edmonds-karp");
-			MinimumEdgeCutSt edmondsKarpAlgo = MinimumEdgeCutSt.newFromMaximumFlow(builder.build());
-			builder.setOption("impl", "push-relabel-highest-first");
-			MinimumEdgeCutSt pushRelabelAlgo = MinimumEdgeCutSt.newFromMaximumFlow(builder.build());
+			MinimumEdgeCutSt edmondsKarpAlgo = new MaximumFlowEdmondsKarp();
+			MinimumEdgeCutSt pushRelabelAlgo = MaximumFlowPushRelabel.newInstanceHighestFirst();
 
 			MinimumEdgeCutSt validationAlgo =
 					alg.getClass().equals(pushRelabelAlgo.getClass()) ? edmondsKarpAlgo : pushRelabelAlgo;

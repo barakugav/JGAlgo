@@ -17,7 +17,6 @@
 package com.jgalgo.alg.flow;
 
 import java.util.Collection;
-import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
@@ -35,8 +34,7 @@ import com.jgalgo.graph.WeightFunctionInt;
  * the sum of flows going in(out) to the source(sink).
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * <pre> {@code
  * Graph<String, Integer> g = ...;
@@ -113,83 +111,12 @@ public interface MaximumFlow {
 	 * Create a new maximum flow algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MaximumFlow} object. The {@link MaximumFlow.Builder}
-	 * might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MaximumFlow} object.
 	 *
 	 * @return a default implementation of {@link MaximumFlow}
 	 */
 	static MaximumFlow newInstance() {
-		return builder().build();
-	}
-
-	/**
-	 * Create a new maximum flow algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link MaximumFlow} objects
-	 */
-	static MaximumFlow.Builder builder() {
-		return new MaximumFlow.Builder() {
-			String impl;
-
-			@Override
-			public MaximumFlow build() {
-				if (impl != null) {
-					switch (impl) {
-						case "edmonds-karp":
-							return new MaximumFlowEdmondsKarp();
-						case "dinic":
-							return new MaximumFlowDinic();
-						case "dinic-dynamic-trees":
-							return new MaximumFlowDinicDynamicTrees();
-						case "push-relabel-fifo":
-							return MaximumFlowPushRelabel.newInstanceFifo();
-						case "push-relabel-highest-first":
-							return MaximumFlowPushRelabel.newInstanceHighestFirst();
-						case "push-relabel-partial-augment":
-							return MaximumFlowPushRelabel.newInstancePartialAugment();
-						case "push-relabel-lowest-first":
-							return MaximumFlowPushRelabel.newInstanceLowestFirst();
-						case "push-relabel-move-to-front":
-							return MaximumFlowPushRelabel.newInstanceMoveToFront();
-						case "push-relabel-fifo-dynamic-trees":
-							return new MaximumFlowPushRelabelDynamicTrees();
-						default:
-							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-					}
-				}
-				return MaximumFlowPushRelabel.newInstanceHighestFirst();
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					default:
-						MaximumFlow.Builder.super.setOption(key, value);
-				}
-			}
-		};
-	}
-
-	/**
-	 * A builder for {@link MaximumFlow} objects.
-	 *
-	 * @see    MaximumFlow#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for maximum flow computation.
-		 *
-		 * @return a new maximum flow algorithm
-		 */
-		MaximumFlow build();
+		return MaximumFlowPushRelabel.newInstanceHighestFirst();
 	}
 
 }
