@@ -28,17 +28,15 @@ public class KShortestPathsStHershbergerMaxelSuriTest extends TestBase {
 
 	@Test
 	public void randGraphs() {
-		KShortestPathsSt.Builder builder = KShortestPathsSt.builder();
-		builder.setOption("impl", "hershberger-maxel-suri");
-		builder.setOption("fast-replacement-threshold", Integer.valueOf(5));
-		KShortestPathsStTestUtils.randGraphs(builder.build(), true, 0x81541a81321bcabcL);
+		KShortestPathsStHershbergerMaxelSuri algo = new KShortestPathsStHershbergerMaxelSuri();
+		algo.setFastReplacementThreshold(5);
+		KShortestPathsStTestUtils.randGraphs(algo, true, 0x81541a81321bcabcL);
 	}
 
 	@Test
 	public void randGraphWithDefaultFastReplacementAlgoThreshold() {
-		KShortestPathsSt.Builder builder = KShortestPathsSt.builder();
-		builder.setOption("impl", "hershberger-maxel-suri");
-		KShortestPathsStTestUtils.randGraph(builder.build(), true, 1000, 3000, 10, 0x337126dc7194280bL);
+		KShortestPathsStHershbergerMaxelSuri algo = new KShortestPathsStHershbergerMaxelSuri();
+		KShortestPathsStTestUtils.randGraph(algo, true, 1000, 3000, 10, 0x337126dc7194280bL);
 	}
 
 	@SuppressWarnings("boxing")

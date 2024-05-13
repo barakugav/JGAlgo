@@ -133,20 +133,4 @@ class KShortestPathsStTestUtils extends TestBase {
 		});
 	}
 
-	@Test
-	public void testSetOption() {
-		KShortestPathsSt.Builder builder = KShortestPathsSt.builder();
-
-		assertThrows(IllegalArgumentException.class, () -> builder.setOption("jdasg", "lhfj"));
-
-		builder.setOption("impl", "yen");
-		assertEquals(KShortestPathsStYen.class, builder.build().getClass());
-		builder.setOption("impl", "katoh-ibaraki-mine");
-		assertEquals(KShortestPathsStKatohIbarakiMine.class, builder.build().getClass());
-		builder.setOption("impl", "hershberger-maxel-suri");
-		assertEquals(KShortestPathsStHershbergerMaxelSuri.class, builder.build().getClass());
-		builder.setOption("impl", "dmksm");
-		assertThrows(IllegalArgumentException.class, () -> builder.build());
-	}
-
 }

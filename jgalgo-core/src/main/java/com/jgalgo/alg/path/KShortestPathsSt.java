@@ -16,8 +16,6 @@
 package com.jgalgo.alg.path;
 
 import java.util.List;
-import com.jgalgo.alg.AlgorithmBuilderBase;
-import com.jgalgo.alg.span.MinimumSpanningTree;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
@@ -64,107 +62,33 @@ public interface KShortestPathsSt {
 	 * Create a new K shortest paths algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link KShortestPathsSt} object. The
-	 * {@link KShortestPathsSt.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link KShortestPathsSt} object.
 	 *
 	 * @return a default implementation of {@link KShortestPathsSt}
 	 */
 	static KShortestPathsSt newInstance() {
-		return builder().build();
-	}
-
-	/**
-	 * Create a new minimum spanning tree algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link MinimumSpanningTree} objects
-	 */
-	static KShortestPathsSt.Builder builder() {
-		return new KShortestPathsSt.Builder() {
-			String impl;
-			int fastReplacementThreshold = Integer.MAX_VALUE;
-			boolean fastReplacementThresholdValid = false;
-
-			@Override
-			public KShortestPathsSt build() {
-				if (impl != null) {
-					switch (impl) {
-						case "yen":
-							return new KShortestPathsStYen();
-
-						case "katoh-ibaraki-mine": {
-							KShortestPathsStKatohIbarakiMine algo = new KShortestPathsStKatohIbarakiMine();
-							if (fastReplacementThresholdValid)
-								algo.setFastReplacementThreshold(fastReplacementThreshold);
-							return algo;
-						}
-						case "hershberger-maxel-suri": {
-							KShortestPathsStHershbergerMaxelSuri algo = new KShortestPathsStHershbergerMaxelSuri();
-							if (fastReplacementThresholdValid)
-								algo.setFastReplacementThreshold(fastReplacementThreshold);
-							return algo;
-						}
-						default:
-							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-					}
-				}
-				/*-
-				 * Katoh-Ibaraki-Mine algorithm has a better complexity than Yen's algorithm, so theoretically we should
-				 * use it for undirected graphs by default, but benchmarks (for relatively small k) showed otherwise:
-				 * KShortestPathsSTKatohIbarakiMine    |V|=200 |E|=1500 k=5  avgt    3   1.716 ±  0.601  ms/op
-				 * KShortestPathsSTKatohIbarakiMine  |V|=800 |E|=10000 k=15  avgt    3  38.263 ±  1.930  ms/op
-				 * KShortestPathsSTKatohIbarakiMine  |V|=1500 |E|=3000 k=50  avgt    3  91.850 ± 11.972  ms/op
-				 * KShortestPathsSTYen                 |V|=200 |E|=1500 k=5  avgt    3   0.435 ±  0.012  ms/op
-				 * KShortestPathsSTYen               |V|=800 |E|=10000 k=15  avgt    3   8.372 ±  0.932  ms/op
-				 * KShortestPathsSTYen               |V|=1500 |E|=3000 k=50  avgt    3   8.783 ±  0.181  ms/op
-				 */
-				// return new KShortestPathsST() {
-				// private final KShortestPathsST directedAlgo = new KShortestPathsSTYen();
-				// private final KShortestPathsST undirectedAlgo = new KShortestPathsSTKatohIbarakiMine();
-				// @Override
-				// public <V, E> List<Path<V, E>> computeKShortestPaths(Graph<V, E> g, WeightFunction<E> w, V source,
-				// V target, int k) {
-				// if (g.isDirected()) {
-				// return directedAlgo.computeKShortestPaths(g, w, source, target, k);
-				// } else {
-				// return undirectedAlgo.computeKShortestPaths(g, w, source, target, k);
-				// } } };
-				return new KShortestPathsStYen();
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					case "fast-replacement-threshold":
-						fastReplacementThreshold = ((Integer) value).intValue();
-						fastReplacementThresholdValid = true;
-						break;
-					default:
-						KShortestPathsSt.Builder.super.setOption(key, value);
-				}
-			}
-		};
-	}
-
-	/**
-	 * A builder for {@link KShortestPathsSt} objects.
-	 *
-	 * @see    KShortestPathsSt#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for k shortest paths computation.
-		 *
-		 * @return a new k shortest paths algorithm
+		/*-
+		 * Katoh-Ibaraki-Mine algorithm has a better complexity than Yen's algorithm, so theoretically we should
+		 * use it for undirected graphs by default, but benchmarks (for relatively small k) showed otherwise:
+		 * KShortestPathsSTKatohIbarakiMine    |V|=200 |E|=1500 k=5  avgt    3   1.716 ±  0.601  ms/op
+		 * KShortestPathsSTKatohIbarakiMine  |V|=800 |E|=10000 k=15  avgt    3  38.263 ±  1.930  ms/op
+		 * KShortestPathsSTKatohIbarakiMine  |V|=1500 |E|=3000 k=50  avgt    3  91.850 ± 11.972  ms/op
+		 * KShortestPathsSTYen                 |V|=200 |E|=1500 k=5  avgt    3   0.435 ±  0.012  ms/op
+		 * KShortestPathsSTYen               |V|=800 |E|=10000 k=15  avgt    3   8.372 ±  0.932  ms/op
+		 * KShortestPathsSTYen               |V|=1500 |E|=3000 k=50  avgt    3   8.783 ±  0.181  ms/op
 		 */
-		KShortestPathsSt build();
+		// return new KShortestPathsST() {
+		// private final KShortestPathsST directedAlgo = new KShortestPathsSTYen();
+		// private final KShortestPathsST undirectedAlgo = new KShortestPathsSTKatohIbarakiMine();
+		// @Override
+		// public <V, E> List<Path<V, E>> computeKShortestPaths(Graph<V, E> g, WeightFunction<E> w, V source,
+		// V target, int k) {
+		// if (g.isDirected()) {
+		// return directedAlgo.computeKShortestPaths(g, w, source, target, k);
+		// } else {
+		// return undirectedAlgo.computeKShortestPaths(g, w, source, target, k);
+		// } } };
+		return new KShortestPathsStYen();
 	}
 
 }

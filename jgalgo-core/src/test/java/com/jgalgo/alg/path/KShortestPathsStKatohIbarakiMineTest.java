@@ -29,17 +29,15 @@ public class KShortestPathsStKatohIbarakiMineTest extends TestBase {
 
 	@Test
 	public void randGraphs() {
-		KShortestPathsSt.Builder builder = KShortestPathsSt.builder();
-		builder.setOption("impl", "katoh-ibaraki-mine");
-		builder.setOption("fast-replacement-threshold", Integer.valueOf(5));
-		KShortestPathsStTestUtils.randGraphs(builder.build(), false, 0x3b8b75d281206314L);
+		KShortestPathsStKatohIbarakiMine algo = new KShortestPathsStKatohIbarakiMine();
+		algo.setFastReplacementThreshold(5);
+		KShortestPathsStTestUtils.randGraphs(algo, false, 0x3b8b75d281206314L);
 	}
 
 	@Test
 	public void randGraphWithDefaultFastReplacementAlgoThreshold() {
-		KShortestPathsSt.Builder builder = KShortestPathsSt.builder();
-		builder.setOption("impl", "katoh-ibaraki-mine");
-		KShortestPathsStTestUtils.randGraph(builder.build(), false, 1000, 3000, 10, 0xc9c5279d5fd2e4acL);
+		KShortestPathsStKatohIbarakiMine algo = new KShortestPathsStKatohIbarakiMine();
+		KShortestPathsStTestUtils.randGraph(algo, false, 1000, 3000, 10, 0xc9c5279d5fd2e4acL);
 	}
 
 	@Test

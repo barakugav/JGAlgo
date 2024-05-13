@@ -35,6 +35,9 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.path.KShortestPathsSt;
+import com.jgalgo.alg.path.KShortestPathsStHershbergerMaxelSuri;
+import com.jgalgo.alg.path.KShortestPathsStKatohIbarakiMine;
+import com.jgalgo.alg.path.KShortestPathsStYen;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -93,17 +96,14 @@ public class KShortestPathsStBench {
 
 		@Benchmark
 		public void Yen(Blackhole blackhole) {
-			KShortestPathsSt.Builder builder = KShortestPathsSt.builder();
-			builder.setOption("impl", "yen");
-			super.benchAlgo(builder.build(), blackhole);
+			super.benchAlgo(new KShortestPathsStYen(), blackhole);
 		}
 
 		@Benchmark
 		public void HershbergerMaxelSuri(Blackhole blackhole) {
-			KShortestPathsSt.Builder builder = KShortestPathsSt.builder();
-			builder.setOption("impl", "hershberger-maxel-suri");
-			builder.setOption("fast-replacement-threshold", 10);
-			super.benchAlgo(builder.build(), blackhole);
+			KShortestPathsStHershbergerMaxelSuri algo = new KShortestPathsStHershbergerMaxelSuri();
+			algo.setFastReplacementThreshold(10);
+			super.benchAlgo(algo, blackhole);
 		}
 	}
 
@@ -125,17 +125,14 @@ public class KShortestPathsStBench {
 
 		@Benchmark
 		public void Yen(Blackhole blackhole) {
-			KShortestPathsSt.Builder builder = KShortestPathsSt.builder();
-			builder.setOption("impl", "yen");
-			super.benchAlgo(builder.build(), blackhole);
+			super.benchAlgo(new KShortestPathsStYen(), blackhole);
 		}
 
 		@Benchmark
-		public void KShortestPathsStKatohIbarakiMine(Blackhole blackhole) {
-			KShortestPathsSt.Builder builder = KShortestPathsSt.builder();
-			builder.setOption("impl", "katoh-ibaraki-mine");
-			builder.setOption("fast-replacement-threshold", 10);
-			super.benchAlgo(builder.build(), blackhole);
+		public void KatohIbarakiMine(Blackhole blackhole) {
+			KShortestPathsStKatohIbarakiMine algo = new KShortestPathsStKatohIbarakiMine();
+			algo.setFastReplacementThreshold(10);
+			super.benchAlgo(algo, blackhole);
 		}
 	}
 
