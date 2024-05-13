@@ -34,6 +34,8 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.path.ShortestPathAllPairs;
+import com.jgalgo.alg.path.ShortestPathAllPairsFloydWarshall;
+import com.jgalgo.alg.path.ShortestPathAllPairsJohnson;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -81,17 +83,12 @@ public class ApspBench {
 
 	@Benchmark
 	public void FloydWarshall(Blackhole blackhole) {
-		benchApspPositiveWeights(getAlgo("floyd-warshall"), blackhole);
+		benchApspPositiveWeights(new ShortestPathAllPairsFloydWarshall(), blackhole);
 	}
 
 	@Benchmark
 	public void Johnson(Blackhole blackhole) {
-		benchApspPositiveWeights(getAlgo("johnson"), blackhole);
+		benchApspPositiveWeights(new ShortestPathAllPairsJohnson(), blackhole);
 	}
 
-	private static ShortestPathAllPairs getAlgo(String implName) {
-		ShortestPathAllPairs.Builder builder = ShortestPathAllPairs.builder();
-		builder.setOption("impl", implName);
-		return builder.build();
-	}
 }

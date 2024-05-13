@@ -212,22 +212,9 @@ public interface ShortestPathAllPairs {
 	static ShortestPathAllPairs.Builder builder() {
 		return new ShortestPathAllPairs.Builder() {
 			private boolean cardinalityWeight;
-			String impl;
 
 			@Override
 			public ShortestPathAllPairs build() {
-				if (impl != null) {
-					switch (impl) {
-						case "cardinality":
-							return new ShortestPathAllPairsCardinality();
-						case "floyd-warshall":
-							return new ShortestPathAllPairsFloydWarshall();
-						case "johnson":
-							return new ShortestPathAllPairsJohnson();
-						default:
-							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-					}
-				}
 				ShortestPathAllPairs cardinalityAlgo = new ShortestPathAllPairsCardinality();
 				if (cardinalityWeight)
 					return cardinalityAlgo;
@@ -260,17 +247,6 @@ public interface ShortestPathAllPairs {
 			public ShortestPathAllPairs.Builder setCardinality(boolean cardinalityWeight) {
 				this.cardinalityWeight = cardinalityWeight;
 				return this;
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					default:
-						ShortestPathAllPairs.Builder.super.setOption(key, value);
-				}
 			}
 		};
 	}

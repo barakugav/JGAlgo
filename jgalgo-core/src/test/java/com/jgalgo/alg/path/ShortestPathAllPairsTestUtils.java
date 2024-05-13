@@ -205,24 +205,6 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 	}
 
 	@Test
-	public void testBuilderSetOption() {
-		ShortestPathAllPairs.Builder builder = ShortestPathAllPairs.builder();
-		assertNotNull(builder.build());
-
-		assertThrows(IllegalArgumentException.class, () -> builder.setOption("non-existing-option", "value"));
-
-		builder.setOption("impl", "cardinality");
-		assertEquals(ShortestPathAllPairsCardinality.class, builder.build().getClass());
-		builder.setOption("impl", "floyd-warshall");
-		assertEquals(ShortestPathAllPairsFloydWarshall.class, builder.build().getClass());
-		builder.setOption("impl", "johnson");
-		assertEquals(ShortestPathAllPairsJohnson.class, builder.build().getClass());
-
-		builder.setOption("impl", "non-existing-imp");
-		assertThrows(IllegalArgumentException.class, () -> builder.build());
-	}
-
-	@Test
 	public void testBuilderSetCardinality() {
 		ShortestPathAllPairs.Builder builder = ShortestPathAllPairs.builder();
 		builder.setCardinality(true);
