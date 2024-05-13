@@ -16,8 +16,6 @@
 
 package com.jgalgo.alg.tree;
 
-import com.jgalgo.alg.AlgorithmBuilderBase;
-
 /**
  * Dynamic algorithm for Lowest Common Ancestor (LCA) queries.
  *
@@ -27,8 +25,7 @@ import com.jgalgo.alg.AlgorithmBuilderBase;
  * the tree by adding leafs as children to existing parents vertices, while supporting LCA queries.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * <pre> {@code
  * LowestCommonAncestorDynamic lca = LowestCommonAncestorDynamic.newInstance();
@@ -125,71 +122,12 @@ public interface LowestCommonAncestorDynamic {
 	 * Create a new algorithm for dynamic LCA queries.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorDynamic} object. The
-	 * {@link LowestCommonAncestorDynamic.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorDynamic} object.
 	 *
 	 * @return a default implementation of {@link LowestCommonAncestorDynamic}
 	 */
 	static LowestCommonAncestorDynamic newInstance() {
-		return builder().build();
-	}
-
-	/**
-	 * Create a new dynamic LCA algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link LowestCommonAncestorDynamic} objects
-	 */
-	static LowestCommonAncestorDynamic.Builder builder() {
-		return new LowestCommonAncestorDynamic.Builder() {
-			String impl;
-
-			@Override
-			public LowestCommonAncestorDynamic build() {
-				if (impl != null) {
-					switch (impl) {
-						case "gabow-simple":
-							return new LowestCommonAncestorDynamicGabowSimple();
-						case "gabow-ints":
-							return new LowestCommonAncestorDynamicGabowInts();
-						case "gabow-longs":
-							return new LowestCommonAncestorDynamicGabowLongs();
-						default:
-							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-					}
-				}
-				return new LowestCommonAncestorDynamicGabowLongs();
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					default:
-						LowestCommonAncestorDynamic.Builder.super.setOption(key, value);
-				}
-			}
-		};
-	}
-
-	/**
-	 * A builder for {@link LowestCommonAncestorDynamic} objects.
-	 *
-	 * @see    LowestCommonAncestorDynamic#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new dynamic LCA algorithm.
-		 *
-		 * @return a new dynamic LCA algorithm
-		 */
-		LowestCommonAncestorDynamic build();
+		return new LowestCommonAncestorDynamicGabowLongs();
 	}
 
 }

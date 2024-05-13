@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -29,7 +30,7 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 
 	private LowestCommonAncestorDynamicTestUtils() {}
 
-	static void fullBinaryTreesRandOps(LowestCommonAncestorDynamic.Builder builder, long seed) {
+	static void fullBinaryTreesRandOps(Supplier<? extends LowestCommonAncestorDynamic> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 16).repeat(64);
@@ -45,7 +46,7 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 		});
 	}
 
-	static void randTrees(LowestCommonAncestorDynamic.Builder builder, long seed) {
+	static void randTrees(Supplier<? extends LowestCommonAncestorDynamic> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 16).repeat(128);
@@ -149,9 +150,9 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	static void testLCA(LowestCommonAncestorDynamic.Builder builder, int n, Collection<Op> ops) {
+	static void testLCA(Supplier<? extends LowestCommonAncestorDynamic> builder, int n, Collection<Op> ops) {
 		List<LowestCommonAncestorDynamic.Vertex> vertices = new ObjectArrayList<>();
-		LowestCommonAncestorDynamic lca = builder.build();
+		LowestCommonAncestorDynamic lca = builder.get();
 
 		for (Op op0 : ops) {
 			if (op0 instanceof OpInitTree) {

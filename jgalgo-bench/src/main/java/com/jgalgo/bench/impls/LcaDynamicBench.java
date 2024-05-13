@@ -37,6 +37,9 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.tree.LowestCommonAncestorDynamic;
+import com.jgalgo.alg.tree.LowestCommonAncestorDynamicGabowInts;
+import com.jgalgo.alg.tree.LowestCommonAncestorDynamicGabowLongs;
+import com.jgalgo.alg.tree.LowestCommonAncestorDynamicGabowSimple;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -101,23 +104,17 @@ public class LcaDynamicBench {
 
 	@Benchmark
 	public void GabowSimple(Blackhole blackhole) {
-		benchLCA(getAlgo("gabow-simple"), blackhole);
+		benchLCA(new LowestCommonAncestorDynamicGabowSimple(), blackhole);
 	}
 
 	@Benchmark
 	public void GabowLinear(Blackhole blackhole) {
-		benchLCA(getAlgo("gabow-ints"), blackhole);
+		benchLCA(new LowestCommonAncestorDynamicGabowInts(), blackhole);
 	}
 
 	@Benchmark
 	public void GabowLongs(Blackhole blackhole) {
-		benchLCA(getAlgo("gabow-longs"), blackhole);
-	}
-
-	private static LowestCommonAncestorDynamic getAlgo(String implName) {
-		LowestCommonAncestorDynamic.Builder builder = LowestCommonAncestorDynamic.builder();
-		builder.setOption("impl", implName);
-		return builder.build();
+		benchLCA(new LowestCommonAncestorDynamicGabowLongs(), blackhole);
 	}
 
 	private static Collection<Op> generateRandOps(int n, int m, long seed) {
