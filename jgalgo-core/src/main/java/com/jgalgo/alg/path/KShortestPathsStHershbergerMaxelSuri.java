@@ -53,7 +53,7 @@ import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
  *
  * @author Barak Ugav
  */
-class KShortestPathsStHershbergerMaxelSuri extends KShortestPathsStBasedPathsTree {
+public class KShortestPathsStHershbergerMaxelSuri extends KShortestPathsStBasedPathsTree {
 
 	private int fastReplacementThreshold = 50;
 
@@ -85,13 +85,21 @@ class KShortestPathsStHershbergerMaxelSuri extends KShortestPathsStBasedPathsTre
 	 * Set the threshold for the fast replacement algorithm.
 	 *
 	 * <p>
-	 * If the path, for each a replacement path is computed, is shorter than the threshold, the algorithm falls back to
-	 * Yen's algorithm, as the fast replacement algorithm is more complex and it's theoretical advantage is relevant
-	 * when a large number of S-Y computation are required in Yen's algorithm.
+	 * Given a path \(P\), a replacement path \(P'\) is the shortest path with the same source and target vertices that
+	 * replace at least one edge from \(P\). During the running of the algorithm, replacement paths are computed for
+	 * different paths with different lengths. Yen's algorithm uses a black box S-T shortest path computation for each
+	 * possible deviation edge, which is a time consuming operation. The fast replacement algorithm computes the
+	 * replacement path in time \(O(m + n \log n)\) using two shortest path trees. In practice, Yen's solution might be
+	 * faster, specifically when the path \(P\) is short, as the fast replacement algorithm is more complex and it's
+	 * theoretical advantage is relevant when a large number of S-T computation are required in Yen's algorithm.
 	 *
-	 * @param threshold if the path is shorter than this threshold, the fast replacement algorithm is not used
+	 * <p>
+	 * This method sets a threshold for which for any path with length greater or equal than this threshold, the fast
+	 * replacement algorithm is used. The default value is 50.
+	 *
+	 * @param threshold if the path is greater or equal to this threshold, the fast replacement algorithm is not used
 	 */
-	void setFastReplacementThreshold(int threshold) {
+	public void setFastReplacementThreshold(int threshold) {
 		fastReplacementThreshold = threshold;
 	}
 
