@@ -29,8 +29,9 @@ import com.jgalgo.graph.WeightFunctions;
  * Abstract class for computing the global minimum edge cut in a graph.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
@@ -39,22 +40,22 @@ public abstract class MinimumEdgeCutGlobalAbstract implements MinimumEdgeCutGlob
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L42">	public MinimumEdgeCutGlobalAbstract() {}</span>
+<span class="fc" id="L43">	public MinimumEdgeCutGlobalAbstract() {}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;V, E&gt; VertexBiPartition&lt;V, E&gt; computeMinimumCut(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L48">			return (VertexBiPartition&lt;V, E&gt;) computeMinimumCut((IndexGraph) g,</span>
-<span class="nc" id="L49">					WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w));</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L49">			return (VertexBiPartition&lt;V, E&gt;) computeMinimumCut((IndexGraph) g,</span>
+<span class="nc" id="L50">					WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w));</span>
 
 		} else {
-<span class="fc" id="L52">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L53">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L54">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L53">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L54">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L55">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
 
-<span class="fc" id="L56">			IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw);</span>
-<span class="fc" id="L57">			return VertexBiPartition.partitionFromIndexPartition(g, indexCut);</span>
+<span class="fc" id="L57">			IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw);</span>
+<span class="fc" id="L58">			return VertexBiPartition.partitionFromIndexPartition(g, indexCut);</span>
 		}
 	}
 

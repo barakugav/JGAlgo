@@ -113,7 +113,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 <span class="fc" id="L113">		return new IndexIdMapImpl&lt;&gt;(indicesSet, idToIndex, indexToId, isVertices, immutable);</span>
 	}
 
-	/* This object should not be used again. Responsibility of the user (of this class). */
+	/* This object should not be used again. Responsibility of the caller. */
 	IndexIdMapImpl&lt;K&gt; intoImmutable(Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; reIndexing) {
 <span class="fc bfc" id="L118" title="All 2 branches covered.">		if (reIndexing.isPresent()) {</span>
 <span class="fc" id="L119">			IndexGraphBuilder.ReIndexingMap reIndexing0 = reIndexing.get();</span>

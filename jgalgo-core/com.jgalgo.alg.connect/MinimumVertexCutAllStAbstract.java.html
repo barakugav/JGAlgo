@@ -31,8 +31,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Abstract class for computing all minimum vertex cuts between two vertices in a graph.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
@@ -41,24 +42,24 @@ public abstract class MinimumVertexCutAllStAbstract implements MinimumVertexCutA
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L44">	public MinimumVertexCutAllStAbstract() {}</span>
+<span class="fc" id="L45">	public MinimumVertexCutAllStAbstract() {}</span>
 
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	@Override
 	public &lt;V, E&gt; Iterator&lt;Set&lt;V&gt;&gt; minimumCutsIter(Graph&lt;V, E&gt; g, WeightFunction&lt;V&gt; w, V source, V sink) {
-<span class="fc bfc" id="L49" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L50">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="fc" id="L51">			int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();</span>
-<span class="fc" id="L52">			return (Iterator) minimumCutsIter((IndexGraph) g, w0, source0, sink0);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L51">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L52">			int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();</span>
+<span class="fc" id="L53">			return (Iterator) minimumCutsIter((IndexGraph) g, w0, source0, sink0);</span>
 
 		} else {
-<span class="fc" id="L55">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L56">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L57">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);</span>
-<span class="fc" id="L58">			int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L59">			int iSink = viMap.idToIndex(sink);</span>
-<span class="fc" id="L60">			Iterator&lt;IntSet&gt; indexCuts = minimumCutsIter(iGraph, iw, iSource, iSink);</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">			return indexCuts == null ? null : IterTools.map(indexCuts, c -&gt; IndexIdMaps.indexToIdSet(c, viMap));</span>
+<span class="fc" id="L56">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L57">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L58">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);</span>
+<span class="fc" id="L59">			int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L60">			int iSink = viMap.idToIndex(sink);</span>
+<span class="fc" id="L61">			Iterator&lt;IntSet&gt; indexCuts = minimumCutsIter(iGraph, iw, iSource, iSink);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">			return indexCuts == null ? null : IterTools.map(indexCuts, c -&gt; IndexIdMaps.indexToIdSet(c, viMap));</span>
 		}
 	}
 

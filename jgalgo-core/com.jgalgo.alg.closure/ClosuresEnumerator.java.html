@@ -16,7 +16,6 @@
 package com.jgalgo.alg.closure;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import com.jgalgo.alg.path.IPath;
 import com.jgalgo.alg.path.Path;
@@ -24,18 +23,23 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * An algorithm that enumerate all the closure subsets in a directed graph.
  *
  * &lt;p&gt;
- * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that no edges leave
- * \(C\) to \(V \setminus C\). There might be exponentially many closures in a graph, and algorithms implementing this
- * interface enumerate over all of them (use an {@link Iterator} avoiding storing all of them in memory).
+ * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that there are no
+ * edges from \(C\) to \(V \setminus C\).
  *
  * &lt;p&gt;
- * For undirected graphs, the closure subsets are simply the weakly connected components.
+ * There may be exponentially many closures in a graph, therefore all implementations of this interface use some
+ * heuristic to speed up the process but run in exponential time in the worst case. The algorithm returns an iterator
+ * over the closures, so that the caller can iterate over them without storing them all in memory. Avoid using this
+ * algorithm on very large graphs.
+ *
+ * &lt;p&gt;
+ * For undirected graphs, the closure subsets are simply the weakly connected components, and algorithms implementing
+ * this interface will throw an exception if the graph is not directed.
  *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface.
@@ -49,9 +53,9 @@ public interface ClosuresEnumerator {
 	 * Iterate over all closures in the given graph.
 	 *
 	 * &lt;p&gt;
-	 * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that no edges
-	 * leave \(C\) to \(V \setminus C\). Although the empty set of vertices is consider a colure, it is not returned by
-	 * this method.
+	 * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that there are no
+	 * edges from \(C\) to \(V \setminus C\). Although the empty set of vertices is considered a colure, it is not
+	 * returned by this method.
 	 *
 	 * &lt;p&gt;
 	 * If {@code g} is {@link IntGraph}, the returned iterator will iterate over {@link IntSet} objects.
@@ -65,27 +69,6 @@ public interface ClosuresEnumerator {
 	&lt;V, E&gt; Iterator&lt;Set&lt;V&gt;&gt; closuresIter(Graph&lt;V, E&gt; g);
 
 	/**
-	 * Find all closures in the given graph.
-	 *
-	 * &lt;p&gt;
-	 * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that no edges
-	 * leave \(C\) to \(V \setminus C\). Although the empty set of vertices is consider a colure, it is not returned by
-	 * this method.
-	 *
-	 * &lt;p&gt;
-	 * If {@code g} is {@link IntGraph}, the returned list will contain {@link IntSet} objects.
-	 *
-	 * @param  &lt;V&gt;                      the vertices type
-	 * @param  &lt;E&gt;                      the edges type
-	 * @param  g                        a directed graph
-	 * @return                          a list of all closures in the graph
-	 * @throws IllegalArgumentException if the graph is not directed
-	 */
-	default &lt;V, E&gt; List&lt;Set&lt;V&gt;&gt; allClosures(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L85">		return new ObjectArrayList&lt;&gt;(closuresIter(g));</span>
-	}
-
-	/**
 	 * Create a new closure enumeration algorithm.
 	 *
 	 * &lt;p&gt;
@@ -94,15 +77,15 @@ public interface ClosuresEnumerator {
 	 * @return a default implementation of {@link ClosuresEnumerator}
 	 */
 	static ClosuresEnumerator newInstance() {
-<span class="fc" id="L97">		return new ClosuresEnumeratorSchrageBaker();</span>
+<span class="fc" id="L80">		return new ClosuresEnumeratorSchrageBaker();</span>
 	}
 
 	/**
-	 * Check whether the given set is a closure in the given graph.
+	 * Check whether the given set of vertices is a closure in the given graph.
 	 *
 	 * &lt;p&gt;
-	 * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that no edges
-	 * leave \(C\) to \(V \setminus C\). The empty set of vertices is considered a closure.
+	 * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that there are no
+	 * edges from \(C\) to \(V \setminus C\). The empty set of vertices is considered a closure.
 	 *
 	 * @param  &lt;V&gt; the vertices type
 	 * @param  &lt;E&gt; the edges type
@@ -112,17 +95,17 @@ public interface ClosuresEnumerator {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; boolean isClosure(Graph&lt;V, E&gt; g, Set&lt;V&gt; c) {
-<span class="fc bfc" id="L115" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L116">			IntSet c0 = IntAdapters.asIntSet((Set&lt;Integer&gt;) c);</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">			for (int w : IPath.reachableVertices((IntGraph) g, c0.iterator()))</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">				if (!(c0.contains(w)))</span>
-<span class="fc" id="L119">					return false;</span>
-<span class="fc" id="L120">		} else {</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">			for (V w : Path.reachableVertices(g, c.iterator()))</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">				if (!(c.contains(w)))</span>
-<span class="fc" id="L123">					return false;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L99">			IntSet c0 = IntAdapters.asIntSet((Set&lt;Integer&gt;) c);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">			for (int w : IPath.reachableVertices((IntGraph) g, c0.iterator()))</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">				if (!(c0.contains(w)))</span>
+<span class="fc" id="L102">					return false;</span>
+<span class="fc" id="L103">		} else {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			for (V w : Path.reachableVertices(g, c.iterator()))</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">				if (!(c.contains(w)))</span>
+<span class="fc" id="L106">					return false;</span>
 		}
-<span class="fc" id="L125">		return true;</span>
+<span class="fc" id="L108">		return true;</span>
 	}
 
 }

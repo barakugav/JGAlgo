@@ -143,7 +143,7 @@ public class TreePathMaximaHagerup extends TreePathMaximaAbstract {
 <span class="fc" id="L143">		}</span>
 
 		TreePathMaxima.IResult calcTPM(TreePathMaxima.IQueries queries) {
-<span class="fc" id="L146">			int[] lcaQueries = splitQueriesIntoLCAQueries(queries);</span>
+<span class="fc" id="L146">			int[] lcaQueries = splitQueriesIntoLcaQueries(queries);</span>
 
 <span class="fc" id="L148">			int[] q = calcQueriesPerVertex(lcaQueries);</span>
 <span class="fc" id="L149">			int[][] a = calcAnswersPerVertex(q);</span>
@@ -426,7 +426,7 @@ public class TreePathMaximaHagerup extends TreePathMaximaAbstract {
 <span class="fc" id="L426">			return Pair.of(treeBuilder.build(), edgeRef);</span>
 		}
 
-		private int[] splitQueriesIntoLCAQueries(TreePathMaxima.IQueries queries) {
+		private int[] splitQueriesIntoLcaQueries(TreePathMaxima.IQueries queries) {
 <span class="fc" id="L430">			int queriesNum = queries.size();</span>
 <span class="fc" id="L431">			int[] lcaQueries = new int[queriesNum * 4];</span>
 

@@ -31,8 +31,9 @@ import com.jgalgo.internal.util.IterTools;
  * Abstract class for computing all minimum edge cuts between two terminal nodes.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
@@ -41,27 +42,27 @@ public abstract class MinimumEdgeCutAllStAbstract implements MinimumEdgeCutAllSt
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L44">	public MinimumEdgeCutAllStAbstract() {}</span>
+<span class="fc" id="L45">	public MinimumEdgeCutAllStAbstract() {}</span>
 
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	@Override
 	public &lt;V, E&gt; Iterator&lt;VertexBiPartition&lt;V, E&gt;&gt; minimumCutsIter(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source,
 			V sink) {
-<span class="fc bfc" id="L50" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L51">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="fc" id="L52">			int source0 = ((Integer) source).intValue();</span>
-<span class="fc" id="L53">			int sink0 = ((Integer) sink).intValue();</span>
-<span class="fc" id="L54">			return (Iterator) minimumCutsIter((IndexGraph) g, w0, source0, sink0);</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L52">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L53">			int source0 = ((Integer) source).intValue();</span>
+<span class="fc" id="L54">			int sink0 = ((Integer) sink).intValue();</span>
+<span class="fc" id="L55">			return (Iterator) minimumCutsIter((IndexGraph) g, w0, source0, sink0);</span>
 
 		} else {
-<span class="fc" id="L57">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L58">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L59">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L60">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L61">			int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L62">			int iSink = viMap.idToIndex(sink);</span>
-<span class="fc" id="L63">			Iterator&lt;IVertexBiPartition&gt; indexIter = minimumCutsIter(iGraph, iw, iSource, iSink);</span>
-<span class="fc" id="L64">			return IterTools.map(indexIter, iPartition -&gt; VertexBiPartition.partitionFromIndexPartition(g, iPartition));</span>
+<span class="fc" id="L58">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L59">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L60">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L61">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L62">			int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L63">			int iSink = viMap.idToIndex(sink);</span>
+<span class="fc" id="L64">			Iterator&lt;IVertexBiPartition&gt; indexIter = minimumCutsIter(iGraph, iw, iSource, iSink);</span>
+<span class="fc" id="L65">			return IterTools.map(indexIter, iPartition -&gt; VertexBiPartition.partitionFromIndexPartition(g, iPartition));</span>
 		}
 	}
 

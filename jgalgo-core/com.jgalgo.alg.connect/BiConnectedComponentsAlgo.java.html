@@ -107,7 +107,7 @@ public interface BiConnectedComponentsAlgo {
 		 * Get the edges contained in a single bi-connected component.
 		 *
 		 * &lt;p&gt;
-		 * An edge \((u,v)\) is said to bi contained in a bi-connected component \(B\) if both \(u\) and \(v\) are in
+		 * An edge \((u,v)\) is said to be contained in a bi-connected component \(B\) if both \(u\) and \(v\) are in
 		 * \(B\).
 		 *
 		 * @param  biccIdx                   an index of a bi-connected component
@@ -145,8 +145,12 @@ public interface BiConnectedComponentsAlgo {
 		 * Get the graph of the bi-connected components.
 		 *
 		 * &lt;p&gt;
-		 * The vertices of the graph are the bi-connected components indices, and there is an edge between two
-		 * bi-connected components if they share a (cut) vertex. There are no cycles in the graph, namely its a forest.
+		 * The vertices of the graph are the bi-connected components, and there is an edge between two bi-connected
+		 * components if they share a (cut) vertex. There are no cycles in the graph, namely its a forest.
+		 *
+		 * &lt;p&gt;
+		 * The vertex of each bi-connected component is assigned the index of the bi-connected component. The edges are
+		 * assigned arbitrary unique integers identifiers.
 		 *
 		 * @return the graph of the bi-connected components
 		 */
@@ -178,7 +182,7 @@ public interface BiConnectedComponentsAlgo {
 		@Deprecated
 		@Override
 		default IntSet getVertexBiCcs(Integer vertex) {
-<span class="fc" id="L181">			return getVertexBiCcs((vertex).intValue());</span>
+<span class="fc" id="L185">			return getVertexBiCcs((vertex).intValue());</span>
 		}
 
 		@Override
@@ -208,7 +212,7 @@ public interface BiConnectedComponentsAlgo {
 		@Deprecated
 		@Override
 		default boolean isCutVertex(Integer vertex) {
-<span class="fc" id="L211">			return isCutVertex((vertex).intValue());</span>
+<span class="fc" id="L215">			return isCutVertex((vertex).intValue());</span>
 		}
 
 		@Override
@@ -225,7 +229,7 @@ public interface BiConnectedComponentsAlgo {
 	 * @return a default implementation of {@link BiConnectedComponentsAlgo}
 	 */
 	static BiConnectedComponentsAlgo newInstance() {
-<span class="fc" id="L228">		return new BiConnectedComponentsAlgoHopcroftTarjan();</span>
+<span class="fc" id="L232">		return new BiConnectedComponentsAlgoHopcroftTarjan();</span>
 	}
 
 }

@@ -17,7 +17,6 @@
 package com.jgalgo.alg.flow;
 
 import java.util.Collection;
-import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
@@ -35,8 +34,7 @@ import com.jgalgo.graph.WeightFunctionInt;
  * the sum of flows going in(out) to the source(sink).
  *
  * &lt;p&gt;
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * &lt;pre&gt; {@code
  * Graph&lt;String, Integer&gt; g = ...;
@@ -113,83 +111,12 @@ public interface MaximumFlow {
 	 * Create a new maximum flow algorithm object.
 	 *
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link MaximumFlow} object. The {@link MaximumFlow.Builder}
-	 * might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MaximumFlow} object.
 	 *
 	 * @return a default implementation of {@link MaximumFlow}
 	 */
 	static MaximumFlow newInstance() {
-<span class="fc" id="L122">		return builder().build();</span>
-	}
-
-	/**
-	 * Create a new maximum flow algorithm builder.
-	 *
-	 * &lt;p&gt;
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link MaximumFlow} objects
-	 */
-	static MaximumFlow.Builder builder() {
-<span class="fc" id="L134">		return new MaximumFlow.Builder() {</span>
-			String impl;
-
-			@Override
-			public MaximumFlow build() {
-<span class="fc bfc" id="L139" title="All 2 branches covered.">				if (impl != null) {</span>
-<span class="pc bpc" id="L140" title="8 of 10 branches missed.">					switch (impl) {</span>
-						case &quot;edmonds-karp&quot;:
-<span class="fc" id="L142">							return new MaximumFlowEdmondsKarp();</span>
-						case &quot;dinic&quot;:
-<span class="nc" id="L144">							return new MaximumFlowDinic();</span>
-						case &quot;dinic-dynamic-trees&quot;:
-<span class="nc" id="L146">							return new MaximumFlowDinicDynamicTrees();</span>
-						case &quot;push-relabel-fifo&quot;:
-<span class="nc" id="L148">							return MaximumFlowPushRelabel.newInstanceFifo();</span>
-						case &quot;push-relabel-highest-first&quot;:
-<span class="fc" id="L150">							return MaximumFlowPushRelabel.newInstanceHighestFirst();</span>
-						case &quot;push-relabel-partial-augment&quot;:
-<span class="nc" id="L152">							return MaximumFlowPushRelabel.newInstancePartialAugment();</span>
-						case &quot;push-relabel-lowest-first&quot;:
-<span class="nc" id="L154">							return MaximumFlowPushRelabel.newInstanceLowestFirst();</span>
-						case &quot;push-relabel-move-to-front&quot;:
-<span class="nc" id="L156">							return MaximumFlowPushRelabel.newInstanceMoveToFront();</span>
-						case &quot;push-relabel-fifo-dynamic-trees&quot;:
-<span class="nc" id="L158">							return new MaximumFlowPushRelabelDynamicTrees();</span>
-						default:
-<span class="nc" id="L160">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
-					}
-				}
-<span class="fc" id="L163">				return MaximumFlowPushRelabel.newInstanceHighestFirst();</span>
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-<span class="pc bpc" id="L168" title="1 of 2 branches missed.">				switch (key) {</span>
-					case &quot;impl&quot;:
-<span class="fc" id="L170">						impl = (String) value;</span>
-<span class="fc" id="L171">						break;</span>
-					default:
-<span class="nc" id="L173">						MaximumFlow.Builder.super.setOption(key, value);</span>
-				}
-<span class="fc" id="L175">			}</span>
-		};
-	}
-
-	/**
-	 * A builder for {@link MaximumFlow} objects.
-	 *
-	 * @see    MaximumFlow#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for maximum flow computation.
-		 *
-		 * @return a new maximum flow algorithm
-		 */
-		MaximumFlow build();
+<span class="fc" id="L119">		return MaximumFlowPushRelabel.newInstanceHighestFirst();</span>
 	}
 
 }

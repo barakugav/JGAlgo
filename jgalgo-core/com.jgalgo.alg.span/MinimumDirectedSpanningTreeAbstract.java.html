@@ -29,8 +29,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Abstract class for computing minimum spanning trees in directed graphs.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
@@ -39,25 +40,25 @@ public abstract class MinimumDirectedSpanningTreeAbstract implements MinimumDire
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L42">	public MinimumDirectedSpanningTreeAbstract() {}</span>
+<span class="fc" id="L43">	public MinimumDirectedSpanningTreeAbstract() {}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;V, E&gt; MinimumSpanningTree.Result&lt;V, E&gt; computeMinimumDirectedSpanningTree(Graph&lt;V, E&gt; g,
 			WeightFunction&lt;E&gt; w, V root) {
-<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L49">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="fc" id="L50">			int root0 = ((Integer) root).intValue();</span>
-<span class="fc" id="L51">			return (MinimumSpanningTree.Result&lt;V, E&gt;) computeMinimumDirectedSpanningTree((IndexGraph) g, w0, root0);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L50">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L51">			int root0 = ((Integer) root).intValue();</span>
+<span class="fc" id="L52">			return (MinimumSpanningTree.Result&lt;V, E&gt;) computeMinimumDirectedSpanningTree((IndexGraph) g, w0, root0);</span>
 
 		} else {
-<span class="fc" id="L54">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L55">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L56">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L57">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L58">			int iRoot = viMap.idToIndex(root);</span>
-<span class="fc" id="L59">			MinimumSpanningTree.IResult indexResult = computeMinimumDirectedSpanningTree(iGraph, iw, iRoot);</span>
-<span class="fc" id="L60">			return MinimumSpanningTrees.resultFromIndexResult(g, indexResult);</span>
+<span class="fc" id="L55">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L56">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L57">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L58">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L59">			int iRoot = viMap.idToIndex(root);</span>
+<span class="fc" id="L60">			MinimumSpanningTree.IResult indexResult = computeMinimumDirectedSpanningTree(iGraph, iw, iRoot);</span>
+<span class="fc" id="L61">			return MinimumSpanningTrees.resultFromIndexResult(g, indexResult);</span>
 		}
 	}
 
@@ -65,11 +66,11 @@ public abstract class MinimumDirectedSpanningTreeAbstract implements MinimumDire
 			int root);
 
 	protected static MinimumSpanningTree.IResult newIndexResult(IntSet edges) {
-<span class="nc" id="L68">		return new MinimumSpanningTrees.IndexResult(edges);</span>
+<span class="nc" id="L69">		return new MinimumSpanningTrees.IndexResult(edges);</span>
 	}
 
 	protected static MinimumSpanningTree.IResult newIndexResult(int[] edges) {
-<span class="fc" id="L72">		return new MinimumSpanningTrees.IndexResult(edges);</span>
+<span class="fc" id="L73">		return new MinimumSpanningTrees.IndexResult(edges);</span>
 	}
 
 }

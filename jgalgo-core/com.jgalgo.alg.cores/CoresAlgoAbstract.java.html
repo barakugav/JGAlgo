@@ -26,28 +26,29 @@ import com.jgalgo.graph.IntGraph;
  * Abstract class for computing the cores of a graph.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L34">public abstract class CoresAlgoAbstract implements CoresAlgo {</span>
+<span class="fc" id="L35">public abstract class CoresAlgoAbstract implements CoresAlgo {</span>
 
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L39">	public CoresAlgoAbstract() {}</span>
+<span class="fc" id="L40">	public CoresAlgoAbstract() {}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;V, E&gt; CoresAlgo.Result&lt;V, E&gt; computeCores(Graph&lt;V, E&gt; g, EdgeDirection degreeType) {
-<span class="fc bfc" id="L44" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L45">			return (CoresAlgo.Result&lt;V, E&gt;) computeCores((IndexGraph) g, degreeType);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L46">			return (CoresAlgo.Result&lt;V, E&gt;) computeCores((IndexGraph) g, degreeType);</span>
 
 		} else {
-<span class="fc" id="L48">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L49">			CoresAlgo.IResult iResult = computeCores(iGraph, degreeType);</span>
-<span class="fc" id="L50">			return resultFromIndexResult(g, iResult);</span>
+<span class="fc" id="L49">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L50">			CoresAlgo.IResult iResult = computeCores(iGraph, degreeType);</span>
+<span class="fc" id="L51">			return resultFromIndexResult(g, iResult);</span>
 		}
 	}
 
@@ -55,11 +56,11 @@ import com.jgalgo.graph.IntGraph;
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;V, E&gt; CoresAlgo.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g, CoresAlgo.IResult indexResult) {
-<span class="pc bpc" id="L58" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L60">			return (CoresAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L61">			return (CoresAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
 		} else {
-<span class="fc" id="L62">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
+<span class="fc" id="L63">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
 		}
 	}
 

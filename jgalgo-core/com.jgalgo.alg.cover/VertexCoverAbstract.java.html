@@ -29,8 +29,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Abstract class for computing a minimum vertex cover.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
@@ -39,21 +40,21 @@ public abstract class VertexCoverAbstract implements VertexCover {
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L42">	public VertexCoverAbstract() {}</span>
+<span class="fc" id="L43">	public VertexCoverAbstract() {}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;V, E&gt; Set&lt;V&gt; computeMinimumVertexCover(Graph&lt;V, E&gt; g, WeightFunction&lt;V&gt; w) {
-<span class="fc bfc" id="L47" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L48">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="fc" id="L49">			return (Set&lt;V&gt;) computeMinimumVertexCover((IndexGraph) g, w0);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L49">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L50">			return (Set&lt;V&gt;) computeMinimumVertexCover((IndexGraph) g, w0);</span>
 
 		} else {
-<span class="fc" id="L52">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L53">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L54">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);</span>
-<span class="fc" id="L55">			IntSet indexResult = computeMinimumVertexCover(iGraph, iw);</span>
-<span class="fc" id="L56">			return IndexIdMaps.indexToIdSet(indexResult, viMap);</span>
+<span class="fc" id="L53">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L54">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L55">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);</span>
+<span class="fc" id="L56">			IntSet indexResult = computeMinimumVertexCover(iGraph, iw);</span>
+<span class="fc" id="L57">			return IndexIdMaps.indexToIdSet(indexResult, viMap);</span>
 		}
 	}
 

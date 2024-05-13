@@ -29,8 +29,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Abstract class for computing a minimum spanning trees in undirected graphs.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
@@ -39,32 +40,32 @@ public abstract class MinimumSpanningTreeAbstract implements MinimumSpanningTree
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L42">	public MinimumSpanningTreeAbstract() {}</span>
+<span class="fc" id="L43">	public MinimumSpanningTreeAbstract() {}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;V, E&gt; MinimumSpanningTree.Result&lt;V, E&gt; computeMinimumSpanningTree(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
-<span class="fc bfc" id="L47" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L48">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="fc" id="L49">			return (MinimumSpanningTree.Result&lt;V, E&gt;) computeMinimumSpanningTree((IndexGraph) g, w0);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L49">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L50">			return (MinimumSpanningTree.Result&lt;V, E&gt;) computeMinimumSpanningTree((IndexGraph) g, w0);</span>
 
 		} else {
-<span class="fc" id="L52">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L53">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L54">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L55">			MinimumSpanningTree.IResult indexResult = computeMinimumSpanningTree(iGraph, iw);</span>
-<span class="fc" id="L56">			return MinimumSpanningTrees.resultFromIndexResult(g, indexResult);</span>
+<span class="fc" id="L53">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L54">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L55">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L56">			MinimumSpanningTree.IResult indexResult = computeMinimumSpanningTree(iGraph, iw);</span>
+<span class="fc" id="L57">			return MinimumSpanningTrees.resultFromIndexResult(g, indexResult);</span>
 		}
 	}
 
 	protected abstract MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w);
 
 	protected static MinimumSpanningTree.IResult newIndexResult(IntSet edges) {
-<span class="fc" id="L63">		return new MinimumSpanningTrees.IndexResult(edges);</span>
+<span class="fc" id="L64">		return new MinimumSpanningTrees.IndexResult(edges);</span>
 	}
 
 	protected static MinimumSpanningTree.IResult newIndexResult(int[] edges) {
-<span class="nc" id="L67">		return new MinimumSpanningTrees.IndexResult(edges);</span>
+<span class="nc" id="L68">		return new MinimumSpanningTrees.IndexResult(edges);</span>
 	}
 
 }

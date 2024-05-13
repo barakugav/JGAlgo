@@ -28,8 +28,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Abstract class for enumerating over all maximal independent sets in a graph.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
@@ -38,18 +39,18 @@ public abstract class MaximalIndependentSetsEnumeratorAbstract implements Maxima
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L41">	public MaximalIndependentSetsEnumeratorAbstract() {}</span>
+<span class="fc" id="L42">	public MaximalIndependentSetsEnumeratorAbstract() {}</span>
 
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	@Override
 	public &lt;V, E&gt; Iterator&lt;Set&lt;V&gt;&gt; maximalIndependentSetsIter(Graph&lt;V, E&gt; g) {
-<span class="fc bfc" id="L46" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L47">			return (Iterator) maximalIndependentSetsIter((IndexGraph) g);</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L48">			return (Iterator) maximalIndependentSetsIter((IndexGraph) g);</span>
 		} else {
-<span class="fc" id="L49">			IndexGraph ig = g.indexGraph();</span>
-<span class="fc" id="L50">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L51">			Iterator&lt;IntSet&gt; indexIter = maximalIndependentSetsIter(ig);</span>
-<span class="fc" id="L52">			return IterTools.map(indexIter, indexSet -&gt; IndexIdMaps.indexToIdSet(indexSet, viMap));</span>
+<span class="fc" id="L50">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L51">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L52">			Iterator&lt;IntSet&gt; indexIter = maximalIndependentSetsIter(ig);</span>
+<span class="fc" id="L53">			return IterTools.map(indexIter, indexSet -&gt; IndexIdMaps.indexToIdSet(indexSet, viMap));</span>
 		}
 	}
 

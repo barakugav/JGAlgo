@@ -19,7 +19,6 @@ import static com.jgalgo.internal.util.Range.range;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.IntPredicate;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -28,133 +27,138 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
-<span class="fc" id="L31">public final class ImmutableIntArraySet extends AbstractIntSet {</span>
+<span class="fc" id="L30">public final class ImmutableIntArraySet extends AbstractIntSet {</span>
 
 	final int[] arr;
 	final int from, to, size;
-	private final IntPredicate containsFunc;
-<span class="fc" id="L36">	private int hashCode = 0;</span>
+	private final ContainsPredicate containsFunc;
+<span class="fc" id="L35">	private int hashCode = 0;</span>
 
-<span class="fc" id="L38">	private ImmutableIntArraySet(int[] arr, int from, int to, IntPredicate containsFunc) {</span>
-<span class="fc" id="L39">		Assertions.checkArrayFromTo(from, to, arr.length);</span>
-<span class="fc" id="L40">		this.arr = Objects.requireNonNull(arr);</span>
-<span class="fc" id="L41">		this.from = from;</span>
-<span class="fc" id="L42">		this.to = to;</span>
-<span class="fc" id="L43">		this.size = to - from;</span>
-<span class="fc" id="L44">		this.containsFunc = containsFunc;</span>
+<span class="fc" id="L37">	private ImmutableIntArraySet(int[] arr, int from, int to, ContainsPredicate containsFunc) {</span>
+<span class="fc" id="L38">		Assertions.checkArrayFromTo(from, to, arr.length);</span>
+<span class="fc" id="L39">		this.arr = Objects.requireNonNull(arr);</span>
+<span class="fc" id="L40">		this.from = from;</span>
+<span class="fc" id="L41">		this.to = to;</span>
+<span class="fc" id="L42">		this.size = to - from;</span>
+<span class="fc" id="L43">		this.containsFunc = containsFunc;</span>
 
-<span class="pc bpc" id="L46" title="1 of 2 branches missed.">		assert new IntOpenHashSet(this).size() == size : &quot;Duplicate elements in array&quot;;</span>
-<span class="fc" id="L47">	}</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">		assert new IntOpenHashSet(this).size() == size : &quot;Duplicate elements in array&quot;;</span>
+<span class="fc" id="L46">	}</span>
 
-	public static IntSet newInstance(int[] arr, IntPredicate containsFunc) {
-<span class="fc" id="L50">		return newInstance(arr, 0, arr.length, containsFunc);</span>
+	public static IntSet newInstance(int[] arr, ContainsPredicate containsFunc) {
+<span class="fc" id="L49">		return newInstance(arr, 0, arr.length, containsFunc);</span>
 	}
 
-	public static IntSet newInstance(int[] arr, int from, int to, IntPredicate containsFunc) {
-<span class="fc" id="L54">		return new ImmutableIntArraySet(arr, from, to, Objects.requireNonNull(containsFunc));</span>
+	public static IntSet newInstance(int[] arr, int from, int to, ContainsPredicate containsFunc) {
+<span class="fc" id="L53">		return new ImmutableIntArraySet(arr, from, to, Objects.requireNonNull(containsFunc));</span>
 	}
 
 	public static IntSet withNaiveContains(int[] arr) {
-<span class="fc" id="L58">		return withNaiveContains(arr, 0, arr.length);</span>
+<span class="fc" id="L57">		return withNaiveContains(arr, 0, arr.length);</span>
 	}
 
 	public static IntSet withNaiveContains(int[] arr, int from, int to) {
-<span class="fc" id="L62">		return new ImmutableIntArraySet(arr, from, to, null);</span>
+<span class="fc" id="L61">		return new ImmutableIntArraySet(arr, from, to, null);</span>
 	}
 
 	public static IntSet withBitmap(Bitmap bitmap) {
-<span class="fc" id="L66">		return withBitmap(bitmap.toArray(), bitmap);</span>
+<span class="fc" id="L65">		return withBitmap(bitmap.toArray(), bitmap);</span>
 	}
 
 	public static IntSet withBitmap(int[] arr, int bitmapSize) {
-<span class="fc" id="L70">		Bitmap bitmap = new Bitmap(bitmapSize);</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">		for (int i : arr)</span>
-<span class="fc" id="L72">			bitmap.set(i);</span>
-<span class="fc" id="L73">		return withBitmap(arr, bitmap);</span>
+<span class="fc" id="L69">		Bitmap bitmap = new Bitmap(bitmapSize);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		for (int i : arr)</span>
+<span class="fc" id="L71">			bitmap.set(i);</span>
+<span class="fc" id="L72">		return withBitmap(arr, bitmap);</span>
 	}
 
 	public static IntSet withBitmap(IntCollection elms, int bitmapSize) {
-<span class="fc bfc" id="L77" title="All 2 branches covered.">		if (!(elms instanceof ImmutableIntArraySet))</span>
-<span class="fc" id="L78">			return withBitmap(elms.toIntArray(), bitmapSize);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		if (!(elms instanceof ImmutableIntArraySet))</span>
+<span class="fc" id="L77">			return withBitmap(elms.toIntArray(), bitmapSize);</span>
 
-<span class="fc" id="L80">		ImmutableIntArraySet elms0 = (ImmutableIntArraySet) elms;</span>
-<span class="fc" id="L81">		Bitmap bitmap = new Bitmap(bitmapSize);</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (int x : elms)</span>
-<span class="fc" id="L83">			bitmap.set(x);</span>
-<span class="fc" id="L84">		return withBitmap(elms0.arr, elms0.from, elms0.to, bitmap);</span>
+<span class="fc" id="L79">		ImmutableIntArraySet elms0 = (ImmutableIntArraySet) elms;</span>
+<span class="fc" id="L80">		Bitmap bitmap = new Bitmap(bitmapSize);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">		for (int x : elms)</span>
+<span class="fc" id="L82">			bitmap.set(x);</span>
+<span class="fc" id="L83">		return withBitmap(elms0.arr, elms0.from, elms0.to, bitmap);</span>
 	}
 
 	private static IntSet withBitmap(int[] arr, Bitmap bitmap) {
-<span class="fc" id="L88">		return withBitmap(arr, 0, arr.length, bitmap);</span>
+<span class="fc" id="L87">		return withBitmap(arr, 0, arr.length, bitmap);</span>
 	}
 
 	private static IntSet withBitmap(int[] arr, int from, int to, Bitmap bitmap) {
-<span class="fc" id="L92">		Objects.requireNonNull(bitmap);</span>
-<span class="fc bfc" id="L93" title="All 6 branches covered.">		return newInstance(arr, from, to, key -&gt; 0 &lt;= key &amp;&amp; key &lt; bitmap.capacity() &amp;&amp; bitmap.get(key));</span>
+<span class="fc" id="L91">		Objects.requireNonNull(bitmap);</span>
+<span class="fc bfc" id="L92" title="All 6 branches covered.">		return newInstance(arr, from, to, key -&gt; 0 &lt;= key &amp;&amp; key &lt; bitmap.capacity() &amp;&amp; bitmap.get(key));</span>
 	}
 
 	@Override
 	public boolean contains(int key) {
-<span class="fc bfc" id="L98" title="All 4 branches covered.">		return containsFunc != null ? containsFunc.test(key) : range(from, to).anyMatch(i -&gt; key == arr[i]);</span>
+<span class="fc bfc" id="L97" title="All 4 branches covered.">		return containsFunc != null ? containsFunc.contains(key) : range(from, to).anyMatch(i -&gt; key == arr[i]);</span>
 	}
 
 	@Override
 	public int size() {
-<span class="fc" id="L103">		return size;</span>
+<span class="fc" id="L102">		return size;</span>
 	}
 
 	@Override
 	public int[] toIntArray() {
-<span class="fc" id="L108">		return Arrays.copyOfRange(arr, from, to);</span>
+<span class="fc" id="L107">		return Arrays.copyOfRange(arr, from, to);</span>
 	}
 
 	@Override
 	public int[] toArray(int[] a) {
-<span class="fc bfc" id="L113" title="All 2 branches covered.">		if (a.length &gt;= size) {</span>
-<span class="fc" id="L114">			System.arraycopy(arr, from, a, 0, size);</span>
-<span class="fc" id="L115">			return a;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		if (a.length &gt;= size) {</span>
+<span class="fc" id="L113">			System.arraycopy(arr, from, a, 0, size);</span>
+<span class="fc" id="L114">			return a;</span>
 		} else {
-<span class="fc" id="L117">			return toIntArray();</span>
+<span class="fc" id="L116">			return toIntArray();</span>
 		}
 	}
 
 	@Override
 	public Object[] toArray() {
-<span class="fc bfc" id="L123" title="All 2 branches covered.">		if (isEmpty())</span>
-<span class="fc" id="L124">			return ObjectArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L125">		Object[] a = new Object[size];</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">		for (int i : range(from, to))</span>
-<span class="fc" id="L127">			a[i - from] = Integer.valueOf(arr[i]);</span>
-<span class="fc" id="L128">		return a;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		if (isEmpty())</span>
+<span class="fc" id="L123">			return ObjectArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L124">		Object[] a = new Object[size];</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">		for (int i : range(from, to))</span>
+<span class="fc" id="L126">			a[i - from] = Integer.valueOf(arr[i]);</span>
+<span class="fc" id="L127">		return a;</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;T&gt; T[] toArray(T[] a) {
-<span class="fc bfc" id="L134" title="All 2 branches covered.">		if (a.length &lt; size)</span>
-<span class="fc" id="L135">			a = (T[]) Array.newInstance(a.getClass().getComponentType(), size);</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">		for (int i : range(from, to))</span>
-<span class="fc" id="L137">			a[i - from] = (T) Integer.valueOf(arr[i]);</span>
-<span class="fc" id="L138">		return a;</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">		if (a.length &lt; size)</span>
+<span class="fc" id="L134">			a = (T[]) Array.newInstance(a.getClass().getComponentType(), size);</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">		for (int i : range(from, to))</span>
+<span class="fc" id="L136">			a[i - from] = (T) Integer.valueOf(arr[i]);</span>
+<span class="fc" id="L137">		return a;</span>
 	}
 
 	@Override
 	public int hashCode() {
-<span class="fc bfc" id="L143" title="All 2 branches covered.">		if (hashCode == 0)</span>
-<span class="fc" id="L144">			hashCode = super.hashCode();</span>
-<span class="fc" id="L145">		return hashCode;</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">		if (hashCode == 0)</span>
+<span class="fc" id="L143">			hashCode = super.hashCode();</span>
+<span class="fc" id="L144">		return hashCode;</span>
 	}
 
 	@Override
 	public boolean equals(Object other) {
-<span class="fc bfc" id="L150" title="All 4 branches covered.">		if (other instanceof ImmutableIntArraySet &amp;&amp; hashCode() != other.hashCode())</span>
-<span class="fc" id="L151">			return false;</span>
-<span class="fc" id="L152">		return super.equals(other);</span>
+<span class="fc bfc" id="L149" title="All 4 branches covered.">		if (other instanceof ImmutableIntArraySet &amp;&amp; hashCode() != other.hashCode())</span>
+<span class="fc" id="L150">			return false;</span>
+<span class="fc" id="L151">		return super.equals(other);</span>
 	}
 
 	@Override
 	public IntIterator iterator() {
-<span class="fc" id="L157">		return IntIterators.wrap(arr, from, to - from);</span>
+<span class="fc" id="L156">		return IntIterators.wrap(arr, from, to - from);</span>
+	}
+
+	@FunctionalInterface
+	public static interface ContainsPredicate {
+		boolean contains(int key);
 	}
 
 }

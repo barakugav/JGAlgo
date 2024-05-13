@@ -32,8 +32,8 @@ import it.unimi.dsi.fastutil.longs.LongArrays;
 	final GraphElementSet.Mutable edges;
 <span class="fc" id="L33">	private long[] endpoints = LongArrays.EMPTY_ARRAY;</span>
 
-	final WeightsImpl.IndexMutable.Manager verticesUserWeights;
-	final WeightsImpl.IndexMutable.Manager edgesUserWeights;
+	final WeightsImpl.IndexMutable.Manager verticesWeights;
+	final WeightsImpl.IndexMutable.Manager edgesWeights;
 
 	IndexGraphFactoryImpl.MutableImpl mutableImpl;
 	IndexGraphFactoryImpl.ImmutableImpl immutableImpl;
@@ -50,8 +50,8 @@ import it.unimi.dsi.fastutil.longs.LongArrays;
 <span class="fc" id="L50">		this.directed = directed;</span>
 <span class="fc" id="L51">		vertices = GraphElementSet.Mutable.ofVertices(0);</span>
 <span class="fc" id="L52">		edges = GraphElementSet.Mutable.ofEdges(0);</span>
-<span class="fc" id="L53">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(0, true);</span>
-<span class="fc" id="L54">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(0, false);</span>
+<span class="fc" id="L53">		verticesWeights = new WeightsImpl.IndexMutable.Manager(0, true);</span>
+<span class="fc" id="L54">		edgesWeights = new WeightsImpl.IndexMutable.Manager(0, false);</span>
 <span class="fc" id="L55">		setDefaultImpls();</span>
 <span class="fc" id="L56">	}</span>
 
@@ -88,15 +88,15 @@ import it.unimi.dsi.fastutil.longs.LongArrays;
 <span class="fc" id="L88">			}</span>
 		}
 
-<span class="fc" id="L91">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), true);</span>
-<span class="fc" id="L92">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), false);</span>
+<span class="fc" id="L91">		verticesWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), true);</span>
+<span class="fc" id="L92">		edgesWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), false);</span>
 <span class="fc bfc" id="L93" title="All 2 branches covered.">		if (copyVerticesWeights)</span>
 <span class="fc bfc" id="L94" title="All 2 branches covered.">			for (String key : g.verticesWeightsKeys())</span>
-<span class="fc" id="L95">				verticesUserWeights</span>
+<span class="fc" id="L95">				verticesWeights</span>
 <span class="fc" id="L96">						.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.verticesWeights(key), vertices, true));</span>
 <span class="fc bfc" id="L97" title="All 2 branches covered.">		if (copyEdgesWeights)</span>
 <span class="fc bfc" id="L98" title="All 2 branches covered.">			for (String key : g.edgesWeightsKeys())</span>
-<span class="fc" id="L99">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.edgesWeights(key), edges, false));</span>
+<span class="fc" id="L99">				edgesWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.edgesWeights(key), edges, false));</span>
 
 <span class="fc" id="L101">		setDefaultImpls();</span>
 <span class="fc" id="L102">	}</span>
@@ -127,7 +127,7 @@ import it.unimi.dsi.fastutil.longs.LongArrays;
 	@Override
 	public int addVertexInt() {
 <span class="fc" id="L129">		int u = vertices.add();</span>
-<span class="fc" id="L130">		verticesUserWeights.ensureCapacity(u + 1);</span>
+<span class="fc" id="L130">		verticesWeights.ensureCapacity(u + 1);</span>
 <span class="fc" id="L131">		return u;</span>
 	}
 
@@ -138,7 +138,7 @@ import it.unimi.dsi.fastutil.longs.LongArrays;
 					+ this.vertices.size + &quot; but was &quot; + vertices);
 
 <span class="fc" id="L140">		this.vertices.addAll(vertices.size());</span>
-<span class="fc" id="L141">		verticesUserWeights.ensureCapacity(this.vertices.size);</span>
+<span class="fc" id="L141">		verticesWeights.ensureCapacity(this.vertices.size);</span>
 <span class="fc" id="L142">	}</span>
 
 	@Override
@@ -264,13 +264,13 @@ import it.unimi.dsi.fastutil.longs.LongArrays;
 
 	@Override
 	public void ensureVertexCapacity(int verticesNum) {
-<span class="fc" id="L267">		verticesUserWeights.ensureCapacity(verticesNum);</span>
+<span class="fc" id="L267">		verticesWeights.ensureCapacity(verticesNum);</span>
 <span class="fc" id="L268">	}</span>
 
 	@Override
 	public void ensureEdgeCapacity(int edgesNum) {
 <span class="fc" id="L272">		copyOnWriteFromLastGraph();</span>
-<span class="fc" id="L273">		edgesUserWeights.ensureCapacity(edgesNum);</span>
+<span class="fc" id="L273">		edgesWeights.ensureCapacity(edgesNum);</span>
 <span class="fc bfc" id="L274" title="All 2 branches covered.">		if (edgesNum &gt; endpoints.length)</span>
 <span class="fc" id="L275">			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, edgesNum)));</span>
 <span class="fc" id="L276">	}</span>
@@ -279,8 +279,8 @@ import it.unimi.dsi.fastutil.longs.LongArrays;
 	public void clear() {
 <span class="fc" id="L280">		vertices.clear();</span>
 <span class="fc" id="L281">		edges.clear();</span>
-<span class="fc" id="L282">		verticesUserWeights.clearContainers();</span>
-<span class="fc" id="L283">		edgesUserWeights.clearContainers();</span>
+<span class="fc" id="L282">		verticesWeights.clearContainers();</span>
+<span class="fc" id="L283">		edgesWeights.clearContainers();</span>
 <span class="fc bfc" id="L284" title="All 2 branches covered.">		if (lastImmutableGraph != null) {</span>
 <span class="fc" id="L285">			lastImmutableGraph = null;</span>
 <span class="fc" id="L286">			lastImmutableVerticesReIndexingMap = null;</span>
@@ -392,7 +392,7 @@ import it.unimi.dsi.fastutil.longs.LongArrays;
 
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT verticesWeights(String key) {
-<span class="fc" id="L395">		return verticesUserWeights.getWeights(key);</span>
+<span class="fc" id="L395">		return verticesWeights.getWeights(key);</span>
 	}
 
 	@Override
@@ -400,7 +400,7 @@ import it.unimi.dsi.fastutil.longs.LongArrays;
 			T defVal) {
 <span class="fc" id="L401">		copyOnWriteFromLastGraph();</span>
 <span class="fc" id="L402">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, true, type, defVal);</span>
-<span class="fc" id="L403">		verticesUserWeights.addWeights(key, weights);</span>
+<span class="fc" id="L403">		verticesWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L405">		WeightsT weights0 = (WeightsT) weights;</span>
 <span class="fc" id="L406">		return weights0;</span>
@@ -408,12 +408,12 @@ import it.unimi.dsi.fastutil.longs.LongArrays;
 
 	@Override
 	public Set&lt;String&gt; verticesWeightsKeys() {
-<span class="fc" id="L411">		return verticesUserWeights.weightsKeys();</span>
+<span class="fc" id="L411">		return verticesWeights.weightsKeys();</span>
 	}
 
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT edgesWeights(String key) {
-<span class="fc" id="L416">		return edgesUserWeights.getWeights(key);</span>
+<span class="fc" id="L416">		return edgesWeights.getWeights(key);</span>
 	}
 
 	@Override
@@ -421,7 +421,7 @@ import it.unimi.dsi.fastutil.longs.LongArrays;
 			T defVal) {
 <span class="fc" id="L422">		copyOnWriteFromLastGraph();</span>
 <span class="fc" id="L423">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, false, type, defVal);</span>
-<span class="fc" id="L424">		edgesUserWeights.addWeights(key, weights);</span>
+<span class="fc" id="L424">		edgesWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L426">		WeightsT weights0 = (WeightsT) weights;</span>
 <span class="fc" id="L427">		return weights0;</span>
@@ -429,7 +429,7 @@ import it.unimi.dsi.fastutil.longs.LongArrays;
 
 	@Override
 	public Set&lt;String&gt; edgesWeightsKeys() {
-<span class="fc" id="L432">		return edgesUserWeights.weightsKeys();</span>
+<span class="fc" id="L432">		return edgesWeights.weightsKeys();</span>
 	}
 
 	long[] stealEndpointsArray() {

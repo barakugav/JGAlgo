@@ -24,8 +24,9 @@ import com.jgalgo.graph.IndexGraph;
  * Abstract class for coloring algorithms.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
@@ -34,18 +35,18 @@ public abstract class ColoringAlgoAbstract implements ColoringAlgo {
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L37">	public ColoringAlgoAbstract() {}</span>
+<span class="fc" id="L38">	public ColoringAlgoAbstract() {}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;V, E&gt; VertexPartition&lt;V, E&gt; computeColoring(Graph&lt;V, E&gt; g) {
-<span class="pc bpc" id="L42" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L43">			return (VertexPartition&lt;V, E&gt;) computeColoring((IndexGraph) g);</span>
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L44">			return (VertexPartition&lt;V, E&gt;) computeColoring((IndexGraph) g);</span>
 
 		} else {
-<span class="fc" id="L46">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L47">			IVertexPartition indexResult = computeColoring(iGraph);</span>
-<span class="fc" id="L48">			return VertexPartition.partitionFromIndexPartition(g, indexResult);</span>
+<span class="fc" id="L47">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L48">			IVertexPartition indexResult = computeColoring(iGraph);</span>
+<span class="fc" id="L49">			return VertexPartition.partitionFromIndexPartition(g, indexResult);</span>
 		}
 	}
 

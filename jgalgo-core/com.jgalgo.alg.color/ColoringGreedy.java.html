@@ -31,22 +31,25 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * A greedy coloring algorithm with random vertices order.
  *
  * &lt;p&gt;
- * The algorithm examine the vertices in random order and assign for each vertex the minimum (integer) color which is
+ * The algorithm examine the vertices in a random order and assign for each vertex the minimum (integer) color which is
  * not used by its neighbors.
  *
  * &lt;p&gt;
  * The algorithm runs in linear time, assuming the number of colors is constant.
  *
  * &lt;p&gt;
- * Note that the result is an approximate for the minimum number of colors, as finding an optimal coloring is an NP-hard
- * problem.
+ * For deterministic behavior, set the seed using {@link #setSeed(long)}.
+ *
+ * &lt;p&gt;
+ * Note that the result is an approximation for the minimum number of colors, as finding an optimal coloring is an
+ * NP-hard problem.
  *
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Greedy_coloring&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
 public class ColoringGreedy extends ColoringAlgoAbstract implements RandomizedAlgorithm {
 
-<span class="fc" id="L49">	private final Random rand = new Random();</span>
+<span class="fc" id="L52">	private final Random rand = new Random();</span>
 
 	/**
 	 * Create a new coloring algorithm object.
@@ -55,39 +58,38 @@ public class ColoringGreedy extends ColoringAlgoAbstract implements RandomizedAl
 	 * Please prefer using {@link ColoringAlgo#newInstance()} to get a default implementation for the
 	 * {@link ColoringAlgo} interface.
 	 */
-<span class="fc" id="L58">	public ColoringGreedy() {}</span>
+<span class="fc" id="L61">	public ColoringGreedy() {}</span>
 
 	@Override
 	public void setSeed(long seed) {
-<span class="fc" id="L62">		rand.setSeed(seed);</span>
-<span class="fc" id="L63">	}</span>
+<span class="fc" id="L65">		rand.setSeed(seed);</span>
+<span class="fc" id="L66">	}</span>
 
 	@Override
 	protected IVertexPartition computeColoring(IndexGraph g) {
-<span class="fc" id="L67">		Assertions.onlyUndirected(g);</span>
-<span class="fc" id="L68">		Assertions.noSelfEdges(g, &quot;no valid coloring in graphs with self edges&quot;);</span>
+<span class="fc" id="L70">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L71">		Assertions.noSelfEdges(g, &quot;no valid coloring in graphs with self edges&quot;);</span>
 
-<span class="fc" id="L70">		final int n = g.vertices().size();</span>
-<span class="fc" id="L71">		int[] colors = new int[n];</span>
-<span class="fc" id="L72">		int colorsNum = 0;</span>
-<span class="fc" id="L73">		Arrays.fill(colors, -1);</span>
-<span class="fc" id="L74">		int[] order = range(n).toIntArray();</span>
-<span class="fc" id="L75">		IntArrays.shuffle(order, rand);</span>
+<span class="fc" id="L73">		final int n = g.vertices().size();</span>
+<span class="fc" id="L74">		int[] colors = new int[n];</span>
+<span class="fc" id="L75">		Arrays.fill(colors, -1);</span>
+<span class="fc" id="L76">		int[] order = range(n).toIntArray();</span>
+<span class="fc" id="L77">		IntArrays.shuffle(order, rand);</span>
 
-<span class="fc" id="L77">		BitSet usedColors = new BitSet();</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">		for (int u : order) {</span>
-<span class="fc" id="L79">			usedColors.clear();</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L81">				eit.nextInt();</span>
-<span class="fc" id="L82">				int v = eit.targetInt();</span>
-<span class="fc" id="L83">				int c = colors[v];</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">				if (c &gt;= 0)</span>
-<span class="fc" id="L85">					usedColors.set(c);</span>
-<span class="fc" id="L86">			}</span>
-<span class="fc" id="L87">			int color = colors[u] = usedColors.nextClearBit(0);</span>
-<span class="fc" id="L88">			colorsNum = Math.max(colorsNum, color + 1);</span>
+<span class="fc" id="L79">		BitSet usedColors = new BitSet();</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		for (int u : order) {</span>
+<span class="fc" id="L81">			usedColors.clear();</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L83">				eit.nextInt();</span>
+<span class="fc" id="L84">				int v = eit.targetInt();</span>
+<span class="fc" id="L85">				int c = colors[v];</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">				if (c &gt;= 0)</span>
+<span class="fc" id="L87">					usedColors.set(c);</span>
+<span class="fc" id="L88">			}</span>
+<span class="fc" id="L89">			colors[u] = usedColors.nextClearBit(0);</span>
 		}
-<span class="fc" id="L90">		return IVertexPartition.fromArray(g, colors, colorsNum);</span>
+<span class="fc" id="L91">		int colorsNum = Arrays.stream(colors).max().orElse(-1) + 1;</span>
+<span class="fc" id="L92">		return IVertexPartition.fromArray(g, colors, colorsNum);</span>
 	}
 
 }

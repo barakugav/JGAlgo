@@ -28,8 +28,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Abstract class for enumerating over all maximal cliques in a graph.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
@@ -38,19 +39,19 @@ public abstract class MaximalCliquesEnumeratorAbstract implements MaximalCliques
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L41">	public MaximalCliquesEnumeratorAbstract() {}</span>
+<span class="fc" id="L42">	public MaximalCliquesEnumeratorAbstract() {}</span>
 
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	@Override
 	public &lt;V, E&gt; Iterator&lt;Set&lt;V&gt;&gt; maximalCliquesIter(Graph&lt;V, E&gt; g) {
-<span class="fc bfc" id="L46" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L47">			return (Iterator) maximalCliquesIter((IndexGraph) g);</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L48">			return (Iterator) maximalCliquesIter((IndexGraph) g);</span>
 
 		} else {
-<span class="fc" id="L50">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L51">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L52">			Iterator&lt;IntSet&gt; indexResult = maximalCliquesIter(iGraph);</span>
-<span class="fc" id="L53">			return IterTools.map(indexResult, iSet -&gt; IndexIdMaps.indexToIdSet(iSet, viMap));</span>
+<span class="fc" id="L51">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L52">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L53">			Iterator&lt;IntSet&gt; indexResult = maximalCliquesIter(iGraph);</span>
+<span class="fc" id="L54">			return IterTools.map(indexResult, iSet -&gt; IndexIdMaps.indexToIdSet(iSet, viMap));</span>
 		}
 	}
 

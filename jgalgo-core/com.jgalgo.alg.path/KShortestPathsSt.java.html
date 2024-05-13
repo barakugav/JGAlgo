@@ -16,8 +16,6 @@
 package com.jgalgo.alg.path;
 
 import java.util.List;
-import com.jgalgo.alg.AlgorithmBuilderBase;
-import com.jgalgo.alg.span.MinimumSpanningTree;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
@@ -64,107 +62,33 @@ public interface KShortestPathsSt {
 	 * Create a new K shortest paths algorithm object.
 	 *
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link KShortestPathsSt} object. The
-	 * {@link KShortestPathsSt.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link KShortestPathsSt} object.
 	 *
 	 * @return a default implementation of {@link KShortestPathsSt}
 	 */
 	static KShortestPathsSt newInstance() {
-<span class="nc" id="L73">		return builder().build();</span>
-	}
-
-	/**
-	 * Create a new minimum spanning tree algorithm builder.
-	 *
-	 * &lt;p&gt;
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link MinimumSpanningTree} objects
-	 */
-	static KShortestPathsSt.Builder builder() {
-<span class="fc" id="L85">		return new KShortestPathsSt.Builder() {</span>
-			String impl;
-<span class="fc" id="L87">			int fastReplacementThreshold = Integer.MAX_VALUE;</span>
-<span class="fc" id="L88">			boolean fastReplacementThresholdValid = false;</span>
-
-			@Override
-			public KShortestPathsSt build() {
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="pc bpc" id="L93" title="2 of 4 branches missed.">					switch (impl) {</span>
-						case &quot;yen&quot;:
-<span class="nc" id="L95">							return new KShortestPathsStYen();</span>
-
-						case &quot;katoh-ibaraki-mine&quot;: {
-<span class="fc" id="L98">							KShortestPathsStKatohIbarakiMine algo = new KShortestPathsStKatohIbarakiMine();</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">							if (fastReplacementThresholdValid)</span>
-<span class="fc" id="L100">								algo.setFastReplacementThreshold(fastReplacementThreshold);</span>
-<span class="fc" id="L101">							return algo;</span>
-						}
-						case &quot;hershberger-maxel-suri&quot;: {
-<span class="fc" id="L104">							KShortestPathsStHershbergerMaxelSuri algo = new KShortestPathsStHershbergerMaxelSuri();</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">							if (fastReplacementThresholdValid)</span>
-<span class="fc" id="L106">								algo.setFastReplacementThreshold(fastReplacementThreshold);</span>
-<span class="fc" id="L107">							return algo;</span>
-						}
-						default:
-<span class="nc" id="L110">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
-					}
-				}
-				/*-
-				 * Katoh-Ibaraki-Mine algorithm has a better complexity than Yen's algorithm, so theoretically we should
-				 * use it for undirected graphs by default, but benchmarks (for relatively small k) showed otherwise:
-				 * KShortestPathsSTKatohIbarakiMine    |V|=200 |E|=1500 k=5  avgt    3   1.716 ±  0.601  ms/op
-				 * KShortestPathsSTKatohIbarakiMine  |V|=800 |E|=10000 k=15  avgt    3  38.263 ±  1.930  ms/op
-				 * KShortestPathsSTKatohIbarakiMine  |V|=1500 |E|=3000 k=50  avgt    3  91.850 ± 11.972  ms/op
-				 * KShortestPathsSTYen                 |V|=200 |E|=1500 k=5  avgt    3   0.435 ±  0.012  ms/op
-				 * KShortestPathsSTYen               |V|=800 |E|=10000 k=15  avgt    3   8.372 ±  0.932  ms/op
-				 * KShortestPathsSTYen               |V|=1500 |E|=3000 k=50  avgt    3   8.783 ±  0.181  ms/op
-				 */
-				// return new KShortestPathsST() {
-				// private final KShortestPathsST directedAlgo = new KShortestPathsSTYen();
-				// private final KShortestPathsST undirectedAlgo = new KShortestPathsSTKatohIbarakiMine();
-				// @Override
-				// public &lt;V, E&gt; List&lt;Path&lt;V, E&gt;&gt; computeKShortestPaths(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source,
-				// V target, int k) {
-				// if (g.isDirected()) {
-				// return directedAlgo.computeKShortestPaths(g, w, source, target, k);
-				// } else {
-				// return undirectedAlgo.computeKShortestPaths(g, w, source, target, k);
-				// } } };
-<span class="nc" id="L134">				return new KShortestPathsStYen();</span>
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-<span class="pc bpc" id="L139" title="1 of 3 branches missed.">				switch (key) {</span>
-					case &quot;impl&quot;:
-<span class="fc" id="L141">						impl = (String) value;</span>
-<span class="fc" id="L142">						break;</span>
-					case &quot;fast-replacement-threshold&quot;:
-<span class="fc" id="L144">						fastReplacementThreshold = ((Integer) value).intValue();</span>
-<span class="fc" id="L145">						fastReplacementThresholdValid = true;</span>
-<span class="fc" id="L146">						break;</span>
-					default:
-<span class="nc" id="L148">						KShortestPathsSt.Builder.super.setOption(key, value);</span>
-				}
-<span class="fc" id="L150">			}</span>
-		};
-	}
-
-	/**
-	 * A builder for {@link KShortestPathsSt} objects.
-	 *
-	 * @see    KShortestPathsSt#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for k shortest paths computation.
-		 *
-		 * @return a new k shortest paths algorithm
+		/*-
+		 * Katoh-Ibaraki-Mine algorithm has a better complexity than Yen's algorithm, so theoretically we should
+		 * use it for undirected graphs by default, but benchmarks (for relatively small k) showed otherwise:
+		 * KShortestPathsSTKatohIbarakiMine    |V|=200 |E|=1500 k=5  avgt    3   1.716 ±  0.601  ms/op
+		 * KShortestPathsSTKatohIbarakiMine  |V|=800 |E|=10000 k=15  avgt    3  38.263 ±  1.930  ms/op
+		 * KShortestPathsSTKatohIbarakiMine  |V|=1500 |E|=3000 k=50  avgt    3  91.850 ± 11.972  ms/op
+		 * KShortestPathsSTYen                 |V|=200 |E|=1500 k=5  avgt    3   0.435 ±  0.012  ms/op
+		 * KShortestPathsSTYen               |V|=800 |E|=10000 k=15  avgt    3   8.372 ±  0.932  ms/op
+		 * KShortestPathsSTYen               |V|=1500 |E|=3000 k=50  avgt    3   8.783 ±  0.181  ms/op
 		 */
-		KShortestPathsSt build();
+		// return new KShortestPathsST() {
+		// private final KShortestPathsST directedAlgo = new KShortestPathsSTYen();
+		// private final KShortestPathsST undirectedAlgo = new KShortestPathsSTKatohIbarakiMine();
+		// @Override
+		// public &lt;V, E&gt; List&lt;Path&lt;V, E&gt;&gt; computeKShortestPaths(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source,
+		// V target, int k) {
+		// if (g.isDirected()) {
+		// return directedAlgo.computeKShortestPaths(g, w, source, target, k);
+		// } else {
+		// return undirectedAlgo.computeKShortestPaths(g, w, source, target, k);
+		// } } };
+<span class="nc" id="L91">		return new KShortestPathsStYen();</span>
 	}
 
 }

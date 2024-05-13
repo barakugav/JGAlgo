@@ -29,8 +29,9 @@ import com.jgalgo.graph.WeightFunctions;
  * Abstract class for computing the cycle with minimum mean weight in a graph.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
@@ -39,21 +40,21 @@ public abstract class MinimumMeanCycleAbstract implements MinimumMeanCycle {
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L42">	public MinimumMeanCycleAbstract() {}</span>
+<span class="fc" id="L43">	public MinimumMeanCycleAbstract() {}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;V, E&gt; Path&lt;V, E&gt; computeMinimumMeanCycle(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
-<span class="fc bfc" id="L47" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L48">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="fc" id="L49">			return (Path&lt;V, E&gt;) computeMinimumMeanCycle((IndexGraph) g, w0);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L49">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L50">			return (Path&lt;V, E&gt;) computeMinimumMeanCycle((IndexGraph) g, w0);</span>
 
 		} else {
-<span class="fc" id="L52">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L53">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L54">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L55">			IPath indexPath = computeMinimumMeanCycle(iGraph, iw);</span>
-<span class="fc" id="L56">			return Path.pathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L53">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L54">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L55">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L56">			IPath indexPath = computeMinimumMeanCycle(iGraph, iw);</span>
+<span class="fc" id="L57">			return Path.pathFromIndexPath(g, indexPath);</span>
 		}
 	}
 

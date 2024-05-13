@@ -33,28 +33,29 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * Abstract class for computing a topological order in a DAG graph.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L41">public abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {</span>
+<span class="fc" id="L42">public abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {</span>
 
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L46">	public TopologicalOrderAlgoAbstract() {}</span>
+<span class="fc" id="L47">	public TopologicalOrderAlgoAbstract() {}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;V, E&gt; Optional&lt;TopologicalOrderAlgo.Result&lt;V, E&gt;&gt; computeTopologicalSortingIfExist(Graph&lt;V, E&gt; g) {
-<span class="fc bfc" id="L51" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L52">			return computeTopologicalSortingIfExist((IndexGraph) g).map(res -&gt; (TopologicalOrderAlgo.Result&lt;V, E&gt;) res);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L53">			return computeTopologicalSortingIfExist((IndexGraph) g).map(res -&gt; (TopologicalOrderAlgo.Result&lt;V, E&gt;) res);</span>
 
 		} else {
-<span class="fc" id="L55">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L56">			Optional&lt;TopologicalOrderAlgo.IResult&gt; indexResult = computeTopologicalSortingIfExist(iGraph);</span>
-<span class="fc" id="L57">			return indexResult.map(res -&gt; resultFromIndexResult(g, res));</span>
+<span class="fc" id="L56">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L57">			Optional&lt;TopologicalOrderAlgo.IResult&gt; indexResult = computeTopologicalSortingIfExist(iGraph);</span>
+<span class="fc" id="L58">			return indexResult.map(res -&gt; resultFromIndexResult(g, res));</span>
 		}
 	}
 
@@ -70,25 +71,25 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		private final IntList orderedVertices;
 		private int[] vertexOrderIndex;
 
-<span class="fc" id="L73">		public IndexResult(int[] topolSort) {</span>
-<span class="fc" id="L74">			orderedVertices = Fastutil.list(topolSort);</span>
-<span class="fc" id="L75">		}</span>
+<span class="fc" id="L74">		public IndexResult(int[] topolSort) {</span>
+<span class="fc" id="L75">			orderedVertices = Fastutil.list(topolSort);</span>
+<span class="fc" id="L76">		}</span>
 
 		@Override
 		public IntList orderedVertices() {
-<span class="fc" id="L79">			return orderedVertices;</span>
+<span class="fc" id="L80">			return orderedVertices;</span>
 		}
 
 		@Override
 		public int vertexOrderIndex(int vertex) {
-<span class="fc bfc" id="L84" title="All 2 branches covered.">			if (vertexOrderIndex == null) {</span>
-<span class="fc" id="L85">				vertexOrderIndex = new int[orderedVertices.size()];</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">				for (int i : range(orderedVertices.size()))</span>
-<span class="fc" id="L87">					vertexOrderIndex[orderedVertices.getInt(i)] = i;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (vertexOrderIndex == null) {</span>
+<span class="fc" id="L86">				vertexOrderIndex = new int[orderedVertices.size()];</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">				for (int i : range(orderedVertices.size()))</span>
+<span class="fc" id="L88">					vertexOrderIndex[orderedVertices.getInt(i)] = i;</span>
 			}
-<span class="pc bpc" id="L89" title="2 of 4 branches missed.">			if (!(0 &lt;= vertex &amp;&amp; vertex &lt; vertexOrderIndex.length))</span>
-<span class="nc" id="L90">				throw NoSuchVertexException.ofIndex(vertex);</span>
-<span class="fc" id="L91">			return vertexOrderIndex[vertex];</span>
+<span class="pc bpc" id="L90" title="2 of 4 branches missed.">			if (!(0 &lt;= vertex &amp;&amp; vertex &lt; vertexOrderIndex.length))</span>
+<span class="nc" id="L91">				throw NoSuchVertexException.ofIndex(vertex);</span>
+<span class="fc" id="L92">			return vertexOrderIndex[vertex];</span>
 		}
 	}
 
@@ -97,19 +98,19 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		private final TopologicalOrderAlgo.IResult indexRes;
 		private final IndexIdMap&lt;V&gt; viMap;
 
-<span class="fc" id="L100">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, TopologicalOrderAlgo.IResult indexRes) {</span>
-<span class="fc" id="L101">			this.indexRes = Objects.requireNonNull(indexRes);</span>
-<span class="fc" id="L102">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L103">		}</span>
+<span class="fc" id="L101">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, TopologicalOrderAlgo.IResult indexRes) {</span>
+<span class="fc" id="L102">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L103">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L104">		}</span>
 
 		@Override
 		public List&lt;V&gt; orderedVertices() {
-<span class="fc" id="L107">			return IndexIdMaps.indexToIdList(indexRes.orderedVertices(), viMap);</span>
+<span class="fc" id="L108">			return IndexIdMaps.indexToIdList(indexRes.orderedVertices(), viMap);</span>
 		}
 
 		@Override
 		public int vertexOrderIndex(V vertex) {
-<span class="fc" id="L112">			return indexRes.vertexOrderIndex(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L113">			return indexRes.vertexOrderIndex(viMap.idToIndex(vertex));</span>
 		}
 	}
 
@@ -118,30 +119,30 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		private final TopologicalOrderAlgo.IResult indexRes;
 		private final IndexIntIdMap viMap;
 
-<span class="fc" id="L121">		IntResultFromIndexResult(IntGraph g, TopologicalOrderAlgo.IResult indexRes) {</span>
-<span class="fc" id="L122">			this.indexRes = Objects.requireNonNull(indexRes);</span>
-<span class="fc" id="L123">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L124">		}</span>
+<span class="fc" id="L122">		IntResultFromIndexResult(IntGraph g, TopologicalOrderAlgo.IResult indexRes) {</span>
+<span class="fc" id="L123">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L124">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L125">		}</span>
 
 		@Override
 		public IntList orderedVertices() {
-<span class="fc" id="L128">			return IndexIdMaps.indexToIdList(indexRes.orderedVertices(), viMap);</span>
+<span class="fc" id="L129">			return IndexIdMaps.indexToIdList(indexRes.orderedVertices(), viMap);</span>
 		}
 
 		@Override
 		public int vertexOrderIndex(int vertex) {
-<span class="fc" id="L133">			return indexRes.vertexOrderIndex(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L134">			return indexRes.vertexOrderIndex(viMap.idToIndex(vertex));</span>
 		}
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;V, E&gt; TopologicalOrderAlgo.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
 			TopologicalOrderAlgo.IResult indexResult) {
-<span class="pc bpc" id="L140" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L142">			return (TopologicalOrderAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L143">			return (TopologicalOrderAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
 		} else {
-<span class="fc" id="L144">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
+<span class="fc" id="L145">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
 		}
 	}
 

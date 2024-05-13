@@ -25,9 +25,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Algorithm for enumerating over all maximal independent sets in a graph.
  *
  * &lt;p&gt;
- * An independent set is a subset of vertices of an graph such that there are no edges between any pair of vertices in
+ * An independent set is a subset of vertices of a graph such that there are no edges between any pair of vertices in
  * the set. Self edges are allowed within an independent set, namely they are ignored. A maximal independent set is an
  * independent set that cannot be extended by including one more vertex.
+ *
+ * &lt;p&gt;
+ * There may be exponentially many maximal independent sets in a graph, therefore all implementations of this interface
+ * use some heuristic to speed up the process but run in exponential time in the worst case. The algorithm returns an
+ * iterator over the independent sets, so that the caller can iterate over them without storing them all in memory.
+ * Avoid using this algorithm on very large graphs.
  *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface.
@@ -38,7 +44,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * for (Iterator&lt;Set&lt;String&gt;&gt; it = independentSetsAlgo.maximalIndependentSetsIter(g); it.hasNext();) {
  *	Set&lt;String&gt; independentSet = it.next();
- *	System.out.println(&quot;Independent set in the graph:&quot;);
+ *	System.out.println(&quot;Maximal independent set in the graph:&quot;);
  *	for (String v : independentSet)
  *		System.out.println(&quot;\t&quot; + v);
  * }
@@ -50,6 +56,9 @@ public interface MaximalIndependentSetsEnumerator {
 
 	/**
 	 * Iterate over all maximal independent sets in a graph.
+	 *
+	 * &lt;p&gt;
+	 * The input graph should not be changed during the iteration.
 	 *
 	 * &lt;p&gt;
 	 * If {@code g} is {@link IntGraph}, the returned iterator will be iterate over {@link IntSet}.
@@ -70,7 +79,7 @@ public interface MaximalIndependentSetsEnumerator {
 	 * @return a default implementation of {@link MaximalIndependentSetsEnumerator}
 	 */
 	static MaximalIndependentSetsEnumerator newInstance() {
-<span class="fc" id="L73">		return new MaximalIndependentSetsEnumeratorComplementCliques();</span>
+<span class="fc" id="L82">		return new MaximalIndependentSetsEnumeratorComplementCliques();</span>
 	}
 
 }

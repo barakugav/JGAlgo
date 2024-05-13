@@ -17,7 +17,6 @@
 package com.jgalgo.alg.cycle;
 
 import java.util.Iterator;
-import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.alg.path.IPath;
 import com.jgalgo.alg.path.Path;
 import com.jgalgo.graph.Graph;
@@ -32,8 +31,7 @@ import com.jgalgo.graph.IntGraph;
  * enumerate over all of them (use an {@link Iterator} avoiding storing all of them in memory).
  *
  * &lt;p&gt;
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @author Barak Ugav
  */
@@ -56,69 +54,12 @@ public interface CyclesEnumerator {
 	 * Create a new algorithm for cycles enumerating.
 	 *
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link CyclesEnumerator} object. The
-	 * {@link CyclesEnumerator.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link CyclesEnumerator} object.
 	 *
 	 * @return a default implementation of {@link CyclesEnumerator}
 	 */
 	static CyclesEnumerator newInstance() {
-<span class="nc" id="L65">		return builder().build();</span>
-	}
-
-	/**
-	 * Create a new cycles enumeration algorithm builder.
-	 *
-	 * &lt;p&gt;
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link CyclesEnumerator} objects
-	 */
-	static CyclesEnumerator.Builder builder() {
-<span class="nc" id="L77">		return new CyclesEnumerator.Builder() {</span>
-			String impl;
-
-			@Override
-			public CyclesEnumerator build() {
-<span class="nc bnc" id="L82" title="All 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L83" title="All 3 branches missed.">					switch (impl) {</span>
-						case &quot;johnson&quot;:
-<span class="nc" id="L85">							return new CyclesEnumeratorJohnson();</span>
-						case &quot;tarjan&quot;:
-<span class="nc" id="L87">							return new CyclesEnumeratorTarjan();</span>
-						default:
-<span class="nc" id="L89">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
-					}
-				}
-<span class="nc" id="L92">				return new CyclesEnumeratorTarjan();</span>
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L97" title="All 2 branches missed.">				switch (key) {</span>
-					case &quot;impl&quot;:
-<span class="nc" id="L99">						impl = (String) value;</span>
-<span class="nc" id="L100">						break;</span>
-					default:
-<span class="nc" id="L102">						CyclesEnumerator.Builder.super.setOption(key, value);</span>
-				}
-<span class="nc" id="L104">			}</span>
-		};
-	}
-
-	/**
-	 * A builder for {@link CyclesEnumerator} objects.
-	 *
-	 * @see    CyclesEnumerator#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for cycles computation.
-		 *
-		 * @return a new cycles enumeration algorithm
-		 */
-		CyclesEnumerator build();
+<span class="nc" id="L62">		return new CyclesEnumeratorTarjan();</span>
 	}
 
 }

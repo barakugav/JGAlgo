@@ -33,12 +33,12 @@ import it.unimi.dsi.fastutil.longs.LongList;
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
-		public &lt;V, E&gt; LowestCommonAncestorOffline.Result&lt;V, E&gt; findLCAs(Graph&lt;V, E&gt; tree, V root,
+		public &lt;V, E&gt; LowestCommonAncestorOffline.Result&lt;V, E&gt; findLowestCommonAncestors(Graph&lt;V, E&gt; tree, V root,
 				LowestCommonAncestorOffline.Queries&lt;V, E&gt; queries) {
 <span class="fc bfc" id="L38" title="All 2 branches covered.">			if (tree instanceof IndexGraph) {</span>
 <span class="fc" id="L39">				LowestCommonAncestorOffline.IQueries queries0 =</span>
 <span class="fc" id="L40">						asIntQueries((LowestCommonAncestorOffline.Queries&lt;Integer, Integer&gt;) queries);</span>
-<span class="fc" id="L41">				return (LowestCommonAncestorOffline.Result&lt;V, E&gt;) findLCAs((IndexGraph) tree,</span>
+<span class="fc" id="L41">				return (LowestCommonAncestorOffline.Result&lt;V, E&gt;) findLowestCommonAncestors((IndexGraph) tree,</span>
 <span class="fc" id="L42">						((Integer) root).intValue(), queries0);</span>
 
 			} else {
@@ -46,12 +46,12 @@ import it.unimi.dsi.fastutil.longs.LongList;
 <span class="fc" id="L46">				IndexIdMap&lt;V&gt; viMap = tree.indexGraphVerticesMap();</span>
 <span class="fc" id="L47">				int iRoot = viMap.idToIndex(root);</span>
 <span class="fc" id="L48">				LowestCommonAncestorOffline.IQueries iQueries = indexQueriesFromQueries(tree, queries);</span>
-<span class="fc" id="L49">				LowestCommonAncestorOffline.IResult indexResult = findLCAs(iGraph, iRoot, iQueries);</span>
+<span class="fc" id="L49">				LowestCommonAncestorOffline.IResult indexResult = findLowestCommonAncestors(iGraph, iRoot, iQueries);</span>
 <span class="fc" id="L50">				return resultFromIndexResult(tree, indexResult);</span>
 			}
 		}
 
-		abstract LowestCommonAncestorOffline.IResult findLCAs(IndexGraph tree, int root,
+		abstract LowestCommonAncestorOffline.IResult findLowestCommonAncestors(IndexGraph tree, int root,
 				LowestCommonAncestorOffline.IQueries queries);
 
 	}

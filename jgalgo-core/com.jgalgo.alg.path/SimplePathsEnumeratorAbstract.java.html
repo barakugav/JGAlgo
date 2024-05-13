@@ -25,8 +25,9 @@ import com.jgalgo.internal.util.IterTools;
  * Abstract class for enumerating all simple paths between a source and target vertices.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
@@ -35,22 +36,22 @@ public abstract class SimplePathsEnumeratorAbstract implements SimplePathsEnumer
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L38">	public SimplePathsEnumeratorAbstract() {}</span>
+<span class="fc" id="L39">	public SimplePathsEnumeratorAbstract() {}</span>
 
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	@Override
 	public &lt;V, E&gt; Iterator&lt;Path&lt;V, E&gt;&gt; simplePathsIter(Graph&lt;V, E&gt; g, V source, V target) {
-<span class="fc bfc" id="L43" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L44">			int source0 = ((Integer) source).intValue(), target0 = ((Integer) target).intValue();</span>
-<span class="fc" id="L45">			return (Iterator) simplePathsIter((IndexGraph) g, source0, target0);</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L45">			int source0 = ((Integer) source).intValue(), target0 = ((Integer) target).intValue();</span>
+<span class="fc" id="L46">			return (Iterator) simplePathsIter((IndexGraph) g, source0, target0);</span>
 
 		} else {
-<span class="fc" id="L48">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L49">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L50">			int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L51">			int iTarget = viMap.idToIndex(target);</span>
-<span class="fc" id="L52">			Iterator&lt;IPath&gt; indexResult = simplePathsIter(iGraph, iSource, iTarget);</span>
-<span class="fc" id="L53">			return IterTools.map(indexResult, iPath -&gt; Path.pathFromIndexPath(g, iPath));</span>
+<span class="fc" id="L49">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L50">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L51">			int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L52">			int iTarget = viMap.idToIndex(target);</span>
+<span class="fc" id="L53">			Iterator&lt;IPath&gt; indexResult = simplePathsIter(iGraph, iSource, iTarget);</span>
+<span class="fc" id="L54">			return IterTools.map(indexResult, iPath -&gt; Path.pathFromIndexPath(g, iPath));</span>
 		}
 	}
 

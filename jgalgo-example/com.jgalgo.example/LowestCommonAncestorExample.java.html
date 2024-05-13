@@ -32,7 +32,7 @@ import com.jgalgo.graph.Graph;
 	 * This example demonstrates how to use the static lowest common ancestor algorithm.
 	 */
 	@SuppressWarnings(&quot;boxing&quot;)
-	public static void staticLCAExample() {
+	public static void staticLcaExample() {
 		/* Create a full binary tree of height 3 */
 <span class="fc" id="L37">		Graph&lt;String, Integer&gt; tree = Graph.newUndirected();</span>
 <span class="fc" id="L38">		tree.addVertex(&quot;root&quot;);</span>
@@ -64,7 +64,7 @@ import com.jgalgo.graph.Graph;
 	/**
 	 * This example demonstrates how to use the dynamic lowest common ancestor algorithm.
 	 */
-	public static void dynamicLCAExample() {
+	public static void dynamicLcaExample() {
 		/* Create a full binary tree of height 3 and perform LCA queries during the construction */
 <span class="fc" id="L69">		LowestCommonAncestorDynamic lcaAlgo = LowestCommonAncestorDynamic.newInstance();</span>
 <span class="fc" id="L70">		LowestCommonAncestorDynamic.Vertex rt = lcaAlgo.initTree();</span>
@@ -91,8 +91,8 @@ import com.jgalgo.graph.Graph;
 	 * @param args main args
 	 */
 	public static void main(String[] args) {
-<span class="fc" id="L94">		staticLCAExample();</span>
-<span class="fc" id="L95">		dynamicLCAExample();</span>
+<span class="fc" id="L94">		staticLcaExample();</span>
+<span class="fc" id="L95">		dynamicLcaExample();</span>
 <span class="fc" id="L96">	}</span>
 
 }

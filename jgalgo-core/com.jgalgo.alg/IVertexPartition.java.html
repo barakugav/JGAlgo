@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * A partition of the vertices of an int graph.
  *
  * &lt;p&gt;
- * This interface is a specific version of {@link VertexPartition} for {@link IntGraph}.
+ * This interface is a specification of {@link VertexPartition} for {@link IntGraph}.
  *
  * &lt;p&gt;
  * A partition of a set is a division of the set into a number of disjoint subsets, such that their union is the
@@ -154,8 +154,8 @@ public interface IVertexPartition extends VertexPartition&lt;Integer, Integer&gt
 	 * @param  g             the graph
 	 * @param  vertexToBlock an array of size \(n\) where \(n\) is the number of vertices in the graph, in which each
 	 *                           element is the block index of the corresponding vertex. The array is not copied, and it
-	 *                           is assumed that the user of this function will not modify the array after calling this
-	 *                           function
+	 *                           is assumed that the caller of this function will not modify the array after calling
+	 *                           this function
 	 * @param  blocksNum     the number of blocks
 	 * @return               a new vertex partition
 	 */

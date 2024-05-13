@@ -26,8 +26,9 @@ import com.jgalgo.internal.util.IterTools;
  * Abstract class for enumerating all simple cycles in a graph.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
@@ -36,18 +37,18 @@ public abstract class CyclesEnumeratorAbstract implements CyclesEnumerator {
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L39">	public CyclesEnumeratorAbstract() {}</span>
+<span class="fc" id="L40">	public CyclesEnumeratorAbstract() {}</span>
 
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	@Override
 	public &lt;V, E&gt; Iterator&lt;Path&lt;V, E&gt;&gt; cyclesIter(Graph&lt;V, E&gt; g) {
-<span class="fc bfc" id="L44" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L45">			return (Iterator) cyclesIter((IndexGraph) g);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L46">			return (Iterator) cyclesIter((IndexGraph) g);</span>
 
 		} else {
-<span class="fc" id="L48">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L49">			Iterator&lt;IPath&gt; indexResult = cyclesIter(iGraph);</span>
-<span class="fc" id="L50">			return IterTools.map(indexResult, iPath -&gt; Path.pathFromIndexPath(g, iPath));</span>
+<span class="fc" id="L49">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L50">			Iterator&lt;IPath&gt; indexResult = cyclesIter(iGraph);</span>
+<span class="fc" id="L51">			return IterTools.map(indexResult, iPath -&gt; Path.pathFromIndexPath(g, iPath));</span>
 		}
 	}
 

@@ -30,8 +30,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * Abstract class for computing minimum cost flow in a graph.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
@@ -40,28 +41,28 @@ public abstract class MinimumCostFlowAbstract implements MinimumCostFlow {
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L43">	public MinimumCostFlowAbstract() {}</span>
+<span class="fc" id="L44">	public MinimumCostFlowAbstract() {}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;V, E&gt; Flow&lt;V, E&gt; computeMinCostMaxFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity, WeightFunction&lt;E&gt; cost,
 			V source, V sink) {
-<span class="fc bfc" id="L49" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L50">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
-<span class="fc" id="L51">			IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
-<span class="fc" id="L52">			int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();</span>
-<span class="fc" id="L53">			return (Flow&lt;V, E&gt;) computeMinCostMaxFlow((IndexGraph) g, capacity0, cost0, source0, sink0);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L51">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
+<span class="fc" id="L52">			IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
+<span class="fc" id="L53">			int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();</span>
+<span class="fc" id="L54">			return (Flow&lt;V, E&gt;) computeMinCostMaxFlow((IndexGraph) g, capacity0, cost0, source0, sink0);</span>
 
 		} else {
-<span class="fc" id="L56">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L57">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L58">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L59">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
-<span class="fc" id="L60">			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);</span>
-<span class="fc" id="L61">			int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L62">			int iSink = viMap.idToIndex(sink);</span>
-<span class="fc" id="L63">			IFlow indexFlow = computeMinCostMaxFlow(iGraph, iCapacity, iCost, iSource, iSink);</span>
-<span class="fc" id="L64">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
+<span class="fc" id="L57">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L58">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L59">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L60">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
+<span class="fc" id="L61">			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);</span>
+<span class="fc" id="L62">			int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L63">			int iSink = viMap.idToIndex(sink);</span>
+<span class="fc" id="L64">			IFlow indexFlow = computeMinCostMaxFlow(iGraph, iCapacity, iCost, iSource, iSink);</span>
+<span class="fc" id="L65">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
 		}
 	}
 
@@ -69,24 +70,24 @@ public abstract class MinimumCostFlowAbstract implements MinimumCostFlow {
 	@Override
 	public &lt;V, E&gt; Flow&lt;V, E&gt; computeMinCostMaxFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity, WeightFunction&lt;E&gt; cost,
 			WeightFunction&lt;E&gt; lowerBound, V source, V sink) {
-<span class="fc bfc" id="L72" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L73">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
-<span class="fc" id="L74">			IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
-<span class="fc" id="L75">			IWeightFunction lowerBound0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) lowerBound);</span>
-<span class="fc" id="L76">			int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();</span>
-<span class="fc" id="L77">			return (Flow&lt;V, E&gt;) computeMinCostMaxFlow((IndexGraph) g, capacity0, cost0, lowerBound0, source0, sink0);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L74">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
+<span class="fc" id="L75">			IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
+<span class="fc" id="L76">			IWeightFunction lowerBound0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) lowerBound);</span>
+<span class="fc" id="L77">			int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();</span>
+<span class="fc" id="L78">			return (Flow&lt;V, E&gt;) computeMinCostMaxFlow((IndexGraph) g, capacity0, cost0, lowerBound0, source0, sink0);</span>
 
 		} else {
-<span class="fc" id="L80">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L81">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L82">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L83">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
-<span class="fc" id="L84">			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);</span>
-<span class="fc" id="L85">			IWeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);</span>
-<span class="fc" id="L86">			int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L87">			int iSink = viMap.idToIndex(sink);</span>
-<span class="fc" id="L88">			IFlow indexFlow = computeMinCostMaxFlow(iGraph, iCapacity, iCost, iLowerBound, iSource, iSink);</span>
-<span class="fc" id="L89">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
+<span class="fc" id="L81">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L82">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L83">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L84">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
+<span class="fc" id="L85">			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);</span>
+<span class="fc" id="L86">			IWeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);</span>
+<span class="fc" id="L87">			int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L88">			int iSink = viMap.idToIndex(sink);</span>
+<span class="fc" id="L89">			IFlow indexFlow = computeMinCostMaxFlow(iGraph, iCapacity, iCost, iLowerBound, iSource, iSink);</span>
+<span class="fc" id="L90">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
 		}
 	}
 
@@ -94,23 +95,23 @@ public abstract class MinimumCostFlowAbstract implements MinimumCostFlow {
 	@Override
 	public &lt;V, E&gt; Flow&lt;V, E&gt; computeMinCostMaxFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity, WeightFunction&lt;E&gt; cost,
 			Collection&lt;V&gt; sources, Collection&lt;V&gt; sinks) {
-<span class="fc bfc" id="L97" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L98">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
-<span class="fc" id="L99">			IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
-<span class="fc" id="L100">			IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
-<span class="fc" id="L101">			IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
-<span class="fc" id="L102">			return (Flow&lt;V, E&gt;) computeMinCostMaxFlow((IndexGraph) g, capacity0, cost0, sources0, sinks0);</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L99">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
+<span class="fc" id="L100">			IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
+<span class="fc" id="L101">			IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
+<span class="fc" id="L102">			IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
+<span class="fc" id="L103">			return (Flow&lt;V, E&gt;) computeMinCostMaxFlow((IndexGraph) g, capacity0, cost0, sources0, sinks0);</span>
 
 		} else {
-<span class="fc" id="L105">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L106">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L107">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L108">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
-<span class="fc" id="L109">			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);</span>
-<span class="fc" id="L110">			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);</span>
-<span class="fc" id="L111">			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);</span>
-<span class="fc" id="L112">			IFlow indexFlow = computeMinCostMaxFlow(iGraph, iCapacity, iCost, iSources, iSinks);</span>
-<span class="fc" id="L113">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
+<span class="fc" id="L106">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L107">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L108">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L109">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
+<span class="fc" id="L110">			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);</span>
+<span class="fc" id="L111">			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);</span>
+<span class="fc" id="L112">			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);</span>
+<span class="fc" id="L113">			IFlow indexFlow = computeMinCostMaxFlow(iGraph, iCapacity, iCost, iSources, iSinks);</span>
+<span class="fc" id="L114">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
 		}
 	}
 
@@ -118,25 +119,25 @@ public abstract class MinimumCostFlowAbstract implements MinimumCostFlow {
 	@Override
 	public &lt;V, E&gt; Flow&lt;V, E&gt; computeMinCostMaxFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity, WeightFunction&lt;E&gt; cost,
 			WeightFunction&lt;E&gt; lowerBound, Collection&lt;V&gt; sources, Collection&lt;V&gt; sinks) {
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L122">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
-<span class="fc" id="L123">			IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
-<span class="fc" id="L124">			IWeightFunction lowerBound0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) lowerBound);</span>
-<span class="fc" id="L125">			IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
-<span class="fc" id="L126">			IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
-<span class="fc" id="L127">			return (Flow&lt;V, E&gt;) computeMinCostMaxFlow((IndexGraph) g, capacity0, cost0, lowerBound0, sources0, sinks0);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L123">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
+<span class="fc" id="L124">			IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
+<span class="fc" id="L125">			IWeightFunction lowerBound0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) lowerBound);</span>
+<span class="fc" id="L126">			IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
+<span class="fc" id="L127">			IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
+<span class="fc" id="L128">			return (Flow&lt;V, E&gt;) computeMinCostMaxFlow((IndexGraph) g, capacity0, cost0, lowerBound0, sources0, sinks0);</span>
 
 		} else {
-<span class="fc" id="L130">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L131">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L132">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L133">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
-<span class="fc" id="L134">			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);</span>
-<span class="fc" id="L135">			IWeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);</span>
-<span class="fc" id="L136">			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);</span>
-<span class="fc" id="L137">			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);</span>
-<span class="fc" id="L138">			IFlow indexFlow = computeMinCostMaxFlow(iGraph, iCapacity, iCost, iLowerBound, iSources, iSinks);</span>
-<span class="fc" id="L139">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
+<span class="fc" id="L131">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L132">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L133">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L134">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
+<span class="fc" id="L135">			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);</span>
+<span class="fc" id="L136">			IWeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);</span>
+<span class="fc" id="L137">			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);</span>
+<span class="fc" id="L138">			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);</span>
+<span class="fc" id="L139">			IFlow indexFlow = computeMinCostMaxFlow(iGraph, iCapacity, iCost, iLowerBound, iSources, iSinks);</span>
+<span class="fc" id="L140">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
 		}
 	}
 
@@ -144,21 +145,21 @@ public abstract class MinimumCostFlowAbstract implements MinimumCostFlow {
 	@Override
 	public &lt;V, E&gt; Flow&lt;V, E&gt; computeMinCostFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity, WeightFunction&lt;E&gt; cost,
 			WeightFunction&lt;V&gt; supply) {
-<span class="fc bfc" id="L147" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L148">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
-<span class="fc" id="L149">			IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
-<span class="fc" id="L150">			IWeightFunction supply0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) supply);</span>
-<span class="fc" id="L151">			return (Flow&lt;V, E&gt;) computeMinCostFlow((IndexGraph) g, capacity0, cost0, supply0);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L149">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
+<span class="fc" id="L150">			IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
+<span class="fc" id="L151">			IWeightFunction supply0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) supply);</span>
+<span class="fc" id="L152">			return (Flow&lt;V, E&gt;) computeMinCostFlow((IndexGraph) g, capacity0, cost0, supply0);</span>
 
 		} else {
-<span class="fc" id="L154">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L155">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L156">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L157">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
-<span class="fc" id="L158">			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);</span>
-<span class="fc" id="L159">			IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);</span>
-<span class="fc" id="L160">			IFlow indexFlow = computeMinCostFlow(iGraph, iCapacity, iCost, iSupply);</span>
-<span class="fc" id="L161">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
+<span class="fc" id="L155">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L156">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L157">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L158">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
+<span class="fc" id="L159">			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);</span>
+<span class="fc" id="L160">			IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);</span>
+<span class="fc" id="L161">			IFlow indexFlow = computeMinCostFlow(iGraph, iCapacity, iCost, iSupply);</span>
+<span class="fc" id="L162">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
 		}
 	}
 
@@ -166,23 +167,23 @@ public abstract class MinimumCostFlowAbstract implements MinimumCostFlow {
 	@Override
 	public &lt;V, E&gt; Flow&lt;V, E&gt; computeMinCostFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity, WeightFunction&lt;E&gt; cost,
 			WeightFunction&lt;E&gt; lowerBound, WeightFunction&lt;V&gt; supply) {
-<span class="fc bfc" id="L169" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L170">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
-<span class="fc" id="L171">			IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
-<span class="fc" id="L172">			IWeightFunction lowerBound0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) lowerBound);</span>
-<span class="fc" id="L173">			IWeightFunction supply0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) supply);</span>
-<span class="fc" id="L174">			return (Flow&lt;V, E&gt;) computeMinCostFlow((IndexGraph) g, capacity0, cost0, lowerBound0, supply0);</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L171">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
+<span class="fc" id="L172">			IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
+<span class="fc" id="L173">			IWeightFunction lowerBound0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) lowerBound);</span>
+<span class="fc" id="L174">			IWeightFunction supply0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) supply);</span>
+<span class="fc" id="L175">			return (Flow&lt;V, E&gt;) computeMinCostFlow((IndexGraph) g, capacity0, cost0, lowerBound0, supply0);</span>
 
 		} else {
-<span class="fc" id="L177">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L178">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L179">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L180">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
-<span class="fc" id="L181">			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);</span>
-<span class="fc" id="L182">			IWeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);</span>
-<span class="fc" id="L183">			IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);</span>
-<span class="fc" id="L184">			IFlow indexFlow = computeMinCostFlow(iGraph, iCapacity, iCost, iLowerBound, iSupply);</span>
-<span class="fc" id="L185">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
+<span class="fc" id="L178">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L179">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L180">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L181">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
+<span class="fc" id="L182">			IWeightFunction iCost = IndexIdMaps.idToIndexWeightFunc(cost, eiMap);</span>
+<span class="fc" id="L183">			IWeightFunction iLowerBound = IndexIdMaps.idToIndexWeightFunc(lowerBound, eiMap);</span>
+<span class="fc" id="L184">			IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);</span>
+<span class="fc" id="L185">			IFlow indexFlow = computeMinCostFlow(iGraph, iCapacity, iCost, iLowerBound, iSupply);</span>
+<span class="fc" id="L186">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
 		}
 	}
 
@@ -205,7 +206,7 @@ public abstract class MinimumCostFlowAbstract implements MinimumCostFlow {
 			IWeightFunction lowerBound, IWeightFunction supply);
 
 	protected static IFlow newFlow(IndexGraph g, double[] flow) {
-<span class="fc" id="L208">		return new Flows.IndexFlow(g, flow);</span>
+<span class="fc" id="L209">		return new Flows.IndexFlow(g, flow);</span>
 	}
 
 }

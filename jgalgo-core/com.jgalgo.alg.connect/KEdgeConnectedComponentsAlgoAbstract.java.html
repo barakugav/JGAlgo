@@ -24,8 +24,9 @@ import com.jgalgo.graph.IndexGraph;
  * Abstract class for k-edge connected components algorithms.
  *
  * &lt;p&gt;
- * The class implements the interface by solving the problem on the index graph and then maps the results back to the
- * original graph. The implementation for the index graph is abstract and left to the subclasses.
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
  *
  * @author Barak Ugav
  */
@@ -34,18 +35,18 @@ public abstract class KEdgeConnectedComponentsAlgoAbstract implements KEdgeConne
 	/**
 	 * Default constructor.
 	 */
-<span class="fc" id="L37">	public KEdgeConnectedComponentsAlgoAbstract() {}</span>
+<span class="fc" id="L38">	public KEdgeConnectedComponentsAlgoAbstract() {}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;V, E&gt; VertexPartition&lt;V, E&gt; computeKEdgeConnectedComponents(Graph&lt;V, E&gt; g, int k) {
-<span class="fc bfc" id="L42" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L43">			return (VertexPartition&lt;V, E&gt;) computeKEdgeConnectedComponents((IndexGraph) g, k);</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L44">			return (VertexPartition&lt;V, E&gt;) computeKEdgeConnectedComponents((IndexGraph) g, k);</span>
 
 		} else {
-<span class="fc" id="L46">			IndexGraph ig = g.indexGraph();</span>
-<span class="fc" id="L47">			IVertexPartition indexPartition = computeKEdgeConnectedComponents(ig, k);</span>
-<span class="fc" id="L48">			return VertexPartition.partitionFromIndexPartition(g, indexPartition);</span>
+<span class="fc" id="L47">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L48">			IVertexPartition indexPartition = computeKEdgeConnectedComponents(ig, k);</span>
+<span class="fc" id="L49">			return VertexPartition.partitionFromIndexPartition(g, indexPartition);</span>
 		}
 	}
 

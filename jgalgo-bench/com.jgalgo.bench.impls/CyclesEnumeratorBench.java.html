@@ -35,6 +35,8 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.cycle.CyclesEnumerator;
+import com.jgalgo.alg.cycle.CyclesEnumeratorJohnson;
+import com.jgalgo.alg.cycle.CyclesEnumeratorTarjan;
 import com.jgalgo.alg.path.IPath;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
@@ -48,51 +50,45 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 @Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
-<span class="fc" id="L51">public class CyclesEnumeratorBench {</span>
+<span class="fc" id="L53">public class CyclesEnumeratorBench {</span>
 
 	@Param({ &quot;|V|=32 |E|=64&quot;, &quot;|V|=64 |E|=140&quot; })
 	public String args;
 
 	private List&lt;IntGraph&gt; graphs;
-<span class="fc" id="L57">	private final int graphsNum = 31;</span>
-<span class="fc" id="L58">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
+<span class="fc" id="L59">	private final int graphsNum = 31;</span>
+<span class="fc" id="L60">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
 
 	@Setup(Level.Iteration)
 	public void setup() {
-<span class="fc" id="L62">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L63">		int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L64">		int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+<span class="fc" id="L64">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L65">		int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L66">		int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
 
-<span class="fc" id="L66">		final SeedGenerator seedGen = new SeedGenerator(0x29b0e6d2a833e386L);</span>
-<span class="fc" id="L67">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L69">			IntGraph g = GraphsTestUtils.randGraph(n, m, true, false, false, seedGen.nextSeed());</span>
-<span class="fc" id="L70">			graphs.add(g);</span>
+<span class="fc" id="L68">		final SeedGenerator seedGen = new SeedGenerator(0x29b0e6d2a833e386L);</span>
+<span class="fc" id="L69">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L71">			IntGraph g = GraphsTestUtils.randGraph(n, m, true, false, false, seedGen.nextSeed());</span>
+<span class="fc" id="L72">			graphs.add(g);</span>
 		}
-<span class="fc" id="L72">	}</span>
+<span class="fc" id="L74">	}</span>
 
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	private void benchCyclesEnumerator(CyclesEnumerator algo, Blackhole blackhole) {
-<span class="fc" id="L76">		IntGraph g = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
-<span class="fc" id="L77">		List&lt;IPath&gt; cycles = new ObjectArrayList&lt;&gt;((Iterator) algo.cyclesIter(g));</span>
-<span class="fc" id="L78">		blackhole.consume(cycles);</span>
-<span class="fc" id="L79">	}</span>
+<span class="fc" id="L78">		IntGraph g = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L79">		List&lt;IPath&gt; cycles = new ObjectArrayList&lt;&gt;((Iterator) algo.cyclesIter(g));</span>
+<span class="fc" id="L80">		blackhole.consume(cycles);</span>
+<span class="fc" id="L81">	}</span>
 
 	@Benchmark
 	public void Johnson(Blackhole blackhole) {
-<span class="fc" id="L83">		benchCyclesEnumerator(getAlgo(&quot;johnson&quot;), blackhole);</span>
-<span class="fc" id="L84">	}</span>
+<span class="fc" id="L85">		benchCyclesEnumerator(new CyclesEnumeratorJohnson(), blackhole);</span>
+<span class="fc" id="L86">	}</span>
 
 	@Benchmark
 	public void Tarjan(Blackhole blackhole) {
-<span class="fc" id="L88">		benchCyclesEnumerator(getAlgo(&quot;tarjan&quot;), blackhole);</span>
-<span class="fc" id="L89">	}</span>
-
-	private static CyclesEnumerator getAlgo(String implName) {
-<span class="fc" id="L92">		CyclesEnumerator.Builder builder = CyclesEnumerator.builder();</span>
-<span class="fc" id="L93">		builder.setOption(&quot;impl&quot;, implName);</span>
-<span class="fc" id="L94">		return builder.build();</span>
-	}
+<span class="fc" id="L90">		benchCyclesEnumerator(new CyclesEnumeratorTarjan(), blackhole);</span>
+<span class="fc" id="L91">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -35,6 +35,9 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.path.KShortestPathsSt;
+import com.jgalgo.alg.path.KShortestPathsStHershbergerMaxelSuri;
+import com.jgalgo.alg.path.KShortestPathsStKatohIbarakiMine;
+import com.jgalgo.alg.path.KShortestPathsStYen;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -44,36 +47,36 @@ import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-<span class="fc" id="L47">public class KShortestPathsStBench {</span>
+<span class="fc" id="L50">public class KShortestPathsStBench {</span>
 
 	private List&lt;BenchArgs&gt; graphs;
-<span class="fc" id="L50">	private final int graphsNum = 31;</span>
-<span class="fc" id="L51">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
+<span class="fc" id="L53">	private final int graphsNum = 31;</span>
+<span class="fc" id="L54">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
 
 	private void setup(String args, boolean directed) {
-<span class="fc" id="L54">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L55">		int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L56">		int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
-<span class="fc" id="L57">		int k = Integer.parseInt(argsMap.get(&quot;k&quot;));</span>
+<span class="fc" id="L57">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L58">		int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L59">		int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+<span class="fc" id="L60">		int k = Integer.parseInt(argsMap.get(&quot;k&quot;));</span>
 
-<span class="fc" id="L59">		final SeedGenerator seedGen = new SeedGenerator(0xb6b1a069899f9baaL);</span>
-<span class="fc" id="L60">		final Random rand = new Random(seedGen.nextSeed());</span>
-<span class="fc" id="L61">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L63">			IntGraph g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());</span>
-<span class="fc" id="L64">			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, 64, seedGen.nextSeed());</span>
-<span class="fc" id="L65">			int source = Graphs.randVertex(g, rand);</span>
-<span class="fc" id="L66">			int target = Graphs.randVertex(g, rand);</span>
-<span class="fc" id="L67">			graphs.add(new BenchArgs(g, w, source, target, k));</span>
+<span class="fc" id="L62">		final SeedGenerator seedGen = new SeedGenerator(0xb6b1a069899f9baaL);</span>
+<span class="fc" id="L63">		final Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L64">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L66">			IntGraph g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());</span>
+<span class="fc" id="L67">			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsInt(g, 0, 64, seedGen.nextSeed());</span>
+<span class="fc" id="L68">			int source = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L69">			int target = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L70">			graphs.add(new BenchArgs(g, w, source, target, k));</span>
 		}
-<span class="fc" id="L69">	}</span>
+<span class="fc" id="L72">	}</span>
 
 	@SuppressWarnings(&quot;boxing&quot;)
 	private void benchAlgo(KShortestPathsSt algo, Blackhole blackhole) {
-<span class="fc" id="L73">		BenchArgs args = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
-<span class="fc" id="L74">		Object res = algo.computeKShortestPaths(args.g, args.w, args.source, args.target, args.k);</span>
-<span class="fc" id="L75">		blackhole.consume(res);</span>
-<span class="fc" id="L76">	}</span>
+<span class="fc" id="L76">		BenchArgs args = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L77">		Object res = algo.computeKShortestPaths(args.g, args.w, args.source, args.target, args.k);</span>
+<span class="fc" id="L78">		blackhole.consume(res);</span>
+<span class="fc" id="L79">	}</span>
 
 	@BenchmarkMode(Mode.AverageTime)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -81,29 +84,26 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Measurement(iterations = 3, time = 3, timeUnit = TimeUnit.SECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-<span class="fc" id="L84">	public static class Directed extends KShortestPathsStBench {</span>
+<span class="fc" id="L87">	public static class Directed extends KShortestPathsStBench {</span>
 
 		@Param({ &quot;|V|=200 |E|=1500 k=5&quot;, &quot;|V|=800 |E|=10000 k=15&quot;, &quot;|V|=1500 |E|=3000 k=50&quot; })
 		public String args;
 
 		@Setup(Level.Trial)
 		public void setup() {
-<span class="fc" id="L91">			super.setup(args, true);</span>
-<span class="fc" id="L92">		}</span>
+<span class="fc" id="L94">			super.setup(args, true);</span>
+<span class="fc" id="L95">		}</span>
 
 		@Benchmark
 		public void Yen(Blackhole blackhole) {
-<span class="fc" id="L96">			KShortestPathsSt.Builder builder = KShortestPathsSt.builder();</span>
-<span class="fc" id="L97">			builder.setOption(&quot;impl&quot;, &quot;yen&quot;);</span>
-<span class="fc" id="L98">			super.benchAlgo(builder.build(), blackhole);</span>
-<span class="fc" id="L99">		}</span>
+<span class="fc" id="L99">			super.benchAlgo(new KShortestPathsStYen(), blackhole);</span>
+<span class="fc" id="L100">		}</span>
 
 		@Benchmark
 		public void HershbergerMaxelSuri(Blackhole blackhole) {
-<span class="fc" id="L103">			KShortestPathsSt.Builder builder = KShortestPathsSt.builder();</span>
-<span class="fc" id="L104">			builder.setOption(&quot;impl&quot;, &quot;hershberger-maxel-suri&quot;);</span>
-<span class="fc" id="L105">			builder.setOption(&quot;fast-replacement-threshold&quot;, 10);</span>
-<span class="fc" id="L106">			super.benchAlgo(builder.build(), blackhole);</span>
+<span class="fc" id="L104">			KShortestPathsStHershbergerMaxelSuri algo = new KShortestPathsStHershbergerMaxelSuri();</span>
+<span class="fc" id="L105">			algo.setFastReplacementThreshold(10);</span>
+<span class="fc" id="L106">			super.benchAlgo(algo, blackhole);</span>
 <span class="fc" id="L107">		}</span>
 	}
 
@@ -125,18 +125,15 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Benchmark
 		public void Yen(Blackhole blackhole) {
-<span class="fc" id="L128">			KShortestPathsSt.Builder builder = KShortestPathsSt.builder();</span>
-<span class="fc" id="L129">			builder.setOption(&quot;impl&quot;, &quot;yen&quot;);</span>
-<span class="fc" id="L130">			super.benchAlgo(builder.build(), blackhole);</span>
-<span class="fc" id="L131">		}</span>
+<span class="fc" id="L128">			super.benchAlgo(new KShortestPathsStYen(), blackhole);</span>
+<span class="fc" id="L129">		}</span>
 
 		@Benchmark
-		public void KShortestPathsStKatohIbarakiMine(Blackhole blackhole) {
-<span class="fc" id="L135">			KShortestPathsSt.Builder builder = KShortestPathsSt.builder();</span>
-<span class="fc" id="L136">			builder.setOption(&quot;impl&quot;, &quot;katoh-ibaraki-mine&quot;);</span>
-<span class="fc" id="L137">			builder.setOption(&quot;fast-replacement-threshold&quot;, 10);</span>
-<span class="fc" id="L138">			super.benchAlgo(builder.build(), blackhole);</span>
-<span class="fc" id="L139">		}</span>
+		public void KatohIbarakiMine(Blackhole blackhole) {
+<span class="fc" id="L133">			KShortestPathsStKatohIbarakiMine algo = new KShortestPathsStKatohIbarakiMine();</span>
+<span class="fc" id="L134">			algo.setFastReplacementThreshold(10);</span>
+<span class="fc" id="L135">			super.benchAlgo(algo, blackhole);</span>
+<span class="fc" id="L136">		}</span>
 	}
 
 	private static class BenchArgs {
@@ -146,13 +143,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		final int target;
 		final int k;
 
-<span class="fc" id="L149">		BenchArgs(IntGraph g, IWeightFunction w, int source, int target, int k) {</span>
-<span class="fc" id="L150">			this.g = g;</span>
-<span class="fc" id="L151">			this.w = w;</span>
-<span class="fc" id="L152">			this.source = source;</span>
-<span class="fc" id="L153">			this.target = target;</span>
-<span class="fc" id="L154">			this.k = k;</span>
-<span class="fc" id="L155">		}</span>
+<span class="fc" id="L146">		BenchArgs(IntGraph g, IWeightFunction w, int source, int target, int k) {</span>
+<span class="fc" id="L147">			this.g = g;</span>
+<span class="fc" id="L148">			this.w = w;</span>
+<span class="fc" id="L149">			this.source = source;</span>
+<span class="fc" id="L150">			this.target = target;</span>
+<span class="fc" id="L151">			this.k = k;</span>
+<span class="fc" id="L152">		}</span>
 
 	}
 }

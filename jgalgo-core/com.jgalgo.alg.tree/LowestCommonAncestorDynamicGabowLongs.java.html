@@ -137,7 +137,7 @@ import com.jgalgo.alg.tree.LowestCommonAncestorDynamicGabowSimple.Characteristic
 		}
 <span class="nc" id="L138">	}</span>
 
-	private Vertex2 calcLCA(Vertex2 x2, Vertex2 y2) {
+	private Vertex2 calcLca(Vertex2 x2, Vertex2 y2) {
 <span class="fc bfc" id="L141" title="All 2 branches covered.">		if (x2.subTree != y2.subTree) {</span>
 <span class="fc bfc" id="L142" title="All 2 branches covered.">			if (!x2.subTree.isFull())</span>
 <span class="fc" id="L143">				x2 = x2.subTree.top.parent;</span>
@@ -204,7 +204,7 @@ import com.jgalgo.alg.tree.LowestCommonAncestorDynamicGabowSimple.Characteristic
 
 	@Override
 	public Vertex findLowestCommonAncestor(Vertex x, Vertex y) {
-<span class="fc" id="L207">		return calcLCA((Vertex2) x, (Vertex2) y);</span>
+<span class="fc" id="L207">		return calcLca((Vertex2) x, (Vertex2) y);</span>
 	}
 
 	@Override
