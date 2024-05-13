@@ -17,7 +17,6 @@
 package com.jgalgo.alg.cycle;
 
 import java.util.Iterator;
-import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.alg.path.IPath;
 import com.jgalgo.alg.path.Path;
 import com.jgalgo.graph.Graph;
@@ -32,8 +31,7 @@ import com.jgalgo.graph.IntGraph;
  * enumerate over all of them (use an {@link Iterator} avoiding storing all of them in memory).
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @author Barak Ugav
  */
@@ -56,69 +54,12 @@ public interface CyclesEnumerator {
 	 * Create a new algorithm for cycles enumerating.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link CyclesEnumerator} object. The
-	 * {@link CyclesEnumerator.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link CyclesEnumerator} object.
 	 *
 	 * @return a default implementation of {@link CyclesEnumerator}
 	 */
 	static CyclesEnumerator newInstance() {
-		return builder().build();
-	}
-
-	/**
-	 * Create a new cycles enumeration algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link CyclesEnumerator} objects
-	 */
-	static CyclesEnumerator.Builder builder() {
-		return new CyclesEnumerator.Builder() {
-			String impl;
-
-			@Override
-			public CyclesEnumerator build() {
-				if (impl != null) {
-					switch (impl) {
-						case "johnson":
-							return new CyclesEnumeratorJohnson();
-						case "tarjan":
-							return new CyclesEnumeratorTarjan();
-						default:
-							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-					}
-				}
-				return new CyclesEnumeratorTarjan();
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					default:
-						CyclesEnumerator.Builder.super.setOption(key, value);
-				}
-			}
-		};
-	}
-
-	/**
-	 * A builder for {@link CyclesEnumerator} objects.
-	 *
-	 * @see    CyclesEnumerator#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for cycles computation.
-		 *
-		 * @return a new cycles enumeration algorithm
-		 */
-		CyclesEnumerator build();
+		return new CyclesEnumeratorTarjan();
 	}
 
 }

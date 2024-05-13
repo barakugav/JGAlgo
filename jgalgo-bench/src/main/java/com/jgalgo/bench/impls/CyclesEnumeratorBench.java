@@ -35,6 +35,8 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.cycle.CyclesEnumerator;
+import com.jgalgo.alg.cycle.CyclesEnumeratorJohnson;
+import com.jgalgo.alg.cycle.CyclesEnumeratorTarjan;
 import com.jgalgo.alg.path.IPath;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
@@ -80,18 +82,12 @@ public class CyclesEnumeratorBench {
 
 	@Benchmark
 	public void Johnson(Blackhole blackhole) {
-		benchCyclesEnumerator(getAlgo("johnson"), blackhole);
+		benchCyclesEnumerator(new CyclesEnumeratorJohnson(), blackhole);
 	}
 
 	@Benchmark
 	public void Tarjan(Blackhole blackhole) {
-		benchCyclesEnumerator(getAlgo("tarjan"), blackhole);
-	}
-
-	private static CyclesEnumerator getAlgo(String implName) {
-		CyclesEnumerator.Builder builder = CyclesEnumerator.builder();
-		builder.setOption("impl", implName);
-		return builder.build();
+		benchCyclesEnumerator(new CyclesEnumeratorTarjan(), blackhole);
 	}
 
 }
