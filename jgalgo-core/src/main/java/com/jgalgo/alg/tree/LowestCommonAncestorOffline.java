@@ -51,7 +51,7 @@ public interface LowestCommonAncestorOffline {
 	 * @param  queries the queries
 	 * @return         the lowest common ancestors of the given queries
 	 */
-	<V, E> LowestCommonAncestorOffline.Result<V, E> findLCAs(Graph<V, E> tree, V root,
+	<V, E> LowestCommonAncestorOffline.Result<V, E> findLowestCommonAncestors(Graph<V, E> tree, V root,
 			LowestCommonAncestorOffline.Queries<V, E> queries);
 
 	/**
@@ -60,7 +60,7 @@ public interface LowestCommonAncestorOffline {
 	 * <p>
 	 * Queries are added one by one to this container, and than the Queries object is passed to a
 	 * {@link LowestCommonAncestorOffline} algorithm using
-	 * {@link LowestCommonAncestorOffline#findLCAs(Graph, Object, Queries)}.
+	 * {@link LowestCommonAncestorOffline#findLowestCommonAncestors(Graph, Object, Queries)}.
 	 *
 	 * @param  <V> the vertices type
 	 * @param  <E> the edges type
@@ -233,9 +233,9 @@ public interface LowestCommonAncestorOffline {
 		 *
 		 * <p>
 		 * This result object was obtained by calling
-		 * {@link LowestCommonAncestorOffline#findLCAs(Graph, Object, Queries)}, which accept a set of multiple queries
-		 * using the {@link LowestCommonAncestorOffline.IQueries} object. This method return the answer to a
-		 * <b>single</b> queries among them, by its index.
+		 * {@link LowestCommonAncestorOffline#findLowestCommonAncestors(Graph, Object, Queries)}, which accept a set of
+		 * multiple queries using the {@link LowestCommonAncestorOffline.IQueries} object. This method return the answer
+		 * to a <b>single</b> queries among them, by its index.
 		 *
 		 * @param  queryIdx index of the query. Must be in range {@code [0, size())}
 		 * @return          the lowest common ancestor of the given query
@@ -247,7 +247,7 @@ public interface LowestCommonAncestorOffline {
 		 *
 		 * <p>
 		 * This number is the same as the number of queries in the {@link LowestCommonAncestorOffline.IQueries} object
-		 * passed to {@link LowestCommonAncestorOffline#findLCAs(Graph, Object, Queries)}.
+		 * passed to {@link LowestCommonAncestorOffline#findLowestCommonAncestors(Graph, Object, Queries)}.
 		 *
 		 * @return the number of queries in this result
 		 */
@@ -266,9 +266,9 @@ public interface LowestCommonAncestorOffline {
 		 *
 		 * <p>
 		 * This result object was obtained by calling
-		 * {@link LowestCommonAncestorOffline#findLCAs(Graph, Object, Queries)}, which accept a set of multiple queries
-		 * using the {@link LowestCommonAncestorOffline.IQueries} object. This method return the answer to a
-		 * <b>single</b> queries among them, by its index.
+		 * {@link LowestCommonAncestorOffline#findLowestCommonAncestors(Graph, Object, Queries)}, which accept a set of
+		 * multiple queries using the {@link LowestCommonAncestorOffline.IQueries} object. This method return the answer
+		 * to a <b>single</b> queries among them, by its index.
 		 *
 		 * @param  queryIdx index of the query. Must be in range {@code [0, size())}
 		 * @return          the lowest common ancestor of the given query

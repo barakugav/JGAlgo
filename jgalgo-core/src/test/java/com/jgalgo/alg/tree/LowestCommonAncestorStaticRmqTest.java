@@ -97,7 +97,7 @@ public class LowestCommonAncestorStaticRmqTest extends TestBase {
 		return queries;
 	}
 
-	private static <V, E> void testLCA(Graph<V, E> g, V root, Supplier<? extends LowestCommonAncestorStatic> builder,
+	private static <V, E> void testLca(Graph<V, E> g, V root, Supplier<? extends LowestCommonAncestorStatic> builder,
 			Query<V>[] queries) {
 		LowestCommonAncestorStatic lca = builder.get();
 		LowestCommonAncestorStatic.DataStructure<V, E> lcaDS = lca.preProcessTree(g, root);
@@ -123,7 +123,7 @@ public class LowestCommonAncestorStaticRmqTest extends TestBase {
 			Graph<Integer, Integer> g = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 			Integer root = g.vertices().iterator().next();
 			Query<Integer>[] queries = randLcaQueries(g, root, m, seedGen.nextSeed());
-			testLCA(g, root, LowestCommonAncestorStaticRmq::new, queries);
+			testLca(g, root, LowestCommonAncestorStaticRmq::new, queries);
 		});
 	}
 

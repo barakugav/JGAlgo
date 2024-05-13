@@ -42,7 +42,7 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 		tester.addPhase().withArgs(1000, 4096).repeat(1);
 		tester.run((n, m) -> {
 			Collection<Op> ops = generateRandOpsOnFullBinaryTree(n, m, seedGen.nextSeed());
-			testLCA(builder, n, ops);
+			testLca(builder, n, ops);
 		});
 	}
 
@@ -59,7 +59,7 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 		tester.addPhase().withArgs(4100, 8000).repeat(1);
 		tester.run((n, m) -> {
 			Collection<Op> ops = generateRandOps(n, m, seedGen.nextSeed());
-			testLCA(builder, n, ops);
+			testLca(builder, n, ops);
 		});
 	}
 
@@ -96,7 +96,7 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 				case lcaOp: {
 					int x = rand.nextInt(verticesCount);
 					int y = rand.nextInt(verticesCount);
-					ops.add(new OpLCAQuery(x, y));
+					ops.add(new OpLcaQuery(x, y));
 					break;
 				}
 				default:
@@ -139,7 +139,7 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 				case lcaOp: {
 					int x = rand.nextInt(verticesCount);
 					int y = rand.nextInt(verticesCount);
-					ops.add(new OpLCAQuery(x, y));
+					ops.add(new OpLcaQuery(x, y));
 					break;
 				}
 				default:
@@ -150,7 +150,7 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	static void testLCA(Supplier<? extends LowestCommonAncestorDynamic> builder, int n, Collection<Op> ops) {
+	static void testLca(Supplier<? extends LowestCommonAncestorDynamic> builder, int n, Collection<Op> ops) {
 		List<LowestCommonAncestorDynamic.Vertex> vertices = new ObjectArrayList<>();
 		LowestCommonAncestorDynamic lca = builder.get();
 
@@ -167,8 +167,8 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 				leaf.setData(parent.<Integer>getData() + 1);
 				vertices.add(leaf);
 
-			} else if (op0 instanceof OpLCAQuery) {
-				OpLCAQuery op = (OpLCAQuery) op0;
+			} else if (op0 instanceof OpLcaQuery) {
+				OpLcaQuery op = (OpLcaQuery) op0;
 
 				LowestCommonAncestorDynamic.Vertex x = vertices.get(op.x), y = vertices.get(op.y);
 				if (x.<Integer>getData() > y.<Integer>getData()) {
@@ -209,10 +209,10 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 		}
 	}
 
-	public static class OpLCAQuery extends Op {
+	public static class OpLcaQuery extends Op {
 		public final int x, y;
 
-		OpLCAQuery(int x, int y) {
+		OpLcaQuery(int x, int y) {
 			this.x = x;
 			this.y = y;
 		}

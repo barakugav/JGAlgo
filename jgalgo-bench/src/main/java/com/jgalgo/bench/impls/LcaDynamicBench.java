@@ -75,7 +75,7 @@ public class LcaDynamicBench {
 		}
 	}
 
-	private void benchLCA(LowestCommonAncestorDynamic lca, Blackhole blackhole) {
+	private void benchLca(LowestCommonAncestorDynamic lca, Blackhole blackhole) {
 		Collection<Op> ops = lcaOps.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		LowestCommonAncestorDynamic.Vertex[] vertices = new LowestCommonAncestorDynamic.Vertex[n];
 		int verticesNum = 0;
@@ -88,8 +88,8 @@ public class LcaDynamicBench {
 				LowestCommonAncestorDynamic.Vertex parent = vertices[op.parent];
 				vertices[verticesNum++] = lca.addLeaf(parent);
 
-			} else if (op0 instanceof OpLCAQuery) {
-				OpLCAQuery op = (OpLCAQuery) op0;
+			} else if (op0 instanceof OpLcaQuery) {
+				OpLcaQuery op = (OpLcaQuery) op0;
 				LowestCommonAncestorDynamic.Vertex x = vertices[op.x], y = vertices[op.y];
 				LowestCommonAncestorDynamic.Vertex lcaRes = lca.findLowestCommonAncestor(x, y);
 				blackhole.consume(lcaRes);
@@ -104,17 +104,17 @@ public class LcaDynamicBench {
 
 	@Benchmark
 	public void GabowSimple(Blackhole blackhole) {
-		benchLCA(new LowestCommonAncestorDynamicGabowSimple(), blackhole);
+		benchLca(new LowestCommonAncestorDynamicGabowSimple(), blackhole);
 	}
 
 	@Benchmark
 	public void GabowLinear(Blackhole blackhole) {
-		benchLCA(new LowestCommonAncestorDynamicGabowInts(), blackhole);
+		benchLca(new LowestCommonAncestorDynamicGabowInts(), blackhole);
 	}
 
 	@Benchmark
 	public void GabowLongs(Blackhole blackhole) {
-		benchLCA(new LowestCommonAncestorDynamicGabowLongs(), blackhole);
+		benchLca(new LowestCommonAncestorDynamicGabowLongs(), blackhole);
 	}
 
 	private static Collection<Op> generateRandOps(int n, int m, long seed) {
@@ -150,7 +150,7 @@ public class LcaDynamicBench {
 				case lcaOp: {
 					int x = rand.nextInt(verticesNum);
 					int y = rand.nextInt(verticesNum);
-					ops.add(new OpLCAQuery(x, y));
+					ops.add(new OpLcaQuery(x, y));
 					break;
 				}
 				default:
@@ -174,10 +174,10 @@ public class LcaDynamicBench {
 		}
 	}
 
-	private static class OpLCAQuery extends Op {
+	private static class OpLcaQuery extends Op {
 		final int x, y;
 
-		OpLCAQuery(int x, int y) {
+		OpLcaQuery(int x, int y) {
 			this.x = x;
 			this.y = y;
 		}

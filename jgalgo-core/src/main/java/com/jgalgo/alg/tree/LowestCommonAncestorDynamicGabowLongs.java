@@ -137,7 +137,7 @@ public class LowestCommonAncestorDynamicGabowLongs implements LowestCommonAncest
 		}
 	}
 
-	private Vertex2 calcLCA(Vertex2 x2, Vertex2 y2) {
+	private Vertex2 calcLca(Vertex2 x2, Vertex2 y2) {
 		if (x2.subTree != y2.subTree) {
 			if (!x2.subTree.isFull())
 				x2 = x2.subTree.top.parent;
@@ -204,7 +204,7 @@ public class LowestCommonAncestorDynamicGabowLongs implements LowestCommonAncest
 
 	@Override
 	public Vertex findLowestCommonAncestor(Vertex x, Vertex y) {
-		return calcLCA((Vertex2) x, (Vertex2) y);
+		return calcLca((Vertex2) x, (Vertex2) y);
 	}
 
 	@Override

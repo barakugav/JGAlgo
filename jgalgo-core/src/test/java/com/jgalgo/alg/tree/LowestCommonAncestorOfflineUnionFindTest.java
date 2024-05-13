@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.Pair;
 public class LowestCommonAncestorOfflineUnionFindTest extends TestBase {
 
 	@SuppressWarnings("unchecked")
-	private static <V, E> void testLCA(Graph<V, E> g, V root, Supplier<? extends LowestCommonAncestorOffline> builder,
+	private static <V, E> void testLca(Graph<V, E> g, V root, Supplier<? extends LowestCommonAncestorOffline> builder,
 			Query<V>[] queries, Random rand) {
 		LowestCommonAncestorOffline lca = builder.get();
 		LowestCommonAncestorOffline.Queries<V, E> qs;
@@ -49,7 +49,7 @@ public class LowestCommonAncestorOfflineUnionFindTest extends TestBase {
 		for (int q : range(queries.length))
 			qs.addQuery(queries[q].u, queries[q].v);
 
-		LowestCommonAncestorOffline.Result<V, E> lcaResult = lca.findLCAs(g, root, qs);
+		LowestCommonAncestorOffline.Result<V, E> lcaResult = lca.findLowestCommonAncestors(g, root, qs);
 		assertEquals(qs.size(), lcaResult.size());
 
 		for (int q : range(queries.length)) {
@@ -75,7 +75,7 @@ public class LowestCommonAncestorOfflineUnionFindTest extends TestBase {
 			g = maybeIndexGraph(g, rand);
 			Integer root = g.vertices().iterator().next();
 			Query<Integer>[] queries = LowestCommonAncestorStaticRmqTest.randLcaQueries(g, root, m, seedGen.nextSeed());
-			testLCA(g, root, LowestCommonAncestorOfflineUnionFind::new, queries, rand);
+			testLca(g, root, LowestCommonAncestorOfflineUnionFind::new, queries, rand);
 		});
 	}
 

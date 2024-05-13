@@ -32,7 +32,7 @@ public class LowestCommonAncestorExample {
 	 * This example demonstrates how to use the static lowest common ancestor algorithm.
 	 */
 	@SuppressWarnings("boxing")
-	public static void staticLCAExample() {
+	public static void staticLcaExample() {
 		/* Create a full binary tree of height 3 */
 		Graph<String, Integer> tree = Graph.newUndirected();
 		tree.addVertex("root");
@@ -64,7 +64,7 @@ public class LowestCommonAncestorExample {
 	/**
 	 * This example demonstrates how to use the dynamic lowest common ancestor algorithm.
 	 */
-	public static void dynamicLCAExample() {
+	public static void dynamicLcaExample() {
 		/* Create a full binary tree of height 3 and perform LCA queries during the construction */
 		LowestCommonAncestorDynamic lcaAlgo = LowestCommonAncestorDynamic.newInstance();
 		LowestCommonAncestorDynamic.Vertex rt = lcaAlgo.initTree();
@@ -91,8 +91,8 @@ public class LowestCommonAncestorExample {
 	 * @param args main args
 	 */
 	public static void main(String[] args) {
-		staticLCAExample();
-		dynamicLCAExample();
+		staticLcaExample();
+		dynamicLcaExample();
 	}
 
 }

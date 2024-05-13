@@ -33,12 +33,12 @@ class LowestCommonAncestorOfflineUtils {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <V, E> LowestCommonAncestorOffline.Result<V, E> findLCAs(Graph<V, E> tree, V root,
+		public <V, E> LowestCommonAncestorOffline.Result<V, E> findLowestCommonAncestors(Graph<V, E> tree, V root,
 				LowestCommonAncestorOffline.Queries<V, E> queries) {
 			if (tree instanceof IndexGraph) {
 				LowestCommonAncestorOffline.IQueries queries0 =
 						asIntQueries((LowestCommonAncestorOffline.Queries<Integer, Integer>) queries);
-				return (LowestCommonAncestorOffline.Result<V, E>) findLCAs((IndexGraph) tree,
+				return (LowestCommonAncestorOffline.Result<V, E>) findLowestCommonAncestors((IndexGraph) tree,
 						((Integer) root).intValue(), queries0);
 
 			} else {
@@ -46,12 +46,12 @@ class LowestCommonAncestorOfflineUtils {
 				IndexIdMap<V> viMap = tree.indexGraphVerticesMap();
 				int iRoot = viMap.idToIndex(root);
 				LowestCommonAncestorOffline.IQueries iQueries = indexQueriesFromQueries(tree, queries);
-				LowestCommonAncestorOffline.IResult indexResult = findLCAs(iGraph, iRoot, iQueries);
+				LowestCommonAncestorOffline.IResult indexResult = findLowestCommonAncestors(iGraph, iRoot, iQueries);
 				return resultFromIndexResult(tree, indexResult);
 			}
 		}
 
-		abstract LowestCommonAncestorOffline.IResult findLCAs(IndexGraph tree, int root,
+		abstract LowestCommonAncestorOffline.IResult findLowestCommonAncestors(IndexGraph tree, int root,
 				LowestCommonAncestorOffline.IQueries queries);
 
 	}

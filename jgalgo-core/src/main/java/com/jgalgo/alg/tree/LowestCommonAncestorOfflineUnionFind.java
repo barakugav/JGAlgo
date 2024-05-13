@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUtils.AbstractImpl {
 
 	@Override
-	LowestCommonAncestorOffline.IResult findLCAs(IndexGraph tree, int root,
+	LowestCommonAncestorOffline.IResult findLowestCommonAncestors(IndexGraph tree, int root,
 			LowestCommonAncestorOffline.IQueries queries) {
 		final int n = tree.vertices().size();
 		int[] res = new int[queries.size()];
