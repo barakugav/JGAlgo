@@ -41,12 +41,16 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  *
  * @author Barak Ugav
  */
-class RmqStaticPlusMinusOne extends RmqStaticLinearAbstract {
+public class RmqStaticPlusMinusOne extends RmqStaticLinearAbstract {
 
 	/**
 	 * Construct a new static RMQ algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link RmqStatic#newInstance()} to get a default implementation for the {@link RmqStatic}
+	 * interface.
 	 */
-	RmqStaticPlusMinusOne() {}
+	public RmqStaticPlusMinusOne() {}
 
 	@Override
 	public RmqStatic.DataStructure preProcessSequence(RmqStaticComparator c, int n) {

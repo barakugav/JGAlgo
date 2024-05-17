@@ -40,7 +40,11 @@ import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.TestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.internal.ds.RmqStatic;
+import com.jgalgo.internal.ds.RmqStaticCartesianTrees;
 import com.jgalgo.internal.ds.RmqStaticComparator;
+import com.jgalgo.internal.ds.RmqStaticPlusMinusOne;
+import com.jgalgo.internal.ds.RmqStaticPowerOf2Table;
+import com.jgalgo.internal.ds.RmqStaticSimpleLookupTable;
 import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -84,17 +88,17 @@ public class RmqStaticBench {
 
 		@Benchmark
 		public void LookupTable(Blackhole blackhole) {
-			benchPreProcess(getAlgo("simple-lookup-table"), blackhole);
+			benchPreProcess(new RmqStaticSimpleLookupTable(), blackhole);
 		}
 
 		@Benchmark
 		public void PowerOf2Table(Blackhole blackhole) {
-			benchPreProcess(getAlgo("power-of-2-table"), blackhole);
+			benchPreProcess(new RmqStaticPowerOf2Table(), blackhole);
 		}
 
 		@Benchmark
 		public void CartesianTrees(Blackhole blackhole) {
-			benchPreProcess(getAlgo("cartesian-trees"), blackhole);
+			benchPreProcess(new RmqStaticCartesianTrees(), blackhole);
 		}
 
 	}
@@ -133,7 +137,7 @@ public class RmqStaticBench {
 		@Benchmark
 		public void benchPreProcess(Blackhole blackhole) {
 			Pair<Integer, RmqStaticComparator> arr = arrays.get(arrIdx.getAndUpdate(i -> (i + 1) % arrsNum));
-			RmqStatic rmq = getAlgo("plus-minus-one");
+			RmqStatic rmq = new RmqStaticPlusMinusOne();
 			rmq.preProcessSequence(arr.second(), arr.first().intValue());
 			blackhole.consume(rmq);
 		}
@@ -220,7 +224,7 @@ public class RmqStaticBench {
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
-				super.setupCreateArray(args, getAlgo("simple-lookup-table"));
+				super.setupCreateArray(args, new RmqStaticSimpleLookupTable());
 			}
 
 			@Setup(Level.Invocation)
@@ -248,7 +252,7 @@ public class RmqStaticBench {
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
-				super.setupCreateArray(args, getAlgo("power-of-2-table"));
+				super.setupCreateArray(args, new RmqStaticPowerOf2Table());
 			}
 
 			@Setup(Level.Invocation)
@@ -276,7 +280,7 @@ public class RmqStaticBench {
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
-				super.setupCreateArray(args, getAlgo("plus-minus-one"));
+				super.setupCreateArray(args, new RmqStaticPlusMinusOne());
 			}
 
 			@Override
@@ -313,7 +317,7 @@ public class RmqStaticBench {
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
-				super.setupCreateArray(args, getAlgo("cartesian-trees"));
+				super.setupCreateArray(args, new RmqStaticCartesianTrees());
 			}
 
 			@Setup(Level.Invocation)
@@ -328,12 +332,6 @@ public class RmqStaticBench {
 			}
 		}
 
-	}
-
-	private static RmqStatic getAlgo(String implName) {
-		RmqStatic.Builder builder = RmqStatic.builder();
-		builder.setOption("impl", implName);
-		return builder.build();
 	}
 
 }

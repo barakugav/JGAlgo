@@ -32,12 +32,16 @@ import java.util.Objects;
  *
  * @author Barak Ugav
  */
-class RmqStaticSimpleLookupTable implements RmqStatic {
+public class RmqStaticSimpleLookupTable implements RmqStatic {
 
 	/**
 	 * Construct a new static RMQ algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link RmqStatic#newInstance()} to get a default implementation for the {@link RmqStatic}
+	 * interface.
 	 */
-	RmqStaticSimpleLookupTable() {}
+	public RmqStaticSimpleLookupTable() {}
 
 	@Override
 	public RmqStatic.DataStructure preProcessSequence(RmqStaticComparator c, int n) {

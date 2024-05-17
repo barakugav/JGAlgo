@@ -16,8 +16,6 @@
 
 package com.jgalgo.internal.ds;
 
-import com.jgalgo.alg.AlgorithmBuilderBase;
-
 /**
  * Static Range Minimum Query (RMQ) algorithm.
  *
@@ -32,8 +30,7 @@ import com.jgalgo.alg.AlgorithmBuilderBase;
  * two elements given their <i>indices</i> only.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @author Barak Ugav
  */
@@ -79,73 +76,12 @@ public interface RmqStatic {
 	 * Create a new RMQ algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link RmqStatic} object. The {@link RmqStatic.Builder} might
-	 * support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link RmqStatic} object.
 	 *
 	 * @return a default implementation of {@link RmqStatic}
 	 */
 	static RmqStatic newInstance() {
-		return builder().build();
-	}
-
-	/**
-	 * Create a new static range minimum queries algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link RmqStatic} objects
-	 */
-	static RmqStatic.Builder builder() {
-		return new RmqStatic.Builder() {
-			String impl;
-
-			@Override
-			public RmqStatic build() {
-				if (impl != null) {
-					switch (impl) {
-						case "simple-lookup-table":
-							return new RmqStaticSimpleLookupTable();
-						case "power-of-2-table":
-							return new RmqStaticPowerOf2Table();
-						case "cartesian-trees":
-							return new RmqStaticCartesianTrees();
-						case "plus-minus-one":
-							return new RmqStaticPlusMinusOne();
-						default:
-							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-					}
-				}
-				return new RmqStaticPowerOf2Table();
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					default:
-						RmqStatic.Builder.super.setOption(key, value);
-				}
-			}
-		};
-	}
-
-	/**
-	 * A builder for {@link RmqStatic} objects.
-	 *
-	 * @see    RmqStatic#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new static range minimum queries algorithm.
-		 *
-		 * @return a new static range minimum queries algorithm
-		 */
-		RmqStatic build();
+		return new RmqStaticPowerOf2Table();
 	}
 
 }

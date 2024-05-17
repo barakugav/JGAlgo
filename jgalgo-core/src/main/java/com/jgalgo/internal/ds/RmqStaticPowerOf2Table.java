@@ -30,12 +30,16 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  *
  * @author Barak Ugav
  */
-class RmqStaticPowerOf2Table implements RmqStatic {
+public class RmqStaticPowerOf2Table implements RmqStatic {
 
 	/**
 	 * Construct a new static RMQ algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link RmqStatic#newInstance()} to get a default implementation for the {@link RmqStatic}
+	 * interface.
 	 */
-	RmqStaticPowerOf2Table() {}
+	public RmqStaticPowerOf2Table() {}
 
 	@Override
 	public RmqStatic.DataStructure preProcessSequence(RmqStaticComparator c, int n) {

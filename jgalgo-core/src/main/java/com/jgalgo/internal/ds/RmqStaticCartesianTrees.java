@@ -40,12 +40,16 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  *
  * @author Barak Ugav
  */
-class RmqStaticCartesianTrees extends RmqStaticLinearAbstract {
+public class RmqStaticCartesianTrees extends RmqStaticLinearAbstract {
 
 	/**
 	 * Construct a new static RMQ algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link RmqStatic#newInstance()} to get a default implementation for the {@link RmqStatic}
+	 * interface.
 	 */
-	RmqStaticCartesianTrees() {}
+	public RmqStaticCartesianTrees() {}
 
 	@Override
 	public RmqStatic.DataStructure preProcessSequence(RmqStaticComparator c, int n) {

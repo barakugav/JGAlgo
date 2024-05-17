@@ -22,6 +22,7 @@ import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.RmqStatic;
 import com.jgalgo.internal.ds.RmqStaticComparator;
+import com.jgalgo.internal.ds.RmqStaticPlusMinusOne;
 import com.jgalgo.internal.util.Assertions;
 
 /**
@@ -42,16 +43,12 @@ import com.jgalgo.internal.util.Assertions;
  */
 class LowestCommonAncestorStaticRmq extends LowestCommonAncestorStaticAbstract {
 
-	private final RmqStatic rmq;
+	private final RmqStatic rmq = new RmqStaticPlusMinusOne();
 
 	/**
 	 * Create a new static LCA algorithm object.
 	 */
-	LowestCommonAncestorStaticRmq() {
-		RmqStatic.Builder rmqBuilder = RmqStatic.builder();
-		rmqBuilder.setOption("impl", "plus-minus-one");
-		rmq = rmqBuilder.build();
-	}
+	LowestCommonAncestorStaticRmq() {}
 
 	@Override
 	LowestCommonAncestorStatic.IDataStructure preProcessTree(IndexGraph tree, int root) {
