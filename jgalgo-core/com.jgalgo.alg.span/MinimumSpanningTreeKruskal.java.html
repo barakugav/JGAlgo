@@ -17,7 +17,6 @@
 package com.jgalgo.alg.span;
 
 import static com.jgalgo.internal.util.Range.range;
-import java.util.Objects;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.JGAlgoConfigImpl;
@@ -50,8 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public class MinimumSpanningTreeKruskal extends MinimumSpanningTreeAbstract {
 
-<span class="fc" id="L53">	private UnionFind.Builder unionFindBuilder = UnionFind.builder();</span>
-<span class="fc" id="L54">	private boolean parallelEnable = JGAlgoConfigImpl.ParallelByDefault;</span>
+<span class="fc" id="L52">	private boolean parallelEnable = JGAlgoConfigImpl.ParallelByDefault;</span>
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -60,17 +58,7 @@ public class MinimumSpanningTreeKruskal extends MinimumSpanningTreeAbstract {
 	 * Please prefer using {@link MinimumSpanningTree#newInstance()} to get a default implementation for the
 	 * {@link MinimumSpanningTree} interface.
 	 */
-<span class="fc" id="L63">	public MinimumSpanningTreeKruskal() {}</span>
-
-	/**
-	 * [experimental API] Set the implementation of {@link UnionFind} used by this algorithm.
-	 *
-	 * @param builder a builder function that accept a number of elements \(n\) and create a {@link UnionFind} with IDs
-	 *                    {@code 0,1,2,...,n-1}.
-	 */
-	void setUnionFindBuilder(UnionFind.Builder builder) {
-<span class="nc" id="L72">		unionFindBuilder = Objects.requireNonNull(builder);</span>
-<span class="nc" id="L73">	}</span>
+<span class="fc" id="L61">	public MinimumSpanningTreeKruskal() {}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -79,33 +67,33 @@ public class MinimumSpanningTreeKruskal extends MinimumSpanningTreeAbstract {
 	 */
 	@Override
 	protected MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L82">		Assertions.onlyUndirected(g);</span>
-<span class="fc" id="L83">		final int n = g.vertices().size();</span>
-<span class="fc" id="L84">		final int m = g.edges().size();</span>
-<span class="pc bpc" id="L85" title="2 of 4 branches missed.">		if (n == 0 || m == 0)</span>
-<span class="nc" id="L86">			return MinimumSpanningTrees.IndexResult.Empty;</span>
+<span class="fc" id="L70">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L71">		final int n = g.vertices().size();</span>
+<span class="fc" id="L72">		final int m = g.edges().size();</span>
+<span class="pc bpc" id="L73" title="2 of 4 branches missed.">		if (n == 0 || m == 0)</span>
+<span class="nc" id="L74">			return MinimumSpanningTrees.IndexResult.Empty;</span>
 
 		/* sort edges */
-<span class="fc" id="L89">		int[] edges = range(m).toIntArray();</span>
-<span class="fc" id="L90">		JGAlgoUtils.sort(edges, 0, m, w, parallelEnable);</span>
+<span class="fc" id="L77">		int[] edges = range(m).toIntArray();</span>
+<span class="fc" id="L78">		JGAlgoUtils.sort(edges, 0, m, w, parallelEnable);</span>
 
 		/* create union find data structure for each vertex */
-<span class="fc" id="L93">		UnionFind uf = unionFindBuilder.expectedSize(n).build();</span>
-<span class="fc" id="L94">		uf.makeMany(n);</span>
+<span class="fc" id="L81">		UnionFind uf = UnionFind.newInstance();</span>
+<span class="fc" id="L82">		uf.makeMany(n);</span>
 
 		/* iterate over the edges and build the MST */
-<span class="fc" id="L97">		IntArrayList mst = new IntArrayList(n - 1);</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">		for (int e : edges) {</span>
-<span class="fc" id="L99">			int U = uf.find(g.edgeSource(e));</span>
-<span class="fc" id="L100">			int V = uf.find(g.edgeTarget(e));</span>
+<span class="fc" id="L85">		IntArrayList mst = new IntArrayList(n - 1);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L87">			int U = uf.find(g.edgeSource(e));</span>
+<span class="fc" id="L88">			int V = uf.find(g.edgeTarget(e));</span>
 
-<span class="fc bfc" id="L102" title="All 2 branches covered.">			if (U != V) {</span>
-<span class="fc" id="L103">				uf.union(U, V);</span>
-<span class="fc" id="L104">				mst.add(e);</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">			if (U != V) {</span>
+<span class="fc" id="L91">				uf.union(U, V);</span>
+<span class="fc" id="L92">				mst.add(e);</span>
 			}
 		}
-<span class="fc" id="L107">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
-<span class="fc" id="L108">		return newIndexResult(mstSet);</span>
+<span class="fc" id="L95">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
+<span class="fc" id="L96">		return newIndexResult(mstSet);</span>
 	}
 
 }

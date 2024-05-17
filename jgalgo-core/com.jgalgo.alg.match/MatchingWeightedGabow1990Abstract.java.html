@@ -256,7 +256,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 		final Blossom[] findToBlossoms;
 
 <span class="fc" id="L258">		Evens(int n) {</span>
-<span class="fc" id="L259">			uf = UnionFind.builder().expectedSize(n).build();</span>
+<span class="fc" id="L259">			uf = UnionFind.newInstance();</span>
 <span class="fc" id="L260">			findToBlossoms = new Blossom[n];</span>
 <span class="fc" id="L261">		}</span>
 

@@ -40,12 +40,16 @@ import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.TestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.internal.ds.RmqStatic;
+import com.jgalgo.internal.ds.RmqStaticCartesianTrees;
 import com.jgalgo.internal.ds.RmqStaticComparator;
+import com.jgalgo.internal.ds.RmqStaticPlusMinusOne;
+import com.jgalgo.internal.ds.RmqStaticPowerOf2Table;
+import com.jgalgo.internal.ds.RmqStaticSimpleLookupTable;
 import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-<span class="nc" id="L48">public class RmqStaticBench {</span>
+<span class="nc" id="L52">public class RmqStaticBench {</span>
 
 	@BenchmarkMode(Mode.AverageTime)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -53,49 +57,49 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-<span class="fc" id="L56">	public static class PreProcess {</span>
+<span class="fc" id="L60">	public static class PreProcess {</span>
 
 		@Param({ &quot;N=128&quot;, &quot;N=2500&quot;, &quot;N=15000&quot; })
 		public String args;
 		public int n;
 
 		private List&lt;Pair&lt;Integer, RmqStaticComparator&gt;&gt; arrays;
-<span class="fc" id="L63">		private final int arrsNum = 31;</span>
-<span class="fc" id="L64">		private final AtomicInteger arrIdx = new AtomicInteger();</span>
+<span class="fc" id="L67">		private final int arrsNum = 31;</span>
+<span class="fc" id="L68">		private final AtomicInteger arrIdx = new AtomicInteger();</span>
 
 		@Setup(Level.Trial)
 		public void setup() {
-<span class="fc" id="L68">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L69">			n = Integer.parseInt(argsMap.get(&quot;N&quot;));</span>
+<span class="fc" id="L72">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L73">			n = Integer.parseInt(argsMap.get(&quot;N&quot;));</span>
 
-<span class="fc" id="L71">			final SeedGenerator seedGen = new SeedGenerator(0xea7471a0349fe14eL);</span>
-<span class="fc" id="L72">			arrays = new ObjectArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">			for (int aIdx = 0; aIdx &lt; arrsNum; aIdx++) {</span>
-<span class="fc" id="L74">				int[] arr = TestUtils.randArray(n, seedGen.nextSeed());</span>
-<span class="fc" id="L75">				arrays.add(Pair.of(Integer.valueOf(n), RmqStaticComparator.ofIntArray(arr)));</span>
+<span class="fc" id="L75">			final SeedGenerator seedGen = new SeedGenerator(0xea7471a0349fe14eL);</span>
+<span class="fc" id="L76">			arrays = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">			for (int aIdx = 0; aIdx &lt; arrsNum; aIdx++) {</span>
+<span class="fc" id="L78">				int[] arr = TestUtils.randArray(n, seedGen.nextSeed());</span>
+<span class="fc" id="L79">				arrays.add(Pair.of(Integer.valueOf(n), RmqStaticComparator.ofIntArray(arr)));</span>
 			}
-<span class="fc" id="L77">		}</span>
+<span class="fc" id="L81">		}</span>
 
 		private void benchPreProcess(RmqStatic rmq, Blackhole blackhole) {
-<span class="fc" id="L80">			Pair&lt;Integer, RmqStaticComparator&gt; arr = arrays.get(arrIdx.getAndUpdate(i -&gt; (i + 1) % arrsNum));</span>
-<span class="fc" id="L81">			rmq.preProcessSequence(arr.second(), arr.first().intValue());</span>
-<span class="fc" id="L82">			blackhole.consume(rmq);</span>
-<span class="fc" id="L83">		}</span>
+<span class="fc" id="L84">			Pair&lt;Integer, RmqStaticComparator&gt; arr = arrays.get(arrIdx.getAndUpdate(i -&gt; (i + 1) % arrsNum));</span>
+<span class="fc" id="L85">			rmq.preProcessSequence(arr.second(), arr.first().intValue());</span>
+<span class="fc" id="L86">			blackhole.consume(rmq);</span>
+<span class="fc" id="L87">		}</span>
 
 		@Benchmark
 		public void LookupTable(Blackhole blackhole) {
-<span class="fc" id="L87">			benchPreProcess(getAlgo(&quot;simple-lookup-table&quot;), blackhole);</span>
-<span class="fc" id="L88">		}</span>
+<span class="fc" id="L91">			benchPreProcess(new RmqStaticSimpleLookupTable(), blackhole);</span>
+<span class="fc" id="L92">		}</span>
 
 		@Benchmark
 		public void PowerOf2Table(Blackhole blackhole) {
-<span class="fc" id="L92">			benchPreProcess(getAlgo(&quot;power-of-2-table&quot;), blackhole);</span>
-<span class="fc" id="L93">		}</span>
+<span class="fc" id="L96">			benchPreProcess(new RmqStaticPowerOf2Table(), blackhole);</span>
+<span class="fc" id="L97">		}</span>
 
 		@Benchmark
 		public void CartesianTrees(Blackhole blackhole) {
-<span class="fc" id="L97">			benchPreProcess(getAlgo(&quot;cartesian-trees&quot;), blackhole);</span>
-<span class="fc" id="L98">		}</span>
+<span class="fc" id="L101">			benchPreProcess(new RmqStaticCartesianTrees(), blackhole);</span>
+<span class="fc" id="L102">		}</span>
 
 	}
 
@@ -105,107 +109,107 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-<span class="fc" id="L108">	public static class PreProcessPlusMinusOne {</span>
+<span class="fc" id="L112">	public static class PreProcessPlusMinusOne {</span>
 
 		@Param({ &quot;N=128&quot;, &quot;N=2500&quot;, &quot;N=15000&quot; })
 		public String args;
 		public int n;
 
 		private List&lt;Pair&lt;Integer, RmqStaticComparator&gt;&gt; arrays;
-<span class="fc" id="L115">		private final int arrsNum = 31;</span>
-<span class="fc" id="L116">		private final AtomicInteger arrIdx = new AtomicInteger();</span>
+<span class="fc" id="L119">		private final int arrsNum = 31;</span>
+<span class="fc" id="L120">		private final AtomicInteger arrIdx = new AtomicInteger();</span>
 
 		@Setup(Level.Trial)
 		public void setup() {
-<span class="fc" id="L120">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L121">			n = Integer.parseInt(argsMap.get(&quot;N&quot;));</span>
+<span class="fc" id="L124">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L125">			n = Integer.parseInt(argsMap.get(&quot;N&quot;));</span>
 
-<span class="fc" id="L123">			final Random rand = new Random(0x9fc881bb3f61bc29L);</span>
-<span class="fc" id="L124">			arrays = new ObjectArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L125" title="All 2 branches covered.">			for (int aIdx = 0; aIdx &lt; arrsNum; aIdx++) {</span>
-<span class="fc" id="L126">				int[] arr = new int[n];</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">				for (int i : range(1, n))</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">					arr[i] = arr[i - 1] + (rand.nextBoolean() ? +1 : -1);</span>
-<span class="fc" id="L129">				arrays.add(Pair.of(Integer.valueOf(n), RmqStaticComparator.ofIntArray(arr)));</span>
+<span class="fc" id="L127">			final Random rand = new Random(0x9fc881bb3f61bc29L);</span>
+<span class="fc" id="L128">			arrays = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">			for (int aIdx = 0; aIdx &lt; arrsNum; aIdx++) {</span>
+<span class="fc" id="L130">				int[] arr = new int[n];</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">				for (int i : range(1, n))</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">					arr[i] = arr[i - 1] + (rand.nextBoolean() ? +1 : -1);</span>
+<span class="fc" id="L133">				arrays.add(Pair.of(Integer.valueOf(n), RmqStaticComparator.ofIntArray(arr)));</span>
 			}
-<span class="fc" id="L131">		}</span>
+<span class="fc" id="L135">		}</span>
 
 		@Benchmark
 		public void benchPreProcess(Blackhole blackhole) {
-<span class="fc" id="L135">			Pair&lt;Integer, RmqStaticComparator&gt; arr = arrays.get(arrIdx.getAndUpdate(i -&gt; (i + 1) % arrsNum));</span>
-<span class="fc" id="L136">			RmqStatic rmq = getAlgo(&quot;plus-minus-one&quot;);</span>
-<span class="fc" id="L137">			rmq.preProcessSequence(arr.second(), arr.first().intValue());</span>
-<span class="fc" id="L138">			blackhole.consume(rmq);</span>
-<span class="fc" id="L139">		}</span>
+<span class="fc" id="L139">			Pair&lt;Integer, RmqStaticComparator&gt; arr = arrays.get(arrIdx.getAndUpdate(i -&gt; (i + 1) % arrsNum));</span>
+<span class="fc" id="L140">			RmqStatic rmq = new RmqStaticPlusMinusOne();</span>
+<span class="fc" id="L141">			rmq.preProcessSequence(arr.second(), arr.first().intValue());</span>
+<span class="fc" id="L142">			blackhole.consume(rmq);</span>
+<span class="fc" id="L143">		}</span>
 
 	}
 
-<span class="fc" id="L143">	public static class Query {</span>
+<span class="fc" id="L147">	public static class Query {</span>
 
 		int n;
 		RmqStatic.DataStructure rmq;
 		private long[] queriesAll;
 		private int queryIdx;
-<span class="fc" id="L149">		long[] queries = new long[OperationsPerInvocation];</span>
+<span class="fc" id="L153">		long[] queries = new long[OperationsPerInvocation];</span>
 
 		private static final int OperationsPerInvocation = 427;
 
 		int[] randArray(int size, long seed) {
-<span class="fc" id="L154">			return TestUtils.randArray(size, seed);</span>
+<span class="fc" id="L158">			return TestUtils.randArray(size, seed);</span>
 		}
 
 		Pair&lt;RmqStatic.DataStructure, long[]&gt; createArray(RmqStatic rmq, int n) {
-<span class="fc" id="L158">			final SeedGenerator seedGen = new SeedGenerator(0x5b3fba9dd26f2769L);</span>
+<span class="fc" id="L162">			final SeedGenerator seedGen = new SeedGenerator(0x5b3fba9dd26f2769L);</span>
 
-<span class="fc" id="L160">			int[] arr = randArray(n, seedGen.nextSeed());</span>
+<span class="fc" id="L164">			int[] arr = randArray(n, seedGen.nextSeed());</span>
 
-<span class="fc" id="L162">			RmqStatic.DataStructure rmqDS = rmq.preProcessSequence(RmqStaticComparator.ofIntArray(arr), n);</span>
+<span class="fc" id="L166">			RmqStatic.DataStructure rmqDS = rmq.preProcessSequence(RmqStaticComparator.ofIntArray(arr), n);</span>
 
-<span class="fc" id="L164">			int queriesNum = n * 53;</span>
-<span class="fc" id="L165">			int[] queries = TestUtils.randArray(queriesNum * 2, 0, n, seedGen.nextSeed());</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">			for (int q = 0; q &lt; queriesNum; q++) {</span>
-<span class="fc" id="L167">				int i = queries[q * 2 + 0];</span>
-<span class="fc" id="L168">				int j = queries[q * 2 + 1];</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">				if (j &lt; i) {</span>
-<span class="fc" id="L170">					int temp = i;</span>
-<span class="fc" id="L171">					i = j;</span>
-<span class="fc" id="L172">					j = temp;</span>
+<span class="fc" id="L168">			int queriesNum = n * 53;</span>
+<span class="fc" id="L169">			int[] queries = TestUtils.randArray(queriesNum * 2, 0, n, seedGen.nextSeed());</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">			for (int q = 0; q &lt; queriesNum; q++) {</span>
+<span class="fc" id="L171">				int i = queries[q * 2 + 0];</span>
+<span class="fc" id="L172">				int j = queries[q * 2 + 1];</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">				if (j &lt; i) {</span>
+<span class="fc" id="L174">					int temp = i;</span>
+<span class="fc" id="L175">					i = j;</span>
+<span class="fc" id="L176">					j = temp;</span>
 				}
-<span class="fc" id="L174">				queries[q * 2 + 0] = i;</span>
-<span class="fc" id="L175">				queries[q * 2 + 1] = j;</span>
+<span class="fc" id="L178">				queries[q * 2 + 0] = i;</span>
+<span class="fc" id="L179">				queries[q * 2 + 1] = j;</span>
 			}
-<span class="fc" id="L177">			long[] queries0 = new long[queriesNum];</span>
-<span class="fc bfc" id="L178" title="All 2 branches covered.">			for (int q = 0; q &lt; queriesNum; q++)</span>
-<span class="fc" id="L179">				queries0[q] = IntPair.of(queries[q * 2 + 0], queries[q * 2 + 1]);</span>
-<span class="fc" id="L180">			return Pair.of(rmqDS, queries0);</span>
+<span class="fc" id="L181">			long[] queries0 = new long[queriesNum];</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">			for (int q = 0; q &lt; queriesNum; q++)</span>
+<span class="fc" id="L183">				queries0[q] = IntPair.of(queries[q * 2 + 0], queries[q * 2 + 1]);</span>
+<span class="fc" id="L184">			return Pair.of(rmqDS, queries0);</span>
 		}
 
 		private void setupCreateArray(String args, RmqStatic rmq) {
-<span class="fc" id="L184">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L185">			n = Integer.parseInt(argsMap.get(&quot;N&quot;));</span>
+<span class="fc" id="L188">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L189">			n = Integer.parseInt(argsMap.get(&quot;N&quot;));</span>
 
-<span class="fc" id="L187">			Pair&lt;RmqStatic.DataStructure, long[]&gt; p = createArray(rmq, n);</span>
-<span class="fc" id="L188">			this.rmq = p.first();</span>
-<span class="fc" id="L189">			queriesAll = p.second();</span>
-<span class="fc" id="L190">			queryIdx = 0;</span>
-<span class="fc" id="L191">		}</span>
+<span class="fc" id="L191">			Pair&lt;RmqStatic.DataStructure, long[]&gt; p = createArray(rmq, n);</span>
+<span class="fc" id="L192">			this.rmq = p.first();</span>
+<span class="fc" id="L193">			queriesAll = p.second();</span>
+<span class="fc" id="L194">			queryIdx = 0;</span>
+<span class="fc" id="L195">		}</span>
 
 		private void setupCreateQueries() {
-<span class="fc bfc" id="L194" title="All 2 branches covered.">			for (int qIdx : range(OperationsPerInvocation)) {</span>
-<span class="fc" id="L195">				queries[qIdx] = queriesAll[queryIdx];</span>
-<span class="pc bpc" id="L196" title="1 of 2 branches missed.">				if (++queryIdx == queriesAll.length)</span>
-<span class="nc" id="L197">					queryIdx = 0;</span>
-<span class="fc" id="L198">			}</span>
-<span class="fc" id="L199">		}</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">			for (int qIdx : range(OperationsPerInvocation)) {</span>
+<span class="fc" id="L199">				queries[qIdx] = queriesAll[queryIdx];</span>
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">				if (++queryIdx == queriesAll.length)</span>
+<span class="nc" id="L201">					queryIdx = 0;</span>
+<span class="fc" id="L202">			}</span>
+<span class="fc" id="L203">		}</span>
 
 		private void benchQuery(Blackhole blackhole) {
-<span class="fc bfc" id="L202" title="All 2 branches covered.">			for (long q : queries) {</span>
-<span class="fc" id="L203">				int queryI = IntPair.first(q);</span>
-<span class="fc" id="L204">				int queryJ = IntPair.second(q);</span>
-<span class="fc" id="L205">				int res = rmq.findMinimumInRange(queryI, queryJ);</span>
-<span class="fc" id="L206">				blackhole.consume(res);</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">			for (long q : queries) {</span>
+<span class="fc" id="L207">				int queryI = IntPair.first(q);</span>
+<span class="fc" id="L208">				int queryJ = IntPair.second(q);</span>
+<span class="fc" id="L209">				int res = rmq.findMinimumInRange(queryI, queryJ);</span>
+<span class="fc" id="L210">				blackhole.consume(res);</span>
 			}
-<span class="fc" id="L208">		}</span>
+<span class="fc" id="L212">		}</span>
 
 		@BenchmarkMode(Mode.AverageTime)
 		@OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -213,26 +217,26 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L216">		public static class LookupTable extends Query {</span>
+<span class="fc" id="L220">		public static class LookupTable extends Query {</span>
 
 			@Param({ &quot;N=128&quot;, &quot;N=2500&quot; })
 			public String args;
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
-<span class="fc" id="L223">				super.setupCreateArray(args, getAlgo(&quot;simple-lookup-table&quot;));</span>
-<span class="fc" id="L224">			}</span>
+<span class="fc" id="L227">				super.setupCreateArray(args, new RmqStaticSimpleLookupTable());</span>
+<span class="fc" id="L228">			}</span>
 
 			@Setup(Level.Invocation)
 			public void setupCreateQueries() {
-<span class="fc" id="L228">				super.setupCreateQueries();</span>
-<span class="fc" id="L229">			}</span>
+<span class="fc" id="L232">				super.setupCreateQueries();</span>
+<span class="fc" id="L233">			}</span>
 
 			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			@Benchmark
 			public void benchQuery(Blackhole blackhole) {
-<span class="fc" id="L234">				super.benchQuery(blackhole);</span>
-<span class="fc" id="L235">			}</span>
+<span class="fc" id="L238">				super.benchQuery(blackhole);</span>
+<span class="fc" id="L239">			}</span>
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -241,26 +245,26 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L244">		public static class PowerOf2Table extends Query {</span>
+<span class="fc" id="L248">		public static class PowerOf2Table extends Query {</span>
 
 			@Param({ &quot;N=128&quot;, &quot;N=2500&quot;, &quot;N=15000&quot; })
 			public String args;
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
-<span class="fc" id="L251">				super.setupCreateArray(args, getAlgo(&quot;power-of-2-table&quot;));</span>
-<span class="fc" id="L252">			}</span>
+<span class="fc" id="L255">				super.setupCreateArray(args, new RmqStaticPowerOf2Table());</span>
+<span class="fc" id="L256">			}</span>
 
 			@Setup(Level.Invocation)
 			public void setupCreateQueries() {
-<span class="fc" id="L256">				super.setupCreateQueries();</span>
-<span class="fc" id="L257">			}</span>
+<span class="fc" id="L260">				super.setupCreateQueries();</span>
+<span class="fc" id="L261">			}</span>
 
 			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			@Benchmark
 			public void benchQuery(Blackhole blackhole) {
-<span class="fc" id="L262">				super.benchQuery(blackhole);</span>
-<span class="fc" id="L263">			}</span>
+<span class="fc" id="L266">				super.benchQuery(blackhole);</span>
+<span class="fc" id="L267">			}</span>
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -269,35 +273,35 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L272">		public static class PlusMinusOne extends Query {</span>
+<span class="fc" id="L276">		public static class PlusMinusOne extends Query {</span>
 
 			@Param({ &quot;N=128&quot;, &quot;N=2500&quot;, &quot;N=15000&quot; })
 			public String args;
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
-<span class="fc" id="L279">				super.setupCreateArray(args, getAlgo(&quot;plus-minus-one&quot;));</span>
-<span class="fc" id="L280">			}</span>
+<span class="fc" id="L283">				super.setupCreateArray(args, new RmqStaticPlusMinusOne());</span>
+<span class="fc" id="L284">			}</span>
 
 			@Override
 			int[] randArray(int size, long seed) {
-<span class="fc" id="L284">				final Random rand = new Random(seed);</span>
-<span class="fc" id="L285">				int[] arr = new int[size];</span>
-<span class="fc bfc" id="L286" title="All 2 branches covered.">				for (int i : range(1, n))</span>
-<span class="fc bfc" id="L287" title="All 2 branches covered.">					arr[i] = arr[i - 1] + (rand.nextBoolean() ? +1 : -1);</span>
-<span class="fc" id="L288">				return arr;</span>
+<span class="fc" id="L288">				final Random rand = new Random(seed);</span>
+<span class="fc" id="L289">				int[] arr = new int[size];</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">				for (int i : range(1, n))</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">					arr[i] = arr[i - 1] + (rand.nextBoolean() ? +1 : -1);</span>
+<span class="fc" id="L292">				return arr;</span>
 			}
 
 			@Setup(Level.Invocation)
 			public void setupCreateQueries() {
-<span class="fc" id="L293">				super.setupCreateQueries();</span>
-<span class="fc" id="L294">			}</span>
+<span class="fc" id="L297">				super.setupCreateQueries();</span>
+<span class="fc" id="L298">			}</span>
 
 			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			@Benchmark
 			public void benchQuery(Blackhole blackhole) {
-<span class="fc" id="L299">				super.benchQuery(blackhole);</span>
-<span class="fc" id="L300">			}</span>
+<span class="fc" id="L303">				super.benchQuery(blackhole);</span>
+<span class="fc" id="L304">			}</span>
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -306,34 +310,28 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L309">		public static class CartesianTrees extends Query {</span>
+<span class="fc" id="L313">		public static class CartesianTrees extends Query {</span>
 
 			@Param({ &quot;N=128&quot;, &quot;N=2500&quot;, &quot;N=15000&quot; })
 			public String args;
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
-<span class="fc" id="L316">				super.setupCreateArray(args, getAlgo(&quot;cartesian-trees&quot;));</span>
-<span class="fc" id="L317">			}</span>
+<span class="fc" id="L320">				super.setupCreateArray(args, new RmqStaticCartesianTrees());</span>
+<span class="fc" id="L321">			}</span>
 
 			@Setup(Level.Invocation)
 			public void setupCreateQueries() {
-<span class="fc" id="L321">				super.setupCreateQueries();</span>
-<span class="fc" id="L322">			}</span>
+<span class="fc" id="L325">				super.setupCreateQueries();</span>
+<span class="fc" id="L326">			}</span>
 
 			@OperationsPerInvocation(Query.OperationsPerInvocation)
 			@Benchmark
 			public void benchQuery(Blackhole blackhole) {
-<span class="fc" id="L327">				super.benchQuery(blackhole);</span>
-<span class="fc" id="L328">			}</span>
+<span class="fc" id="L331">				super.benchQuery(blackhole);</span>
+<span class="fc" id="L332">			}</span>
 		}
 
-	}
-
-	private static RmqStatic getAlgo(String implName) {
-<span class="fc" id="L334">		RmqStatic.Builder builder = RmqStatic.builder();</span>
-<span class="fc" id="L335">		builder.setOption(&quot;impl&quot;, implName);</span>
-<span class="fc" id="L336">		return builder.build();</span>
 	}
 
 }

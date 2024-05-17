@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LowestCommonAncestorOfflineQueriesImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.tree</a> &gt; <span class="el_source">LowestCommonAncestorOfflineQueriesImpl.java</span></div><h1>LowestCommonAncestorOfflineQueriesImpl.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.tree;
+
+import static com.jgalgo.internal.util.Range.range;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.IntPair;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
+
+<span class="fc" id="L28">class LowestCommonAncestorOfflineQueriesImpl {</span>
+
+	private LowestCommonAncestorOfflineQueriesImpl() {}
+
+<span class="fc" id="L32">	static class ObjQueriesImpl&lt;V, E&gt; implements LowestCommonAncestorOffline.Queries&lt;V, E&gt; {</span>
+
+<span class="fc" id="L34">		private final LowestCommonAncestorOffline.IQueries indexQueries = new IntQueriesImpl();</span>
+		private final IndexIdMap&lt;V&gt; viMap;
+
+<span class="fc" id="L37">		ObjQueriesImpl(Graph&lt;V, E&gt; g) {</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">			assert !(g instanceof IndexGraph);</span>
+<span class="fc" id="L39">			viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L40">		}</span>
+
+		@Override
+		public void addQuery(V u, V v) {
+<span class="fc" id="L44">			indexQueries.addQuery(viMap.idToIndex(u), viMap.idToIndex(v));</span>
+<span class="fc" id="L45">		}</span>
+
+		@Override
+		public V getQuerySource(int idx) {
+<span class="fc" id="L49">			return viMap.indexToId(indexQueries.getQuerySourceInt(idx));</span>
+		}
+
+		@Override
+		public V getQueryTarget(int idx) {
+<span class="fc" id="L54">			return viMap.indexToId(indexQueries.getQueryTargetInt(idx));</span>
+		}
+
+		@Override
+		public int size() {
+<span class="fc" id="L59">			return indexQueries.size();</span>
+		}
+
+		@Override
+		public void clear() {
+<span class="fc" id="L64">			indexQueries.clear();</span>
+<span class="fc" id="L65">		}</span>
+	}
+
+	static class IntQueriesImpl implements LowestCommonAncestorOffline.IQueries {
+		private final LongList qs;
+
+<span class="fc" id="L71">		IntQueriesImpl() {</span>
+<span class="fc" id="L72">			qs = new LongArrayList();</span>
+<span class="fc" id="L73">		}</span>
+
+		@Override
+		public void addQuery(int u, int v) {
+<span class="fc" id="L77">			qs.add(IntPair.of(u, v));</span>
+<span class="fc" id="L78">		}</span>
+
+		@Override
+		public int getQuerySourceInt(int idx) {
+<span class="fc" id="L82">			return IntPair.first(qs.getLong(idx));</span>
+		}
+
+		@Override
+		public int getQueryTargetInt(int idx) {
+<span class="fc" id="L87">			return IntPair.second(qs.getLong(idx));</span>
+		}
+
+		@Override
+		public int size() {
+<span class="fc" id="L92">			return qs.size();</span>
+		}
+
+		@Override
+		public void clear() {
+<span class="fc" id="L97">			qs.clear();</span>
+<span class="fc" id="L98">		}</span>
+	}
+
+	static &lt;V, E&gt; LowestCommonAncestorOffline.IQueries indexQueriesFromQueries(Graph&lt;V, E&gt; g,
+			LowestCommonAncestorOffline.Queries&lt;V, E&gt; queries) {
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">		if (queries instanceof ObjQueriesImpl) {</span>
+<span class="fc" id="L105">			ObjQueriesImpl&lt;V, E&gt; q0 = (ObjQueriesImpl&lt;V, E&gt;) queries;</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (q0.viMap != g.indexGraphVerticesMap())</span>
+<span class="fc" id="L107">				throw new IllegalArgumentException(&quot;queries object was created with different graph&quot;);</span>
+<span class="fc" id="L108">			return q0.indexQueries;</span>
+		}
+
+<span class="fc" id="L111">		LowestCommonAncestorOffline.IQueries qs = LowestCommonAncestorOffline.IQueries.newInstance(g.indexGraph());</span>
+<span class="fc bfc" id="L112" title="All 4 branches covered.">		if (g instanceof IntGraph &amp;&amp; queries instanceof LowestCommonAncestorOffline.IQueries) {</span>
+<span class="fc" id="L113">			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
+<span class="fc" id="L114">			LowestCommonAncestorOffline.IQueries queries0 = (LowestCommonAncestorOffline.IQueries) queries;</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">			for (int q : range(queries.size())) {</span>
+<span class="fc" id="L116">				int u = queries0.getQuerySourceInt(q), v = queries0.getQueryTargetInt(q);</span>
+<span class="fc" id="L117">				qs.addQuery(viMap.idToIndex(u), viMap.idToIndex(v));</span>
+<span class="fc" id="L118">			}</span>
+
+<span class="fc" id="L120">		} else {</span>
+<span class="fc" id="L121">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">			for (int q : range(queries.size())) {</span>
+<span class="fc" id="L123">				V u = queries.getQuerySource(q), v = queries.getQueryTarget(q);</span>
+<span class="fc" id="L124">				qs.addQuery(viMap.idToIndex(u), viMap.idToIndex(v));</span>
+<span class="fc" id="L125">			}</span>
+		}
+<span class="fc" id="L127">		return qs;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

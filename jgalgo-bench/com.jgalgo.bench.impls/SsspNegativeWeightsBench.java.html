@@ -36,6 +36,8 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.path.NegativeCycleException;
 import com.jgalgo.alg.path.ShortestPathSingleSource;
+import com.jgalgo.alg.path.ShortestPathSingleSourceBellmanFord;
+import com.jgalgo.alg.path.ShortestPathSingleSourceGoldberg;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -44,22 +46,22 @@ import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-<span class="fc" id="L47">public class SsspNegativeWeightsBench {</span>
+<span class="fc" id="L49">public class SsspNegativeWeightsBench {</span>
 
 	List&lt;GraphArgs&gt; graphs;
-<span class="fc" id="L50">	final int graphsNum = 31;</span>
-<span class="fc" id="L51">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
+<span class="fc" id="L52">	final int graphsNum = 31;</span>
+<span class="fc" id="L53">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
 
 	void benchSssp(ShortestPathSingleSource algo, Blackhole blackhole) {
-<span class="fc" id="L54">		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L56">		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
 		try {
-<span class="fc" id="L56">			ShortestPathSingleSource.IResult result = (ShortestPathSingleSource.IResult) algo</span>
-<span class="fc" id="L57">					.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));</span>
-<span class="fc" id="L58">			blackhole.consume(result);</span>
-<span class="fc" id="L59">		} catch (NegativeCycleException e) {</span>
-<span class="fc" id="L60">			blackhole.consume(e);</span>
-<span class="fc" id="L61">		}</span>
-<span class="fc" id="L62">	}</span>
+<span class="fc" id="L58">			ShortestPathSingleSource.IResult result = (ShortestPathSingleSource.IResult) algo</span>
+<span class="fc" id="L59">					.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));</span>
+<span class="fc" id="L60">			blackhole.consume(result);</span>
+<span class="fc" id="L61">		} catch (NegativeCycleException e) {</span>
+<span class="fc" id="L62">			blackhole.consume(e);</span>
+<span class="fc" id="L63">		}</span>
+<span class="fc" id="L64">	}</span>
 
 	@BenchmarkMode(Mode.AverageTime)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -67,7 +69,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-<span class="fc" id="L70">	public static class Gnp extends SsspNegativeWeightsBench {</span>
+<span class="fc" id="L72">	public static class Gnp extends SsspNegativeWeightsBench {</span>
 
 		@Param({ &quot;|V|=64 MaxWeight=64&quot;, &quot;|V|=512 MaxWeight=50&quot;, &quot;|V|=512 MaxWeight=600&quot;, &quot;|V|=1024 MaxWeight=200&quot;,
 				&quot;|V|=1024 MaxWeight=6000&quot; })
@@ -75,31 +77,31 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Setup(Level.Trial)
 		public void setup() {
-<span class="fc" id="L78">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L79">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L80">			int maxWeight = Integer.parseInt(argsMap.get(&quot;MaxWeight&quot;));</span>
+<span class="fc" id="L80">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L81">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L82">			int maxWeight = Integer.parseInt(argsMap.get(&quot;MaxWeight&quot;));</span>
 
-<span class="fc" id="L82">			final SeedGenerator seedGen = new SeedGenerator(0x359f942eea9011efL);</span>
-<span class="fc" id="L83">			Random rand = new Random(seedGen.nextSeed());</span>
-<span class="fc" id="L84">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L86">				IntGraph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());</span>
-<span class="fc" id="L87">				IWeightFunctionInt w =</span>
-<span class="fc" id="L88">						GraphsTestUtils.assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seedGen.nextSeed());</span>
-<span class="fc" id="L89">				int source = Graphs.randVertex(g, rand);</span>
-<span class="fc" id="L90">				graphs.add(new GraphArgs(g, w, source));</span>
+<span class="fc" id="L84">			final SeedGenerator seedGen = new SeedGenerator(0x359f942eea9011efL);</span>
+<span class="fc" id="L85">			Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L86">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L88">				IntGraph g = GraphsTestUtils.randomGraphGnp(n, true, seedGen.nextSeed());</span>
+<span class="fc" id="L89">				IWeightFunctionInt w =</span>
+<span class="fc" id="L90">						GraphsTestUtils.assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seedGen.nextSeed());</span>
+<span class="fc" id="L91">				int source = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L92">				graphs.add(new GraphArgs(g, w, source));</span>
 			}
-<span class="fc" id="L92">		}</span>
+<span class="fc" id="L94">		}</span>
 
 		@Benchmark
 		public void BellmanFord(Blackhole blackhole) {
-<span class="fc" id="L96">			benchSssp(getAlgo(&quot;bellman-ford&quot;), blackhole);</span>
-<span class="fc" id="L97">		}</span>
+<span class="fc" id="L98">			benchSssp(new ShortestPathSingleSourceBellmanFord(), blackhole);</span>
+<span class="fc" id="L99">		}</span>
 
 		@Benchmark
 		public void Goldberg(Blackhole blackhole) {
-<span class="fc" id="L101">			benchSssp(getAlgo(&quot;goldberg&quot;), blackhole);</span>
-<span class="fc" id="L102">		}</span>
+<span class="fc" id="L103">			benchSssp(new ShortestPathSingleSourceGoldberg(), blackhole);</span>
+<span class="fc" id="L104">		}</span>
 	}
 
 	@BenchmarkMode(Mode.AverageTime)
@@ -108,7 +110,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-<span class="fc" id="L111">	public static class BarabasiAlbert extends SsspNegativeWeightsBench {</span>
+<span class="fc" id="L113">	public static class BarabasiAlbert extends SsspNegativeWeightsBench {</span>
 
 		@Param({ &quot;|V|=64 MaxWeight=64&quot;, &quot;|V|=512 MaxWeight=50&quot;, &quot;|V|=512 MaxWeight=600&quot;, &quot;|V|=4096 MaxWeight=200&quot;,
 				&quot;|V|=4096 MaxWeight=6000&quot; })
@@ -116,31 +118,31 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Setup(Level.Trial)
 		public void setup() {
-<span class="fc" id="L119">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L120">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L121">			int maxWeight = Integer.parseInt(argsMap.get(&quot;MaxWeight&quot;));</span>
+<span class="fc" id="L121">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L122">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L123">			int maxWeight = Integer.parseInt(argsMap.get(&quot;MaxWeight&quot;));</span>
 
-<span class="fc" id="L123">			final SeedGenerator seedGen = new SeedGenerator(0x1b4f94ee86c9e5ceL);</span>
-<span class="fc" id="L124">			Random rand = new Random(seedGen.nextSeed());</span>
-<span class="fc" id="L125">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L127">				IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, true, seedGen.nextSeed());</span>
-<span class="fc" id="L128">				IWeightFunctionInt w =</span>
-<span class="fc" id="L129">						GraphsTestUtils.assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seedGen.nextSeed());</span>
-<span class="fc" id="L130">				int source = Graphs.randVertex(g, rand);</span>
-<span class="fc" id="L131">				graphs.add(new GraphArgs(g, w, source));</span>
+<span class="fc" id="L125">			final SeedGenerator seedGen = new SeedGenerator(0x1b4f94ee86c9e5ceL);</span>
+<span class="fc" id="L126">			Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L127">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L129">				IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, true, seedGen.nextSeed());</span>
+<span class="fc" id="L130">				IWeightFunctionInt w =</span>
+<span class="fc" id="L131">						GraphsTestUtils.assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seedGen.nextSeed());</span>
+<span class="fc" id="L132">				int source = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L133">				graphs.add(new GraphArgs(g, w, source));</span>
 			}
-<span class="fc" id="L133">		}</span>
+<span class="fc" id="L135">		}</span>
 
 		@Benchmark
 		public void BellmanFord(Blackhole blackhole) {
-<span class="fc" id="L137">			benchSssp(getAlgo(&quot;bellman-ford&quot;), blackhole);</span>
-<span class="fc" id="L138">		}</span>
+<span class="fc" id="L139">			benchSssp(new ShortestPathSingleSourceBellmanFord(), blackhole);</span>
+<span class="fc" id="L140">		}</span>
 
 		@Benchmark
 		public void Goldberg(Blackhole blackhole) {
-<span class="fc" id="L142">			benchSssp(getAlgo(&quot;goldberg&quot;), blackhole);</span>
-<span class="fc" id="L143">		}</span>
+<span class="fc" id="L144">			benchSssp(new ShortestPathSingleSourceGoldberg(), blackhole);</span>
+<span class="fc" id="L145">		}</span>
 	}
 
 	@BenchmarkMode(Mode.AverageTime)
@@ -149,7 +151,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-<span class="fc" id="L152">	public static class RecursiveMatrix extends SsspNegativeWeightsBench {</span>
+<span class="fc" id="L154">	public static class RecursiveMatrix extends SsspNegativeWeightsBench {</span>
 
 		@Param({ &quot;|V|=64 |E|=256 MaxWeight=64&quot;, &quot;|V|=512 |E|=4096 MaxWeight=50&quot;, &quot;|V|=512 |E|=4096 MaxWeight=600&quot;,
 				&quot;|V|=4096 |E|=16384 MaxWeight=200&quot;, &quot;|V|=4096 |E|=16384 MaxWeight=6000&quot; })
@@ -157,38 +159,32 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Setup(Level.Trial)
 		public void setup() {
-<span class="fc" id="L160">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L161">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L162">			int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
-<span class="fc" id="L163">			int maxWeight = Integer.parseInt(argsMap.get(&quot;MaxWeight&quot;));</span>
+<span class="fc" id="L162">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L163">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L164">			int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+<span class="fc" id="L165">			int maxWeight = Integer.parseInt(argsMap.get(&quot;MaxWeight&quot;));</span>
 
-<span class="fc" id="L165">			final SeedGenerator seedGen = new SeedGenerator(0xc0fd63fe73c6707aL);</span>
-<span class="fc" id="L166">			Random rand = new Random(seedGen.nextSeed());</span>
-<span class="fc" id="L167">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L169">				IntGraph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());</span>
-<span class="fc" id="L170">				IWeightFunctionInt w =</span>
-<span class="fc" id="L171">						GraphsTestUtils.assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seedGen.nextSeed());</span>
-<span class="fc" id="L172">				int source = Graphs.randVertex(g, rand);</span>
-<span class="fc" id="L173">				graphs.add(new GraphArgs(g, w, source));</span>
+<span class="fc" id="L167">			final SeedGenerator seedGen = new SeedGenerator(0xc0fd63fe73c6707aL);</span>
+<span class="fc" id="L168">			Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L169">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L171">				IntGraph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, true, seedGen.nextSeed());</span>
+<span class="fc" id="L172">				IWeightFunctionInt w =</span>
+<span class="fc" id="L173">						GraphsTestUtils.assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seedGen.nextSeed());</span>
+<span class="fc" id="L174">				int source = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L175">				graphs.add(new GraphArgs(g, w, source));</span>
 			}
-<span class="fc" id="L175">		}</span>
+<span class="fc" id="L177">		}</span>
 
 		@Benchmark
 		public void BellmanFord(Blackhole blackhole) {
-<span class="fc" id="L179">			benchSssp(getAlgo(&quot;bellman-ford&quot;), blackhole);</span>
-<span class="fc" id="L180">		}</span>
+<span class="fc" id="L181">			benchSssp(new ShortestPathSingleSourceBellmanFord(), blackhole);</span>
+<span class="fc" id="L182">		}</span>
 
 		@Benchmark
 		public void Goldberg(Blackhole blackhole) {
-<span class="fc" id="L184">			benchSssp(getAlgo(&quot;goldberg&quot;), blackhole);</span>
-<span class="fc" id="L185">		}</span>
-	}
-
-	private static ShortestPathSingleSource getAlgo(String implName) {
-<span class="fc" id="L189">		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.builder();</span>
-<span class="fc" id="L190">		builder.setOption(&quot;impl&quot;, implName);</span>
-<span class="fc" id="L191">		return builder.build();</span>
+<span class="fc" id="L186">			benchSssp(new ShortestPathSingleSourceGoldberg(), blackhole);</span>
+<span class="fc" id="L187">		}</span>
 	}
 
 	private static class GraphArgs {
@@ -196,11 +192,11 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		final IWeightFunctionInt w;
 		final int source;
 
-<span class="fc" id="L199">		GraphArgs(IntGraph g, IWeightFunctionInt w, int source) {</span>
-<span class="fc" id="L200">			this.g = g;</span>
-<span class="fc" id="L201">			this.w = w;</span>
-<span class="fc" id="L202">			this.source = source;</span>
-<span class="fc" id="L203">		}</span>
+<span class="fc" id="L195">		GraphArgs(IntGraph g, IWeightFunctionInt w, int source) {</span>
+<span class="fc" id="L196">			this.g = g;</span>
+<span class="fc" id="L197">			this.w = w;</span>
+<span class="fc" id="L198">			this.source = source;</span>
+<span class="fc" id="L199">		}</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

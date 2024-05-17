@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TreePathMaximaQueriesImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.tree</a> &gt; <span class="el_source">TreePathMaximaQueriesImpl.java</span></div><h1>TreePathMaximaQueriesImpl.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.tree;
+
+import static com.jgalgo.internal.util.Range.range;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.IntPair;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
+
+<span class="fc" id="L28">class TreePathMaximaQueriesImpl {</span>
+
+	private TreePathMaximaQueriesImpl() {}
+
+<span class="fc" id="L32">	static class ObjQueriesImpl&lt;V, E&gt; implements TreePathMaxima.Queries&lt;V, E&gt; {</span>
+<span class="fc" id="L33">		private final TreePathMaxima.IQueries indexQueries = new IntQueriesImpl();</span>
+		private final IndexIdMap&lt;V&gt; viMap;
+
+<span class="fc" id="L36">		ObjQueriesImpl(Graph&lt;V, E&gt; g) {</span>
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">			assert !(g instanceof IndexGraph);</span>
+<span class="fc" id="L38">			viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L39">		}</span>
+
+		@Override
+		public void addQuery(V u, V v) {
+<span class="fc" id="L43">			indexQueries.addQuery(viMap.idToIndex(u), viMap.idToIndex(v));</span>
+<span class="fc" id="L44">		}</span>
+
+		@Override
+		public V getQuerySource(int idx) {
+<span class="fc" id="L48">			return viMap.indexToId(indexQueries.getQuerySourceInt(idx));</span>
+		}
+
+		@Override
+		public V getQueryTarget(int idx) {
+<span class="fc" id="L53">			return viMap.indexToId(indexQueries.getQueryTargetInt(idx));</span>
+		}
+
+		@Override
+		public int size() {
+<span class="fc" id="L58">			return indexQueries.size();</span>
+		}
+
+		@Override
+		public void clear() {
+<span class="nc" id="L63">			indexQueries.clear();</span>
+<span class="nc" id="L64">		}</span>
+	}
+
+	static class IntQueriesImpl implements TreePathMaxima.IQueries {
+		private final LongList qs;
+
+<span class="fc" id="L70">		IntQueriesImpl() {</span>
+<span class="fc" id="L71">			qs = new LongArrayList();</span>
+<span class="fc" id="L72">		}</span>
+
+		@Override
+		public void addQuery(int u, int v) {
+<span class="fc" id="L76">			qs.add(IntPair.of(u, v));</span>
+<span class="fc" id="L77">		}</span>
+
+		@Override
+		public int getQuerySourceInt(int idx) {
+<span class="fc" id="L81">			return IntPair.first(qs.getLong(idx));</span>
+		}
+
+		@Override
+		public int getQueryTargetInt(int idx) {
+<span class="fc" id="L86">			return IntPair.second(qs.getLong(idx));</span>
+		}
+
+		@Override
+		public int size() {
+<span class="fc" id="L91">			return qs.size();</span>
+		}
+
+		@Override
+		public void clear() {
+<span class="fc" id="L96">			qs.clear();</span>
+<span class="fc" id="L97">		}</span>
+	}
+
+	static &lt;V, E&gt; TreePathMaxima.IQueries indexQueriesFromQueries(Graph&lt;V, E&gt; g, TreePathMaxima.Queries&lt;V, E&gt; queries) {
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		if (queries instanceof ObjQueriesImpl) {</span>
+<span class="fc" id="L103">			ObjQueriesImpl&lt;V, E&gt; q0 = (ObjQueriesImpl&lt;V, E&gt;) queries;</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">			if (q0.viMap != g.indexGraphVerticesMap())</span>
+<span class="nc" id="L105">				throw new IllegalArgumentException(&quot;queries object was created with different graph&quot;);</span>
+<span class="fc" id="L106">			return q0.indexQueries;</span>
+		}
+
+<span class="fc" id="L109">		TreePathMaxima.IQueries qs = TreePathMaxima.IQueries.newInstance(g.indexGraph());</span>
+<span class="pc bpc" id="L110" title="2 of 4 branches missed.">		if (g instanceof IntGraph &amp;&amp; queries instanceof TreePathMaxima.IQueries) {</span>
+<span class="fc" id="L111">			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
+<span class="fc" id="L112">			TreePathMaxima.IQueries queries0 = (TreePathMaxima.IQueries) queries;</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			for (int q : range(queries.size())) {</span>
+<span class="fc" id="L114">				int u = queries0.getQuerySourceInt(q), v = queries0.getQueryTargetInt(q);</span>
+<span class="fc" id="L115">				qs.addQuery(viMap.idToIndex(u), viMap.idToIndex(v));</span>
+<span class="fc" id="L116">			}</span>
+
+<span class="fc" id="L118">		} else {</span>
+<span class="nc" id="L119">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">			for (int q : range(queries.size())) {</span>
+<span class="nc" id="L121">				V u = queries.getQuerySource(q), v = queries.getQueryTarget(q);</span>
+<span class="nc" id="L122">				qs.addQuery(viMap.idToIndex(u), viMap.idToIndex(v));</span>
+<span class="nc" id="L123">			}</span>
+		}
+<span class="fc" id="L125">		return qs;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

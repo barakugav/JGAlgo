@@ -224,58 +224,47 @@ public interface MinimumCostFlow {
 	 */
 	static MinimumCostFlow.Builder builder() {
 <span class="fc" id="L226">		return new MinimumCostFlow.Builder() {</span>
-			String impl;
 			boolean integerNetwork;
 			boolean integerCosts;
 
 			@Override
 			public MinimumCostFlow build() {
-<span class="fc bfc" id="L233" title="All 2 branches covered.">				if (impl != null) {</span>
-<span class="fc bfc" id="L234" title="All 3 branches covered.">					switch (impl) {</span>
-						case &quot;cycle-canceling&quot;:
-<span class="fc" id="L236">							return new MinimumCostFlowCycleCanceling();</span>
-						case &quot;cost-scaling&quot;:
-<span class="fc" id="L238">							return new MinimumCostFlowCostScaling();</span>
-						default:
-<span class="fc" id="L240">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
-					}
-				}
-<span class="pc bpc" id="L243" title="1 of 4 branches missed.">				if (integerNetwork &amp;&amp; integerCosts) {</span>
-<span class="fc" id="L244">					return new MinimumCostFlowCostScaling();</span>
+<span class="pc bpc" id="L232" title="1 of 4 branches missed.">				if (integerNetwork &amp;&amp; integerCosts) {</span>
+<span class="fc" id="L233">					return new MinimumCostFlowCostScaling();</span>
 				} else {
-<span class="fc" id="L246">					return new MinimumCostFlow() {</span>
+<span class="fc" id="L235">					return new MinimumCostFlow() {</span>
 
-<span class="fc" id="L248">						private final MinimumCostFlow integerAlgo = new MinimumCostFlowCostScaling();</span>
-<span class="fc" id="L249">						private final MinimumCostFlow floatsAlgo = new MinimumCostFlowCycleCanceling();</span>
+<span class="fc" id="L237">						private final MinimumCostFlow integerAlgo = new MinimumCostFlowCostScaling();</span>
+<span class="fc" id="L238">						private final MinimumCostFlow floatsAlgo = new MinimumCostFlowCycleCanceling();</span>
 
 						@Override
 						public &lt;V, E&gt; Flow&lt;V, E&gt; computeMinCostMaxFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity,
 								WeightFunction&lt;E&gt; cost, V source, V sink) {
-<span class="pc bpc" id="L254" title="1 of 4 branches missed.">							if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(cost)) {</span>
-<span class="fc" id="L255">								return integerAlgo.computeMinCostMaxFlow(g, capacity, cost, source, sink);</span>
+<span class="pc bpc" id="L243" title="1 of 4 branches missed.">							if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(cost)) {</span>
+<span class="fc" id="L244">								return integerAlgo.computeMinCostMaxFlow(g, capacity, cost, source, sink);</span>
 							} else {
-<span class="fc" id="L257">								return floatsAlgo.computeMinCostMaxFlow(g, capacity, cost, source, sink);</span>
+<span class="fc" id="L246">								return floatsAlgo.computeMinCostMaxFlow(g, capacity, cost, source, sink);</span>
 							}
 						}
 
 						@Override
 						public &lt;V, E&gt; Flow&lt;V, E&gt; computeMinCostMaxFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity,
 								WeightFunction&lt;E&gt; cost, WeightFunction&lt;E&gt; lowerBound, V source, V sink) {
-<span class="pc bpc" id="L264" title="1 of 4 branches missed.">							if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(cost)</span>
-<span class="pc bpc" id="L265" title="1 of 2 branches missed.">									&amp;&amp; WeightFunction.isInteger(lowerBound)) {</span>
-<span class="fc" id="L266">								return integerAlgo.computeMinCostMaxFlow(g, capacity, cost, lowerBound, source, sink);</span>
+<span class="pc bpc" id="L253" title="1 of 4 branches missed.">							if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(cost)</span>
+<span class="pc bpc" id="L254" title="1 of 2 branches missed.">									&amp;&amp; WeightFunction.isInteger(lowerBound)) {</span>
+<span class="fc" id="L255">								return integerAlgo.computeMinCostMaxFlow(g, capacity, cost, lowerBound, source, sink);</span>
 							} else {
-<span class="fc" id="L268">								return floatsAlgo.computeMinCostMaxFlow(g, capacity, cost, lowerBound, source, sink);</span>
+<span class="fc" id="L257">								return floatsAlgo.computeMinCostMaxFlow(g, capacity, cost, lowerBound, source, sink);</span>
 							}
 						}
 
 						@Override
 						public &lt;V, E&gt; Flow&lt;V, E&gt; computeMinCostMaxFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity,
 								WeightFunction&lt;E&gt; cost, Collection&lt;V&gt; sources, Collection&lt;V&gt; sinks) {
-<span class="pc bpc" id="L275" title="1 of 4 branches missed.">							if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(cost)) {</span>
-<span class="fc" id="L276">								return integerAlgo.computeMinCostMaxFlow(g, capacity, cost, sources, sinks);</span>
+<span class="pc bpc" id="L264" title="1 of 4 branches missed.">							if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(cost)) {</span>
+<span class="fc" id="L265">								return integerAlgo.computeMinCostMaxFlow(g, capacity, cost, sources, sinks);</span>
 							} else {
-<span class="fc" id="L278">								return floatsAlgo.computeMinCostMaxFlow(g, capacity, cost, sources, sinks);</span>
+<span class="fc" id="L267">								return floatsAlgo.computeMinCostMaxFlow(g, capacity, cost, sources, sinks);</span>
 							}
 						}
 
@@ -283,33 +272,33 @@ public interface MinimumCostFlow {
 						public &lt;V, E&gt; Flow&lt;V, E&gt; computeMinCostMaxFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity,
 								WeightFunction&lt;E&gt; cost, WeightFunction&lt;E&gt; lowerBound, Collection&lt;V&gt; sources,
 								Collection&lt;V&gt; sinks) {
-<span class="pc bpc" id="L286" title="1 of 4 branches missed.">							if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(cost)</span>
-<span class="pc bpc" id="L287" title="1 of 2 branches missed.">									&amp;&amp; WeightFunction.isInteger(lowerBound)) {</span>
-<span class="fc" id="L288">								return integerAlgo.computeMinCostMaxFlow(g, capacity, cost, lowerBound, sources, sinks);</span>
+<span class="pc bpc" id="L275" title="1 of 4 branches missed.">							if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(cost)</span>
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">									&amp;&amp; WeightFunction.isInteger(lowerBound)) {</span>
+<span class="fc" id="L277">								return integerAlgo.computeMinCostMaxFlow(g, capacity, cost, lowerBound, sources, sinks);</span>
 							} else {
-<span class="fc" id="L290">								return floatsAlgo.computeMinCostMaxFlow(g, capacity, cost, lowerBound, sources, sinks);</span>
+<span class="fc" id="L279">								return floatsAlgo.computeMinCostMaxFlow(g, capacity, cost, lowerBound, sources, sinks);</span>
 							}
 						}
 
 						@Override
 						public &lt;V, E&gt; Flow&lt;V, E&gt; computeMinCostFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity,
 								WeightFunction&lt;E&gt; cost, WeightFunction&lt;V&gt; supply) {
-<span class="pc bpc" id="L297" title="1 of 4 branches missed.">							if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(cost)</span>
-<span class="pc bpc" id="L298" title="1 of 2 branches missed.">									&amp;&amp; WeightFunction.isInteger(supply)) {</span>
-<span class="fc" id="L299">								return integerAlgo.computeMinCostFlow(g, capacity, cost, supply);</span>
+<span class="pc bpc" id="L286" title="1 of 4 branches missed.">							if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(cost)</span>
+<span class="pc bpc" id="L287" title="1 of 2 branches missed.">									&amp;&amp; WeightFunction.isInteger(supply)) {</span>
+<span class="fc" id="L288">								return integerAlgo.computeMinCostFlow(g, capacity, cost, supply);</span>
 							} else {
-<span class="fc" id="L301">								return floatsAlgo.computeMinCostFlow(g, capacity, cost, supply);</span>
+<span class="fc" id="L290">								return floatsAlgo.computeMinCostFlow(g, capacity, cost, supply);</span>
 							}
 						}
 
 						@Override
 						public &lt;V, E&gt; Flow&lt;V, E&gt; computeMinCostFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity,
 								WeightFunction&lt;E&gt; cost, WeightFunction&lt;E&gt; lowerBound, WeightFunction&lt;V&gt; supply) {
-<span class="pc bpc" id="L308" title="1 of 4 branches missed.">							if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(cost)</span>
-<span class="pc bpc" id="L309" title="2 of 4 branches missed.">									&amp;&amp; WeightFunction.isInteger(lowerBound) &amp;&amp; WeightFunction.isInteger(supply)) {</span>
-<span class="fc" id="L310">								return integerAlgo.computeMinCostFlow(g, capacity, cost, lowerBound, supply);</span>
+<span class="pc bpc" id="L297" title="1 of 4 branches missed.">							if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(cost)</span>
+<span class="pc bpc" id="L298" title="2 of 4 branches missed.">									&amp;&amp; WeightFunction.isInteger(lowerBound) &amp;&amp; WeightFunction.isInteger(supply)) {</span>
+<span class="fc" id="L299">								return integerAlgo.computeMinCostFlow(g, capacity, cost, lowerBound, supply);</span>
 							} else {
-<span class="fc" id="L312">								return floatsAlgo.computeMinCostFlow(g, capacity, cost, lowerBound, supply);</span>
+<span class="fc" id="L301">								return floatsAlgo.computeMinCostFlow(g, capacity, cost, lowerBound, supply);</span>
 							}
 						}
 
@@ -319,26 +308,15 @@ public interface MinimumCostFlow {
 
 			@Override
 			public MinimumCostFlow.Builder integerNetwork(boolean enable) {
-<span class="fc" id="L322">				integerNetwork = enable;</span>
-<span class="fc" id="L323">				return this;</span>
+<span class="fc" id="L311">				integerNetwork = enable;</span>
+<span class="fc" id="L312">				return this;</span>
 			}
 
 			@Override
 			public MinimumCostFlow.Builder integerCosts(boolean enable) {
-<span class="fc" id="L328">				integerCosts = enable;</span>
-<span class="fc" id="L329">				return this;</span>
+<span class="fc" id="L317">				integerCosts = enable;</span>
+<span class="fc" id="L318">				return this;</span>
 			}
-
-			@Override
-			public void setOption(String key, Object value) {
-<span class="pc bpc" id="L334" title="1 of 2 branches missed.">				switch (key) {</span>
-					case &quot;impl&quot;:
-<span class="fc" id="L336">						impl = (String) value;</span>
-<span class="fc" id="L337">						break;</span>
-					default:
-<span class="nc" id="L339">						MinimumCostFlow.Builder.super.setOption(key, value);</span>
-				}
-<span class="fc" id="L341">			}</span>
 		};
 	}
 

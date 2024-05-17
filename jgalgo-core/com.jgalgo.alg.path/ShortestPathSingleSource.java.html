@@ -374,106 +374,74 @@ public interface ShortestPathSingleSource {
 			private boolean dagGraphs;
 			private boolean cardinalityWeight;
 
-			private String impl;
-
 			@Override
 			public ShortestPathSingleSource build() {
-<span class="pc bpc" id="L381" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L382" title="All 7 branches missed.">					switch (impl) {</span>
-						case &quot;cardinality&quot;:
-<span class="nc" id="L384">							return new ShortestPathSingleSourceCardinality();</span>
-						case &quot;dag&quot;:
-<span class="nc" id="L386">							return new ShortestPathSingleSourceDag();</span>
-						case &quot;dijkstra&quot;:
-<span class="nc" id="L388">							return new ShortestPathSingleSourceDijkstra();</span>
-						case &quot;dial&quot;:
-<span class="nc" id="L390">							return new ShortestPathSingleSourceDial();</span>
-						case &quot;bellman-ford&quot;:
-<span class="nc" id="L392">							return new ShortestPathSingleSourceBellmanFord();</span>
-						case &quot;goldberg&quot;:
-<span class="nc" id="L394">							return new ShortestPathSingleSourceGoldberg();</span>
-						default:
-<span class="nc" id="L396">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
-					}
-				}
-
-<span class="fc bfc" id="L400" title="All 2 branches covered.">				if (cardinalityWeight)</span>
-<span class="fc" id="L401">					return new ShortestPathSingleSourceCardinality();</span>
-<span class="fc bfc" id="L402" title="All 2 branches covered.">				if (dagGraphs)</span>
-<span class="fc" id="L403">					return new ShortestPathSingleSourceDag();</span>
-<span class="fc bfc" id="L404" title="All 2 branches covered.">				if (negativeWeights) {</span>
-<span class="pc bpc" id="L405" title="1 of 2 branches missed.">					if (intWeights) {</span>
-<span class="nc" id="L406">						return new ShortestPathSingleSourceGoldberg();</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">				if (cardinalityWeight)</span>
+<span class="fc" id="L380">					return new ShortestPathSingleSourceCardinality();</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">				if (dagGraphs)</span>
+<span class="fc" id="L382">					return new ShortestPathSingleSourceDag();</span>
+<span class="fc bfc" id="L383" title="All 2 branches covered.">				if (negativeWeights) {</span>
+<span class="pc bpc" id="L384" title="1 of 2 branches missed.">					if (intWeights) {</span>
+<span class="nc" id="L385">						return new ShortestPathSingleSourceGoldberg();</span>
 					} else {
-<span class="fc" id="L408">						return new ShortestPathSingleSourceBellmanFord();</span>
+<span class="fc" id="L387">						return new ShortestPathSingleSourceBellmanFord();</span>
 					}
 				} else {
-<span class="fc" id="L411">					final ShortestPathSingleSourceDijkstra ssspDijkstra = new ShortestPathSingleSourceDijkstra();</span>
+<span class="fc" id="L390">					final ShortestPathSingleSourceDijkstra ssspDijkstra = new ShortestPathSingleSourceDijkstra();</span>
 
-<span class="pc bpc" id="L413" title="3 of 4 branches missed.">					if (intWeights &amp;&amp; maxDistance &lt; Integer.MAX_VALUE) {</span>
-<span class="nc" id="L414">						return new ShortestPathSingleSourceAbstract() {</span>
-<span class="nc" id="L415">							private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();</span>
-<span class="nc" id="L416">							private final int maxDistance0 = (int) maxDistance;</span>
+<span class="pc bpc" id="L392" title="3 of 4 branches missed.">					if (intWeights &amp;&amp; maxDistance &lt; Integer.MAX_VALUE) {</span>
+<span class="nc" id="L393">						return new ShortestPathSingleSourceAbstract() {</span>
+<span class="nc" id="L394">							private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();</span>
+<span class="nc" id="L395">							private final int maxDistance0 = (int) maxDistance;</span>
 
 							@Override
 							public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g,
 									IWeightFunction w, int source) {
-<span class="nc" id="L421">								final int n = g.vertices().size(), m = g.edges().size();</span>
-<span class="nc" id="L422">								int dialWork = n + m + maxDistance0;</span>
-<span class="nc" id="L423">								int dijkstraWork = m + n * JGAlgoUtils.log2ceil(n);</span>
-<span class="nc bnc" id="L424" title="All 2 branches missed.">								if (dialWork &lt; dijkstraWork) {</span>
-<span class="nc" id="L425">									return ssspDial</span>
-<span class="nc" id="L426">											.computeShortestPaths(g, (IWeightFunctionInt) w, source, maxDistance0);</span>
+<span class="nc" id="L400">								final int n = g.vertices().size(), m = g.edges().size();</span>
+<span class="nc" id="L401">								int dialWork = n + m + maxDistance0;</span>
+<span class="nc" id="L402">								int dijkstraWork = m + n * JGAlgoUtils.log2ceil(n);</span>
+<span class="nc bnc" id="L403" title="All 2 branches missed.">								if (dialWork &lt; dijkstraWork) {</span>
+<span class="nc" id="L404">									return ssspDial</span>
+<span class="nc" id="L405">											.computeShortestPaths(g, (IWeightFunctionInt) w, source, maxDistance0);</span>
 								} else {
-<span class="nc" id="L428">									return ssspDijkstra.computeShortestPaths(g, w, source);</span>
+<span class="nc" id="L407">									return ssspDijkstra.computeShortestPaths(g, w, source);</span>
 								}
 							}
 						};
 					}
-<span class="fc" id="L433">					return ssspDijkstra;</span>
+<span class="fc" id="L412">					return ssspDijkstra;</span>
 				}
 			}
 
 			@Override
 			public ShortestPathSingleSource.Builder setIntWeights(boolean enable) {
-<span class="nc" id="L439">				intWeights = enable;</span>
-<span class="nc" id="L440">				return this;</span>
+<span class="nc" id="L418">				intWeights = enable;</span>
+<span class="nc" id="L419">				return this;</span>
 			}
 
 			@Override
 			public ShortestPathSingleSource.Builder setNegativeWeights(boolean enable) {
-<span class="fc" id="L445">				negativeWeights = enable;</span>
-<span class="fc" id="L446">				return this;</span>
+<span class="fc" id="L424">				negativeWeights = enable;</span>
+<span class="fc" id="L425">				return this;</span>
 			}
 
 			@Override
 			public ShortestPathSingleSource.Builder setMaxDistance(double maxDistance) {
-<span class="nc" id="L451">				this.maxDistance = maxDistance;</span>
-<span class="nc" id="L452">				return this;</span>
+<span class="nc" id="L430">				this.maxDistance = maxDistance;</span>
+<span class="nc" id="L431">				return this;</span>
 			}
 
 			@Override
 			public ShortestPathSingleSource.Builder setDag(boolean dagGraphs) {
-<span class="fc" id="L457">				this.dagGraphs = dagGraphs;</span>
-<span class="fc" id="L458">				return this;</span>
+<span class="fc" id="L436">				this.dagGraphs = dagGraphs;</span>
+<span class="fc" id="L437">				return this;</span>
 			}
 
 			@Override
 			public ShortestPathSingleSource.Builder setCardinality(boolean cardinalityWeight) {
-<span class="fc" id="L463">				this.cardinalityWeight = cardinalityWeight;</span>
-<span class="fc" id="L464">				return this;</span>
+<span class="fc" id="L442">				this.cardinalityWeight = cardinalityWeight;</span>
+<span class="fc" id="L443">				return this;</span>
 			}
-
-			@Override
-			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L469" title="All 2 branches missed.">				switch (key) {</span>
-					case &quot;impl&quot;:
-<span class="nc" id="L471">						impl = (String) value;</span>
-<span class="nc" id="L472">						break;</span>
-					default:
-<span class="nc" id="L474">						ShortestPathSingleSource.Builder.super.setOption(key, value);</span>
-				}
-<span class="nc" id="L476">			}</span>
 		};
 	}
 

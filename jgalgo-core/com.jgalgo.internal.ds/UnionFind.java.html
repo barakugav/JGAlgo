@@ -16,7 +16,6 @@
 
 package com.jgalgo.internal.ds;
 
-import com.jgalgo.alg.AlgorithmBuilderBase;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -33,8 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * &lt;/ul&gt;
  *
  * &lt;p&gt;
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * &lt;pre&gt; {@code
  * UnionFind uf = UnionFind.newInstance();
@@ -110,87 +108,12 @@ public interface UnionFind {
 	 * Create a new union find algorithm object.
 	 *
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link UnionFind} object. The {@link UnionFind.Builder} might
-	 * support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link UnionFind} object.
 	 *
 	 * @return a default implementation of {@link UnionFind}
 	 */
 	static UnionFind newInstance() {
-<span class="fc" id="L119">		return builder().build();</span>
-	}
-
-	/**
-	 * Create a new union-find data structure builder.
-	 *
-	 * &lt;p&gt;
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link UnionFind} objects
-	 */
-	static UnionFind.Builder builder() {
-<span class="fc" id="L131">		return new UnionFind.Builder() {</span>
-			int expectedSize;
-			String impl;
-
-			@Override
-			public UnionFind build() {
-<span class="pc bpc" id="L137" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L138" title="All 3 branches missed.">					switch (impl) {</span>
-						case &quot;array&quot;:
-<span class="nc" id="L140">							return new UnionFindArray(expectedSize);</span>
-						case &quot;ptr&quot;:
-<span class="nc" id="L142">							return new UnionFindPtr(expectedSize);</span>
-						default:
-<span class="nc" id="L144">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
-					}
-				}
-<span class="fc" id="L147">				return new UnionFindArray(expectedSize);</span>
-			}
-
-			@Override
-			public UnionFind.Builder expectedSize(int expectedSize) {
-<span class="pc bpc" id="L152" title="1 of 2 branches missed.">				if (expectedSize &lt; 0)</span>
-<span class="nc" id="L153">					throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
-<span class="fc" id="L154">				this.expectedSize = expectedSize;</span>
-<span class="fc" id="L155">				return this;</span>
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L160" title="All 2 branches missed.">				switch (key) {</span>
-					case &quot;impl&quot;:
-<span class="nc" id="L162">						impl = (String) value;</span>
-<span class="nc" id="L163">						break;</span>
-					default:
-<span class="nc" id="L165">						UnionFind.Builder.super.setOption(key, value);</span>
-				}
-<span class="nc" id="L167">			}</span>
-		};
-	}
-
-	/**
-	 * A builder for {@link UnionFind} objects.
-	 *
-	 * @see    UnionFind#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new empty union-find data structure.
-		 *
-		 * @return a new empty union-find data structure
-		 */
-		UnionFind build();
-
-		/**
-		 * Hint the implementation the number of elements that will exists in the union-find data structure.
-		 *
-		 * @param  expectedSize the expected number of elements that will be in the data structure
-		 * @return              this builder
-		 */
-		UnionFind.Builder expectedSize(int expectedSize);
-
+<span class="fc" id="L116">		return new UnionFindArray();</span>
 	}
 
 }

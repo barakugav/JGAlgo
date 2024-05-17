@@ -148,83 +148,51 @@ public interface MatchingAlgo {
 
 <span class="fc" id="L149">			boolean cardinality = false;</span>
 <span class="fc" id="L150">			boolean isBipartite = false;</span>
-			String impl;
 
 			@Override
 			public MatchingAlgo build() {
-<span class="pc bpc" id="L155" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L156" title="All 8 branches missed.">					switch (impl) {</span>
-						case &quot;cardinality-bipartite-hopcroft-karp&quot;:
-<span class="nc" id="L158">							return new MatchingCardinalityBipartiteHopcroftKarp();</span>
-						case &quot;cardinality-gabow-1976&quot;:
-<span class="nc" id="L160">							return new MatchingCardinalityGabow1976();</span>
-						case &quot;bipartite-hungarian-method&quot;:
-<span class="nc" id="L162">							return new MatchingWeightedBipartiteHungarianMethod();</span>
-						case &quot;bipartite-sssp&quot;:
-<span class="nc" id="L164">							return new MatchingWeightedBipartiteSssp();</span>
-						case &quot;gabow-1990&quot;:
-<span class="nc" id="L166">							return new MatchingWeightedGabow1990();</span>
-						case &quot;gabow-1990-simpler&quot;:
-<span class="nc" id="L168">							return new MatchingWeightedGabow1990Simpler();</span>
-						case &quot;blossom-v&quot;:
-<span class="nc" id="L170">							return new MatchingWeightedBlossomV();</span>
-						default:
-<span class="nc" id="L172">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
-					}
-				}
-<span class="fc" id="L175">				Supplier&lt;MatchingAlgo&gt; cardinalityGeneralAlgo = MatchingCardinalityGabow1976::new;</span>
-<span class="fc" id="L176">				Supplier&lt;MatchingAlgo&gt; cardinalityBipartiteAlgo = MatchingCardinalityBipartiteHopcroftKarp::new;</span>
-<span class="fc" id="L177">				Supplier&lt;MatchingAlgo&gt; weightedGeneralAlgo = MatchingWeightedBlossomV::new;</span>
-<span class="fc" id="L178">				Supplier&lt;MatchingAlgo&gt; weightedBipartiteAlgo = weightedGeneralAlgo;</span>
+<span class="fc" id="L154">				Supplier&lt;MatchingAlgo&gt; cardinalityGeneralAlgo = MatchingCardinalityGabow1976::new;</span>
+<span class="fc" id="L155">				Supplier&lt;MatchingAlgo&gt; cardinalityBipartiteAlgo = MatchingCardinalityBipartiteHopcroftKarp::new;</span>
+<span class="fc" id="L156">				Supplier&lt;MatchingAlgo&gt; weightedGeneralAlgo = MatchingWeightedBlossomV::new;</span>
+<span class="fc" id="L157">				Supplier&lt;MatchingAlgo&gt; weightedBipartiteAlgo = weightedGeneralAlgo;</span>
 
-<span class="fc bfc" id="L180" title="All 2 branches covered.">				if (cardinality) {</span>
-<span class="fc bfc" id="L181" title="All 2 branches covered.">					if (isBipartite) {</span>
-<span class="fc" id="L182">						return cardinalityBipartiteAlgo.get();</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">				if (cardinality) {</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">					if (isBipartite) {</span>
+<span class="fc" id="L161">						return cardinalityBipartiteAlgo.get();</span>
 
 					} else {
-<span class="fc" id="L185">						MatchingAlgo a = cardinalityGeneralAlgo.get();</span>
-<span class="fc" id="L186">						MatchingAlgo b = cardinalityBipartiteAlgo.get();</span>
-<span class="fc" id="L187">						return new Matchings.SuperImpl(a, b, a, b);</span>
+<span class="fc" id="L164">						MatchingAlgo a = cardinalityGeneralAlgo.get();</span>
+<span class="fc" id="L165">						MatchingAlgo b = cardinalityBipartiteAlgo.get();</span>
+<span class="fc" id="L166">						return new Matchings.SuperImpl(a, b, a, b);</span>
 
 					}
 				} else {
-<span class="fc bfc" id="L191" title="All 2 branches covered.">					if (isBipartite) {</span>
-<span class="fc" id="L192">						MatchingAlgo a = cardinalityBipartiteAlgo.get();</span>
-<span class="fc" id="L193">						MatchingAlgo b = weightedBipartiteAlgo.get();</span>
-<span class="fc" id="L194">						return new Matchings.SuperImpl(a, a, b, b);</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">					if (isBipartite) {</span>
+<span class="fc" id="L171">						MatchingAlgo a = cardinalityBipartiteAlgo.get();</span>
+<span class="fc" id="L172">						MatchingAlgo b = weightedBipartiteAlgo.get();</span>
+<span class="fc" id="L173">						return new Matchings.SuperImpl(a, a, b, b);</span>
 
 					} else {
-<span class="fc" id="L197">						MatchingAlgo a = cardinalityGeneralAlgo.get();</span>
-<span class="fc" id="L198">						MatchingAlgo b = cardinalityBipartiteAlgo.get();</span>
-<span class="fc" id="L199">						MatchingAlgo c = weightedGeneralAlgo.get();</span>
-<span class="fc" id="L200">						MatchingAlgo d = weightedBipartiteAlgo.get();</span>
-<span class="fc" id="L201">						return new Matchings.SuperImpl(a, b, c, d);</span>
+<span class="fc" id="L176">						MatchingAlgo a = cardinalityGeneralAlgo.get();</span>
+<span class="fc" id="L177">						MatchingAlgo b = cardinalityBipartiteAlgo.get();</span>
+<span class="fc" id="L178">						MatchingAlgo c = weightedGeneralAlgo.get();</span>
+<span class="fc" id="L179">						MatchingAlgo d = weightedBipartiteAlgo.get();</span>
+<span class="fc" id="L180">						return new Matchings.SuperImpl(a, b, c, d);</span>
 					}
 				}
 			}
 
 			@Override
 			public MatchingAlgo.Builder setBipartite(boolean bipartite) {
-<span class="fc" id="L208">				isBipartite = bipartite;</span>
-<span class="fc" id="L209">				return this;</span>
+<span class="fc" id="L187">				isBipartite = bipartite;</span>
+<span class="fc" id="L188">				return this;</span>
 			}
 
 			@Override
 			public MatchingAlgo.Builder setCardinality(boolean cardinality) {
-<span class="fc" id="L214">				this.cardinality = cardinality;</span>
-<span class="fc" id="L215">				return this;</span>
+<span class="fc" id="L193">				this.cardinality = cardinality;</span>
+<span class="fc" id="L194">				return this;</span>
 			}
-
-			@Override
-			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L220" title="All 2 branches missed.">				switch (key) {</span>
-					case &quot;impl&quot;:
-<span class="nc" id="L222">						impl = (String) value;</span>
-<span class="nc" id="L223">						break;</span>
-					default:
-<span class="nc" id="L225">						MatchingAlgo.Builder.super.setOption(key, value);</span>
-				}
-<span class="nc" id="L227">			}</span>
 		};
 	}
 

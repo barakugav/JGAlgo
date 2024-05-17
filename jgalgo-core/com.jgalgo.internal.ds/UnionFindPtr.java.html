@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    UnionFindArray
  * @author Barak Ugav
  */
-<span class="fc" id="L38">class UnionFindPtr implements UnionFind {</span>
+<span class="fc" id="L38">public class UnionFindPtr implements UnionFind {</span>
 
 	private Elm[] elements;
 	private int size;
@@ -43,7 +43,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	/**
 	 * Create an empty Union Find data structure with no elements.
 	 */
-	UnionFindPtr() {
+	public UnionFindPtr() {
 <span class="fc" id="L47">		this(0);</span>
 <span class="fc" id="L48">	}</span>
 
@@ -52,7 +52,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	 *
 	 * @param expectedSize the expended number of elements in the data structure
 	 */
-<span class="fc" id="L55">	UnionFindPtr(int expectedSize) {</span>
+<span class="fc" id="L55">	public UnionFindPtr(int expectedSize) {</span>
 <span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if (expectedSize &lt; 0)</span>
 <span class="nc" id="L57">			throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
 <span class="pc bpc" id="L58" title="1 of 2 branches missed.">		elements = new Elm[expectedSize == 0 ? 2 : expectedSize];</span>
