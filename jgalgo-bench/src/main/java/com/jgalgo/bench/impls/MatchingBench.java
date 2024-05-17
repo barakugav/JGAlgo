@@ -39,6 +39,13 @@ import com.jgalgo.alg.IVertexBiPartition;
 import com.jgalgo.alg.bipartite.BipartiteGraphs;
 import com.jgalgo.alg.match.IMatching;
 import com.jgalgo.alg.match.MatchingAlgo;
+import com.jgalgo.alg.match.MatchingCardinalityBipartiteHopcroftKarp;
+import com.jgalgo.alg.match.MatchingCardinalityGabow1976;
+import com.jgalgo.alg.match.MatchingWeightedBipartiteHungarianMethod;
+import com.jgalgo.alg.match.MatchingWeightedBipartiteSssp;
+import com.jgalgo.alg.match.MatchingWeightedBlossomV;
+import com.jgalgo.alg.match.MatchingWeightedGabow1990;
+import com.jgalgo.alg.match.MatchingWeightedGabow1990Simpler;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -90,7 +97,7 @@ public class MatchingBench {
 
 		@Benchmark
 		public void CardinalityGabow1976(Blackhole blackhole) {
-			benchAlgo(getAlgo("cardinality-gabow-1976"), blackhole);
+			benchAlgo(new MatchingCardinalityGabow1976(), blackhole);
 		}
 
 	}
@@ -132,12 +139,12 @@ public class MatchingBench {
 
 		@Benchmark
 		public void CardinalityBipartiteHopcroftKarp(Blackhole blackhole) {
-			benchAlgo(getAlgo("cardinality-bipartite-hopcroft-karp"), blackhole);
+			benchAlgo(new MatchingCardinalityBipartiteHopcroftKarp(), blackhole);
 		}
 
 		@Benchmark
 		public void CardinalityGabow1976(Blackhole blackhole) {
-			benchAlgo(getAlgo("cardinality-gabow-1976"), blackhole);
+			benchAlgo(new MatchingCardinalityGabow1976(), blackhole);
 		}
 
 	}
@@ -182,17 +189,17 @@ public class MatchingBench {
 
 		@Benchmark
 		public void Gabow1990Simpler(Blackhole blackhole) {
-			benchAlgo(getAlgo("gabow-1990-simpler"), blackhole);
+			benchAlgo(new MatchingWeightedGabow1990Simpler(), blackhole);
 		}
 
 		@Benchmark
 		public void Gabow1990(Blackhole blackhole) {
-			benchAlgo(getAlgo("gabow-1990"), blackhole);
+			benchAlgo(new MatchingWeightedGabow1990(), blackhole);
 		}
 
 		@Benchmark
 		public void BlossomV(Blackhole blackhole) {
-			benchAlgo(getAlgo("blossom-v"), blackhole);
+			benchAlgo(new MatchingWeightedBlossomV(), blackhole);
 		}
 
 	}
@@ -237,17 +244,17 @@ public class MatchingBench {
 
 		@Benchmark
 		public void BipartiteHungarianMethod(Blackhole blackhole) {
-			benchAlgo(getAlgo("bipartite-hungarian-method"), blackhole);
+			benchAlgo(new MatchingWeightedBipartiteHungarianMethod(), blackhole);
 		}
 
 		@Benchmark
 		public void BipartiteSssp(Blackhole blackhole) {
-			benchAlgo(getAlgo("bipartite-sssp"), blackhole);
+			benchAlgo(new MatchingWeightedBipartiteSssp(), blackhole);
 		}
 
 		@Benchmark
 		public void BlossomV(Blackhole blackhole) {
-			benchAlgo(getAlgo("blossom-v"), blackhole);
+			benchAlgo(new MatchingWeightedBlossomV(), blackhole);
 		}
 
 	}
@@ -308,17 +315,17 @@ public class MatchingBench {
 
 		// @Benchmark
 		// public void Gabow1990Simpler(Blackhole blackhole) {
-		// benchAlgo(getAlgo("gabow-1990-simpler"), blackhole);
+		// benchAlgo(new MatchingWeightedGabow1990Simpler(), blackhole);
 		// }
 
 		// @Benchmark
 		// public void Gabow1990(Blackhole blackhole) {
-		// benchAlgo(getAlgo("gabow-1990"), blackhole);
+		// benchAlgo(new MatchingWeightedGabow1990(), blackhole);
 		// }
 
 		@Benchmark
 		public void BlossomV(Blackhole blackhole) {
-			benchAlgo(getAlgo("blossom-v"), blackhole);
+			benchAlgo(new MatchingWeightedBlossomV(), blackhole);
 		}
 
 	}
@@ -381,25 +388,19 @@ public class MatchingBench {
 
 		@Benchmark
 		public void BipartiteHungarianMethod(Blackhole blackhole) {
-			benchAlgo(getAlgo("bipartite-hungarian-method"), blackhole);
+			benchAlgo(new MatchingWeightedBipartiteHungarianMethod(), blackhole);
 		}
 
 		// @Benchmark
 		// public void Gabow1990Simpler(Blackhole blackhole) {
-		// benchAlgo(getAlgo("gabow-1990-simpler"), blackhole);
+		// benchAlgo(new MatchingWeightedGabow1990Simpler(), blackhole);
 		// }
 
 		@Benchmark
 		public void BlossomV(Blackhole blackhole) {
-			benchAlgo(getAlgo("blossom-v"), blackhole);
+			benchAlgo(new MatchingWeightedBlossomV(), blackhole);
 		}
 
-	}
-
-	private static MatchingAlgo getAlgo(String implName) {
-		MatchingAlgo.Builder builder = MatchingAlgo.builder();
-		builder.setOption("impl", implName);
-		return builder.build();
 	}
 
 }

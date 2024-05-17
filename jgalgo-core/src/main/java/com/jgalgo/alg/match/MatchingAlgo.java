@@ -148,30 +148,9 @@ public interface MatchingAlgo {
 
 			boolean cardinality = false;
 			boolean isBipartite = false;
-			String impl;
 
 			@Override
 			public MatchingAlgo build() {
-				if (impl != null) {
-					switch (impl) {
-						case "cardinality-bipartite-hopcroft-karp":
-							return new MatchingCardinalityBipartiteHopcroftKarp();
-						case "cardinality-gabow-1976":
-							return new MatchingCardinalityGabow1976();
-						case "bipartite-hungarian-method":
-							return new MatchingWeightedBipartiteHungarianMethod();
-						case "bipartite-sssp":
-							return new MatchingWeightedBipartiteSssp();
-						case "gabow-1990":
-							return new MatchingWeightedGabow1990();
-						case "gabow-1990-simpler":
-							return new MatchingWeightedGabow1990Simpler();
-						case "blossom-v":
-							return new MatchingWeightedBlossomV();
-						default:
-							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-					}
-				}
 				Supplier<MatchingAlgo> cardinalityGeneralAlgo = MatchingCardinalityGabow1976::new;
 				Supplier<MatchingAlgo> cardinalityBipartiteAlgo = MatchingCardinalityBipartiteHopcroftKarp::new;
 				Supplier<MatchingAlgo> weightedGeneralAlgo = MatchingWeightedBlossomV::new;
@@ -213,17 +192,6 @@ public interface MatchingAlgo {
 			public MatchingAlgo.Builder setCardinality(boolean cardinality) {
 				this.cardinality = cardinality;
 				return this;
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					default:
-						MatchingAlgo.Builder.super.setOption(key, value);
-				}
 			}
 		};
 	}
