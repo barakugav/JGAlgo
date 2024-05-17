@@ -17,7 +17,6 @@ package com.jgalgo.alg.path;
 
 import java.util.function.IntToDoubleFunction;
 import java.util.function.ToDoubleFunction;
-import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
@@ -39,8 +38,7 @@ import com.jgalgo.graph.WeightFunction;
  * operations and space.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    ShortestPathSingleSource
  * @author Barak Ugav
@@ -84,68 +82,12 @@ public interface ShortestPathHeuristicSt {
 	 * Create a new shortest path algorithm with heuristic.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link ShortestPathHeuristicSt} object. The
-	 * {@link ShortestPathHeuristicSt.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link ShortestPathHeuristicSt} object.
 	 *
 	 * @return a default implementation of {@link ShortestPathHeuristicSt}
 	 */
 	static ShortestPathHeuristicSt newInstance() {
-		return builder().build();
-	}
-
-	/**
-	 * Create a new heuristic shortest path algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link ShortestPathHeuristicSt} objects
-	 */
-	static ShortestPathHeuristicSt.Builder builder() {
-		return new ShortestPathHeuristicSt.Builder() {
-
-			private String impl;
-
-			@Override
-			public ShortestPathHeuristicSt build() {
-				if (impl != null) {
-					switch (impl) {
-						case "a-star":
-							return new ShortestPathAStar();
-						default:
-							break;
-					}
-				}
-				return new ShortestPathAStar();
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					default:
-						ShortestPathHeuristicSt.Builder.super.setOption(key, value);
-				}
-			}
-		};
-	}
-
-	/**
-	 * A builder for {@link ShortestPathHeuristicSt} objects.
-	 *
-	 * @see    ShortestPathHeuristicSt#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for shortest path with heuristic computation.
-		 *
-		 * @return a new heuristic shortest path algorithm
-		 */
-		ShortestPathHeuristicSt build();
+		return new ShortestPathAStar();
 	}
 
 }

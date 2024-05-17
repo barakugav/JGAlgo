@@ -35,6 +35,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
+import com.jgalgo.alg.path.ShortestPathAStar;
 import com.jgalgo.alg.path.ShortestPathHeuristicSt;
 import com.jgalgo.alg.path.ShortestPathSingleSource;
 import com.jgalgo.alg.path.ShortestPathSt;
@@ -113,7 +114,7 @@ public class ShortestPathStBench {
 
 		@Benchmark
 		public void AStar(Blackhole blackhole) {
-			benchStShortestPath(getAlgo("a-star"), blackhole);
+			benchStShortestPath(new ShortestPathAStar(), blackhole);
 		}
 	}
 
@@ -155,7 +156,7 @@ public class ShortestPathStBench {
 
 		@Benchmark
 		public void AStar(Blackhole blackhole) {
-			benchStShortestPath(getAlgo("a-star"), blackhole);
+			benchStShortestPath(new ShortestPathAStar(), blackhole);
 		}
 	}
 
@@ -198,14 +199,8 @@ public class ShortestPathStBench {
 
 		@Benchmark
 		public void AStar(Blackhole blackhole) {
-			benchStShortestPath(getAlgo("a-star"), blackhole);
+			benchStShortestPath(new ShortestPathAStar(), blackhole);
 		}
-	}
-
-	private static ShortestPathHeuristicSt getAlgo(String implName) {
-		ShortestPathHeuristicSt.Builder builder = ShortestPathHeuristicSt.builder();
-		builder.setOption("impl", implName);
-		return builder.build();
 	}
 
 	private static class GraphArgs {
