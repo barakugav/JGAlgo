@@ -45,9 +45,10 @@ public abstract class LowestCommonAncestorOfflineAbstract implements LowestCommo
 	public <V, E> LowestCommonAncestorOffline.Result<V, E> findLowestCommonAncestors(Graph<V, E> tree, V root,
 			LowestCommonAncestorOffline.Queries<V, E> queries) {
 		if (tree instanceof IndexGraph) {
+			IndexGraph itree = (IndexGraph) tree;
 			LowestCommonAncestorOffline.IQueries queries0 =
-					asIntQueries((LowestCommonAncestorOffline.Queries<Integer, Integer>) queries);
-			return (LowestCommonAncestorOffline.Result<V, E>) findLowestCommonAncestors((IndexGraph) tree,
+					asIntQueries((LowestCommonAncestorOffline.Queries<Integer, Integer>) queries, itree);
+			return (LowestCommonAncestorOffline.Result<V, E>) findLowestCommonAncestors(itree,
 					((Integer) root).intValue(), queries0);
 
 		} else {
@@ -149,12 +150,13 @@ public abstract class LowestCommonAncestorOfflineAbstract implements LowestCommo
 		}
 	}
 
-	static LowestCommonAncestorOffline.IQueries asIntQueries(LowestCommonAncestorOffline.Queries<Integer, Integer> qs) {
+	private static LowestCommonAncestorOffline.IQueries asIntQueries(
+			LowestCommonAncestorOffline.Queries<Integer, Integer> qs, IntGraph g) {
 		if (qs instanceof LowestCommonAncestorOffline.IQueries) {
 			return (LowestCommonAncestorOffline.IQueries) qs;
 		}
 
-		LowestCommonAncestorOffline.IQueries qs2 = LowestCommonAncestorOffline.IQueries.newInstance();
+		LowestCommonAncestorOffline.IQueries qs2 = LowestCommonAncestorOffline.IQueries.newInstance(g);
 		for (int q : range(qs.size()))
 			qs2.addQuery(qs.getQuerySource(q).intValue(), qs.getQueryTarget(q).intValue());
 		return qs2;

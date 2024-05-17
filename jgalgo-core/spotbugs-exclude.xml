@@ -312,4 +312,11 @@
     <Local name="preQueryResult" />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
+  <Match>
+    <!-- The constructor is documentation, and the result array should not be modified after constructing the result -->
+    <Class name="com.jgalgo.alg.tree.TreePathMaximaAbstract$IndexResult" />
+    <Constructor />
+    <Local name="preQueryResult" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
 </FindBugsFilter>

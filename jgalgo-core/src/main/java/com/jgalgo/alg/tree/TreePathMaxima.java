@@ -16,16 +16,20 @@
 
 package com.jgalgo.alg.tree;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
+import java.util.Objects;
 import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -96,8 +100,14 @@ public interface TreePathMaxima {
 		 * @param  g   the graph on which the TMP computation will be performed
 		 * @return     a new queries container
 		 */
+		@SuppressWarnings("unchecked")
 		static <V, E> TreePathMaxima.Queries<V, E> newInstance(Graph<V, E> g) {
-			return TreePathMaximaAbstract.newQueries(g);
+			Objects.requireNonNull(g);
+			if (g instanceof IntGraph) {
+				return (TreePathMaxima.Queries<V, E>) new TreePathMaximaQueriesImpl.IntQueriesImpl();
+			} else {
+				return new TreePathMaximaQueriesImpl.ObjQueriesImpl<>(g);
+			}
 		}
 
 		/**
@@ -161,7 +171,7 @@ public interface TreePathMaxima {
 		 * @return   a new queries container
 		 */
 		static TreePathMaxima.IQueries newInstance(IntGraph g) {
-			return (TreePathMaxima.IQueries) TreePathMaximaAbstract.newQueries(g);
+			return new TreePathMaximaQueriesImpl.IntQueriesImpl();
 		}
 
 		/**
@@ -393,18 +403,59 @@ public interface TreePathMaxima {
 	@SuppressWarnings("unchecked")
 	public static <V, E> boolean verifyMst(Graph<V, E> g, WeightFunction<E> w, Collection<E> mstEdges,
 			TreePathMaxima tpmAlgo) {
+		Assertions.onlyUndirected(g);
+
+		IndexGraph ig;
+		IWeightFunction iw;
+		IntCollection mstIEdges;
 		if (g instanceof IndexGraph) {
-			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-			IntCollection mstEdges0 = IntAdapters.asIntCollection((Collection<Integer>) mstEdges);
-			return TreePathMaximaAbstract.verifyMst((IndexGraph) g, w0, mstEdges0, tpmAlgo);
+			ig = (IndexGraph) g;
+			iw = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+			mstIEdges = IntAdapters.asIntCollection((Collection<Integer>) mstEdges);
 
 		} else {
-			IndexGraph iGraph = g.indexGraph();
+			ig = g.indexGraph();
 			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-			IntCollection iMstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);
-			return TreePathMaximaAbstract.verifyMst(iGraph, iw, iMstEdges, tpmAlgo);
+			iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			mstIEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);
 		}
+
+		final int n = ig.vertices().size();
+		IndexGraphBuilder mstBuilder = IndexGraphBuilder.undirected();
+		mstBuilder.ensureVertexCapacity(n);
+		mstBuilder.ensureEdgeCapacity(mstIEdges.size());
+
+		mstBuilder.addVertices(range(n));
+		double[] mstWeights = new double[mstIEdges.size()];
+		for (int e : mstIEdges) {
+			int u = ig.edgeSource(e), v = ig.edgeTarget(e);
+			int ne = mstBuilder.addEdge(u, v);
+			mstWeights[ne] = iw.weight(e);
+		}
+		IndexGraph mst = mstBuilder.build();
+		if (!Trees.isTree(mst))
+			return false;
+
+		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance(mst);
+		for (int e : range(ig.edges().size())) {
+			int u = ig.edgeSource(e);
+			int v = ig.edgeTarget(e);
+			if (u != v)
+				queries.addQuery(u, v);
+		}
+		IWeightFunction w0 = e -> mstWeights[e];
+		TreePathMaxima.IResult tpmResults =
+				(TreePathMaxima.IResult) tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);
+
+		int i = 0;
+		for (int e : range(ig.edges().size())) {
+			if (ig.edgeSource(e) == ig.edgeTarget(e))
+				continue;
+			int mstEdge = tpmResults.getHeaviestEdgeInt(i++);
+			if (mstEdge < 0 || iw.weight(e) < mstWeights[mstEdge])
+				return false;
+		}
+		return true;
 	}
 
 }

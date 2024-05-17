@@ -28,6 +28,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.Pair;
 
@@ -39,7 +40,8 @@ public class LowestCommonAncestorOfflineUnionFindTest extends TestBase {
 		LowestCommonAncestorOffline lca = builder.get();
 		LowestCommonAncestorOffline.Queries<V, E> qs;
 		if (g instanceof IntGraph && rand.nextBoolean()) {
-			qs = (LowestCommonAncestorOffline.Queries<V, E>) LowestCommonAncestorOffline.IQueries.newInstance();
+			qs = (LowestCommonAncestorOffline.Queries<V, E>) LowestCommonAncestorOffline.IQueries
+					.newInstance((IntGraph) g);
 		} else {
 			qs = LowestCommonAncestorOffline.Queries.newInstance(g);
 		}
@@ -146,12 +148,11 @@ public class LowestCommonAncestorOfflineUnionFindTest extends TestBase {
 		final Random rand = new Random(seed);
 		Graph<Integer, Integer> g = GraphsTestUtils.randTree(16, rand.nextLong());
 
-		IntGraph gInt = IntGraph.newUndirected();
-		gInt.addVertices(range(16));
+		IntGraph gInt = IntGraphFactory.undirected().newCopyOf(g);
 
 		testQueries(g, LowestCommonAncestorOffline.Queries.newInstance(g), rand);
 		testQueries(g.indexGraph(), LowestCommonAncestorOffline.Queries.newInstance(g.indexGraph()), rand);
-		testQueries(g, LowestCommonAncestorOffline.IQueries.newInstance(), rand);
+		testQueries(gInt, LowestCommonAncestorOffline.IQueries.newInstance(gInt), rand);
 
 		assertThrows(IllegalArgumentException.class, () -> LowestCommonAncestorOfflineQueriesImpl
 				.indexQueriesFromQueries(gInt, LowestCommonAncestorOffline.Queries.newInstance(g)));

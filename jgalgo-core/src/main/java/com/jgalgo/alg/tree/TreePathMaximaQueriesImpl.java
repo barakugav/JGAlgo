@@ -25,13 +25,12 @@ import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 
-class LowestCommonAncestorOfflineQueriesImpl {
+class TreePathMaximaQueriesImpl {
 
-	private LowestCommonAncestorOfflineQueriesImpl() {}
+	private TreePathMaximaQueriesImpl() {}
 
-	static class ObjQueriesImpl<V, E> implements LowestCommonAncestorOffline.Queries<V, E> {
-
-		private final LowestCommonAncestorOffline.IQueries indexQueries = new IntQueriesImpl();
+	static class ObjQueriesImpl<V, E> implements TreePathMaxima.Queries<V, E> {
+		private final TreePathMaxima.IQueries indexQueries = new IntQueriesImpl();
 		private final IndexIdMap<V> viMap;
 
 		ObjQueriesImpl(Graph<V, E> g) {
@@ -65,7 +64,7 @@ class LowestCommonAncestorOfflineQueriesImpl {
 		}
 	}
 
-	static class IntQueriesImpl implements LowestCommonAncestorOffline.IQueries {
+	static class IntQueriesImpl implements TreePathMaxima.IQueries {
 		private final LongList qs;
 
 		IntQueriesImpl() {
@@ -98,8 +97,7 @@ class LowestCommonAncestorOfflineQueriesImpl {
 		}
 	}
 
-	static <V, E> LowestCommonAncestorOffline.IQueries indexQueriesFromQueries(Graph<V, E> g,
-			LowestCommonAncestorOffline.Queries<V, E> queries) {
+	static <V, E> TreePathMaxima.IQueries indexQueriesFromQueries(Graph<V, E> g, TreePathMaxima.Queries<V, E> queries) {
 		assert !(g instanceof IndexGraph);
 		if (queries instanceof ObjQueriesImpl) {
 			ObjQueriesImpl<V, E> q0 = (ObjQueriesImpl<V, E>) queries;
@@ -108,10 +106,10 @@ class LowestCommonAncestorOfflineQueriesImpl {
 			return q0.indexQueries;
 		}
 
-		LowestCommonAncestorOffline.IQueries qs = LowestCommonAncestorOffline.IQueries.newInstance(g.indexGraph());
-		if (g instanceof IntGraph && queries instanceof LowestCommonAncestorOffline.IQueries) {
+		TreePathMaxima.IQueries qs = TreePathMaxima.IQueries.newInstance(g.indexGraph());
+		if (g instanceof IntGraph && queries instanceof TreePathMaxima.IQueries) {
 			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-			LowestCommonAncestorOffline.IQueries queries0 = (LowestCommonAncestorOffline.IQueries) queries;
+			TreePathMaxima.IQueries queries0 = (TreePathMaxima.IQueries) queries;
 			for (int q : range(queries.size())) {
 				int u = queries0.getQuerySourceInt(q), v = queries0.getQueryTargetInt(q);
 				qs.addQuery(viMap.idToIndex(u), viMap.idToIndex(v));

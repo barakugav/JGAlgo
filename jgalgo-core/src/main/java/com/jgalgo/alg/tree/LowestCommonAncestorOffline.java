@@ -145,9 +145,10 @@ public interface LowestCommonAncestorOffline {
 		/**
 		 * Create an empty queries container.
 		 *
-		 * @return a new queries container
+		 * @param  g the graph
+		 * @return   a new queries container
 		 */
-		static LowestCommonAncestorOffline.IQueries newInstance() {
+		static LowestCommonAncestorOffline.IQueries newInstance(IntGraph g) {
 			return new LowestCommonAncestorOfflineQueriesImpl.IntQueriesImpl();
 		}
 
