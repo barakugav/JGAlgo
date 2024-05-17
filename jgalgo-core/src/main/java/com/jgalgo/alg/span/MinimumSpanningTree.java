@@ -20,7 +20,6 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
-import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
@@ -51,8 +50,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
  * compute the maximum spanning tree.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Minimum_spanning_tree">Wikipedia</a>
  * @see    MinimumDirectedSpanningTree
@@ -255,79 +253,12 @@ public interface MinimumSpanningTree {
 	 * Create a new MST algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumSpanningTree} object. The
-	 * {@link MinimumSpanningTree.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MinimumSpanningTree} object.
 	 *
 	 * @return a default implementation of {@link MinimumSpanningTree}
 	 */
 	static MinimumSpanningTree newInstance() {
-		return builder().build();
-	}
-
-	/**
-	 * Create a new minimum spanning tree algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link MinimumSpanningTree} objects
-	 */
-	static MinimumSpanningTree.Builder builder() {
-		return new MinimumSpanningTree.Builder() {
-			String impl;
-
-			@Override
-			public MinimumSpanningTree build() {
-				if (impl != null) {
-					switch (impl) {
-						case "kruskal":
-							return new MinimumSpanningTreeKruskal();
-						case "prim":
-							return new MinimumSpanningTreePrim();
-						case "boruvka":
-							return new MinimumSpanningTreeBoruvka();
-						case "yao":
-							return new MinimumSpanningTreeYao();
-						case "fredman-tarjan":
-							return new MinimumSpanningTreeFredmanTarjan();
-						case "karger-klein-tarjan":
-							return new MinimumSpanningTreeKargerKleinTarjan();
-						default:
-							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-					}
-				}
-
-				// TODO check for which graphs sizes Kruskal is faster
-				return new MinimumSpanningTreePrim();
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					default:
-						MinimumSpanningTree.Builder.super.setOption(key, value);
-				}
-			}
-		};
-	}
-
-	/**
-	 * A builder for {@link MinimumSpanningTree} objects.
-	 *
-	 * @see    MinimumSpanningTree#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for minimum spanning tree computation.
-		 *
-		 * @return a new minimum spanning tree algorithm
-		 */
-		MinimumSpanningTree build();
+		return new MinimumSpanningTreePrim();
 	}
 
 }

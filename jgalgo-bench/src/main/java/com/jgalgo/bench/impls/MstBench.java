@@ -34,6 +34,12 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.span.MinimumSpanningTree;
+import com.jgalgo.alg.span.MinimumSpanningTreeBoruvka;
+import com.jgalgo.alg.span.MinimumSpanningTreeFredmanTarjan;
+import com.jgalgo.alg.span.MinimumSpanningTreeKargerKleinTarjan;
+import com.jgalgo.alg.span.MinimumSpanningTreeKruskal;
+import com.jgalgo.alg.span.MinimumSpanningTreePrim;
+import com.jgalgo.alg.span.MinimumSpanningTreeYao;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -82,38 +88,32 @@ public class MstBench {
 
 	@Benchmark
 	public void Boruvka(Blackhole blackhole) {
-		benchMst(getAlgo("boruvka"), blackhole);
+		benchMst(new MinimumSpanningTreeBoruvka(), blackhole);
 	}
 
 	@Benchmark
 	public void FredmanTarjan(Blackhole blackhole) {
-		benchMst(getAlgo("fredman-tarjan"), blackhole);
+		benchMst(new MinimumSpanningTreeFredmanTarjan(), blackhole);
 	}
 
 	@Benchmark
 	public void Kruskal(Blackhole blackhole) {
-		benchMst(getAlgo("kruskal"), blackhole);
+		benchMst(new MinimumSpanningTreeKruskal(), blackhole);
 	}
 
 	@Benchmark
 	public void Prim(Blackhole blackhole) {
-		benchMst(getAlgo("prim"), blackhole);
+		benchMst(new MinimumSpanningTreePrim(), blackhole);
 	}
 
 	@Benchmark
 	public void Yao(Blackhole blackhole) {
-		benchMst(getAlgo("yao"), blackhole);
+		benchMst(new MinimumSpanningTreeYao(), blackhole);
 	}
 
 	@Benchmark
 	public void KargerKleinTarjan(Blackhole blackhole) {
-		benchMst(getAlgo("karger-klein-tarjan"), blackhole);
-	}
-
-	private static MinimumSpanningTree getAlgo(String implName) {
-		MinimumSpanningTree.Builder builder = MinimumSpanningTree.builder();
-		builder.setOption("impl", implName);
-		return builder.build();
+		benchMst(new MinimumSpanningTreeKargerKleinTarjan(), blackhole);
 	}
 
 }
