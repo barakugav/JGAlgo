@@ -332,32 +332,10 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 	}
 
 	@Test
-	public void testBuilderSetOption() {
+	public void testBuilderNegInt() {
 		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.builder();
 		assertNotNull(builder.build());
 
-		assertThrows(IllegalArgumentException.class, () -> builder.setOption("non-existing-option", "value"));
-
-		builder.setOption("impl", "cardinality");
-		assertEquals(ShortestPathSingleSourceCardinality.class, builder.build().getClass());
-		builder.setOption("impl", "dag");
-		assertEquals(ShortestPathSingleSourceDag.class, builder.build().getClass());
-		builder.setOption("impl", "dijkstra");
-		assertEquals(ShortestPathSingleSourceDijkstra.class, builder.build().getClass());
-		builder.setOption("impl", "dial");
-		assertEquals(ShortestPathSingleSourceDial.class, builder.build().getClass());
-		builder.setOption("impl", "bellman-ford");
-		assertEquals(ShortestPathSingleSourceBellmanFord.class, builder.build().getClass());
-		builder.setOption("impl", "goldberg");
-		assertEquals(ShortestPathSingleSourceGoldberg.class, builder.build().getClass());
-
-		builder.setOption("impl", "non-existing-imp");
-		assertThrows(IllegalArgumentException.class, () -> builder.build());
-	}
-
-	@Test
-	public void testBuilderNegInt() {
-		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.builder();
 		builder.setNegativeWeights(false);
 		builder.setIntWeights(false);
 		assertEquals(ShortestPathSingleSourceDijkstra.class, builder.build().getClass());

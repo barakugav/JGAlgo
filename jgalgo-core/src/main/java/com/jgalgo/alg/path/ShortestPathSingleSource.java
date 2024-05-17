@@ -374,29 +374,8 @@ public interface ShortestPathSingleSource {
 			private boolean dagGraphs;
 			private boolean cardinalityWeight;
 
-			private String impl;
-
 			@Override
 			public ShortestPathSingleSource build() {
-				if (impl != null) {
-					switch (impl) {
-						case "cardinality":
-							return new ShortestPathSingleSourceCardinality();
-						case "dag":
-							return new ShortestPathSingleSourceDag();
-						case "dijkstra":
-							return new ShortestPathSingleSourceDijkstra();
-						case "dial":
-							return new ShortestPathSingleSourceDial();
-						case "bellman-ford":
-							return new ShortestPathSingleSourceBellmanFord();
-						case "goldberg":
-							return new ShortestPathSingleSourceGoldberg();
-						default:
-							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-					}
-				}
-
 				if (cardinalityWeight)
 					return new ShortestPathSingleSourceCardinality();
 				if (dagGraphs)
@@ -462,17 +441,6 @@ public interface ShortestPathSingleSource {
 			public ShortestPathSingleSource.Builder setCardinality(boolean cardinalityWeight) {
 				this.cardinalityWeight = cardinalityWeight;
 				return this;
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					default:
-						ShortestPathSingleSource.Builder.super.setOption(key, value);
-				}
 			}
 		};
 	}

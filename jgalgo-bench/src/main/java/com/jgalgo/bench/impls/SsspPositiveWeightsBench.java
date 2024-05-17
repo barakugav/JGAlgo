@@ -35,6 +35,8 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.path.ShortestPathSingleSource;
+import com.jgalgo.alg.path.ShortestPathSingleSourceDial;
+import com.jgalgo.alg.path.ShortestPathSingleSourceDijkstra;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -87,12 +89,12 @@ public class SsspPositiveWeightsBench {
 
 		@Benchmark
 		public void Dijkstra(Blackhole blackhole) {
-			benchSssp(getAlgo("dijkstra"), blackhole);
+			benchSssp(new ShortestPathSingleSourceDijkstra(), blackhole);
 		}
 
 		@Benchmark
 		public void Dial(Blackhole blackhole) {
-			benchSssp(getAlgo("dial"), blackhole);
+			benchSssp(new ShortestPathSingleSourceDial(), blackhole);
 		}
 	}
 
@@ -127,12 +129,12 @@ public class SsspPositiveWeightsBench {
 
 		@Benchmark
 		public void Dijkstra(Blackhole blackhole) {
-			benchSssp(getAlgo("dijkstra"), blackhole);
+			benchSssp(new ShortestPathSingleSourceDijkstra(), blackhole);
 		}
 
 		@Benchmark
 		public void Dial(Blackhole blackhole) {
-			benchSssp(getAlgo("dial"), blackhole);
+			benchSssp(new ShortestPathSingleSourceDial(), blackhole);
 		}
 	}
 
@@ -168,19 +170,13 @@ public class SsspPositiveWeightsBench {
 
 		@Benchmark
 		public void Dijkstra(Blackhole blackhole) {
-			benchSssp(getAlgo("dijkstra"), blackhole);
+			benchSssp(new ShortestPathSingleSourceDijkstra(), blackhole);
 		}
 
 		@Benchmark
 		public void Dial(Blackhole blackhole) {
-			benchSssp(getAlgo("dial"), blackhole);
+			benchSssp(new ShortestPathSingleSourceDial(), blackhole);
 		}
-	}
-
-	private static ShortestPathSingleSource getAlgo(String implName) {
-		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.builder();
-		builder.setOption("impl", implName);
-		return builder.build();
 	}
 
 	private static class GraphArgs {

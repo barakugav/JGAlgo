@@ -36,6 +36,8 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.path.NegativeCycleException;
 import com.jgalgo.alg.path.ShortestPathSingleSource;
+import com.jgalgo.alg.path.ShortestPathSingleSourceBellmanFord;
+import com.jgalgo.alg.path.ShortestPathSingleSourceGoldberg;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -93,12 +95,12 @@ public class SsspNegativeWeightsBench {
 
 		@Benchmark
 		public void BellmanFord(Blackhole blackhole) {
-			benchSssp(getAlgo("bellman-ford"), blackhole);
+			benchSssp(new ShortestPathSingleSourceBellmanFord(), blackhole);
 		}
 
 		@Benchmark
 		public void Goldberg(Blackhole blackhole) {
-			benchSssp(getAlgo("goldberg"), blackhole);
+			benchSssp(new ShortestPathSingleSourceGoldberg(), blackhole);
 		}
 	}
 
@@ -134,12 +136,12 @@ public class SsspNegativeWeightsBench {
 
 		@Benchmark
 		public void BellmanFord(Blackhole blackhole) {
-			benchSssp(getAlgo("bellman-ford"), blackhole);
+			benchSssp(new ShortestPathSingleSourceBellmanFord(), blackhole);
 		}
 
 		@Benchmark
 		public void Goldberg(Blackhole blackhole) {
-			benchSssp(getAlgo("goldberg"), blackhole);
+			benchSssp(new ShortestPathSingleSourceGoldberg(), blackhole);
 		}
 	}
 
@@ -176,19 +178,13 @@ public class SsspNegativeWeightsBench {
 
 		@Benchmark
 		public void BellmanFord(Blackhole blackhole) {
-			benchSssp(getAlgo("bellman-ford"), blackhole);
+			benchSssp(new ShortestPathSingleSourceBellmanFord(), blackhole);
 		}
 
 		@Benchmark
 		public void Goldberg(Blackhole blackhole) {
-			benchSssp(getAlgo("goldberg"), blackhole);
+			benchSssp(new ShortestPathSingleSourceGoldberg(), blackhole);
 		}
-	}
-
-	private static ShortestPathSingleSource getAlgo(String implName) {
-		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.builder();
-		builder.setOption("impl", implName);
-		return builder.build();
 	}
 
 	private static class GraphArgs {
