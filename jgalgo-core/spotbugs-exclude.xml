@@ -305,4 +305,11 @@
     <Method name="edges" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
+  <Match>
+    <!-- The constructor is documentation, and the result array should not be modified after constructing the result -->
+    <Class name="com.jgalgo.alg.tree.LowestCommonAncestorOfflineAbstract$IndexResult" />
+    <Constructor />
+    <Local name="preQueryResult" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
 </FindBugsFilter>

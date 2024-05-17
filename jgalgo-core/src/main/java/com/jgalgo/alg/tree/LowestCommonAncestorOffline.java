@@ -80,10 +80,11 @@ public interface LowestCommonAncestorOffline {
 		@SuppressWarnings("unchecked")
 		static <V, E> LowestCommonAncestorOffline.Queries<V, E> newInstance(Graph<V, E> g) {
 			if (g instanceof IndexGraph) {
-				LowestCommonAncestorOffline.IQueries queries = new LowestCommonAncestorOfflineUtils.IntQueriesImpl();
+				LowestCommonAncestorOffline.IQueries queries =
+						new LowestCommonAncestorOfflineQueriesImpl.IntQueriesImpl();
 				return (LowestCommonAncestorOffline.Queries<V, E>) queries;
 			} else {
-				return new LowestCommonAncestorOfflineUtils.ObjQueriesImpl<>(g);
+				return new LowestCommonAncestorOfflineQueriesImpl.ObjQueriesImpl<>(g);
 			}
 		}
 
@@ -147,7 +148,7 @@ public interface LowestCommonAncestorOffline {
 		 * @return a new queries container
 		 */
 		static LowestCommonAncestorOffline.IQueries newInstance() {
-			return new LowestCommonAncestorOfflineUtils.IntQueriesImpl();
+			return new LowestCommonAncestorOfflineQueriesImpl.IntQueriesImpl();
 		}
 
 		/**

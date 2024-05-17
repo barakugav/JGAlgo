@@ -152,15 +152,8 @@ public class LowestCommonAncestorOfflineUnionFindTest extends TestBase {
 		testQueries(g, LowestCommonAncestorOffline.Queries.newInstance(g), rand);
 		testQueries(g.indexGraph(), LowestCommonAncestorOffline.Queries.newInstance(g.indexGraph()), rand);
 		testQueries(g, LowestCommonAncestorOffline.IQueries.newInstance(), rand);
-		testQueries(g,
-				LowestCommonAncestorOfflineUtils.asIntQueries(LowestCommonAncestorOffline.Queries.newInstance(g)),
-				rand);
-		testQueries(g.indexGraph(), new LowestCommonAncestorOfflineUtils.IndexQueriesFromObjQueries<>(g,
-				LowestCommonAncestorOffline.Queries.newInstance(g)), rand);
-		testQueries(gInt.indexGraph(), new LowestCommonAncestorOfflineUtils.IndexQueriesFromIntQueries(gInt,
-				LowestCommonAncestorOffline.IQueries.newInstance()), rand);
 
-		assertThrows(IllegalArgumentException.class, () -> LowestCommonAncestorOfflineUtils
+		assertThrows(IllegalArgumentException.class, () -> LowestCommonAncestorOfflineQueriesImpl
 				.indexQueriesFromQueries(gInt, LowestCommonAncestorOffline.Queries.newInstance(g)));
 
 	}

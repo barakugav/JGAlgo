@@ -27,14 +27,43 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUtils.AbstractImpl {
+/**
+ * Offline LCA algorithm based on Union-Find data structure.
+ *
+ * <p>
+ * Given a tree and a set of pairs of vertices, the algorithm computes the lowest common ancestor of each pair. It
+ * traverse the graph by recursively on each sub tree, from the bottom up. For a node \(u\) currently processed, it
+ * calls the recursive function on each of its child \(v\) sequentially, and union \(u\) with \(v\), until all the
+ * subtree of \(u\) is a single set in the union-find data structure. Then, for each query \((u, w)\), if \(w\) was
+ * already processed, the LCA is the root of the set containing \(w\).
+ *
+ * <p>
+ * The algorithm uses linear space and runs in \(O(n + q) \alpha (n + q)\) time, where \(n\) is the number of vertices
+ * in the tree, \(q\) is the number of queries, and \(\alpha\) is the inverse Ackermann function.
+ *
+ * <p>
+ * Based on 'Applications of Path Compression on Balanced Trees' by Tarjan (1979).
+ *
+ * @author Barak Ugav
+ */
+public class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineAbstract {
+
+	/**
+	 * Create a new offline LCA algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link LowestCommonAncestorOffline#newInstance()} to get a default implementation for the
+	 * {@link LowestCommonAncestorOffline} interface.
+	 */
+	public LowestCommonAncestorOfflineUnionFind() {}
 
 	@Override
-	LowestCommonAncestorOffline.IResult findLowestCommonAncestors(IndexGraph tree, int root,
+	protected LowestCommonAncestorOffline.IResult findLowestCommonAncestors(IndexGraph tree, int root,
 			LowestCommonAncestorOffline.IQueries queries) {
 		final int n = tree.vertices().size();
 		int[] res = new int[queries.size()];
 
+		/* Sort the queries by vertex using a linear bucket sort */
 		int[] queriesNum = new int[n];
 		int queriesNumCount = 0;
 		for (int q : range(queries.size())) {
@@ -80,9 +109,7 @@ class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUt
 
 		UnionFind uf = UnionFind.newInstance();
 		uf.makeMany(n);
-		int[] ufRoot = new int[n];
-		for (int v : range(n))
-			ufRoot[v] = v;
+		int[] ufRoot = range(n).toIntArray();
 
 		Bitmap mark = new Bitmap(queries.size());
 
@@ -132,6 +159,6 @@ class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUt
 			int parent = stack.topInt();
 			ufRoot[uf.union(parent, u)] = parent;
 		}
-		return new LowestCommonAncestorOfflineUtils.IndexResult(res);
+		return new IndexResult(res);
 	}
 }
