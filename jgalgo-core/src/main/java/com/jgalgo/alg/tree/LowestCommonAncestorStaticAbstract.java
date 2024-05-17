@@ -22,7 +22,22 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 
-abstract class LowestCommonAncestorStaticAbstract implements LowestCommonAncestorStatic {
+/**
+ * Abstract class for static LCA data structures.
+ *
+ * <p>
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
+ *
+ * @author Barak Ugav
+ */
+public abstract class LowestCommonAncestorStaticAbstract implements LowestCommonAncestorStatic {
+
+	/**
+	 * Default constructor.
+	 */
+	public LowestCommonAncestorStaticAbstract() {}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -40,7 +55,7 @@ abstract class LowestCommonAncestorStaticAbstract implements LowestCommonAncesto
 		}
 	}
 
-	abstract LowestCommonAncestorStatic.IDataStructure preProcessTree(IndexGraph tree, int root);
+	protected abstract LowestCommonAncestorStatic.IDataStructure preProcessTree(IndexGraph tree, int root);
 
 	private static class IntDsFromIndexDs implements LowestCommonAncestorStatic.IDataStructure {
 

@@ -41,17 +41,21 @@ import com.jgalgo.internal.util.Assertions;
  *
  * @author Barak Ugav
  */
-class LowestCommonAncestorStaticRmq extends LowestCommonAncestorStaticAbstract {
+public class LowestCommonAncestorStaticRmq extends LowestCommonAncestorStaticAbstract {
 
 	private final RmqStatic rmq = new RmqStaticPlusMinusOne();
 
 	/**
 	 * Create a new static LCA algorithm object.
+	 *
+	 * <p>
+	 * Please prefer using {@link LowestCommonAncestorStatic#newInstance()} to get a default implementation for the
+	 * {@link LowestCommonAncestorStatic} interface.
 	 */
-	LowestCommonAncestorStaticRmq() {}
+	public LowestCommonAncestorStaticRmq() {}
 
 	@Override
-	LowestCommonAncestorStatic.IDataStructure preProcessTree(IndexGraph tree, int root) {
+	protected LowestCommonAncestorStatic.IDataStructure preProcessTree(IndexGraph tree, int root) {
 		Assertions.onlyTree(tree, root);
 
 		final int n = tree.vertices().size();
@@ -99,17 +103,17 @@ class LowestCommonAncestorStaticRmq extends LowestCommonAncestorStaticAbstract {
 		}
 
 		RmqStatic.DataStructure rmqDS = rmq.preProcessSequence(RmqStaticComparator.ofIntArray(depths), depths.length);
-		return new DS(n, vs, vToDepthsIdx, rmqDS);
+		return new DataStructure(n, vs, vToDepthsIdx, rmqDS);
 	}
 
-	private static class DS implements LowestCommonAncestorStatic.IDataStructure {
+	private static class DataStructure implements LowestCommonAncestorStatic.IDataStructure {
 
 		private final int n;
 		private final int[] vs;
 		private final int[] vToDepthsIdx;
 		private final RmqStatic.DataStructure rmqDS;
 
-		DS(int n, int[] vs, int[] vToDepthsIdx, RmqStatic.DataStructure rmqDS) {
+		DataStructure(int n, int[] vs, int[] vToDepthsIdx, RmqStatic.DataStructure rmqDS) {
 			this.n = n;
 			this.vs = vs;
 			this.vToDepthsIdx = vToDepthsIdx;
