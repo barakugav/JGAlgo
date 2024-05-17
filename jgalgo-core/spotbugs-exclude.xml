@@ -306,17 +306,32 @@
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
-    <!-- The constructor is documentation, and the result array should not be modified after constructing the result -->
+    <!-- The constructor is documented, and the result array should not be modified after constructing the result -->
     <Class name="com.jgalgo.alg.tree.LowestCommonAncestorOfflineAbstract$IndexResult" />
     <Constructor />
     <Local name="preQueryResult" />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
   <Match>
-    <!-- The constructor is documentation, and the result array should not be modified after constructing the result -->
+    <!-- The constructor is documented, and the result array should not be modified after constructing the result -->
     <Class name="com.jgalgo.alg.tree.TreePathMaximaAbstract$IndexResult" />
     <Constructor />
     <Local name="preQueryResult" />
     <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- The constructor is documented, and given arrays should not be modified after constructing the result -->
+    <Class name="com.jgalgo.alg.connect.BiConnectedComponentsAlgoAbstract$IndexResult" />
+    <Constructor />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- The returned object is immutable -->
+    <Class name="com.jgalgo.alg.connect.BiConnectedComponentsAlgoAbstract$IndexResult" />
+    <Or>
+      <Method name="getBlockGraph" />
+      <Method name="getCutVertices" />
+    </Or>
+    <Bug pattern="EI_EXPOSE_REP" />
   </Match>
 </FindBugsFilter>

@@ -83,7 +83,12 @@ public abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedCo
 		}
 	}
 
-	static class IndexResult implements BiConnectedComponentsAlgo.IResult {
+	/**
+	 * Result of a Bi-connected components algorithm for {@link IndexGraph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	protected static class IndexResult implements BiConnectedComponentsAlgo.IResult {
 
 		private final IndexGraph g;
 		private final IntSet[] biccsVertices;
@@ -94,7 +99,14 @@ public abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedCo
 		private IntSet cutVertices;
 		private IntGraph blockGraph;
 
-		IndexResult(IndexGraph g, List<Pair<int[], int[]>> biccs) {
+		/**
+		 * Create a new result object for an index graph.
+		 *
+		 * @param g     the index graph
+		 * @param biccs a list of pairs, each containing the vertices and edges of a bi-connected component. The given
+		 *                  arrays are not copied, and the caller should not modify them after the call.
+		 */
+		public IndexResult(IndexGraph g, List<Pair<int[], int[]>> biccs) {
 			this.g = Objects.requireNonNull(g);
 			final int biccsNum = biccs.size();
 
