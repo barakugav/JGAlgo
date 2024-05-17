@@ -17,7 +17,6 @@
 package com.jgalgo.alg.span;
 
 import static com.jgalgo.internal.util.Range.range;
-import java.util.Objects;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.JGAlgoConfigImpl;
@@ -50,7 +49,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public class MinimumSpanningTreeKruskal extends MinimumSpanningTreeAbstract {
 
-	private UnionFind.Builder unionFindBuilder = UnionFind.builder();
 	private boolean parallelEnable = JGAlgoConfigImpl.ParallelByDefault;
 
 	/**
@@ -61,16 +59,6 @@ public class MinimumSpanningTreeKruskal extends MinimumSpanningTreeAbstract {
 	 * {@link MinimumSpanningTree} interface.
 	 */
 	public MinimumSpanningTreeKruskal() {}
-
-	/**
-	 * [experimental API] Set the implementation of {@link UnionFind} used by this algorithm.
-	 *
-	 * @param builder a builder function that accept a number of elements \(n\) and create a {@link UnionFind} with IDs
-	 *                    {@code 0,1,2,...,n-1}.
-	 */
-	void setUnionFindBuilder(UnionFind.Builder builder) {
-		unionFindBuilder = Objects.requireNonNull(builder);
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -90,7 +78,7 @@ public class MinimumSpanningTreeKruskal extends MinimumSpanningTreeAbstract {
 		JGAlgoUtils.sort(edges, 0, m, w, parallelEnable);
 
 		/* create union find data structure for each vertex */
-		UnionFind uf = unionFindBuilder.expectedSize(n).build();
+		UnionFind uf = UnionFind.newInstance();
 		uf.makeMany(n);
 
 		/* iterate over the edges and build the MST */

@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    UnionFindArray
  * @author Barak Ugav
  */
-class UnionFindPtr implements UnionFind {
+public class UnionFindPtr implements UnionFind {
 
 	private Elm[] elements;
 	private int size;
@@ -43,7 +43,7 @@ class UnionFindPtr implements UnionFind {
 	/**
 	 * Create an empty Union Find data structure with no elements.
 	 */
-	UnionFindPtr() {
+	public UnionFindPtr() {
 		this(0);
 	}
 
@@ -52,7 +52,7 @@ class UnionFindPtr implements UnionFind {
 	 *
 	 * @param expectedSize the expended number of elements in the data structure
 	 */
-	UnionFindPtr(int expectedSize) {
+	public UnionFindPtr(int expectedSize) {
 		if (expectedSize < 0)
 			throw new IllegalArgumentException("negative expected size: " + expectedSize);
 		elements = new Elm[expectedSize == 0 ? 2 : expectedSize];

@@ -16,7 +16,6 @@
 
 package com.jgalgo.internal.ds;
 
-import com.jgalgo.alg.AlgorithmBuilderBase;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -33,8 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * </ul>
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * <pre> {@code
  * UnionFind uf = UnionFind.newInstance();
@@ -110,87 +108,12 @@ public interface UnionFind {
 	 * Create a new union find algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link UnionFind} object. The {@link UnionFind.Builder} might
-	 * support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link UnionFind} object.
 	 *
 	 * @return a default implementation of {@link UnionFind}
 	 */
 	static UnionFind newInstance() {
-		return builder().build();
-	}
-
-	/**
-	 * Create a new union-find data structure builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link UnionFind} objects
-	 */
-	static UnionFind.Builder builder() {
-		return new UnionFind.Builder() {
-			int expectedSize;
-			String impl;
-
-			@Override
-			public UnionFind build() {
-				if (impl != null) {
-					switch (impl) {
-						case "array":
-							return new UnionFindArray(expectedSize);
-						case "ptr":
-							return new UnionFindPtr(expectedSize);
-						default:
-							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-					}
-				}
-				return new UnionFindArray(expectedSize);
-			}
-
-			@Override
-			public UnionFind.Builder expectedSize(int expectedSize) {
-				if (expectedSize < 0)
-					throw new IllegalArgumentException("negative expected size: " + expectedSize);
-				this.expectedSize = expectedSize;
-				return this;
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					default:
-						UnionFind.Builder.super.setOption(key, value);
-				}
-			}
-		};
-	}
-
-	/**
-	 * A builder for {@link UnionFind} objects.
-	 *
-	 * @see    UnionFind#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new empty union-find data structure.
-		 *
-		 * @return a new empty union-find data structure
-		 */
-		UnionFind build();
-
-		/**
-		 * Hint the implementation the number of elements that will exists in the union-find data structure.
-		 *
-		 * @param  expectedSize the expected number of elements that will be in the data structure
-		 * @return              this builder
-		 */
-		UnionFind.Builder expectedSize(int expectedSize);
-
+		return new UnionFindArray();
 	}
 
 }

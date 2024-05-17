@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class UnionFindArray implements UnionFind {
+public class UnionFindArray implements UnionFind {
 
 	int[] parent;
 	int size;
@@ -43,7 +43,7 @@ class UnionFindArray implements UnionFind {
 	/**
 	 * Create an empty Union Find data structure with no elements.
 	 */
-	UnionFindArray() {
+	public UnionFindArray() {
 		this(0);
 	}
 
@@ -52,7 +52,7 @@ class UnionFindArray implements UnionFind {
 	 *
 	 * @param expectedSize the expended number of elements in the data structure
 	 */
-	UnionFindArray(int expectedSize) {
+	public UnionFindArray(int expectedSize) {
 		if (expectedSize < 0)
 			throw new IllegalArgumentException("negative expected size: " + expectedSize);
 		int arrSize = expectedSize == 0 ? 2 : expectedSize;

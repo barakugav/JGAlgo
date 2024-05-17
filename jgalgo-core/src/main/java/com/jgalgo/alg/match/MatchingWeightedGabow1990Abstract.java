@@ -256,7 +256,7 @@ abstract class MatchingWeightedGabow1990Abstract extends MatchingAlgoAbstractBas
 		final Blossom[] findToBlossoms;
 
 		Evens(int n) {
-			uf = UnionFind.builder().expectedSize(n).build();
+			uf = UnionFind.newInstance();
 			findToBlossoms = new Blossom[n];
 		}
 
