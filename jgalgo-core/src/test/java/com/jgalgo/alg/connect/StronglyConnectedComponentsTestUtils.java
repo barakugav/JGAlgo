@@ -16,7 +16,6 @@
 package com.jgalgo.alg.connect;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.alg.VertexPartition;
@@ -71,21 +70,6 @@ class StronglyConnectedComponentsTestUtils extends TestBase {
 	@Test
 	public void testNewInstance() {
 		assertNotNull(StronglyConnectedComponentsAlgo.newInstance());
-	}
-
-	@Test
-	public void testSetOption() {
-		StronglyConnectedComponentsAlgo.Builder builder = StronglyConnectedComponentsAlgo.builder();
-		assertNotNull(builder.build());
-
-		assertThrows(IllegalArgumentException.class, () -> builder.setOption("jdasg", "lhfj"));
-
-		builder.setOption("impl", "path-based");
-		assertNotNull(builder.build());
-		builder.setOption("impl", "tarjan");
-		assertNotNull(builder.build());
-		builder.setOption("impl", "dmksm");
-		assertThrows(IllegalArgumentException.class, () -> builder.build());
 	}
 
 }

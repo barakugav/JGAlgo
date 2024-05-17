@@ -35,6 +35,8 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.IVertexPartition;
 import com.jgalgo.alg.connect.StronglyConnectedComponentsAlgo;
+import com.jgalgo.alg.connect.StronglyConnectedComponentsPathBasedDfs;
+import com.jgalgo.alg.connect.StronglyConnectedComponentsTarjan;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -70,7 +72,7 @@ public class StrongConnectedComponentsBench {
 		}
 	}
 
-	private void benchApspPositiveWeights(StronglyConnectedComponentsAlgo algo, Blackhole blackhole) {
+	private void benchSccs(StronglyConnectedComponentsAlgo algo, Blackhole blackhole) {
 		IntGraph graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		IVertexPartition result = (IVertexPartition) algo.findStronglyConnectedComponents(graph);
 		blackhole.consume(result);
@@ -78,17 +80,11 @@ public class StrongConnectedComponentsBench {
 
 	@Benchmark
 	public void pathBasedDfs(Blackhole blackhole) {
-		benchApspPositiveWeights(getAlgo("path-based"), blackhole);
+		benchSccs(new StronglyConnectedComponentsPathBasedDfs(), blackhole);
 	}
 
 	@Benchmark
 	public void Tarjan(Blackhole blackhole) {
-		benchApspPositiveWeights(getAlgo("tarjan"), blackhole);
-	}
-
-	private static StronglyConnectedComponentsAlgo getAlgo(String implName) {
-		StronglyConnectedComponentsAlgo.Builder builder = StronglyConnectedComponentsAlgo.builder();
-		builder.setOption("impl", implName);
-		return builder.build();
+		benchSccs(new StronglyConnectedComponentsTarjan(), blackhole);
 	}
 }

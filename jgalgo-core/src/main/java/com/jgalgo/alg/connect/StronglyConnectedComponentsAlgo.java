@@ -16,7 +16,6 @@
 
 package com.jgalgo.alg.connect;
 
-import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.alg.IVertexPartition;
 import com.jgalgo.alg.VertexPartition;
 import com.jgalgo.graph.Graph;
@@ -39,8 +38,7 @@ import com.jgalgo.graph.IntGraph;
  * sometimes called the condensation of \(G\).
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    WeaklyConnectedComponentsAlgo
  * @see    BiConnectedComponentsAlgo
@@ -84,70 +82,12 @@ public interface StronglyConnectedComponentsAlgo {
 	 * Create a new strongly connected components algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link StronglyConnectedComponentsAlgo} object. The
-	 * {@link StronglyConnectedComponentsAlgo.Builder} might support different options to obtain different
-	 * implementations.
+	 * This is the recommended way to instantiate a new {@link StronglyConnectedComponentsAlgo} object.
 	 *
 	 * @return a default implementation of {@link StronglyConnectedComponentsAlgo}
 	 */
 	static StronglyConnectedComponentsAlgo newInstance() {
-		return builder().build();
-	}
-
-	/**
-	 * Create a new strongly connected algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link StronglyConnectedComponentsAlgo} objects
-	 */
-	static StronglyConnectedComponentsAlgo.Builder builder() {
-		return new StronglyConnectedComponentsAlgo.Builder() {
-			String impl;
-
-			@Override
-			public StronglyConnectedComponentsAlgo build() {
-				if (impl != null) {
-					switch (impl) {
-						case "path-based":
-							return new StronglyConnectedComponentsPathBasedDfs();
-						case "tarjan":
-							return new StronglyConnectedComponentsTarjan();
-						default:
-							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-					}
-				}
-				return new StronglyConnectedComponentsTarjan();
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					default:
-						StronglyConnectedComponentsAlgo.Builder.super.setOption(key, value);
-				}
-			}
-		};
-	}
-
-	/**
-	 * A builder for {@link StronglyConnectedComponentsAlgo} objects.
-	 *
-	 * @see    StronglyConnectedComponentsAlgo#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for strongly connected components computation.
-		 *
-		 * @return a new connected components algorithm
-		 */
-		StronglyConnectedComponentsAlgo build();
+		return new StronglyConnectedComponentsTarjan();
 	}
 
 }
