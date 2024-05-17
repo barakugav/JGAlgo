@@ -36,6 +36,8 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.flow.IFlow;
 import com.jgalgo.alg.flow.MinimumCostFlow;
+import com.jgalgo.alg.flow.MinimumCostFlowCostScaling;
+import com.jgalgo.alg.flow.MinimumCostFlowCycleCanceling;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -137,12 +139,12 @@ public class MinCostFlowBench {
 
 			@Benchmark
 			public void CycleCanceling(Blackhole blackhole) {
-				benchMinCostFlow(getAlgo("cycle-canceling"), blackhole);
+				benchMinCostFlow(new MinimumCostFlowCycleCanceling(), blackhole);
 			}
 
 			@Benchmark
 			public void CostScaling(Blackhole blackhole) {
-				benchMinCostFlow(getAlgo("cost-scaling"), blackhole);
+				benchMinCostFlow(new MinimumCostFlowCostScaling(), blackhole);
 			}
 		}
 
@@ -177,12 +179,12 @@ public class MinCostFlowBench {
 
 			@Benchmark
 			public void CycleCanceling(Blackhole blackhole) {
-				benchMinCostFlow(getAlgo("cycle-canceling"), blackhole);
+				benchMinCostFlow(new MinimumCostFlowCycleCanceling(), blackhole);
 			}
 
 			@Benchmark
 			public void CostScaling(Blackhole blackhole) {
-				benchMinCostFlow(getAlgo("cost-scaling"), blackhole);
+				benchMinCostFlow(new MinimumCostFlowCostScaling(), blackhole);
 			}
 		}
 
@@ -219,12 +221,12 @@ public class MinCostFlowBench {
 
 			@Benchmark
 			public void CycleCanceling(Blackhole blackhole) {
-				benchMinCostFlow(getAlgo("cycle-canceling"), blackhole);
+				benchMinCostFlow(new MinimumCostFlowCycleCanceling(), blackhole);
 			}
 
 			@Benchmark
 			public void CostScaling(Blackhole blackhole) {
-				benchMinCostFlow(getAlgo("cost-scaling"), blackhole);
+				benchMinCostFlow(new MinimumCostFlowCostScaling(), blackhole);
 			}
 		}
 	}
@@ -297,12 +299,12 @@ public class MinCostFlowBench {
 
 			@Benchmark
 			public void CycleCanceling(Blackhole blackhole) {
-				benchMinCostFlow(getAlgo("cycle-canceling"), blackhole);
+				benchMinCostFlow(new MinimumCostFlowCycleCanceling(), blackhole);
 			}
 
 			@Benchmark
 			public void CostScaling(Blackhole blackhole) {
-				benchMinCostFlow(getAlgo("cost-scaling"), blackhole);
+				benchMinCostFlow(new MinimumCostFlowCostScaling(), blackhole);
 			}
 		}
 
@@ -337,12 +339,12 @@ public class MinCostFlowBench {
 
 			@Benchmark
 			public void CycleCanceling(Blackhole blackhole) {
-				benchMinCostFlow(getAlgo("cycle-canceling"), blackhole);
+				benchMinCostFlow(new MinimumCostFlowCycleCanceling(), blackhole);
 			}
 
 			@Benchmark
 			public void CostScaling(Blackhole blackhole) {
-				benchMinCostFlow(getAlgo("cost-scaling"), blackhole);
+				benchMinCostFlow(new MinimumCostFlowCostScaling(), blackhole);
 			}
 		}
 
@@ -378,20 +380,14 @@ public class MinCostFlowBench {
 
 			@Benchmark
 			public void CycleCanceling(Blackhole blackhole) {
-				benchMinCostFlow(getAlgo("cycle-canceling"), blackhole);
+				benchMinCostFlow(new MinimumCostFlowCycleCanceling(), blackhole);
 			}
 
 			@Benchmark
 			public void CostScaling(Blackhole blackhole) {
-				benchMinCostFlow(getAlgo("cost-scaling"), blackhole);
+				benchMinCostFlow(new MinimumCostFlowCostScaling(), blackhole);
 			}
 		}
-	}
-
-	private static MinimumCostFlow getAlgo(String implName) {
-		MinimumCostFlow.Builder builder = MinimumCostFlow.builder();
-		builder.setOption("impl", implName);
-		return builder.build();
 	}
 
 	private static IWeightFunctionInt randNetwork(IntGraph g, Random rand) {

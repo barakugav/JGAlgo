@@ -224,22 +224,11 @@ public interface MinimumCostFlow {
 	 */
 	static MinimumCostFlow.Builder builder() {
 		return new MinimumCostFlow.Builder() {
-			String impl;
 			boolean integerNetwork;
 			boolean integerCosts;
 
 			@Override
 			public MinimumCostFlow build() {
-				if (impl != null) {
-					switch (impl) {
-						case "cycle-canceling":
-							return new MinimumCostFlowCycleCanceling();
-						case "cost-scaling":
-							return new MinimumCostFlowCostScaling();
-						default:
-							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-					}
-				}
 				if (integerNetwork && integerCosts) {
 					return new MinimumCostFlowCostScaling();
 				} else {
@@ -327,17 +316,6 @@ public interface MinimumCostFlow {
 			public MinimumCostFlow.Builder integerCosts(boolean enable) {
 				integerCosts = enable;
 				return this;
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					default:
-						MinimumCostFlow.Builder.super.setOption(key, value);
-				}
 			}
 		};
 	}

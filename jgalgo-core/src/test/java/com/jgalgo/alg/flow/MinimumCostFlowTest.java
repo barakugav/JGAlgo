@@ -16,7 +16,6 @@
 package com.jgalgo.alg.flow;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 
@@ -76,21 +75,6 @@ public class MinimumCostFlowTest extends TestBase {
 		builder.integerCosts(true);
 		builder.integerNetwork(true);
 		assertNotNull(builder.build());
-	}
-
-	@Test
-	public void testSetOption() {
-		MinimumCostFlow.Builder builder = MinimumCostFlow.builder();
-		assertNotNull(builder.build());
-
-		assertThrows(IllegalArgumentException.class, () -> builder.setOption("jdasg", "lhfj"));
-
-		builder.setOption("impl", "cycle-canceling");
-		assertNotNull(builder.build());
-		builder.setOption("impl", "cost-scaling");
-		assertNotNull(builder.build());
-		builder.setOption("impl", "dmksm");
-		assertThrows(IllegalArgumentException.class, () -> builder.build());
 	}
 
 }
