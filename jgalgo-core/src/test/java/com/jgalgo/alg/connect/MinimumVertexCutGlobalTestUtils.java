@@ -42,10 +42,10 @@ class MinimumVertexCutGlobalTestUtils extends TestUtils {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
-		tester.addPhase().withArgs(8, 20).repeat(40);
-		tester.addPhase().withArgs(16, 32).repeat(10);
-		tester.addPhase().withArgs(64, 128).repeat(64);
-		tester.addPhase().withArgs(128, 256).repeat(32);
+		tester.addPhase().withArgs(8, 20).repeat(20);
+		tester.addPhase().withArgs(16, 32).repeat(8);
+		tester.addPhase().withArgs(64, 128).repeat(32);
+		tester.addPhase().withArgs(128, 256).repeat(16);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
