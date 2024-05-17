@@ -34,6 +34,8 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.cycle.MinimumMeanCycle;
+import com.jgalgo.alg.cycle.MinimumMeanCycleDasdanGupta;
+import com.jgalgo.alg.cycle.MinimumMeanCycleHoward;
 import com.jgalgo.alg.path.IPath;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
@@ -83,18 +85,12 @@ public class MinimumMeanCycleBench {
 
 	@Benchmark
 	public void Howard(Blackhole blackhole) {
-		benchMinMeanCycle(getAlgo("howard"), blackhole);
+		benchMinMeanCycle(new MinimumMeanCycleHoward(), blackhole);
 	}
 
 	@Benchmark
 	public void DasdanGupta(Blackhole blackhole) {
-		benchMinMeanCycle(getAlgo("dasdan-gupta"), blackhole);
-	}
-
-	private static MinimumMeanCycle getAlgo(String implName) {
-		MinimumMeanCycle.Builder builder = MinimumMeanCycle.builder();
-		builder.setOption("impl", implName);
-		return builder.build();
+		benchMinMeanCycle(new MinimumMeanCycleDasdanGupta(), blackhole);
 	}
 
 }

@@ -16,7 +16,6 @@
 
 package com.jgalgo.alg.cycle;
 
-import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.alg.path.IPath;
 import com.jgalgo.alg.path.Path;
 import com.jgalgo.graph.Graph;
@@ -34,8 +33,7 @@ import com.jgalgo.graph.WeightFunction;
  * find the cycle with the minimum mean weight among all the cycles in the given graph.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @author Barak Ugav
  */
@@ -60,69 +58,12 @@ public interface MinimumMeanCycle {
 	 * Create a new min mean cycle algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumMeanCycle} object. The
-	 * {@link MinimumMeanCycle.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MinimumMeanCycle} object.
 	 *
 	 * @return a default implementation of {@link MinimumMeanCycle}
 	 */
 	static MinimumMeanCycle newInstance() {
-		return builder().build();
-	}
-
-	/**
-	 * Create a new minimum mean cycle algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link MinimumMeanCycle} objects
-	 */
-	static MinimumMeanCycle.Builder builder() {
-		return new MinimumMeanCycle.Builder() {
-			String impl;
-
-			@Override
-			public MinimumMeanCycle build() {
-				if (impl != null) {
-					switch (impl) {
-						case "dasdan-gupta":
-							return new MinimumMeanCycleDasdanGupta();
-						case "howard":
-							return new MinimumMeanCycleHoward();
-						default:
-							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-					}
-				}
-				return new MinimumMeanCycleHoward();
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					default:
-						MinimumMeanCycle.Builder.super.setOption(key, value);
-				}
-			}
-		};
-	}
-
-	/**
-	 * A builder for {@link MinimumMeanCycle} objects.
-	 *
-	 * @see    MinimumMeanCycle#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for minimum mean cycle computation.
-		 *
-		 * @return a new minimum mean cycle algorithm
-		 */
-		MinimumMeanCycle build();
+		return new MinimumMeanCycleHoward();
 	}
 
 }
