@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: 11
           distribution: "adopt"
@@ -58,37 +58,37 @@ jobs:
           tar -czf artifacts/jgalgo-bench.tar.gz coverage/jgalgo-bench/
 
       - name: Upload jgalgo-core artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: jgalgo-core-jacoco-coverage-report
           path: artifacts/jgalgo-core.tar.gz
 
       - name: Upload jgalgo-io artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: jgalgo-io-jacoco-coverage-report
           path: artifacts/jgalgo-io.tar.gz
 
       - name: Upload jgalgo-adapt-guava artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: jgalgo-adapt-guava-jacoco-coverage-report
           path: artifacts/jgalgo-adapt-guava.tar.gz
 
       - name: Upload jgalgo-adapt-jgrapht artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: jgalgo-adapt-jgrapht-jacoco-coverage-report
           path: artifacts/jgalgo-adapt-jgrapht.tar.gz
 
       - name: Upload jgalgo-example artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: jgalgo-example-jacoco-coverage-report
           path: artifacts/jgalgo-example.tar.gz
 
       - name: Upload jgalgo-bench artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: jgalgo-bench-jacoco-coverage-report
           path: artifacts/jgalgo-bench.tar.gz
