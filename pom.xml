@@ -43,7 +43,7 @@
     <fastutil.version>8.5.13</fastutil.version>
     <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
     <junit-jupiter-engine.version>5.10.2</junit-jupiter-engine.version>
-    <spotbugs-maven-plugin.version>4.7.3.4</spotbugs-maven-plugin.version>
+    <spotbugs-maven-plugin.version>4.8.5.0</spotbugs-maven-plugin.version>
     <jmh.version>1.37</jmh.version>
 
     <maven-clean-plugin.version>3.3.2</maven-clean-plugin.version>
