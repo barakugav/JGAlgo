@@ -1,4 +1,4 @@
 requests~=2.32.3
 numpy~=1.24.3
-matplotlib~=3.7.1
+matplotlib~=3.9.0
 grequests~=0.7.0
