@@ -16,7 +16,7 @@
 package com.jgalgo.alg.flow;
 
 import java.util.Collection;
-import com.jgalgo.alg.IVertexBiPartition;
+import com.jgalgo.alg.common.IVertexBiPartition;
 import com.jgalgo.alg.connect.MinimumEdgeCutSt;
 import com.jgalgo.alg.connect.MinimumEdgeCutStAbstract;
 import com.jgalgo.graph.Graph;

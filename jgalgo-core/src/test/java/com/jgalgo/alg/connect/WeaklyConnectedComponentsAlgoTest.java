@@ -16,7 +16,7 @@
 package com.jgalgo.alg.connect;
 
 import org.junit.jupiter.api.Test;
-import com.jgalgo.alg.VertexPartition;
+import com.jgalgo.alg.common.VertexPartition;
 import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;

@@ -15,7 +15,7 @@
  */
 package com.jgalgo.alg.cores;
 
-import com.jgalgo.alg.EdgeDirection;
+import com.jgalgo.alg.common.EdgeDirection;
 import com.jgalgo.alg.cores.CoresAlgos.IntResultFromIndexResult;
 import com.jgalgo.alg.cores.CoresAlgos.ObjResultFromIndexResult;
 import com.jgalgo.graph.Graph;

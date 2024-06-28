@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg.path;
 
+import com.jgalgo.alg.common.IPath;
 import com.jgalgo.alg.euler.EulerianTourAlgo;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;

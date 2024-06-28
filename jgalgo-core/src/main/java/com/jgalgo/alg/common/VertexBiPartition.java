@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jgalgo.alg;
+package com.jgalgo.alg.common;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
-import com.jgalgo.alg.VertexBiPartitions.IntBiPartitionFromIndexBiPartition;
-import com.jgalgo.alg.VertexBiPartitions.ObjBiPartitionFromIndexBiPartition;
+import com.jgalgo.alg.common.VertexBiPartitions.IntBiPartitionFromIndexBiPartition;
+import com.jgalgo.alg.common.VertexBiPartitions.ObjBiPartitionFromIndexBiPartition;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IndexGraph;

@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.alg.common.Path;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.GraphFactory;

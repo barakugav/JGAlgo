@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.ToDoubleFunction;
-import com.jgalgo.alg.VertexBiPartition;
+import com.jgalgo.alg.common.VertexBiPartition;
 import com.jgalgo.alg.flow.MaximumFlowEdmondsKarp;
 import com.jgalgo.alg.flow.MaximumFlowPushRelabel;
 import com.jgalgo.alg.flow.MaximumFlowTestUtils;

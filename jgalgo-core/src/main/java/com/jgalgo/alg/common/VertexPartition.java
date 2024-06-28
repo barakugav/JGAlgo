@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jgalgo.alg;
+package com.jgalgo.alg.common;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Set;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
-import com.jgalgo.alg.VertexPartitions.IntPartitionFromIndexPartition;
-import com.jgalgo.alg.VertexPartitions.ObjPartitionFromIndexPartition;
+import com.jgalgo.alg.common.VertexPartitions.IntPartitionFromIndexPartition;
+import com.jgalgo.alg.common.VertexPartitions.ObjPartitionFromIndexPartition;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IndexGraph;

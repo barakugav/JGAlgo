@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.alg.common.Path;
 import com.jgalgo.alg.tree.Trees;
 import com.jgalgo.gen.CompleteGraphGenerator;
 import com.jgalgo.graph.Graph;

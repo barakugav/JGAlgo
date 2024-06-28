@@ -18,7 +18,7 @@ package com.jgalgo.alg.hamilton;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Collections;
 import java.util.Iterator;
-import com.jgalgo.alg.path.IPath;
+import com.jgalgo.alg.common.IPath;
 import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;

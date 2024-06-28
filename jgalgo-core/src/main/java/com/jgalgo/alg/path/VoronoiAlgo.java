@@ -16,8 +16,10 @@
 package com.jgalgo.alg.path;
 
 import java.util.Collection;
-import com.jgalgo.alg.IVertexPartition;
-import com.jgalgo.alg.VertexPartition;
+import com.jgalgo.alg.common.IPath;
+import com.jgalgo.alg.common.IVertexPartition;
+import com.jgalgo.alg.common.Path;
+import com.jgalgo.alg.common.VertexPartition;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;

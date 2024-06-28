@@ -20,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.alg.common.IPath;
+import com.jgalgo.alg.common.Path;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.TestBase;

@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.alg.VertexPartition;
+import com.jgalgo.alg.common.VertexPartition;
 import com.jgalgo.alg.connect.WeaklyConnectedComponentsAlgo;
 import com.jgalgo.alg.tree.Trees;
 import com.jgalgo.gen.CompleteGraphGenerator;

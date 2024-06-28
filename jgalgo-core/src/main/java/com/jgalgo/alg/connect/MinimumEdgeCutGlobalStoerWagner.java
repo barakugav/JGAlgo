@@ -16,7 +16,7 @@
 package com.jgalgo.alg.connect;
 
 import static com.jgalgo.internal.util.Range.range;
-import com.jgalgo.alg.IVertexBiPartition;
+import com.jgalgo.alg.common.IVertexBiPartition;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;

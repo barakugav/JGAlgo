@@ -20,7 +20,7 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import com.jgalgo.alg.bipartite.BipartiteGraphs;
-import com.jgalgo.alg.path.IPath;
+import com.jgalgo.alg.common.IPath;
 import com.jgalgo.alg.path.ShortestPathSingleSource;
 import com.jgalgo.alg.path.ShortestPathSingleSourceDijkstra;
 import com.jgalgo.graph.IWeightFunction;

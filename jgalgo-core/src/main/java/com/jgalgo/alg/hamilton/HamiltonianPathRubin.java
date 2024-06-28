@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import com.jgalgo.alg.path.IPath;
+import com.jgalgo.alg.common.IPath;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.BitmapSet;

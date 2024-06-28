@@ -17,7 +17,9 @@
 package com.jgalgo.alg.path;
 
 import static com.jgalgo.internal.util.Numbers.log2ceil;
-import com.jgalgo.alg.AlgorithmBuilderBase;
+import com.jgalgo.alg.common.AlgorithmBuilderBase;
+import com.jgalgo.alg.common.IPath;
+import com.jgalgo.alg.common.Path;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IWeightFunction;

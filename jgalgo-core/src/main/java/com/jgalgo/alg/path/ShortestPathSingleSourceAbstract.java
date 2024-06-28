@@ -18,6 +18,8 @@ package com.jgalgo.alg.path;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
+import com.jgalgo.alg.common.IPath;
+import com.jgalgo.alg.common.Path;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IWeightFunction;

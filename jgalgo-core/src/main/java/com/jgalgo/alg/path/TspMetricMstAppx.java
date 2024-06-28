@@ -18,6 +18,7 @@ package com.jgalgo.alg.path;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Optional;
+import com.jgalgo.alg.common.IPath;
 import com.jgalgo.alg.span.MinimumSpanningTree;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;

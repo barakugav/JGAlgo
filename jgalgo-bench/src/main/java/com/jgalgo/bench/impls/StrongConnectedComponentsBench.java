@@ -33,7 +33,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.alg.IVertexPartition;
+import com.jgalgo.alg.common.IVertexPartition;
 import com.jgalgo.alg.connect.StronglyConnectedComponentsAlgo;
 import com.jgalgo.alg.connect.StronglyConnectedComponentsPathBasedDfs;
 import com.jgalgo.alg.connect.StronglyConnectedComponentsTarjan;

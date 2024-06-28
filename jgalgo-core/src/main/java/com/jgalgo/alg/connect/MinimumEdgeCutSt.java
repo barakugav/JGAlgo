@@ -17,8 +17,8 @@
 package com.jgalgo.alg.connect;
 
 import java.util.Collection;
-import com.jgalgo.alg.IVertexBiPartition;
-import com.jgalgo.alg.VertexBiPartition;
+import com.jgalgo.alg.common.IVertexBiPartition;
+import com.jgalgo.alg.common.VertexBiPartition;
 import com.jgalgo.alg.flow.MaximumFlow;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;

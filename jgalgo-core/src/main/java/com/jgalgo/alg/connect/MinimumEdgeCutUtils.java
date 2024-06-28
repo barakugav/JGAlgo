@@ -16,7 +16,7 @@
 package com.jgalgo.alg.connect;
 
 import static com.jgalgo.internal.util.Range.range;
-import com.jgalgo.alg.IVertexBiPartition;
+import com.jgalgo.alg.common.IVertexBiPartition;
 import com.jgalgo.alg.flow.IFlow;
 import com.jgalgo.alg.flow.MaximumFlow;
 import com.jgalgo.graph.IEdgeIter;

@@ -13,7 +13,7 @@
   <Match>
     <!-- The Path object indeed store a mutable reference to the graph and the user should not
     modify the graph while the Path object is in use -->
-    <Class name="com.jgalgo.alg.path.Path" />
+    <Class name="com.jgalgo.alg.common.Path" />
     <Constructor />
     <Local name="g" />
     <Bug pattern="EI_EXPOSE_REP2" />
@@ -324,8 +324,8 @@
   <Match>
     <!-- The class is not public and all its subclasses are final -->
     <Or>
-      <Class name="com.jgalgo.alg.VertexPartitions$IntPartitionFromIndexPartition" />
-      <Class name="com.jgalgo.alg.VertexPartitions$ObjPartitionFromIndexPartition" />
+      <Class name="com.jgalgo.alg.common.VertexPartitions$IntPartitionFromIndexPartition" />
+      <Class name="com.jgalgo.alg.common.VertexPartitions$ObjPartitionFromIndexPartition" />
       <Class name="com.jgalgo.alg.hamilton.HamiltonianPathRubin$IterBase" />
       <Class name="com.jgalgo.alg.isomorphism.IsomorphismTesterVf2$IsomorphismIterBase" />
       <Class name="com.jgalgo.graph.GraphBaseMutable" />

@@ -17,6 +17,7 @@
 package com.jgalgo.alg.path;
 
 import static com.jgalgo.internal.util.Range.range;
+import com.jgalgo.alg.common.IPath;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;

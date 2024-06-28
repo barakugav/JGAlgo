@@ -18,6 +18,7 @@ package com.jgalgo.alg.path;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Optional;
+import com.jgalgo.alg.common.IPath;
 import com.jgalgo.alg.match.IMatching;
 import com.jgalgo.alg.match.MatchingAlgo;
 import com.jgalgo.alg.span.MinimumSpanningTree;

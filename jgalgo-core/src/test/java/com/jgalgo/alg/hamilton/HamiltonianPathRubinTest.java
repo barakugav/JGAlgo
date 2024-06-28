@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.alg.path.Path;
+import com.jgalgo.alg.common.Path;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.TestBase;
 

@@ -18,7 +18,7 @@ package com.jgalgo.alg.connect;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.alg.VertexPartition;
+import com.jgalgo.alg.common.VertexPartition;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.internal.util.TestBase;

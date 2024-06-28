@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg.path;
 
+import com.jgalgo.alg.common.IPath;
 import com.jgalgo.alg.traversal.BfsIter;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;

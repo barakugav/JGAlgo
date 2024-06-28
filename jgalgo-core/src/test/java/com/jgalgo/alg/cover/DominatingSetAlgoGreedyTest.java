@@ -18,7 +18,7 @@ package com.jgalgo.alg.cover;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.alg.EdgeDirection;
+import com.jgalgo.alg.common.EdgeDirection;
 import com.jgalgo.gen.EmptyGraphGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraphFactory;

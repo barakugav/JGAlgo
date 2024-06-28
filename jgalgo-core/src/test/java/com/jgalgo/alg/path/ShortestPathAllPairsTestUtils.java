@@ -29,6 +29,7 @@ import java.util.OptionalDouble;
 import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.alg.common.Path;
 import com.jgalgo.gen.CompleteGraphGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;

@@ -19,6 +19,8 @@ import static com.jgalgo.internal.util.Numbers.isEqual;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.List;
+import com.jgalgo.alg.common.IPath;
+import com.jgalgo.alg.common.Path;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.IndexHeap;

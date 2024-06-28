@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jgalgo.alg.path;
+package com.jgalgo.alg.common;
 
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;

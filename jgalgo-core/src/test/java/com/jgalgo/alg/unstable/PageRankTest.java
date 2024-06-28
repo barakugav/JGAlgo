@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jgalgo.alg;
+package com.jgalgo.alg.unstable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Random;

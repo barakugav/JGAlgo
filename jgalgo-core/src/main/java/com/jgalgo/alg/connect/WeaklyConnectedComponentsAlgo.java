@@ -16,8 +16,8 @@
 
 package com.jgalgo.alg.connect;
 
-import com.jgalgo.alg.IVertexPartition;
-import com.jgalgo.alg.VertexPartition;
+import com.jgalgo.alg.common.IVertexPartition;
+import com.jgalgo.alg.common.VertexPartition;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 

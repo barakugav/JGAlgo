@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.BitSet;
 import java.util.Set;
-import com.jgalgo.alg.VertexPartition;
+import com.jgalgo.alg.common.VertexPartition;
 import com.jgalgo.alg.traversal.BfsIter;
 import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;

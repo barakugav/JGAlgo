@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jgalgo.alg.path;
+package com.jgalgo.alg.common;
 
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,6 +33,8 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.alg.path.ShortestPathSingleSource;
+import com.jgalgo.alg.path.ShortestPathSingleSourceDijkstra;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;

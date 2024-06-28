@@ -23,7 +23,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.alg.EdgeDirection;
+import com.jgalgo.alg.common.EdgeDirection;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;

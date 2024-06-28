@@ -15,8 +15,8 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.alg.VertexPartition;
 import com.jgalgo.alg.color.ColoringAlgo;
+import com.jgalgo.alg.common.VertexPartition;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jgalgo.alg;
+package com.jgalgo.alg.common;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Map;

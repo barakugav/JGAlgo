@@ -17,7 +17,7 @@ package com.jgalgo.alg.closure;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Iterator;
-import com.jgalgo.alg.IVertexPartition;
+import com.jgalgo.alg.common.IVertexPartition;
 import com.jgalgo.alg.connect.StronglyConnectedComponentsAlgo;
 import com.jgalgo.alg.dag.TopologicalOrderAlgo;
 import com.jgalgo.graph.Graphs;

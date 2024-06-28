@@ -16,6 +16,7 @@
 package com.jgalgo.alg.path;
 
 import java.util.List;
+import com.jgalgo.alg.common.Path;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;

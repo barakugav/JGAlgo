@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.ObjIntConsumer;
 import java.util.function.Predicate;
-import com.jgalgo.alg.IVertexPartition;
+import com.jgalgo.alg.common.IVertexPartition;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;

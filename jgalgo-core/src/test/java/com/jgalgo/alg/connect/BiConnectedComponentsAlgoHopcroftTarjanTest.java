@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.function.BiFunction;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.alg.VertexPartition;
+import com.jgalgo.alg.common.VertexPartition;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IntGraph;

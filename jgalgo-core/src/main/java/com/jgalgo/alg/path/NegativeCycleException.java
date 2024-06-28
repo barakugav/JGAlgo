@@ -17,6 +17,8 @@ package com.jgalgo.alg.path;
 
 import java.util.Objects;
 import java.util.function.Supplier;
+import com.jgalgo.alg.common.IPath;
+import com.jgalgo.alg.common.Path;
 import com.jgalgo.graph.Graph;
 
 /**

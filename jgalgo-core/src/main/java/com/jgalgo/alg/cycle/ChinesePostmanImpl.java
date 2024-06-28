@@ -17,10 +17,10 @@ package com.jgalgo.alg.cycle;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Optional;
+import com.jgalgo.alg.common.IPath;
 import com.jgalgo.alg.euler.EulerianTourAlgo;
 import com.jgalgo.alg.match.IMatching;
 import com.jgalgo.alg.match.MatchingAlgo;
-import com.jgalgo.alg.path.IPath;
 import com.jgalgo.alg.path.ShortestPathAllPairs;
 import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.IEdgeIter;

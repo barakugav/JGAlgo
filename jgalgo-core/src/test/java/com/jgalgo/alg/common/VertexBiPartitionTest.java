@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jgalgo.alg;
+package com.jgalgo.alg.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

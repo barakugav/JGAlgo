@@ -17,7 +17,7 @@ package com.jgalgo.alg.cover;
 
 import java.util.Collection;
 import java.util.Set;
-import com.jgalgo.alg.EdgeDirection;
+import com.jgalgo.alg.common.EdgeDirection;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
