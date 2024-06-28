@@ -19,7 +19,6 @@ package com.jgalgo.alg.tree;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.Objects;
-import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -48,8 +47,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * linear time.
  *
  * &lt;p&gt;
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @author Barak Ugav
  */
@@ -102,11 +100,11 @@ public interface TreePathMaxima {
 		 */
 		@SuppressWarnings(&quot;unchecked&quot;)
 		static &lt;V, E&gt; TreePathMaxima.Queries&lt;V, E&gt; newInstance(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L105">			Objects.requireNonNull(g);</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (g instanceof IntGraph) {</span>
-<span class="fc" id="L107">				return (TreePathMaxima.Queries&lt;V, E&gt;) new TreePathMaximaQueriesImpl.IntQueriesImpl();</span>
+<span class="fc" id="L103">			Objects.requireNonNull(g);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (g instanceof IntGraph) {</span>
+<span class="fc" id="L105">				return (TreePathMaxima.Queries&lt;V, E&gt;) new TreePathMaximaQueriesImpl.IntQueriesImpl();</span>
 			} else {
-<span class="fc" id="L109">				return new TreePathMaximaQueriesImpl.ObjQueriesImpl&lt;&gt;(g);</span>
+<span class="fc" id="L107">				return new TreePathMaximaQueriesImpl.ObjQueriesImpl&lt;&gt;(g);</span>
 			}
 		}
 
@@ -171,7 +169,7 @@ public interface TreePathMaxima {
 		 * @return   a new queries container
 		 */
 		static TreePathMaxima.IQueries newInstance(IntGraph g) {
-<span class="fc" id="L174">			return new TreePathMaximaQueriesImpl.IntQueriesImpl();</span>
+<span class="fc" id="L172">			return new TreePathMaximaQueriesImpl.IntQueriesImpl();</span>
 		}
 
 		/**
@@ -190,8 +188,8 @@ public interface TreePathMaxima {
 		@Deprecated
 		@Override
 		default void addQuery(Integer u, Integer v) {
-<span class="fc" id="L193">			addQuery(u.intValue(), v.intValue());</span>
-<span class="fc" id="L194">		}</span>
+<span class="fc" id="L191">			addQuery(u.intValue(), v.intValue());</span>
+<span class="fc" id="L192">		}</span>
 
 		/**
 		 * Get a query source by index.
@@ -214,7 +212,7 @@ public interface TreePathMaxima {
 		@Deprecated
 		@Override
 		default Integer getQuerySource(int idx) {
-<span class="fc" id="L217">			return Integer.valueOf(getQuerySourceInt(idx));</span>
+<span class="fc" id="L215">			return Integer.valueOf(getQuerySourceInt(idx));</span>
 		}
 
 		/**
@@ -238,7 +236,7 @@ public interface TreePathMaxima {
 		@Deprecated
 		@Override
 		default Integer getQueryTarget(int idx) {
-<span class="fc" id="L241">			return Integer.valueOf(getQueryTargetInt(idx));</span>
+<span class="fc" id="L239">			return Integer.valueOf(getQueryTargetInt(idx));</span>
 		}
 	}
 
@@ -311,7 +309,7 @@ public interface TreePathMaxima {
 		@Deprecated
 		@Override
 		default Integer getHeaviestEdge(int queryIdx) {
-<span class="fc" id="L314">			return Integer.valueOf(getHeaviestEdgeInt(queryIdx));</span>
+<span class="fc" id="L312">			return Integer.valueOf(getHeaviestEdgeInt(queryIdx));</span>
 		}
 	}
 
@@ -319,63 +317,12 @@ public interface TreePathMaxima {
 	 * Create a new tree path maxima algorithm object.
 	 *
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link TreePathMaxima} object. The
-	 * {@link TreePathMaxima.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link TreePathMaxima} object.
 	 *
 	 * @return a default implementation of {@link TreePathMaxima}
 	 */
 	static TreePathMaxima newInstance() {
-<span class="fc" id="L328">		return builder().build();</span>
-	}
-
-	/**
-	 * Create a new tree path maxima algorithm builder.
-	 *
-	 * &lt;p&gt;
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link TreePathMaxima} objects
-	 */
-	static TreePathMaxima.Builder builder() {
-<span class="fc" id="L340">		return new TreePathMaxima.Builder() {</span>
-
-			boolean bitsLookupTablesEnable;
-
-			@Override
-			public TreePathMaxima build() {
-<span class="fc" id="L346">				TreePathMaximaHagerup tpm = new TreePathMaximaHagerup();</span>
-<span class="fc" id="L347">				tpm.setBitsLookupTablesEnable(bitsLookupTablesEnable);</span>
-<span class="fc" id="L348">				return tpm;</span>
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L353" title="All 2 branches missed.">				switch (key) {</span>
-					case &quot;bits-lookup-tables-enable&quot;:
-<span class="nc" id="L355">						bitsLookupTablesEnable = ((Boolean) value).booleanValue();</span>
-<span class="nc" id="L356">						break;</span>
-					default:
-<span class="nc" id="L358">						TreePathMaxima.Builder.super.setOption(key, value);</span>
-				}
-<span class="nc" id="L360">			}</span>
-
-		};
-	}
-
-	/**
-	 * A builder for {@link TreePathMaxima} objects.
-	 *
-	 * @see    TreePathMaxima#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for tree path maxima computation.
-		 *
-		 * @return a new tree path maxima algorithm
-		 */
-		TreePathMaxima build();
+<span class="fc" id="L325">		return new TreePathMaximaHagerup();</span>
 	}
 
 	/**
@@ -403,59 +350,59 @@ public interface TreePathMaxima {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;V, E&gt; boolean verifyMst(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, Collection&lt;E&gt; mstEdges,
 			TreePathMaxima tpmAlgo) {
-<span class="fc" id="L406">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L353">		Assertions.onlyUndirected(g);</span>
 
 		IndexGraph ig;
 		IWeightFunction iw;
 		IntCollection mstIEdges;
-<span class="pc bpc" id="L411" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L412">			ig = (IndexGraph) g;</span>
-<span class="nc" id="L413">			iw = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="nc" id="L414">			mstIEdges = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) mstEdges);</span>
+<span class="pc bpc" id="L358" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L359">			ig = (IndexGraph) g;</span>
+<span class="nc" id="L360">			iw = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="nc" id="L361">			mstIEdges = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) mstEdges);</span>
 
 		} else {
-<span class="fc" id="L417">			ig = g.indexGraph();</span>
-<span class="fc" id="L418">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L419">			iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L420">			mstIEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);</span>
+<span class="fc" id="L364">			ig = g.indexGraph();</span>
+<span class="fc" id="L365">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L366">			iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L367">			mstIEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);</span>
 		}
 
-<span class="fc" id="L423">		final int n = ig.vertices().size();</span>
-<span class="fc" id="L424">		IndexGraphBuilder mstBuilder = IndexGraphBuilder.undirected();</span>
-<span class="fc" id="L425">		mstBuilder.ensureVertexCapacity(n);</span>
-<span class="fc" id="L426">		mstBuilder.ensureEdgeCapacity(mstIEdges.size());</span>
+<span class="fc" id="L370">		final int n = ig.vertices().size();</span>
+<span class="fc" id="L371">		IndexGraphBuilder mstBuilder = IndexGraphBuilder.undirected();</span>
+<span class="fc" id="L372">		mstBuilder.ensureVertexCapacity(n);</span>
+<span class="fc" id="L373">		mstBuilder.ensureEdgeCapacity(mstIEdges.size());</span>
 
-<span class="fc" id="L428">		mstBuilder.addVertices(range(n));</span>
-<span class="fc" id="L429">		double[] mstWeights = new double[mstIEdges.size()];</span>
-<span class="fc bfc" id="L430" title="All 2 branches covered.">		for (int e : mstIEdges) {</span>
-<span class="fc" id="L431">			int u = ig.edgeSource(e), v = ig.edgeTarget(e);</span>
-<span class="fc" id="L432">			int ne = mstBuilder.addEdge(u, v);</span>
-<span class="fc" id="L433">			mstWeights[ne] = iw.weight(e);</span>
-<span class="fc" id="L434">		}</span>
-<span class="fc" id="L435">		IndexGraph mst = mstBuilder.build();</span>
-<span class="pc bpc" id="L436" title="1 of 2 branches missed.">		if (!Trees.isTree(mst))</span>
-<span class="nc" id="L437">			return false;</span>
+<span class="fc" id="L375">		mstBuilder.addVertices(range(n));</span>
+<span class="fc" id="L376">		double[] mstWeights = new double[mstIEdges.size()];</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">		for (int e : mstIEdges) {</span>
+<span class="fc" id="L378">			int u = ig.edgeSource(e), v = ig.edgeTarget(e);</span>
+<span class="fc" id="L379">			int ne = mstBuilder.addEdge(u, v);</span>
+<span class="fc" id="L380">			mstWeights[ne] = iw.weight(e);</span>
+<span class="fc" id="L381">		}</span>
+<span class="fc" id="L382">		IndexGraph mst = mstBuilder.build();</span>
+<span class="pc bpc" id="L383" title="1 of 2 branches missed.">		if (!Trees.isTree(mst))</span>
+<span class="nc" id="L384">			return false;</span>
 
-<span class="fc" id="L439">		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance(mst);</span>
-<span class="fc bfc" id="L440" title="All 2 branches covered.">		for (int e : range(ig.edges().size())) {</span>
-<span class="fc" id="L441">			int u = ig.edgeSource(e);</span>
-<span class="fc" id="L442">			int v = ig.edgeTarget(e);</span>
-<span class="fc bfc" id="L443" title="All 2 branches covered.">			if (u != v)</span>
-<span class="fc" id="L444">				queries.addQuery(u, v);</span>
-<span class="fc" id="L445">		}</span>
-<span class="fc" id="L446">		IWeightFunction w0 = e -&gt; mstWeights[e];</span>
-<span class="fc" id="L447">		TreePathMaxima.IResult tpmResults =</span>
-<span class="fc" id="L448">				(TreePathMaxima.IResult) tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);</span>
+<span class="fc" id="L386">		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance(mst);</span>
+<span class="fc bfc" id="L387" title="All 2 branches covered.">		for (int e : range(ig.edges().size())) {</span>
+<span class="fc" id="L388">			int u = ig.edgeSource(e);</span>
+<span class="fc" id="L389">			int v = ig.edgeTarget(e);</span>
+<span class="fc bfc" id="L390" title="All 2 branches covered.">			if (u != v)</span>
+<span class="fc" id="L391">				queries.addQuery(u, v);</span>
+<span class="fc" id="L392">		}</span>
+<span class="fc" id="L393">		IWeightFunction w0 = e -&gt; mstWeights[e];</span>
+<span class="fc" id="L394">		TreePathMaxima.IResult tpmResults =</span>
+<span class="fc" id="L395">				(TreePathMaxima.IResult) tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);</span>
 
-<span class="fc" id="L450">		int i = 0;</span>
-<span class="fc bfc" id="L451" title="All 2 branches covered.">		for (int e : range(ig.edges().size())) {</span>
-<span class="fc bfc" id="L452" title="All 2 branches covered.">			if (ig.edgeSource(e) == ig.edgeTarget(e))</span>
-<span class="fc" id="L453">				continue;</span>
-<span class="fc" id="L454">			int mstEdge = tpmResults.getHeaviestEdgeInt(i++);</span>
-<span class="pc bpc" id="L455" title="1 of 4 branches missed.">			if (mstEdge &lt; 0 || iw.weight(e) &lt; mstWeights[mstEdge])</span>
-<span class="fc" id="L456">				return false;</span>
-<span class="fc" id="L457">		}</span>
-<span class="fc" id="L458">		return true;</span>
+<span class="fc" id="L397">		int i = 0;</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">		for (int e : range(ig.edges().size())) {</span>
+<span class="fc bfc" id="L399" title="All 2 branches covered.">			if (ig.edgeSource(e) == ig.edgeTarget(e))</span>
+<span class="fc" id="L400">				continue;</span>
+<span class="fc" id="L401">			int mstEdge = tpmResults.getHeaviestEdgeInt(i++);</span>
+<span class="pc bpc" id="L402" title="1 of 4 branches missed.">			if (mstEdge &lt; 0 || iw.weight(e) &lt; mstWeights[mstEdge])</span>
+<span class="fc" id="L403">				return false;</span>
+<span class="fc" id="L404">		}</span>
+<span class="fc" id="L405">		return true;</span>
 	}
 
 }

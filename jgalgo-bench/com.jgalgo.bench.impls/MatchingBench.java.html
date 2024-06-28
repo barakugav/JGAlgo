@@ -288,7 +288,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="pc bpc" id="L288" title="1 of 2 branches missed.">				if (g.vertices().size() % 2 != 0)</span>
 <span class="nc" id="L289">					throw new IllegalArgumentException(&quot;there is no perfect matching&quot;);</span>
 
-<span class="fc" id="L291">				MatchingAlgo cardinalityAlgo = MatchingAlgo.builder().setCardinality(true).build();</span>
+<span class="fc" id="L291">				MatchingAlgo cardinalityAlgo = MatchingAlgo.builder().cardinality(true).build();</span>
 <span class="fc" id="L292">				IMatching cardinalityMatch = (IMatching) cardinalityAlgo.computeMaximumMatching(g, null);</span>
 <span class="fc" id="L293">				IntList unmatchedVertices = new IntArrayList(cardinalityMatch.unmatchedVertices());</span>
 <span class="pc bpc" id="L294" title="1 of 2 branches missed.">				assert unmatchedVertices.size() % 2 == 0;</span>
@@ -357,7 +357,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L357">				IntGraph g = GraphsTestUtils.randBipartiteGraph(n / 2, n / 2, m, false, seedGen.nextSeed());</span>
 <span class="fc" id="L358">				IVertexBiPartition partition = BipartiteGraphs.getExistingPartition(g).get();</span>
 
-<span class="fc" id="L360">				MatchingAlgo cardinalityAlgo = MatchingAlgo.builder().setCardinality(true).setBipartite(true).build();</span>
+<span class="fc" id="L360">				MatchingAlgo cardinalityAlgo = MatchingAlgo.builder().cardinality(true).bipartite(true).build();</span>
 <span class="fc" id="L361">				IMatching cardinalityMatch = (IMatching) cardinalityAlgo.computeMaximumMatching(g, null);</span>
 <span class="fc" id="L362">				IntList unmatchedVerticesS = new IntArrayList(cardinalityMatch.unmatchedVertices());</span>
 <span class="fc" id="L363">				IntList unmatchedVerticesT = new IntArrayList(cardinalityMatch.unmatchedVertices());</span>

@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L46">public class MatchingWeightedBipartiteSssp extends MatchingAlgoAbstractBasedMaximum {</span>
 
 <span class="fc" id="L48">	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newInstance();</span>
-<span class="fc" id="L49">	private ShortestPathSingleSource ssspNegative = ShortestPathSingleSource.builder().setNegativeWeights(true).build();</span>
+<span class="fc" id="L49">	private ShortestPathSingleSource ssspNegative = ShortestPathSingleSource.builder().negativeWeights(true).build();</span>
 
 	/**
 	 * Create a new maximum weighted matching object.

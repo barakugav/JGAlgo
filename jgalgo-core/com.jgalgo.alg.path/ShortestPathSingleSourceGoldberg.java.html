@@ -60,7 +60,7 @@ public class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceAb
 
 <span class="fc" id="L61">	private ShortestPathSingleSource positiveSsspAlgo = ShortestPathSingleSource.newInstance();</span>
 <span class="fc" id="L62">	private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();</span>
-<span class="fc" id="L63">	private final ShortestPathSingleSource dagSssp = ShortestPathSingleSource.builder().setDag(true).build();</span>
+<span class="fc" id="L63">	private final ShortestPathSingleSource dagSssp = ShortestPathSingleSource.builder().dag(true).build();</span>
 <span class="fc" id="L64">	private final StronglyConnectedComponentsAlgo ccAlg = StronglyConnectedComponentsAlgo.newInstance();</span>
 
 <span class="fc" id="L66">	private final Diagnostics diagnostics = new Diagnostics();</span>

@@ -330,7 +330,7 @@ JGAlgo - Core,com.jgalgo.gen,BipartiteGenerators.Direction,0,44,0,0,0,5,0,1,0,1
 JGAlgo - Core,com.jgalgo.gen,EmptyGraphGenerator,0,143,0,14,0,36,0,16,0,9
 JGAlgo - Core,com.jgalgo.gen,RecursiveMatrixGraphGenerator,14,647,7,81,0,134,7,51,0,14
 JGAlgo - Core,com.jgalgo.gen,SymmetricDifferenceGraphGenerator,4,421,1,53,0,100,1,34,0,8
-JGAlgo - Core,com.jgalgo.gen,GnpGraphGenerator,0,354,0,44,0,80,0,34,0,12
+JGAlgo - Core,com.jgalgo.gen,GnpGraphGenerator,0,354,1,43,0,80,1,33,0,12
 JGAlgo - Core,com.jgalgo.graph,WeightsImplObj.IndexImpl,0,97,0,4,0,20,0,7,0,5
 JGAlgo - Core,com.jgalgo.graph,GraphViews.GraphView,0,100,0,0,0,29,0,20,0,20
 JGAlgo - Core,com.jgalgo.graph,IndexIntIdMapImpl.IdSet,0,73,0,2,0,12,0,9,0,8
@@ -765,7 +765,7 @@ JGAlgo - Core,com.jgalgo.alg.path,ShortestPathAllPairs.1.new ShortestPathAllPair
 JGAlgo - Core,com.jgalgo.alg.path,KShortestPathsStKatohIbarakiMine,0,41,0,0,0,10,0,4,0,4
 JGAlgo - Core,com.jgalgo.alg.path,ShortestPathSingleSourceAbstract.ObjResultFromIndexResult,0,181,0,16,0,37,0,16,0,8
 JGAlgo - Core,com.jgalgo.alg.path,ShortestPathAllPairsAbstract.IntResultFromIndexResult,0,47,0,0,0,8,0,3,0,3
-JGAlgo - Core,com.jgalgo.alg.path,ShortestPathSt,9,15,0,2,3,2,3,2,3,1
+JGAlgo - Core,com.jgalgo.alg.path,ShortestPathSt,4,15,0,2,1,2,1,2,1,1
 JGAlgo - Core,com.jgalgo.alg.path,Paths.ObjPathFromIndexPath,0,72,0,0,0,14,0,9,0,9
 JGAlgo - Core,com.jgalgo.alg.path,SimplePathsEnumeratorSedgewick.new Iterator() {...},4,185,1,11,0,37,1,10,0,5
 JGAlgo - Core,com.jgalgo.alg.path,VoronoiAlgo,0,4,0,0,0,1,0,1,0,1
@@ -813,12 +813,12 @@ JGAlgo - Core,com.jgalgo.alg.cover,VertexCoverAbstract,0,34,0,2,0,9,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg.cover,EdgeCoverAbstract,0,34,0,2,0,9,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg.cover,DominatingSetAlgoGreedy,0,34,0,2,0,10,0,4,0,3
 JGAlgo - Core,com.jgalgo.alg.cover,DominatingSetAlgoGreedy.Worker,46,792,14,112,0,174,14,66,0,17
-JGAlgo - Core,com.jgalgo.alg.cover,EdgeCover.new EdgeCover() {...},24,0,2,0,4,0,3,0,2,0
+JGAlgo - Core,com.jgalgo.alg.cover,EdgeCover.new EdgeCover() {...},28,0,2,0,6,0,3,0,2,0
 JGAlgo - Core,com.jgalgo.alg.cover,EdgeCoverCardinality,0,128,0,16,0,21,0,10,0,2
 JGAlgo - Core,com.jgalgo.alg.cover,VertexCover,0,98,0,14,0,20,0,9,0,2
 JGAlgo - Core,com.jgalgo.alg.cover,DominatingSetAlgoAbstract,0,36,0,2,0,9,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg.cover,VertexCoverBarYehuda,0,104,0,10,0,16,0,7,0,2
-JGAlgo - Core,com.jgalgo.alg.cover,EdgeCover,32,143,4,22,8,27,7,10,3,1
+JGAlgo - Core,com.jgalgo.alg.cover,EdgeCover,17,143,4,22,4,27,5,10,1,1
 JGAlgo - Core,com.jgalgo.alg.cover,EdgeCoverWeighted,0,377,0,34,0,63,0,21,0,4
 JGAlgo - Core,com.jgalgo.alg.tree,Trees,6,159,3,21,2,44,3,15,0,6
 JGAlgo - Core,com.jgalgo.alg.tree,TreePathMaximaHagerup,0,24,0,0,0,7,0,3,0,3
@@ -835,7 +835,6 @@ JGAlgo - Core,com.jgalgo.alg.tree,LowestCommonAncestorDynamicGabowLongs.Vertex2,
 JGAlgo - Core,com.jgalgo.alg.tree,TreePathMaximaQueriesImpl.ObjQueriesImpl,8,49,1,1,2,11,2,6,1,6
 JGAlgo - Core,com.jgalgo.alg.tree,LowestCommonAncestorStaticRmq,0,159,0,10,0,40,0,7,0,2
 JGAlgo - Core,com.jgalgo.alg.tree,LowestCommonAncestorStaticAbstract,4,54,1,5,0,14,1,6,0,4
-JGAlgo - Core,com.jgalgo.alg.tree,TreePathMaxima.new TreePathMaxima.Builder() {...},19,13,2,0,5,4,2,2,1,2
 JGAlgo - Core,com.jgalgo.alg.tree,TreePathMaxima.IQueries,0,21,0,0,0,5,0,4,0,4
 JGAlgo - Core,com.jgalgo.alg.tree,TreePathMaxima.Queries,0,15,0,2,0,4,0,2,0,1
 JGAlgo - Core,com.jgalgo.alg.tree,TreePathMaximaAbstract.IntResultFromIndexResult,0,26,0,0,0,7,0,3,0,3
@@ -855,7 +854,7 @@ JGAlgo - Core,com.jgalgo.alg.tree,LowestCommonAncestorOffline,0,4,0,0,0,1,0,1,0,
 JGAlgo - Core,com.jgalgo.alg.tree,LowestCommonAncestorOffline.IResult,0,5,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg.tree,LowestCommonAncestorOfflineQueriesImpl.ObjQueriesImpl,4,53,1,1,0,13,1,7,0,7
 JGAlgo - Core,com.jgalgo.alg.tree,TreePathMaxima.IResult,0,5,0,0,0,1,0,1,0,1
-JGAlgo - Core,com.jgalgo.alg.tree,TreePathMaxima,12,175,3,15,4,40,3,10,0,4
+JGAlgo - Core,com.jgalgo.alg.tree,TreePathMaxima,12,172,3,15,4,39,3,9,0,3
 JGAlgo - Core,com.jgalgo.alg.tree,TreePathMaximaAbstract.ObjResultFromIndexResult,0,26,0,0,0,7,0,3,0,3
 JGAlgo - Core,com.jgalgo.alg.tree,LowestCommonAncestorOfflineAbstract.IntResultFromIndexResult,0,26,0,0,0,7,0,3,0,3
 JGAlgo - Core,com.jgalgo.alg.tree,LowestCommonAncestorStaticAbstract.IntDsFromIndexDs,0,27,0,0,0,5,0,2,0,2
