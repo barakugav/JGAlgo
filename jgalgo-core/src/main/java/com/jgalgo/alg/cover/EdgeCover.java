@@ -18,7 +18,6 @@ package com.jgalgo.alg.cover;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.Set;
-import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -42,8 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * in polynomial time.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    VertexCover
  * @author Barak Ugav
@@ -125,54 +123,24 @@ public interface EdgeCover {
 	 * Create a new edge cover algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link EdgeCover} object. The {@link EdgeCover.Builder} might
-	 * support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link EdgeCover} object.
 	 *
 	 * @return a default implementation of {@link EdgeCover}
 	 */
 	static EdgeCover newInstance() {
-		return builder().build();
-	}
-
-	/**
-	 * Create a new edge cover algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link EdgeCover} objects
-	 */
-	static EdgeCover.Builder builder() {
-		return () -> {
+		return new EdgeCover() {
 			EdgeCover cardinalityAlgo = new EdgeCoverCardinality();
 			EdgeCover weightedAlgo = new EdgeCoverWeighted();
-			return new EdgeCover() {
-				@Override
-				public <V, E> Set<E> computeMinimumEdgeCover(Graph<V, E> g, WeightFunction<E> w) {
-					if (WeightFunction.isCardinality(w)) {
-						return cardinalityAlgo.computeMinimumEdgeCover(g, null);
-					} else {
-						return weightedAlgo.computeMinimumEdgeCover(g, w);
-					}
+
+			@Override
+			public <V, E> Set<E> computeMinimumEdgeCover(Graph<V, E> g, WeightFunction<E> w) {
+				if (WeightFunction.isCardinality(w)) {
+					return cardinalityAlgo.computeMinimumEdgeCover(g, null);
+				} else {
+					return weightedAlgo.computeMinimumEdgeCover(g, w);
 				}
-			};
+			}
 		};
-	}
-
-	/**
-	 * A builder for {@link EdgeCover} algorithms.
-	 *
-	 * @see    EdgeCover#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for minimum edge cover computation.
-		 *
-		 * @return a new minimum edge cover algorithm
-		 */
-		EdgeCover build();
 	}
 
 }
