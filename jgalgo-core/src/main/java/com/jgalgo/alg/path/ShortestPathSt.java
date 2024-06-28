@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg.path;
 
-import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
@@ -36,8 +35,7 @@ import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
  * A variant with a heuristic distance function is also available, see {@link ShortestPathHeuristicSt}.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    ShortestPathSingleSource
  * @see    ShortestPathAllPairs
@@ -89,56 +87,25 @@ public interface ShortestPathSt {
 	 * Create a new S-T shortest path algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link ShortestPathSt} object. The
-	 * {@link ShortestPathSt.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link ShortestPathSt} object.
 	 *
 	 * @return a default implementation of {@link ShortestPathSt}
 	 */
 	static ShortestPathSt newInstance() {
-		return builder().build();
-	}
+		return new ShortestPathSt() {
+			ShortestPathSt cardinalityStSp = new ShortestPathStBidirectionalBfs();
+			ShortestPathSt weightedStSp = new ShortestPathStBidirectionalDijkstra();
 
-	/**
-	 * Create a new S-T shortest path algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link ShortestPathSt} objects
-	 */
-	static ShortestPathSt.Builder builder() {
-		return () -> {
-			return new ShortestPathSt() {
-				ShortestPathSt cardinalityStSp = new ShortestPathStBidirectionalBfs();
-				ShortestPathSt weightedStSp = new ShortestPathStBidirectionalDijkstra();
-
-				@Override
-				public <V, E> ObjectDoublePair<Path<V, E>> computeShortestPathAndWeight(Graph<V, E> g,
-						WeightFunction<E> w, V source, V target) {
-					if (WeightFunction.isCardinality(w)) {
-						return cardinalityStSp.computeShortestPathAndWeight(g, null, source, target);
-					} else {
-						return weightedStSp.computeShortestPathAndWeight(g, w, source, target);
-					}
+			@Override
+			public <V, E> ObjectDoublePair<Path<V, E>> computeShortestPathAndWeight(Graph<V, E> g, WeightFunction<E> w,
+					V source, V target) {
+				if (WeightFunction.isCardinality(w)) {
+					return cardinalityStSp.computeShortestPathAndWeight(g, null, source, target);
+				} else {
+					return weightedStSp.computeShortestPathAndWeight(g, w, source, target);
 				}
-			};
+			}
 		};
-	}
-
-	/**
-	 * A builder for {@link ShortestPathSt} objects.
-	 *
-	 * @see    ShortestPathSt#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for S-T shortest path computation.
-		 *
-		 * @return a new S-T shortest path algorithm
-		 */
-		ShortestPathSt build();
 	}
 
 }

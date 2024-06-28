@@ -39,6 +39,7 @@ import com.jgalgo.alg.path.ShortestPathAStar;
 import com.jgalgo.alg.path.ShortestPathHeuristicSt;
 import com.jgalgo.alg.path.ShortestPathSingleSource;
 import com.jgalgo.alg.path.ShortestPathSt;
+import com.jgalgo.alg.path.ShortestPathStBidirectionalDijkstra;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -109,7 +110,7 @@ public class ShortestPathStBench {
 
 		@Benchmark
 		public void BidirectionalDijkstra(Blackhole blackhole) {
-			benchStShortestPath(ShortestPathSt.builder().build(), blackhole);
+			benchStShortestPath(new ShortestPathStBidirectionalDijkstra(), blackhole);
 		}
 
 		@Benchmark
@@ -151,7 +152,7 @@ public class ShortestPathStBench {
 
 		@Benchmark
 		public void BidirectionalDijkstra(Blackhole blackhole) {
-			benchStShortestPath(ShortestPathSt.builder().build(), blackhole);
+			benchStShortestPath(new ShortestPathStBidirectionalDijkstra(), blackhole);
 		}
 
 		@Benchmark
@@ -194,7 +195,7 @@ public class ShortestPathStBench {
 
 		@Benchmark
 		public void BidirectionalDijkstra(Blackhole blackhole) {
-			benchStShortestPath(ShortestPathSt.builder().build(), blackhole);
+			benchStShortestPath(new ShortestPathStBidirectionalDijkstra(), blackhole);
 		}
 
 		@Benchmark
