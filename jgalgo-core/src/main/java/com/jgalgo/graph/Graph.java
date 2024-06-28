@@ -912,6 +912,10 @@ public interface Graph<V, E> {
 	 * adding/removing vertices/edges/weights, use the enclosing graph instead.
 	 *
 	 * <p>
+	 * The mapping of the vertices and edges indices to the original vertices and edges identifiers can be obtained by
+	 * the {@link #indexGraphVerticesMap()} and {@link #indexGraphEdgesMap()} methods.
+	 *
+	 * <p>
 	 * If this graph is an Index graph, this method returns this graph.
 	 *
 	 * @return an {@link IndexGraph} view of this graph
