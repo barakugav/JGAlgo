@@ -19,7 +19,7 @@ package com.jgalgo.alg.flow;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
-import com.jgalgo.alg.IVertexBiPartition;
+import com.jgalgo.alg.common.IVertexBiPartition;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;

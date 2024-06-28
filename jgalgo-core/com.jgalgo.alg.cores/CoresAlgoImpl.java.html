@@ -18,7 +18,7 @@ package com.jgalgo.alg.cores;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Objects;
 import java.util.function.IntConsumer;
-import com.jgalgo.alg.EdgeDirection;
+import com.jgalgo.alg.common.EdgeDirection;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 

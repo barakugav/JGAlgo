@@ -16,7 +16,7 @@
 package com.jgalgo.alg.flow;
 
 import java.util.Collection;
-import com.jgalgo.alg.AlgorithmBuilderBase;
+import com.jgalgo.alg.common.AlgorithmBuilderBase;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;

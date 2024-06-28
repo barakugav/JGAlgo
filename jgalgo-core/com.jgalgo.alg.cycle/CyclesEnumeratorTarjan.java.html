@@ -17,7 +17,7 @@
 package com.jgalgo.alg.cycle;
 
 import java.util.Iterator;
-import com.jgalgo.alg.path.IPath;
+import com.jgalgo.alg.common.IPath;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;

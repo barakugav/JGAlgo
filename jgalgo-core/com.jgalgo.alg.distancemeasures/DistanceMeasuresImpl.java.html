@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.IntToDoubleFunction;
 import java.util.stream.IntStream;
-import com.jgalgo.alg.path.ShortestPathAllPairs;
+import com.jgalgo.alg.shortestpath.ShortestPathAllPairs;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;

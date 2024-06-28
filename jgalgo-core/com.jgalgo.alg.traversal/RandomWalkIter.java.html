@@ -16,7 +16,7 @@
 package com.jgalgo.alg.traversal;
 
 import java.util.Iterator;
-import com.jgalgo.alg.RandomizedAlgorithm;
+import com.jgalgo.alg.common.RandomizedAlgorithm;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;

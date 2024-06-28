@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ShortestPathHeuristicStAbstract.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.shortestpath</a> &gt; <span class="el_source">ShortestPathHeuristicStAbstract.java</span></div><h1>ShortestPathHeuristicStAbstract.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.shortestpath;
+
+import java.util.function.IntToDoubleFunction;
+import java.util.function.ToDoubleFunction;
+import com.jgalgo.alg.common.IPath;
+import com.jgalgo.alg.common.Path;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
+
+/**
+ * Abstract class for computing shortest path between a source and a target with a heuristic.
+ *
+ * &lt;p&gt;
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
+ *
+ * @author Barak Ugav
+ */
+public abstract class ShortestPathHeuristicStAbstract implements ShortestPathHeuristicSt {
+
+	/**
+	 * Default constructor.
+	 */
+<span class="fc" id="L47">	public ShortestPathHeuristicStAbstract() {}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public &lt;V, E&gt; Path&lt;V, E&gt; computeShortestPath(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source, V target,
+			ToDoubleFunction&lt;V&gt; vHeuristic) {
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L54">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L55">			int source0 = ((Integer) source).intValue();</span>
+<span class="fc" id="L56">			int target0 = ((Integer) target).intValue();</span>
+<span class="fc" id="L57">			ToDoubleFunction&lt;Integer&gt; vHeuristic0 = (ToDoubleFunction&lt;Integer&gt;) vHeuristic;</span>
+<span class="fc" id="L58">			IntToDoubleFunction vHeuristic1 = v -&gt; vHeuristic0.applyAsDouble(Integer.valueOf(v));</span>
+<span class="fc" id="L59">			return (Path&lt;V, E&gt;) computeShortestPath((IndexGraph) g, w0, source0, target0, vHeuristic1);</span>
+
+		} else {
+<span class="fc" id="L62">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L63">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L64">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L65">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L66">			int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L67">			int iTarget = viMap.idToIndex(target);</span>
+<span class="fc" id="L68">			IntToDoubleFunction indexVHeuristic = vIdx -&gt; vHeuristic.applyAsDouble(viMap.indexToId(vIdx));</span>
+<span class="fc" id="L69">			IPath indexPath = NegativeCycleException</span>
+<span class="fc" id="L70">					.runAndConvertException(g,</span>
+<span class="fc" id="L71">							() -&gt; computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic));</span>
+<span class="fc" id="L72">			return Path.pathFromIndexPath(g, indexPath);</span>
+		}
+	}
+
+	@Override
+	public IPath computeShortestPath(IntGraph g, IWeightFunction w, int source, int target,
+			IntToDoubleFunction vHeuristic) {
+<span class="fc bfc" id="L79" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L80">			IntToDoubleFunction vHeuristic1 = v -&gt; vHeuristic.applyAsDouble(v);</span>
+<span class="fc" id="L81">			return computeShortestPath((IndexGraph) g, w, source, target, vHeuristic1);</span>
+
+		} else {
+<span class="fc" id="L84">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L85">			IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L86">			IndexIntIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L87">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc((WeightFunction&lt;Integer&gt;) w, eiMap);</span>
+<span class="fc" id="L88">			int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L89">			int iTarget = viMap.idToIndex(target);</span>
+<span class="fc" id="L90">			IntToDoubleFunction indexVHeuristic = vIdx -&gt; vHeuristic.applyAsDouble(viMap.indexToIdInt(vIdx));</span>
+<span class="fc" id="L91">			IPath indexPath = NegativeCycleException</span>
+<span class="fc" id="L92">					.runAndConvertException(g,</span>
+<span class="fc" id="L93">							() -&gt; computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic));</span>
+<span class="fc" id="L94">			return (IPath) Path.pathFromIndexPath(g, indexPath);</span>
+		}
+	}
+
+	protected abstract IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target,
+			IntToDoubleFunction vHeuristic);
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

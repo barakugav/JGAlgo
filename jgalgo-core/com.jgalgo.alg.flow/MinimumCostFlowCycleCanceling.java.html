@@ -17,8 +17,8 @@ package com.jgalgo.alg.flow;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
+import com.jgalgo.alg.common.IPath;
 import com.jgalgo.alg.cycle.MinimumMeanCycle;
-import com.jgalgo.alg.path.IPath;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsDouble;

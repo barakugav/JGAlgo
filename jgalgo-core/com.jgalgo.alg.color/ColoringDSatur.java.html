@@ -20,7 +20,7 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
-import com.jgalgo.alg.IVertexPartition;
+import com.jgalgo.alg.common.IVertexPartition;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.LongIntReferenceableHeap;

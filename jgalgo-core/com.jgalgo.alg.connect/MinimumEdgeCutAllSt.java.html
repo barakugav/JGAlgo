@@ -17,8 +17,8 @@ package com.jgalgo.alg.connect;
 
 import java.util.Iterator;
 import java.util.List;
-import com.jgalgo.alg.IVertexBiPartition;
-import com.jgalgo.alg.VertexBiPartition;
+import com.jgalgo.alg.common.IVertexBiPartition;
+import com.jgalgo.alg.common.VertexBiPartition;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;

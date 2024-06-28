@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ShortestPathAllPairsAbstract.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.shortestpath</a> &gt; <span class="el_source">ShortestPathAllPairsAbstract.java</span></div><h1>ShortestPathAllPairsAbstract.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg.shortestpath;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Objects;
+import com.jgalgo.alg.common.IPath;
+import com.jgalgo.alg.common.Path;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.BigArrays;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntList;
+
+/**
+ * Abstract class for computing shortest path between all pairs in a graph.
+ *
+ * &lt;p&gt;
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L51">public abstract class ShortestPathAllPairsAbstract implements ShortestPathAllPairs {</span>
+
+	/**
+	 * Default constructor.
+	 */
+<span class="fc" id="L56">	public ShortestPathAllPairsAbstract() {}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeAllShortestPaths(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L62">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L63">			return (ShortestPathAllPairs.Result&lt;V, E&gt;) computeAllShortestPaths((IndexGraph) g, w0);</span>
+
+		} else {
+<span class="fc" id="L66">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L67">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L68">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L69">			ShortestPathAllPairs.IResult indexResult =</span>
+<span class="fc" id="L70">					NegativeCycleException.runAndConvertException(g, () -&gt; computeAllShortestPaths(iGraph, iw));</span>
+<span class="fc" id="L71">			return resultFromIndexResult(g, indexResult);</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeSubsetShortestPaths(Graph&lt;V, E&gt; g,
+			Collection&lt;V&gt; verticesSubset, WeightFunction&lt;E&gt; w) {
+<span class="fc bfc" id="L79" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L80">			IntCollection verticesSubset0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) verticesSubset);</span>
+<span class="fc" id="L81">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L82">			return (ShortestPathAllPairs.Result&lt;V, E&gt;) computeSubsetShortestPaths((IndexGraph) g, verticesSubset0, w0);</span>
+
+		} else {
+<span class="fc" id="L85">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L86">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L87">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L88">			IntCollection iVerticesSubset = IndexIdMaps.idToIndexCollection(verticesSubset, viMap);</span>
+<span class="fc" id="L89">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L90">			ShortestPathAllPairs.IResult indexResult = NegativeCycleException</span>
+<span class="fc" id="L91">					.runAndConvertException(g, () -&gt; computeSubsetShortestPaths(iGraph, iVerticesSubset, iw));</span>
+<span class="fc" id="L92">			return resultFromIndexResult(g, indexResult);</span>
+		}
+	}
+
+	protected abstract ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w);
+
+	protected abstract ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g,
+			IntCollection verticesSubset, IWeightFunction w);
+
+	/**
+	 * The result object for the shortest path between all pairs of vertices in an index graph.
+	 *
+	 * @author Barak Ugav
+	 */
+<span class="fc" id="L106">	protected static final class IndexResult implements ShortestPathAllPairs.IResult {</span>
+
+		final IndexGraph g;
+		private final boolean directed;
+		private final int n;
+		private final int[][] edges;
+		private final double[] distances;
+
+		/**
+		 * Create a new result object for the given graph.
+		 *
+		 * @param g the graph on which the shortest paths were computed. Should not be modified during the lifetime of
+		 *              this object
+		 */
+<span class="fc" id="L120">		public IndexResult(IndexGraph g) {</span>
+<span class="fc" id="L121">			this.g = g;</span>
+<span class="fc" id="L122">			directed = g.isDirected();</span>
+<span class="fc" id="L123">			n = g.vertices().size();</span>
+<span class="fc" id="L124">			edges = new int[n][n];</span>
+<span class="fc" id="L125">			BigArrays.fill(edges, -1);</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc" id="L127">				distances = new double[n * n];</span>
+			} else {
+<span class="fc" id="L129">				distances = new double[n * (n - 1) / 2];</span>
+			}
+<span class="fc" id="L131">			Arrays.fill(distances, Double.POSITIVE_INFINITY);</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">			if (directed)</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">				for (int v : range(n))</span>
+<span class="fc" id="L134">					setDistance(v, v, 0);</span>
+<span class="fc" id="L135">		}</span>
+
+		public static IndexResult fromSsspResult(IndexGraph g, ShortestPathSingleSource.IResult[] ssspResults) {
+<span class="fc" id="L138">			final int n = g.vertices().size();</span>
+<span class="fc" id="L139">			final boolean directed = g.isDirected();</span>
+<span class="fc" id="L140">			IndexResult res = new IndexResult(g);</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">			assert ssspResults.length == n;</span>
+
+<span class="fc" id="L143">			final boolean knownSsspRes =</span>
+<span class="fc" id="L144">					Arrays.stream(ssspResults).allMatch(r -&gt; r instanceof ShortestPathSingleSourceAbstract.IndexResult);</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">			if (knownSsspRes) {</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">				for (int u : range(n)) {</span>
+<span class="fc" id="L147">					ShortestPathSingleSourceAbstract.IndexResult uRes =</span>
+							(ShortestPathSingleSourceAbstract.IndexResult) ssspResults[u];
+<span class="fc bfc" id="L149" title="All 4 branches covered.">					for (int v : range(directed ? 0 : u + 1, n))</span>
+<span class="fc" id="L150">						res.setDistance(u, v, uRes.distances[v]);</span>
+<span class="fc" id="L151">				}</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">				for (int s : range(n)) {</span>
+<span class="fc" id="L153">					ShortestPathSingleSourceAbstract.IndexResult sRes =</span>
+							(ShortestPathSingleSourceAbstract.IndexResult) ssspResults[s];
+<span class="fc bfc" id="L155" title="All 2 branches covered.">					for (int vFirst : range(n)) {</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">						if (s == vFirst) {</span>
+<span class="fc" id="L157">							res.setEdgeTo(s, s, -1);</span>
+<span class="fc" id="L158">							continue;</span>
+						}
+<span class="fc bfc" id="L160" title="All 2 branches covered.">						if (sRes.backtrack[vFirst] &lt; 0)</span>
+<span class="fc" id="L161">							continue;</span>
+<span class="fc" id="L162">						for (int v = vFirst;;) {</span>
+<span class="fc" id="L163">							int e = sRes.backtrack[v];</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">							assert e &gt;= 0;</span>
+<span class="fc" id="L165">							v = g.edgeEndpoint(e, v);</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">							if (v == s) {</span>
+<span class="fc" id="L167">								final int sTowardV = e;</span>
+<span class="fc" id="L168">								for (v = vFirst;;) {</span>
+<span class="fc" id="L169">									res.setEdgeTo(s, v, sTowardV);</span>
+<span class="fc" id="L170">									v = g.edgeEndpoint(sRes.backtrack[v], v);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">									if (v == s)</span>
+<span class="fc" id="L172">										break;</span>
+								}
+								break;
+							}
+<span class="fc" id="L176">						}</span>
+<span class="fc" id="L177">					}</span>
+<span class="fc" id="L178">				}</span>
+
+			} else {
+<span class="nc bnc" id="L181" title="All 2 branches missed.">				for (int u : range(n))</span>
+<span class="nc bnc" id="L182" title="All 4 branches missed.">					for (int v : range(directed ? 0 : u + 1, n))</span>
+<span class="nc" id="L183">						res.setDistance(u, v, ssspResults[u].distance(v));</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">				for (int s : range(n)) {</span>
+<span class="nc" id="L185">					ShortestPathSingleSource.IResult sRes = ssspResults[s];</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">					for (int vFirst : range(n)) {</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">						if (s == vFirst) {</span>
+<span class="nc" id="L188">							res.setEdgeTo(s, s, -1);</span>
+<span class="nc" id="L189">							continue;</span>
+						}
+<span class="nc bnc" id="L191" title="All 2 branches missed.">						if (sRes.backtrackEdge(vFirst) &lt; 0)</span>
+<span class="nc" id="L192">							continue;</span>
+<span class="nc" id="L193">						for (int v = vFirst;;) {</span>
+<span class="nc" id="L194">							int e = sRes.backtrackEdge(v);</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">							assert e &gt;= 0;</span>
+<span class="nc" id="L196">							v = g.edgeEndpoint(e, v);</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">							if (v == s) {</span>
+<span class="nc" id="L198">								final int sTowardV = e;</span>
+<span class="nc" id="L199">								for (v = vFirst;;) {</span>
+<span class="nc" id="L200">									res.setEdgeTo(s, v, sTowardV);</span>
+<span class="nc" id="L201">									v = g.edgeEndpoint(sRes.backtrackEdge(v), v);</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">									if (v == s)</span>
+<span class="nc" id="L203">										break;</span>
+								}
+								break;
+							}
+<span class="nc" id="L207">						}</span>
+<span class="nc" id="L208">					}</span>
+<span class="nc" id="L209">				}</span>
+			}
+<span class="fc" id="L211">			return res;</span>
+		}
+
+		public int getEdgeTo(int source, int target) {
+<span class="fc" id="L215">			return edges[source][target];</span>
+		}
+
+		public void setEdgeTo(int source, int target, int edge) {
+<span class="fc" id="L219">			edges[source][target] = edge;</span>
+<span class="fc" id="L220">		}</span>
+
+		public void setDistance(int source, int target, double distance) {
+<span class="pc bpc" id="L223" title="1 of 4 branches missed.">			if (!directed &amp;&amp; source == target)</span>
+<span class="nc" id="L224">				return;</span>
+<span class="fc" id="L225">			distances[index(source, target)] = distance;</span>
+<span class="fc" id="L226">		}</span>
+
+		@Override
+		public double distance(int source, int target) {
+<span class="fc" id="L230">			Assertions.checkVertex(source, n);</span>
+<span class="fc" id="L231">			Assertions.checkVertex(target, n);</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">			return source != target ? distances[index(source, target)] : 0;</span>
+		}
+
+		private int index(int u, int v) {
+<span class="fc bfc" id="L236" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc" id="L237">				return u * n + v;</span>
+			} else {
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">				assert u != v;</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">				if (u &gt; v) {</span>
+<span class="fc" id="L241">					int temp = u;</span>
+<span class="fc" id="L242">					u = v;</span>
+<span class="fc" id="L243">					v = temp;</span>
+				}
+				/* index mapping assume always u &lt; v (strictly!) */
+<span class="fc" id="L246">				return (2 * n - u - 1) * u / 2 + v - u - 1;</span>
+			}
+		}
+
+		@Override
+		public IPath getPath(int source, int target) {
+<span class="fc bfc" id="L252" title="All 2 branches covered.">			if (distance(source, target) == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L253">				return null;</span>
+<span class="fc" id="L254">			IntList path = new IntArrayList();</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">				for (int v = source; v != target;) {</span>
+<span class="fc" id="L257">					int e = getEdgeTo(v, target);</span>
+<span class="pc bpc" id="L258" title="1 of 2 branches missed.">					assert e &gt;= 0;</span>
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">					assert v == g.edgeSource(e);</span>
+<span class="fc" id="L260">					path.add(e);</span>
+<span class="fc" id="L261">					v = g.edgeTarget(e);</span>
+<span class="fc" id="L262">				}</span>
+			} else {
+<span class="fc bfc" id="L264" title="All 2 branches covered.">				for (int v = source; v != target;) {</span>
+<span class="fc" id="L265">					int e = getEdgeTo(v, target);</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">					assert e &gt;= 0;</span>
+<span class="fc" id="L267">					path.add(e);</span>
+<span class="fc" id="L268">					v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L269">				}</span>
+			}
+<span class="fc" id="L271">			return IPath.valueOf(g, source, target, path);</span>
+		}
+	}
+
+	static class IndexResultVerticesSubsetFromSssp implements ShortestPathAllPairs.IResult {
+
+		final ShortestPathSingleSource.IResult[] ssspResults;
+		final int[] vToSubsetIdx;
+
+<span class="fc" id="L280">		IndexResultVerticesSubsetFromSssp(ShortestPathSingleSource.IResult[] ssspResults, int[] vToSubsetIdx) {</span>
+<span class="fc" id="L281">			this.ssspResults = ssspResults;</span>
+<span class="fc" id="L282">			this.vToSubsetIdx = vToSubsetIdx;</span>
+<span class="fc" id="L283">		}</span>
+
+		@Override
+		public double distance(int source, int target) {
+<span class="fc" id="L287">			int sourceIdx = resultIdx(source);</span>
+<span class="fc" id="L288">			resultIdx(target); /* checks that target is in the subset */</span>
+<span class="fc" id="L289">			return ssspResults[sourceIdx].distance(target);</span>
+		}
+
+		@Override
+		public IPath getPath(int source, int target) {
+<span class="fc" id="L294">			int sourceIdx = resultIdx(source);</span>
+<span class="fc" id="L295">			resultIdx(target); /* checks that target is in the subset */</span>
+<span class="fc" id="L296">			return ssspResults[sourceIdx].getPath(target);</span>
+		}
+
+		private int resultIdx(int vertex) {
+<span class="fc" id="L300">			Assertions.checkVertex(vertex, vToSubsetIdx.length);</span>
+<span class="fc" id="L301">			int idx = vToSubsetIdx[vertex];</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">			if (idx &lt; 0)</span>
+<span class="fc" id="L303">				throw new IllegalArgumentException(&quot;no results for vertex &quot; + vertex);</span>
+<span class="fc" id="L304">			return idx;</span>
+		}
+
+		static int[] indexVerticesSubset(IndexGraph g, IntCollection verticesSubset) {
+<span class="fc bfc" id="L308" title="All 2 branches covered.">			if (verticesSubset == null)</span>
+<span class="fc" id="L309">				return range(g.vertices().size()).toIntArray();</span>
+<span class="fc" id="L310">			int[] vToSubsetIdx = new int[g.vertices().size()];</span>
+<span class="fc" id="L311">			Arrays.fill(vToSubsetIdx, -1);</span>
+<span class="fc" id="L312">			int resIdx = 0;</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">			for (int v : verticesSubset)</span>
+<span class="fc" id="L314">				vToSubsetIdx[v] = resIdx++;</span>
+<span class="fc" id="L315">			return vToSubsetIdx;</span>
+		}
+	}
+
+	private static class ObjResultFromIndexResult&lt;V, E&gt; implements ShortestPathAllPairs.Result&lt;V, E&gt; {
+
+		private final ShortestPathAllPairs.IResult indexRes;
+		private final Graph&lt;V, E&gt; g;
+		private final IndexIdMap&lt;V&gt; viMap;
+
+<span class="fc" id="L325">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, ShortestPathAllPairs.IResult indexRes) {</span>
+<span class="fc" id="L326">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L327">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L328">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L329">		}</span>
+
+		@Override
+		public double distance(V source, V target) {
+<span class="fc" id="L333">			return indexRes.distance(viMap.idToIndex(source), viMap.idToIndex(target));</span>
+		}
+
+		@Override
+		public Path&lt;V, E&gt; getPath(V source, V target) {
+<span class="fc" id="L338">			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));</span>
+<span class="fc" id="L339">			return Path.pathFromIndexPath(g, indexPath);</span>
+		}
+	}
+
+	private static class IntResultFromIndexResult implements ShortestPathAllPairs.IResult {
+
+		private final ShortestPathAllPairs.IResult indexRes;
+		private final IntGraph g;
+		private final IndexIntIdMap viMap;
+
+<span class="fc" id="L349">		IntResultFromIndexResult(IntGraph g, ShortestPathAllPairs.IResult indexRes) {</span>
+<span class="fc" id="L350">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L351">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L352">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L353">		}</span>
+
+		@Override
+		public double distance(int source, int target) {
+<span class="fc" id="L357">			return indexRes.distance(viMap.idToIndex(source), viMap.idToIndex(target));</span>
+		}
+
+		@Override
+		public IPath getPath(int source, int target) {
+<span class="fc" id="L362">			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));</span>
+<span class="fc" id="L363">			return (IPath) Path.pathFromIndexPath(g, indexPath);</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private static &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
+			ShortestPathAllPairs.IResult indexResult) {
+<span class="pc bpc" id="L370" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L372">			return (ShortestPathAllPairs.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
+		} else {
+<span class="fc" id="L374">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

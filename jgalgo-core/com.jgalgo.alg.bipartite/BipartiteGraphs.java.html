@@ -17,8 +17,8 @@ package com.jgalgo.alg.bipartite;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Optional;
-import com.jgalgo.alg.IVertexBiPartition;
-import com.jgalgo.alg.VertexBiPartition;
+import com.jgalgo.alg.common.IVertexBiPartition;
+import com.jgalgo.alg.common.VertexBiPartition;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeights;

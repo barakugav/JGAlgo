@@ -18,8 +18,8 @@ package com.jgalgo.alg.euler;
 
 import java.util.List;
 import java.util.Optional;
-import com.jgalgo.alg.path.IPath;
-import com.jgalgo.alg.path.Path;
+import com.jgalgo.alg.common.IPath;
+import com.jgalgo.alg.common.Path;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;

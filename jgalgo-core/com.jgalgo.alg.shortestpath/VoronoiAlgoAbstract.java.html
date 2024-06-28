@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VoronoiAlgoAbstract.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.shortestpath</a> &gt; <span class="el_source">VoronoiAlgoAbstract.java</span></div><h1>VoronoiAlgoAbstract.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.shortestpath;
+
+import java.util.Collection;
+import java.util.Objects;
+import com.jgalgo.alg.common.IPath;
+import com.jgalgo.alg.common.IVertexPartition;
+import com.jgalgo.alg.common.Path;
+import com.jgalgo.alg.common.VertexPartition;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
+/**
+ * Abstract class for computing the Voronoi cells in a graph given a set of site vertices.
+ *
+ * &lt;p&gt;
+ * The class implements the interface by solving the problem on the {@linkplain Graph#indexGraph() index graph} and then
+ * maps the results back to the original graph. The implementation for {@linkplain IndexGraph index graphs} is abstract
+ * and left to the subclasses.
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L48">public abstract class VoronoiAlgoAbstract implements VoronoiAlgo {</span>
+
+	/**
+	 * Default constructor.
+	 */
+<span class="fc" id="L53">	public VoronoiAlgoAbstract() {}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public &lt;V, E&gt; VoronoiAlgo.Result&lt;V, E&gt; computeVoronoiCells(Graph&lt;V, E&gt; g, Collection&lt;V&gt; sites,
+			WeightFunction&lt;E&gt; w) {
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L60">			IntCollection sites0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sites);</span>
+<span class="fc" id="L61">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L62">			return (VoronoiAlgo.Result&lt;V, E&gt;) computeVoronoiCells((IndexGraph) g, sites0, w0);</span>
+
+		} else {
+<span class="fc" id="L65">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L66">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L67">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L68">			IntCollection iSites = IndexIdMaps.idToIndexCollection(sites, viMap);</span>
+<span class="fc" id="L69">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L70">			VoronoiAlgo.IResult indexResult = computeVoronoiCells(iGraph, iSites, iw);</span>
+<span class="fc" id="L71">			return resultFromIndexResult(g, indexResult);</span>
+		}
+	}
+
+	protected abstract VoronoiAlgo.IResult computeVoronoiCells(IndexGraph g, IntCollection sites, IWeightFunction w);
+
+	/**
+	 * A result object for the Voronoi cells computation in an index graph.
+	 *
+	 * @author Barak Ugav
+	 */
+	protected static class IndexResult implements VoronoiAlgo.IResult {
+
+		private final IVertexPartition partition;
+		private final double[] distance;
+		private final int[] backtrack;
+		private final int[] sites;
+
+		/**
+		 * Create a new result object for the Voronoi cells computation in an index graph.
+		 *
+		 * &lt;p&gt;
+		 * All the arguments are NOT CLONED and are used as is. The caller should not use these arrays after creating
+		 * the result object.
+		 *
+		 * @param g             the index graph
+		 * @param vertexToBlock an array mapping each vertex (index) to its block index
+		 * @param blockNum      the number of blocks
+		 * @param distance      an array mapping vertices (indices) to their distance from their closest site
+		 * @param backtrack     an array mapping vertices (indices) to the edge that led their closest site to them
+		 * @param sites         an array mapping block indices to their site vertex (index)
+		 */
+		public IndexResult(IndexGraph g, int[] vertexToBlock, int blockNum, double[] distance, int[] backtrack,
+<span class="fc" id="L104">				int[] sites) {</span>
+<span class="fc" id="L105">			partition = IVertexPartition.fromArray(g, vertexToBlock, blockNum);</span>
+<span class="fc" id="L106">			this.distance = Objects.requireNonNull(distance);</span>
+<span class="fc" id="L107">			this.backtrack = Objects.requireNonNull(backtrack);</span>
+<span class="fc" id="L108">			this.sites = Objects.requireNonNull(sites);</span>
+<span class="fc" id="L109">		}</span>
+
+		@Override
+		public IVertexPartition partition() {
+<span class="fc" id="L113">			return partition;</span>
+		}
+
+		@Override
+		public double distance(int vertex) {
+<span class="fc" id="L118">			return distance[vertex];</span>
+		}
+
+		@Override
+		public IPath getPath(int target) {
+<span class="fc bfc" id="L123" title="All 2 branches covered.">			if (distance[target] == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L124">				return null;</span>
+<span class="fc" id="L125">			IntArrayList path = new IntArrayList();</span>
+			int site;
+<span class="fc" id="L127">			IndexGraph g = (IndexGraph) partition.graph();</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc" id="L129">				for (int v = target;;) {</span>
+<span class="fc" id="L130">					int e = backtrack[v];</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">					if (e &lt; 0) {</span>
+<span class="fc" id="L132">						site = v;</span>
+<span class="fc" id="L133">						break;</span>
+					}
+<span class="fc" id="L135">					path.add(e);</span>
+<span class="fc" id="L136">					v = g.edgeSource(e);</span>
+<span class="fc" id="L137">				}</span>
+			} else {
+<span class="fc" id="L139">				for (int v = target;;) {</span>
+<span class="fc" id="L140">					int e = backtrack[v];</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">					if (e &lt; 0) {</span>
+<span class="fc" id="L142">						site = v;</span>
+<span class="fc" id="L143">						break;</span>
+					}
+<span class="fc" id="L145">					path.add(e);</span>
+<span class="fc" id="L146">					v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L147">				}</span>
+			}
+<span class="fc" id="L149">			IntArrays.reverse(path.elements(), 0, path.size());</span>
+<span class="fc" id="L150">			return IPath.valueOf(g, site, target, path);</span>
+		}
+
+		@Override
+		public int blockSiteInt(int block) {
+<span class="fc bfc" id="L155" title="All 2 branches covered.">			return block &lt; sites.length ? sites[block] : -1;</span>
+		}
+
+		@Override
+		public int vertexSite(int vertex) {
+<span class="fc" id="L160">			int siteIdx = partition.vertexBlock(vertex);</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">			return siteIdx &lt; sites.length ? sites[siteIdx] : -1;</span>
+		}
+	}
+
+	private static class ObjResultFromIndexResult&lt;V, E&gt; implements VoronoiAlgo.Result&lt;V, E&gt; {
+
+		private final VoronoiAlgo.IResult indexRes;
+		private final IndexIdMap&lt;V&gt; viMap;
+		private final VertexPartition&lt;V, E&gt; partition;
+
+<span class="fc" id="L171">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, VoronoiAlgo.IResult indexRes) {</span>
+<span class="fc" id="L172">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L173">			viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L174">			partition = VertexPartition.partitionFromIndexPartition(g, indexRes.partition());</span>
+<span class="fc" id="L175">		}</span>
+
+		@Override
+		public VertexPartition&lt;V, E&gt; partition() {
+<span class="fc" id="L179">			return partition;</span>
+		}
+
+		@Override
+		public double distance(V vertex) {
+<span class="fc" id="L184">			return indexRes.distance(viMap.idToIndex(vertex));</span>
+		}
+
+		@Override
+		public Path&lt;V, E&gt; getPath(V target) {
+<span class="fc" id="L189">			IPath indexPath = indexRes.getPath(viMap.idToIndex(target));</span>
+<span class="fc" id="L190">			return Path.pathFromIndexPath(partition.graph(), indexPath);</span>
+		}
+
+		@Override
+		public V blockSite(int block) {
+<span class="fc" id="L195">			int site = indexRes.blockSiteInt(block);</span>
+<span class="fc" id="L196">			return viMap.indexToIdIfExist(site);</span>
+		}
+
+		@Override
+		public V vertexSite(V vertex) {
+<span class="fc" id="L201">			int site = indexRes.vertexSite(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L202">			return viMap.indexToIdIfExist(site);</span>
+		}
+	}
+
+	private static class IntResultFromIndexResult implements VoronoiAlgo.IResult {
+
+		private final VoronoiAlgo.IResult indexRes;
+		private final IndexIntIdMap viMap;
+		private final IVertexPartition partition;
+
+<span class="fc" id="L212">		IntResultFromIndexResult(IntGraph g, VoronoiAlgo.IResult indexRes) {</span>
+<span class="fc" id="L213">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L214">			viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L215">			partition = (IVertexPartition) VertexPartition.partitionFromIndexPartition(g, indexRes.partition());</span>
+<span class="fc" id="L216">		}</span>
+
+		@Override
+		public IVertexPartition partition() {
+<span class="fc" id="L220">			return partition;</span>
+		}
+
+		@Override
+		public double distance(int vertex) {
+<span class="fc" id="L225">			return indexRes.distance(viMap.idToIndex(vertex));</span>
+		}
+
+		@Override
+		public IPath getPath(int target) {
+<span class="fc" id="L230">			IPath indexPath = indexRes.getPath(viMap.idToIndex(target));</span>
+<span class="fc" id="L231">			return (IPath) Path.pathFromIndexPath(partition.graph(), indexPath);</span>
+		}
+
+		@Override
+		public int blockSiteInt(int block) {
+<span class="fc" id="L236">			int site = indexRes.blockSiteInt(block);</span>
+<span class="fc" id="L237">			return viMap.indexToIdIfExistInt(site);</span>
+		}
+
+		@Override
+		public int vertexSite(int vertex) {
+<span class="fc" id="L242">			int site = indexRes.vertexSite(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L243">			return viMap.indexToIdIfExistInt(site);</span>
+		}
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private static &lt;V, E&gt; VoronoiAlgo.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
+			VoronoiAlgo.IResult indexResult) {
+<span class="pc bpc" id="L250" title="1 of 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L252">			return (VoronoiAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
+		} else {
+<span class="fc" id="L254">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

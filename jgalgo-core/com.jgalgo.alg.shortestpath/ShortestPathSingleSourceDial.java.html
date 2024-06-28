@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ShortestPathSingleSourceDial.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.shortestpath</a> &gt; <span class="el_source">ShortestPathSingleSourceDial.java</span></div><h1>ShortestPathSingleSourceDial.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.alg.shortestpath;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Arrays;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.ds.LinkedListFixedSize;
+import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+
+/**
+ * Dial's algorithm for Single Source Shortest Path for positive integer weights.
+ *
+ * &lt;p&gt;
+ * The algorithm runs in \(O(n + m + D)\) where \(D\) is the maximum distance, or the sum of heaviest n-1 edges if the
+ * maximum distance is not known. It takes advantage of the fact that a heap for integers can be implemented using
+ * buckets, one for each weight. Such a heap require \(D\) buckets, and therefore the algorithm running time and space
+ * depends on \(D\).
+ *
+ * &lt;p&gt;
+ * This algorithm should be used in case the maximal distance is known in advance, and its small. For example, its used
+ * by {@link ShortestPathSingleSourceGoldberg} as a subroutine, where the maximum distance is bounded by the number of
+ * layers.
+ *
+ * &lt;p&gt;
+ * Based on 'Algorithm 360: Shortest-Path Forest with Topological Ordering' by Dial, Robert B. (1969).
+ *
+ * @author Barak Ugav
+ */
+public class ShortestPathSingleSourceDial extends ShortestPathSingleSourceAbstract {
+
+	/**
+	 * Create a Dial's SSSP algorithm for integer weights.
+	 *
+	 * &lt;p&gt;
+	 * Please prefer using {@link ShortestPathSingleSource#newInstance()} to get a default implementation for the
+	 * {@link ShortestPathSingleSource} interface, or {@link ShortestPathSingleSource#builder()} for more customization
+	 * options.
+	 */
+<span class="fc" id="L60">	public ShortestPathSingleSourceDial() {}</span>
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if one of the edge weights is negative or the weight function is not of type
+	 *                                      {@link IWeightFunctionInt}
+	 */
+	@Override
+	protected ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+<span class="fc" id="L70">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		if (!WeightFunction.isInteger(w))</span>
+<span class="nc" id="L72">			throw new IllegalArgumentException(&quot;only int weights are supported&quot;);</span>
+<span class="fc" id="L73">		IWeightFunctionInt w0 = (IWeightFunctionInt) w;</span>
+
+<span class="fc" id="L75">		return computeShortestPaths(g, w0, source, -1);</span>
+	}
+
+	/**
+	 * Compute the shortest paths from a source to any other vertex in a graph, given a maximal distance bound.
+	 *
+	 * @param  g           a graph
+	 * @param  w           an integer edge weight function with non negative values
+	 * @param  source      a source vertex
+	 * @param  maxDistance a bound on the maximal distance to any vertex in the graph, any negative number is treated as
+	 *                         'unknown'
+	 * @return             a result object containing the distances and shortest paths from the source to any other
+	 *                     vertex
+	 * @see                #computeShortestPaths(IntGraph, IWeightFunction, int)
+	 */
+	protected ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunctionInt w, int source,
+			int maxDistance) {
+<span class="fc" id="L92">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
+<span class="fc" id="L93">		DialHeap heap = new DialHeap(g.vertices().size(), maxDistance);</span>
+<span class="fc" id="L94">		heap.distances[source] = 0;</span>
+<span class="fc" id="L95">		int[] backtrack = new int[g.vertices().size()];</span>
+<span class="fc" id="L96">		Arrays.fill(backtrack, -1);</span>
+
+<span class="fc" id="L98">		for (int u = source;;) {</span>
+<span class="fc" id="L99">			final int uDistance = heap.distances[u];</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L101">				int e = eit.nextInt();</span>
+<span class="fc" id="L102">				int v = eit.targetInt();</span>
+
+<span class="fc" id="L104">				int ew = w.weightInt(e);</span>
+<span class="fc" id="L105">				Assertions.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L106">				int distance = uDistance + ew;</span>
+
+<span class="fc bfc" id="L108" title="All 2 branches covered.">				if (!heap.containsVertex(v)) {</span>
+<span class="fc" id="L109">					heap.insert(v, distance);</span>
+<span class="fc" id="L110">					backtrack[v] = e;</span>
+				} else {
+<span class="fc bfc" id="L112" title="All 2 branches covered.">					if (distance &lt; heap.getCurrentDistance(v)) {</span>
+<span class="fc" id="L113">						backtrack[v] = e;</span>
+<span class="fc" id="L114">						heap.decreaseKey(v, distance);</span>
+					}
+				}
+<span class="fc" id="L117">			}</span>
+
+<span class="fc" id="L119">			u = heap.extractMin();</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">			if (u &lt; 0)</span>
+<span class="fc" id="L121">				break;</span>
+<span class="fc" id="L122">		}</span>
+
+<span class="fc" id="L124">		final int n = g.vertices().size();</span>
+<span class="fc" id="L125">		double[] distances = new double[n];</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">		for (int v : range(n)) {</span>
+<span class="fc" id="L127">			int d = heap.distances[v];</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			distances[v] = d == Integer.MAX_VALUE ? Double.POSITIVE_INFINITY : d;</span>
+<span class="fc" id="L129">		}</span>
+<span class="fc" id="L130">		return new IndexResult(g, source, distances, backtrack);</span>
+	}
+
+<span class="fc" id="L133">	private static class DialHeap {</span>
+
+		private final LinkedListFixedSize.Doubly bucketsNodes;
+		private int[] bucketsHead;
+		final int[] distances;
+		private int scanIdx;
+		private int maxDistance;
+
+<span class="fc" id="L141">		DialHeap(int n, int initialSize) {</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">			bucketsHead = initialSize &lt;= 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[initialSize];</span>
+<span class="fc" id="L143">			Arrays.fill(bucketsHead, LinkedListFixedSize.None);</span>
+<span class="fc" id="L144">			bucketsNodes = new LinkedListFixedSize.Doubly(n);</span>
+<span class="fc" id="L145">			distances = new int[n];</span>
+<span class="fc" id="L146">			Arrays.fill(distances, 0, n, Integer.MAX_VALUE);</span>
+
+<span class="fc" id="L148">			maxDistance = -1;</span>
+<span class="fc" id="L149">			scanIdx = 0;</span>
+<span class="fc" id="L150">		}</span>
+
+		void insert(int v, int distance) {
+<span class="fc" id="L153">			distances[v] = distance;</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">			if (distance &gt;= bucketsHead.length) {</span>
+<span class="fc" id="L155">				int oldLength = bucketsHead.length;</span>
+<span class="fc" id="L156">				int newLength = Math.max(distance + 1, oldLength * 2);</span>
+<span class="fc" id="L157">				bucketsHead = Arrays.copyOf(bucketsHead, newLength);</span>
+<span class="fc" id="L158">				Arrays.fill(bucketsHead, oldLength, newLength, LinkedListFixedSize.None);</span>
+<span class="fc" id="L159">				maxDistance = distance;</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">			} else if (distance &gt; maxDistance) {</span>
+<span class="fc" id="L161">				maxDistance = distance;</span>
+			}
+
+<span class="fc" id="L164">			int h = bucketsHead[distance];</span>
+<span class="fc" id="L165">			bucketsHead[distance] = v;</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">			if (h != LinkedListFixedSize.None)</span>
+<span class="fc" id="L167">				bucketsNodes.connect(v, h);</span>
+<span class="fc" id="L168">		}</span>
+
+		void decreaseKey(int v, int distance) {
+<span class="fc" id="L171">			int oldDistance = distances[v];</span>
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">			assert distance &lt; oldDistance;</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">			if (v == bucketsHead[oldDistance])</span>
+<span class="fc" id="L174">				bucketsHead[oldDistance] = bucketsNodes.next(v);</span>
+<span class="fc" id="L175">			bucketsNodes.disconnect(v);</span>
+
+<span class="fc" id="L177">			insert(v, distance);</span>
+<span class="fc" id="L178">		}</span>
+
+		int extractMin() {
+<span class="fc bfc" id="L181" title="All 2 branches covered.">			for (int distance = scanIdx; distance &lt;= maxDistance; distance++) {</span>
+<span class="fc" id="L182">				int v = bucketsHead[distance];</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">				if (v != LinkedListFixedSize.None) {</span>
+<span class="fc" id="L184">					bucketsHead[distance] = bucketsNodes.next(v);</span>
+<span class="fc" id="L185">					bucketsNodes.disconnect(v);</span>
+<span class="fc" id="L186">					scanIdx = distance;</span>
+<span class="fc" id="L187">					return v;</span>
+				}
+			}
+<span class="fc" id="L190">			scanIdx = maxDistance;</span>
+<span class="fc" id="L191">			return -1;</span>
+		}
+
+		boolean containsVertex(int v) {
+<span class="fc bfc" id="L195" title="All 2 branches covered.">			return distances[v] != Integer.MAX_VALUE;</span>
+		}
+
+		int getCurrentDistance(int v) {
+<span class="fc" id="L199">			return distances[v];</span>
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

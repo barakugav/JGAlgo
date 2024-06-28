@@ -52,7 +52,7 @@ public interface GraphReader&lt;V, E&gt; {
 	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	default Graph&lt;V, E&gt; readGraph(File file) {
-<span class="nc" id="L55">		try (Reader reader = new FileReader(file, GraphFormats.JGALGO_CHARSET)) {</span>
+<span class="nc" id="L55">		try (Reader reader = new FileReader(file, GraphIoUtils.JGALGO_CHARSET)) {</span>
 <span class="nc" id="L56">			return readGraph(reader);</span>
 <span class="nc" id="L57">		} catch (IOException e) {</span>
 <span class="nc" id="L58">			throw new UncheckedIOException(e);</span>
@@ -67,7 +67,7 @@ public interface GraphReader&lt;V, E&gt; {
 	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	default Graph&lt;V, E&gt; readGraph(String path) {
-<span class="nc" id="L70">		try (Reader reader = new FileReader(path, GraphFormats.JGALGO_CHARSET)) {</span>
+<span class="nc" id="L70">		try (Reader reader = new FileReader(path, GraphIoUtils.JGALGO_CHARSET)) {</span>
 <span class="nc" id="L71">			return readGraph(reader);</span>
 <span class="nc" id="L72">		} catch (IOException e) {</span>
 <span class="nc" id="L73">			throw new UncheckedIOException(e);</span>
@@ -82,23 +82,6 @@ public interface GraphReader&lt;V, E&gt; {
 	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	GraphBuilder&lt;V, E&gt; readIntoBuilder(Reader reader);
-
-	// /**
-	// * Get new {@link GraphReader} instance by a format name.
-	// *
-	// * &lt;p&gt;
-	// * Any one of the following formats is supported: ['csv', 'dimacs', 'gexf', 'gml', 'graph6', 'space6', 'graphml',
-	// * 'leda']
-	// *
-	// * @param &lt;V&gt; the vertices type
-	// * @param &lt;E&gt; the edges type
-	// * @param format the name of the format
-	// * @return a reader that can read graphs of the given format
-	// */
-	// static &lt;V, E&gt; GraphReader&lt;V, E&gt; newInstance(String format, Class&lt;V&gt; vType, Class&lt;E&gt; eType) {
-	// // TODO documentation for params and some words on why we accept class types
-	// return GraphFormat.getInstanceByName(format).newReader(vType, eType);
-	// }
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

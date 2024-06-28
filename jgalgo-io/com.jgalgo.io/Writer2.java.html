@@ -92,12 +92,12 @@ class Writer2 {
 	}
 
 	Writer2 appendByte(byte b) throws IOException {
-<span class="fc" id="L95">		writer.append(new String(new byte[] { b }, GraphFormats.JGALGO_CHARSET));</span>
+<span class="fc" id="L95">		writer.append(new String(new byte[] { b }, GraphIoUtils.JGALGO_CHARSET));</span>
 <span class="fc" id="L96">		return this;</span>
 	}
 
 	Writer2 appendBytes(byte[] bytes) throws IOException {
-<span class="fc" id="L100">		writer.append(new String(bytes, GraphFormats.JGALGO_CHARSET));</span>
+<span class="fc" id="L100">		writer.append(new String(bytes, GraphIoUtils.JGALGO_CHARSET));</span>
 <span class="fc" id="L101">		return this;</span>
 	}
 

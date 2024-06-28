@@ -17,7 +17,7 @@
 package com.jgalgo.alg.match;
 
 import java.util.function.Supplier;
-import com.jgalgo.alg.AlgorithmBuilderBase;
+import com.jgalgo.alg.common.AlgorithmBuilderBase;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;

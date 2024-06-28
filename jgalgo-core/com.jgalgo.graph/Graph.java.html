@@ -912,6 +912,10 @@ public interface Graph&lt;V, E&gt; {
 	 * adding/removing vertices/edges/weights, use the enclosing graph instead.
 	 *
 	 * &lt;p&gt;
+	 * The mapping of the vertices and edges indices to the original vertices and edges identifiers can be obtained by
+	 * the {@link #indexGraphVerticesMap()} and {@link #indexGraphEdgesMap()} methods.
+	 *
+	 * &lt;p&gt;
 	 * If this graph is an Index graph, this method returns this graph.
 	 *
 	 * @return an {@link IndexGraph} view of this graph
@@ -965,7 +969,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an identical copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph&lt;V, E&gt; copy() {
-<span class="fc" id="L968">		return copy(false, false);</span>
+<span class="fc" id="L972">		return copy(false, false);</span>
 	}
 
 	/**
@@ -988,7 +992,7 @@ public interface Graph&lt;V, E&gt; {
 	 *                             this graph weights
 	 */
 	default Graph&lt;V, E&gt; copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L991">		return Graphs.copy(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L995">		return Graphs.copy(this, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	/**
@@ -1012,7 +1016,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an immutable copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph&lt;V, E&gt; immutableCopy() {
-<span class="fc" id="L1015">		return immutableCopy(false, false);</span>
+<span class="fc" id="L1019">		return immutableCopy(false, false);</span>
 	}
 
 	/**
@@ -1040,7 +1044,7 @@ public interface Graph&lt;V, E&gt; {
 	 *                             graph weights
 	 */
 	default Graph&lt;V, E&gt; immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L1043">		return Graphs.immutableCopy(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L1047">		return Graphs.immutableCopy(this, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	/**
@@ -1054,7 +1058,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an immutable view of this graph
 	 */
 	default Graph&lt;V, E&gt; immutableView() {
-<span class="fc" id="L1057">		return ImmutableGraphViews.of(this);</span>
+<span class="fc" id="L1061">		return ImmutableGraphViews.of(this);</span>
 	}
 
 	/**
@@ -1071,7 +1075,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return a reversed view of this graph
 	 */
 	default Graph&lt;V, E&gt; reverseView() {
-<span class="fc" id="L1074">		return ReverseGraphViews.of(this);</span>
+<span class="fc" id="L1078">		return ReverseGraphViews.of(this);</span>
 	}
 
 	/**
@@ -1095,7 +1099,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an undirected view of this graph
 	 */
 	default Graph&lt;V, E&gt; undirectedView() {
-<span class="fc" id="L1098">		return UndirectedGraphViews.of(this);</span>
+<span class="fc" id="L1102">		return UndirectedGraphViews.of(this);</span>
 	}
 
 	/**
@@ -1127,7 +1131,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
 	 */
 	default Graph&lt;V, E&gt; subGraphCopy(Collection&lt;V&gt; vertices, Collection&lt;E&gt; edges) {
-<span class="fc" id="L1130">		return Graphs.subGraph(this, vertices, edges);</span>
+<span class="fc" id="L1134">		return Graphs.subGraph(this, vertices, edges);</span>
 	}
 
 	/**
@@ -1142,7 +1146,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return     a new undirected empty graph
 	 */
 	static &lt;V, E&gt; Graph&lt;V, E&gt; newUndirected() {
-<span class="fc" id="L1145">		return GraphFactory.&lt;V, E&gt;undirected().newGraph();</span>
+<span class="fc" id="L1149">		return GraphFactory.&lt;V, E&gt;undirected().newGraph();</span>
 	}
 
 	/**
@@ -1157,7 +1161,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return     a new directed empty graph
 	 */
 	static &lt;V, E&gt; Graph&lt;V, E&gt; newDirected() {
-<span class="fc" id="L1160">		return GraphFactory.&lt;V, E&gt;directed().newGraph();</span>
+<span class="fc" id="L1164">		return GraphFactory.&lt;V, E&gt;directed().newGraph();</span>
 	}
 
 }

@@ -18,9 +18,9 @@ package com.jgalgo.alg.cycle;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Iterator;
-import com.jgalgo.alg.IVertexPartition;
+import com.jgalgo.alg.common.IPath;
+import com.jgalgo.alg.common.IVertexPartition;
 import com.jgalgo.alg.connect.StronglyConnectedComponentsAlgo;
-import com.jgalgo.alg.path.IPath;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
