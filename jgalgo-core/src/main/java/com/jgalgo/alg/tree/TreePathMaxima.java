@@ -19,7 +19,6 @@ package com.jgalgo.alg.tree;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.Objects;
-import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -48,8 +47,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * linear time.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #builder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @author Barak Ugav
  */
@@ -319,63 +317,12 @@ public interface TreePathMaxima {
 	 * Create a new tree path maxima algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link TreePathMaxima} object. The
-	 * {@link TreePathMaxima.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link TreePathMaxima} object.
 	 *
 	 * @return a default implementation of {@link TreePathMaxima}
 	 */
 	static TreePathMaxima newInstance() {
-		return builder().build();
-	}
-
-	/**
-	 * Create a new tree path maxima algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link TreePathMaxima} objects
-	 */
-	static TreePathMaxima.Builder builder() {
-		return new TreePathMaxima.Builder() {
-
-			boolean bitsLookupTablesEnable;
-
-			@Override
-			public TreePathMaxima build() {
-				TreePathMaximaHagerup tpm = new TreePathMaximaHagerup();
-				tpm.setBitsLookupTablesEnable(bitsLookupTablesEnable);
-				return tpm;
-			}
-
-			@Override
-			public void setOption(String key, Object value) {
-				switch (key) {
-					case "bits-lookup-tables-enable":
-						bitsLookupTablesEnable = ((Boolean) value).booleanValue();
-						break;
-					default:
-						TreePathMaxima.Builder.super.setOption(key, value);
-				}
-			}
-
-		};
-	}
-
-	/**
-	 * A builder for {@link TreePathMaxima} objects.
-	 *
-	 * @see    TreePathMaxima#builder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for tree path maxima computation.
-		 *
-		 * @return a new tree path maxima algorithm
-		 */
-		TreePathMaxima build();
+		return new TreePathMaximaHagerup();
 	}
 
 	/**

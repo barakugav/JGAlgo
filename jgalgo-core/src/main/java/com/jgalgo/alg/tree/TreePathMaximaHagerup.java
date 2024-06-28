@@ -75,11 +75,10 @@ public class TreePathMaximaHagerup extends TreePathMaximaAbstract {
 	 * <p>
 	 * This method enable or disable the use of bits lookup tables.
 	 *
-	 * @see          BitsLookupTable
 	 * @param enable if {@code true} bits lookup table will be constructed and used, else methods from {@link Integer}
 	 *                   will be used.
 	 */
-	void setBitsLookupTablesEnable(boolean enable) {
+	public void setBitsLookupTablesEnable(boolean enable) {
 		useBitsLookupTables = enable;
 	}
 

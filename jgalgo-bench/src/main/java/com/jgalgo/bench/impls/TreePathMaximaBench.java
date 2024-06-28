@@ -35,6 +35,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.tree.TreePathMaxima;
+import com.jgalgo.alg.tree.TreePathMaximaHagerup;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -85,16 +86,16 @@ public class TreePathMaximaBench {
 
 	@Benchmark
 	public void TPMHagerup(Blackhole blackhole) {
-		TreePathMaxima.Builder builder = TreePathMaxima.builder();
-		builder.setOption("bits-lookup-tables-enable", Boolean.FALSE);
-		benchTPM(builder.build(), blackhole);
+		TreePathMaximaHagerup algo = new TreePathMaximaHagerup();
+		algo.setBitsLookupTablesEnable(false);
+		benchTPM(algo, blackhole);
 	}
 
 	@Benchmark
 	public void TPMHagerupWithBitsLookupTable(Blackhole blackhole) {
-		TreePathMaxima.Builder builder = TreePathMaxima.builder();
-		builder.setOption("bits-lookup-tables-enable", Boolean.TRUE);
-		benchTPM(builder.build(), blackhole);
+		TreePathMaximaHagerup algo = new TreePathMaximaHagerup();
+		algo.setBitsLookupTablesEnable(true);
+		benchTPM(algo, blackhole);
 	}
 
 	private static class TPMArgs {
