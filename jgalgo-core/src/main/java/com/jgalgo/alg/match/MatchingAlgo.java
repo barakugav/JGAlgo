@@ -183,13 +183,13 @@ public interface MatchingAlgo {
 			}
 
 			@Override
-			public MatchingAlgo.Builder setBipartite(boolean bipartite) {
+			public MatchingAlgo.Builder bipartite(boolean bipartite) {
 				isBipartite = bipartite;
 				return this;
 			}
 
 			@Override
-			public MatchingAlgo.Builder setCardinality(boolean cardinality) {
+			public MatchingAlgo.Builder cardinality(boolean cardinality) {
 				this.cardinality = cardinality;
 				return this;
 			}
@@ -220,7 +220,7 @@ public interface MatchingAlgo {
 		 * @param  bipartite if {@code true}, the created matching algorithms will support bipartite graphs only
 		 * @return           this builder
 		 */
-		MatchingAlgo.Builder setBipartite(boolean bipartite);
+		MatchingAlgo.Builder bipartite(boolean bipartite);
 
 		/**
 		 * Set whether the matching algorithms built by this builder should support only maximum cardinality matching.
@@ -232,7 +232,7 @@ public interface MatchingAlgo {
 		 *                         matching only
 		 * @return             this builder
 		 */
-		MatchingAlgo.Builder setCardinality(boolean cardinality);
+		MatchingAlgo.Builder cardinality(boolean cardinality);
 	}
 
 }

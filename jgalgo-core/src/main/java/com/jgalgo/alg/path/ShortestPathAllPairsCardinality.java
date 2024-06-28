@@ -78,7 +78,7 @@ public class ShortestPathAllPairsCardinality extends ShortestPathAllPairsAbstrac
 		ForkJoinPool pool = JGAlgoUtils.getPool();
 		if (verticesSubsetSize < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
 			/* sequential */
-			ShortestPathSingleSource sssp = ShortestPathSingleSource.builder().setCardinality(true).build();
+			ShortestPathSingleSource sssp = ShortestPathSingleSource.builder().cardinality(true).build();
 			for (int source : verticesSubset)
 				ssspResults[vToSubsetIdx[source]] =
 						(ShortestPathSingleSource.IResult) sssp.computeShortestPaths(g, null, Integer.valueOf(source));
@@ -87,7 +87,7 @@ public class ShortestPathAllPairsCardinality extends ShortestPathAllPairsAbstrac
 			/* parallel */
 			List<RecursiveAction> tasks = new ObjectArrayList<>(verticesSubsetSize);
 			ThreadLocal<ShortestPathSingleSource> sssp =
-					ThreadLocal.withInitial(() -> ShortestPathSingleSource.builder().setCardinality(true).build());
+					ThreadLocal.withInitial(() -> ShortestPathSingleSource.builder().cardinality(true).build());
 			for (int source : verticesSubset) {
 				final int source0 = source;
 				tasks

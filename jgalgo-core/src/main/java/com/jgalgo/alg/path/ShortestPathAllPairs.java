@@ -244,7 +244,7 @@ public interface ShortestPathAllPairs {
 			}
 
 			@Override
-			public ShortestPathAllPairs.Builder setCardinality(boolean cardinalityWeight) {
+			public ShortestPathAllPairs.Builder cardinality(boolean cardinalityWeight) {
 				this.cardinalityWeight = cardinalityWeight;
 				return this;
 			}
@@ -277,7 +277,7 @@ public interface ShortestPathAllPairs {
 		 *                               built by this builder
 		 * @return                   this builder
 		 */
-		ShortestPathAllPairs.Builder setCardinality(boolean cardinalityWeight);
+		ShortestPathAllPairs.Builder cardinality(boolean cardinalityWeight);
 
 	}
 

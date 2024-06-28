@@ -207,7 +207,7 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 	@Test
 	public void testBuilderSetCardinality() {
 		ShortestPathAllPairs.Builder builder = ShortestPathAllPairs.builder();
-		builder.setCardinality(true);
+		builder.cardinality(true);
 		assertEquals(ShortestPathAllPairsCardinality.class, builder.build().getClass());
 	}
 

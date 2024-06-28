@@ -336,16 +336,16 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.builder();
 		assertNotNull(builder.build());
 
-		builder.setNegativeWeights(false);
-		builder.setIntWeights(false);
+		builder.negativeWeights(false);
+		builder.integerWeights(false);
 		assertEquals(ShortestPathSingleSourceDijkstra.class, builder.build().getClass());
 
-		builder.setNegativeWeights(true);
-		builder.setIntWeights(true);
+		builder.negativeWeights(true);
+		builder.integerWeights(true);
 		assertEquals(ShortestPathSingleSourceGoldberg.class, builder.build().getClass());
 
-		builder.setNegativeWeights(true);
-		builder.setIntWeights(false);
+		builder.negativeWeights(true);
+		builder.integerWeights(false);
 		assertEquals(ShortestPathSingleSourceBellmanFord.class, builder.build().getClass());
 	}
 
@@ -353,8 +353,8 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 	@Test
 	public void testBuilderMaxDistance() {
 		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.builder();
-		builder.setIntWeights(true);
-		builder.setMaxDistance(10);
+		builder.integerWeights(true);
+		builder.maxDistance(10);
 
 		Graph<Integer, Integer> g;
 		ShortestPathSingleSource.Result<Integer, Integer> res;

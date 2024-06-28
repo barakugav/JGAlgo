@@ -45,14 +45,14 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  * shortest path to any other vertex, or will find a negative cycle, see {@link NegativeCycleException}. Note that if a
  * negative cycle exists, but it is not reachable from the source, the algorithm may or may not find it, depending on
  * the implementation. To get an algorithm instance that support negative weights, use
- * {@link ShortestPathSingleSource.Builder#setNegativeWeights(boolean)}.
+ * {@link ShortestPathSingleSource.Builder#negativeWeights(boolean)}.
  *
  * <p>
  * A special case of the SSSP problem is on directed graphs that does not contain any cycles, and it could be solved in
  * linear time for any weights types by calculating the topological order of the vertices (see
- * {@link ShortestPathSingleSource.Builder#setDag(boolean)}). Another special case arise when the weight function assign
+ * {@link ShortestPathSingleSource.Builder#dag(boolean)}). Another special case arise when the weight function assign
  * \(1\) to any edges, and the shortest paths could be computed again in linear time using a BFS (see
- * {@link ShortestPathSingleSource.Builder#setCardinality(boolean)}).
+ * {@link ShortestPathSingleSource.Builder#cardinality(boolean)}).
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
@@ -414,31 +414,31 @@ public interface ShortestPathSingleSource {
 			}
 
 			@Override
-			public ShortestPathSingleSource.Builder setIntWeights(boolean enable) {
+			public ShortestPathSingleSource.Builder integerWeights(boolean enable) {
 				intWeights = enable;
 				return this;
 			}
 
 			@Override
-			public ShortestPathSingleSource.Builder setNegativeWeights(boolean enable) {
+			public ShortestPathSingleSource.Builder negativeWeights(boolean enable) {
 				negativeWeights = enable;
 				return this;
 			}
 
 			@Override
-			public ShortestPathSingleSource.Builder setMaxDistance(double maxDistance) {
+			public ShortestPathSingleSource.Builder maxDistance(double maxDistance) {
 				this.maxDistance = maxDistance;
 				return this;
 			}
 
 			@Override
-			public ShortestPathSingleSource.Builder setDag(boolean dagGraphs) {
+			public ShortestPathSingleSource.Builder dag(boolean dagGraphs) {
 				this.dagGraphs = dagGraphs;
 				return this;
 			}
 
 			@Override
-			public ShortestPathSingleSource.Builder setCardinality(boolean cardinalityWeight) {
+			public ShortestPathSingleSource.Builder cardinality(boolean cardinalityWeight) {
 				this.cardinalityWeight = cardinalityWeight;
 				return this;
 			}
@@ -470,7 +470,7 @@ public interface ShortestPathSingleSource {
 		 *                    weights
 		 * @return        this builder
 		 */
-		ShortestPathSingleSource.Builder setIntWeights(boolean enable);
+		ShortestPathSingleSource.Builder integerWeights(boolean enable);
 
 		/**
 		 * Enable/disable the support for negative numbers.
@@ -484,7 +484,7 @@ public interface ShortestPathSingleSource {
 		 *                    numbers
 		 * @return        this builder
 		 */
-		ShortestPathSingleSource.Builder setNegativeWeights(boolean enable);
+		ShortestPathSingleSource.Builder negativeWeights(boolean enable);
 
 		/**
 		 * Set the maximum distance that should be supported.
@@ -495,7 +495,7 @@ public interface ShortestPathSingleSource {
 		 * @param  maxDistance a maximum distance upper bound on the distance from the source to any vertex
 		 * @return             this builder
 		 */
-		ShortestPathSingleSource.Builder setMaxDistance(double maxDistance);
+		ShortestPathSingleSource.Builder maxDistance(double maxDistance);
 
 		/**
 		 * Enable/disable the support for directed acyclic graphs (DAG) only.
@@ -508,7 +508,7 @@ public interface ShortestPathSingleSource {
 		 *                       directed acyclic graphs
 		 * @return           this builder
 		 */
-		ShortestPathSingleSource.Builder setDag(boolean dagGraphs);
+		ShortestPathSingleSource.Builder dag(boolean dagGraphs);
 
 		/**
 		 * Enable/disable the support for cardinality shortest paths only.
@@ -521,7 +521,7 @@ public interface ShortestPathSingleSource {
 		 *                               built by this builder
 		 * @return                   this builder
 		 */
-		ShortestPathSingleSource.Builder setCardinality(boolean cardinalityWeight);
+		ShortestPathSingleSource.Builder cardinality(boolean cardinalityWeight);
 
 	}
 

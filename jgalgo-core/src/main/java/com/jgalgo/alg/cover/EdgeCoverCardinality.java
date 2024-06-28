@@ -43,7 +43,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public class EdgeCoverCardinality extends EdgeCoverAbstract {
 
-	private final MatchingAlgo matchingAlgo = MatchingAlgo.builder().setCardinality(true).build();
+	private final MatchingAlgo matchingAlgo = MatchingAlgo.builder().cardinality(true).build();
 
 	/**
 	 * Create a new edge cover algorithm object for unweighted graphs.

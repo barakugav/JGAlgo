@@ -288,7 +288,7 @@ public class MatchingBench {
 				if (g.vertices().size() % 2 != 0)
 					throw new IllegalArgumentException("there is no perfect matching");
 
-				MatchingAlgo cardinalityAlgo = MatchingAlgo.builder().setCardinality(true).build();
+				MatchingAlgo cardinalityAlgo = MatchingAlgo.builder().cardinality(true).build();
 				IMatching cardinalityMatch = (IMatching) cardinalityAlgo.computeMaximumMatching(g, null);
 				IntList unmatchedVertices = new IntArrayList(cardinalityMatch.unmatchedVertices());
 				assert unmatchedVertices.size() % 2 == 0;
@@ -357,7 +357,7 @@ public class MatchingBench {
 				IntGraph g = GraphsTestUtils.randBipartiteGraph(n / 2, n / 2, m, false, seedGen.nextSeed());
 				IVertexBiPartition partition = BipartiteGraphs.getExistingPartition(g).get();
 
-				MatchingAlgo cardinalityAlgo = MatchingAlgo.builder().setCardinality(true).setBipartite(true).build();
+				MatchingAlgo cardinalityAlgo = MatchingAlgo.builder().cardinality(true).bipartite(true).build();
 				IMatching cardinalityMatch = (IMatching) cardinalityAlgo.computeMaximumMatching(g, null);
 				IntList unmatchedVerticesS = new IntArrayList(cardinalityMatch.unmatchedVertices());
 				IntList unmatchedVerticesT = new IntArrayList(cardinalityMatch.unmatchedVertices());

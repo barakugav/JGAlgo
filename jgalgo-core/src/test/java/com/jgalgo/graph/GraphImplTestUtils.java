@@ -2940,14 +2940,13 @@ class GraphImplTestUtils extends TestUtils {
 
 	static void testUndirectedBipartiteMatching(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		MatchingBipartiteTestUtils
-				.randBipartiteGraphs(MatchingAlgo.builder().setBipartite(true).setCardinality(true).build(), graphImpl,
-						seed);
+				.randBipartiteGraphs(MatchingAlgo.builder().bipartite(true).cardinality(true).build(), graphImpl, seed);
 	}
 
 	static void testUndirectedBipartiteMatchingWeighted(Function<Boolean, Graph<Integer, Integer>> graphImpl,
 			long seed) {
 		MatchingWeightedTestUtils
-				.randGraphsBipartiteWeighted(MatchingAlgo.builder().setBipartite(true).build(), graphImpl, seed);
+				.randGraphsBipartiteWeighted(MatchingAlgo.builder().bipartite(true).build(), graphImpl, seed);
 	}
 
 	static void testRandOps(Function<Boolean, Graph<Integer, Integer>> graphImpl, boolean directed, long seed) {
