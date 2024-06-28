@@ -73,7 +73,7 @@ public final class Sparse6GraphReader extends GraphIoUtils.AbstractIntGraphReade
 		} else {
 			throw new IllegalArgumentException("Invalid header, expected ':' or '>>sparse6<<:'");
 		}
-		byte[] bytes = line.getBytes(GraphFormats.JGALGO_CHARSET);
+		byte[] bytes = line.getBytes(GraphIoUtils.JGALGO_CHARSET);
 		int cursor = 0;
 
 		/* Read N(n) */

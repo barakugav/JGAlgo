@@ -21,7 +21,7 @@ import it.unimi.dsi.fastutil.bytes.ByteList;
 class TestUtils {
 
 	// static String bytesStr(byte... bytes) {
-	// return new String(bytes, GraphFormats.JGALGO_CHARSET);
+	// return new String(bytes, GraphIoUtils.JGALGO_CHARSET);
 	// }
 
 	// static String bytesStr(char... bytes) {
@@ -67,7 +67,7 @@ class TestUtils {
 		}
 
 		String str() {
-			return new String(bytes.toByteArray(), GraphFormats.JGALGO_CHARSET);
+			return new String(bytes.toByteArray(), GraphIoUtils.JGALGO_CHARSET);
 		}
 
 		String strAndClear() {

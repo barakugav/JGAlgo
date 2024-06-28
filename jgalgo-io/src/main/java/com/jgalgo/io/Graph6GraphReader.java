@@ -71,7 +71,7 @@ public final class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader
 		/* optional header */
 		if (line.startsWith(">>graph6<<"))
 			line = line.substring(">>graph6<<".length());
-		byte[] bytes = line.getBytes(GraphFormats.JGALGO_CHARSET);
+		byte[] bytes = line.getBytes(GraphIoUtils.JGALGO_CHARSET);
 		int cursor = 0;
 
 		/* Read N(n) */

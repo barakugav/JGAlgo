@@ -52,7 +52,7 @@ public interface GraphReader<V, E> {
 	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	default Graph<V, E> readGraph(File file) {
-		try (Reader reader = new FileReader(file, GraphFormats.JGALGO_CHARSET)) {
+		try (Reader reader = new FileReader(file, GraphIoUtils.JGALGO_CHARSET)) {
 			return readGraph(reader);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
@@ -67,7 +67,7 @@ public interface GraphReader<V, E> {
 	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	default Graph<V, E> readGraph(String path) {
-		try (Reader reader = new FileReader(path, GraphFormats.JGALGO_CHARSET)) {
+		try (Reader reader = new FileReader(path, GraphIoUtils.JGALGO_CHARSET)) {
 			return readGraph(reader);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
@@ -82,22 +82,5 @@ public interface GraphReader<V, E> {
 	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	GraphBuilder<V, E> readIntoBuilder(Reader reader);
-
-	// /**
-	// * Get new {@link GraphReader} instance by a format name.
-	// *
-	// * <p>
-	// * Any one of the following formats is supported: ['csv', 'dimacs', 'gexf', 'gml', 'graph6', 'space6', 'graphml',
-	// * 'leda']
-	// *
-	// * @param <V> the vertices type
-	// * @param <E> the edges type
-	// * @param format the name of the format
-	// * @return a reader that can read graphs of the given format
-	// */
-	// static <V, E> GraphReader<V, E> newInstance(String format, Class<V> vType, Class<E> eType) {
-	// // TODO documentation for params and some words on why we accept class types
-	// return GraphFormat.getInstanceByName(format).newReader(vType, eType);
-	// }
 
 }

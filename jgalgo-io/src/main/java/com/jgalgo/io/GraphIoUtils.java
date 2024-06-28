@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
@@ -32,6 +33,8 @@ import com.jgalgo.graph.IntGraphBuilder;
 class GraphIoUtils {
 
 	private GraphIoUtils() {}
+
+	static final Charset JGALGO_CHARSET = Charset.forName("UTF-8");
 
 	static Iterable<String> lines(BufferedReader reader, boolean trim) {
 		return () -> new Iterator<>() {

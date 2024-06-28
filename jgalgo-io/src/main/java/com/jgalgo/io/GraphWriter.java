@@ -49,7 +49,7 @@ public interface GraphWriter<V, E> {
 	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	default void writeGraph(Graph<V, E> graph, File file) {
-		try (Writer writer = new FileWriter(file, GraphFormats.JGALGO_CHARSET)) {
+		try (Writer writer = new FileWriter(file, GraphIoUtils.JGALGO_CHARSET)) {
 			writeGraph(graph, writer);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
@@ -64,25 +64,11 @@ public interface GraphWriter<V, E> {
 	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	default void writeGraph(Graph<V, E> graph, String path) {
-		try (Writer writer = new FileWriter(path, GraphFormats.JGALGO_CHARSET)) {
+		try (Writer writer = new FileWriter(path, GraphIoUtils.JGALGO_CHARSET)) {
 			writeGraph(graph, writer);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
 	}
-
-	// /**
-	// * Get new {@link GraphWriter} instance by a format name.
-	// *
-	// * <p>
-	// * Any one of the following formats is supported: ['csv', 'dimacs', 'gexf', 'gml', 'graph6', 'space6', 'graphml',
-	// * 'leda']
-	// *
-	// * @param format the name of the format
-	// * @return a writer that can write graphs with the given format
-	// */
-	// static <V, E> GraphWriter<V, E> newInstance(String format) {
-	// return GraphFormat.getInstanceByName(format).newWriter();
-	// }
 
 }
