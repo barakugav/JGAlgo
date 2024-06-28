@@ -15,6 +15,7 @@
  */
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Numbers.log2ceil;
 import static com.jgalgo.internal.util.Range.range;
 import java.io.IOException;
 import java.io.Writer;
@@ -22,7 +23,6 @@ import java.util.Arrays;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Fastutil;
-import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * Write a graph in 'sparse6' format.
@@ -53,7 +53,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  * @see    Sparse6GraphReader
  * @author Barak Ugav
  */
-<span class="fc" id="L56">public class Sparse6GraphWriter extends GraphIoUtils.AbstractGraphWriter&lt;Integer, Integer&gt; {</span>
+<span class="fc" id="L56">public final class Sparse6GraphWriter extends GraphIoUtils.AbstractGraphWriter&lt;Integer, Integer&gt; {</span>
 
 <span class="fc" id="L58">	private boolean keepEdgesIds = true;</span>
 
@@ -220,7 +220,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 
 		/* write all edges */
 <span class="fc" id="L222">		Graph6.BitsWriter bitsWriter = new Graph6.BitsWriter(out);</span>
-<span class="fc bfc" id="L223" title="All 2 branches covered.">		final int k = n == 0 ? 0 : JGAlgoUtils.log2ceil(n);</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">		final int k = n == 0 ? 0 : log2ceil(n);</span>
 <span class="fc" id="L224">		int currentVertex = 0;</span>
 <span class="fc bfc" id="L225" title="All 2 branches covered.">		for (int e : edges) {</span>
 <span class="fc" id="L226">			int u = graph.edgeSource(Integer.valueOf(e)).intValue();</span>

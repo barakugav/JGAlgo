@@ -29,7 +29,7 @@ import static com.jgalgo.internal.util.Range.range;
  * @see    GraphArrayUndirected
  * @author Barak Ugav
  */
-class GraphLinkedUndirected extends GraphLinkedAbstract implements GraphDefaultsUndirected {
+final class GraphLinkedUndirected extends GraphLinkedAbstract implements GraphDefaultsUndirected {
 
 	private int[] edgesHead;
 	private int[] edgesNum;

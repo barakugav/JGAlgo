@@ -159,7 +159,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 <span class="fc bfc" id="L160" title="All 2 branches covered.">		if (!containsParallelEdges()) {</span>
 <span class="fc" id="L161">			int edge = fastGetEdge(source, target);</span>
-<span class="fc" id="L162">			return new Graphs.EdgeSetSourceTargetSingleton(this, source, target, edge);</span>
+<span class="fc" id="L162">			return new Graphs.EdgeSetSourceTargetSingleEdge(this, source, target, edge);</span>
 		}
 
 <span class="fc" id="L165">		return new SourceTargetEdgesSetFastLookup(source, target);</span>

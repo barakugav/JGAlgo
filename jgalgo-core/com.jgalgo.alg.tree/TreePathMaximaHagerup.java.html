@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg.tree;
 
+import static com.jgalgo.internal.util.Numbers.log2ceil;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.alg.traversal.DfsIter;
@@ -27,7 +28,6 @@ import com.jgalgo.internal.ds.BitsLookupTable;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2IntFunc;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
@@ -90,7 +90,7 @@ public class TreePathMaximaHagerup extends TreePathMaximaAbstract {
 <span class="fc" id="L90">		return new Worker(tree, w, useBitsLookupTables).calcTPM(queries);</span>
 	}
 
-<span class="fc" id="L93">	private static class Worker {</span>
+<span class="fc" id="L93">	private static final class Worker {</span>
 
 		private final IndexGraph tOrig;
 		private final IWeightFunction w;
@@ -116,7 +116,7 @@ public class TreePathMaximaHagerup extends TreePathMaximaAbstract {
 
 <span class="fc bfc" id="L117" title="All 2 branches covered.">			if (useBitsLookupTables) {</span>
 <span class="fc" id="L118">				int n = tOrig.vertices().size();</span>
-<span class="pc bpc" id="L119" title="1 of 2 branches missed.">				int wordsize = n &gt; 1 ? JGAlgoUtils.log2ceil(n) : 1;</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">				int wordsize = n &gt; 1 ? log2ceil(n) : 1;</span>
 <span class="fc" id="L120">				BitsLookupTable.Count count = new BitsLookupTable.Count(wordsize);</span>
 <span class="fc" id="L121">				BitsLookupTable.Ith ith = new BitsLookupTable.Ith(wordsize, count);</span>
 

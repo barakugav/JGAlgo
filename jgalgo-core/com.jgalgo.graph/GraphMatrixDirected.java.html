@@ -32,7 +32,7 @@ import static com.jgalgo.internal.util.Range.range;
  * @see    GraphMatrixUndirected
  * @author Barak Ugav
  */
-class GraphMatrixDirected extends GraphMatrixAbstract implements GraphDefaultsDirected {
+final class GraphMatrixDirected extends GraphMatrixAbstract implements GraphDefaultsDirected {
 
 	private int[] edgesOutNum;
 	private int[] edgesInNum;

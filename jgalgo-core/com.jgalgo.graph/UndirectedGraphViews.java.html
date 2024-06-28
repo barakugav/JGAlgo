@@ -29,7 +29,7 @@ class UndirectedGraphViews {
 
 	private UndirectedGraphViews() {}
 
-<span class="fc" id="L32">	private static class UndirectedView&lt;V, E&gt; extends GraphViews.GraphView&lt;V, E&gt; {</span>
+<span class="fc" id="L32">	private static final class UndirectedView&lt;V, E&gt; extends GraphViews.GraphView&lt;V, E&gt; {</span>
 
 		UndirectedView(Graph&lt;V, E&gt; g) {
 <span class="fc" id="L35">			super(g);</span>
@@ -684,7 +684,7 @@ class UndirectedGraphViews {
 		}
 	}
 
-	private static class UndirectedViewInt extends UndirectedViewIntBase {
+	private static final class UndirectedViewInt extends UndirectedViewIntBase {
 
 		UndirectedViewInt(IntGraph g) {
 <span class="fc" id="L690">			super(g);</span>
@@ -736,7 +736,7 @@ class UndirectedGraphViews {
 		}
 	}
 
-	private static class UndirectedViewIndex extends UndirectedViewIntBase implements IndexGraph {
+	private static final class UndirectedViewIndex extends UndirectedViewIntBase implements IndexGraph {
 
 		UndirectedViewIndex(IndexGraph g) {
 <span class="fc" id="L742">			super(g);</span>

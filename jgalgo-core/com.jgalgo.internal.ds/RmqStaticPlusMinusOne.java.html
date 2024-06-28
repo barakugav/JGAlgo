@@ -16,9 +16,10 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Numbers.log2;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Objects;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.alg.tree.LowestCommonAncestorStaticRmq;
 
 /**
  * Static RMQ for sequences for which the different between any pair of consecutive elements is \(\pm 1\).
@@ -50,59 +51,59 @@ public class RmqStaticPlusMinusOne extends RmqStaticLinearAbstract {
 	 * Please prefer using {@link RmqStatic#newInstance()} to get a default implementation for the {@link RmqStatic}
 	 * interface.
 	 */
-<span class="fc" id="L53">	public RmqStaticPlusMinusOne() {}</span>
+<span class="fc" id="L54">	public RmqStaticPlusMinusOne() {}</span>
 
 	@Override
 	public RmqStatic.DataStructure preProcessSequence(RmqStaticComparator c, int n) {
-<span class="pc bpc" id="L57" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
-<span class="nc" id="L58">			throw new IllegalArgumentException();</span>
-<span class="fc" id="L59">		Objects.requireNonNull(c);</span>
-<span class="fc" id="L60">		return new PreProcessor(c, n).build();</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
+<span class="nc" id="L59">			throw new IllegalArgumentException();</span>
+<span class="fc" id="L60">		Objects.requireNonNull(c);</span>
+<span class="fc" id="L61">		return new PreProcessor(c, n).build();</span>
 	}
 
 	private class PreProcessor extends RmqStaticLinearAbstract.PreProcessor {
 
-<span class="fc" id="L65">		PreProcessor(RmqStaticComparator c, int n) {</span>
-<span class="fc" id="L66">			super(c, n);</span>
-<span class="fc" id="L67">			preProcessInnerBlocks();</span>
-<span class="fc" id="L68">		}</span>
+<span class="fc" id="L66">		PreProcessor(RmqStaticComparator c, int n) {</span>
+<span class="fc" id="L67">			super(c, n);</span>
+<span class="fc" id="L68">			preProcessInnerBlocks();</span>
+<span class="fc" id="L69">		}</span>
 
 		@Override
 		byte getBlockSize(int n) {
-<span class="fc bfc" id="L72" title="All 2 branches covered.">			int s = n &lt;= 1 ? 1 : (int) Math.ceil(JGAlgoUtils.log2((double) n) * 2 / 3);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">			int s = n &lt;= 1 ? 1 : (int) Math.ceil(log2((double) n) * 2 / 3);</span>
 			/* choose block size of at least 5, as 2^(5-1) is 16 (small) */
-<span class="fc" id="L74">			return (byte) Math.min(Math.max(s, 5), n);</span>
+<span class="fc" id="L75">			return (byte) Math.min(Math.max(s, 5), n);</span>
 		}
 
 		@Override
 		int getBlockKeySize() {
-<span class="nc" id="L79">			return blockSize - 1;</span>
+<span class="nc" id="L80">			return blockSize - 1;</span>
 		}
 
 		@Override
 		int calcBlockKey(int b) {
-<span class="fc bfc" id="L84" title="All 2 branches covered.">			RmqStaticComparator c = b &lt; blockNum - 1 ? cmpOrig : cmpPadded;</span>
-<span class="fc" id="L85">			int key = 0;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			RmqStaticComparator c = b &lt; blockNum - 1 ? cmpOrig : cmpPadded;</span>
+<span class="fc" id="L86">			int key = 0;</span>
 
-<span class="fc" id="L87">			int base = b * blockSize;</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">			for (int i = blockSize - 2; i &gt;= 0; i--) {</span>
-<span class="fc" id="L89">				key &lt;&lt;= 1;</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">				if (c.compare(base + i + 1, base + i) &lt; 0)</span>
-<span class="fc" id="L91">					key |= 1;</span>
+<span class="fc" id="L88">			int base = b * blockSize;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">			for (int i = blockSize - 2; i &gt;= 0; i--) {</span>
+<span class="fc" id="L90">				key &lt;&lt;= 1;</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">				if (c.compare(base + i + 1, base + i) &lt; 0)</span>
+<span class="fc" id="L92">					key |= 1;</span>
 			}
 
-<span class="fc" id="L94">			return key;</span>
+<span class="fc" id="L95">			return key;</span>
 		}
 
 		@Override
 		byte[] calcDemoBlock(int key) {
-<span class="fc" id="L99">			byte[] demoBlock = new byte[blockSize];</span>
+<span class="fc" id="L100">			byte[] demoBlock = new byte[blockSize];</span>
 
-<span class="fc" id="L101">			demoBlock[0] = 0;</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">			for (int i : range(1, demoBlock.length))</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">				demoBlock[i] = (byte) (demoBlock[i - 1] + ((key &amp; (1 &lt;&lt; (i - 1))) != 0 ? -1 : 1));</span>
+<span class="fc" id="L102">			demoBlock[0] = 0;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			for (int i : range(1, demoBlock.length))</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">				demoBlock[i] = (byte) (demoBlock[i - 1] + ((key &amp; (1 &lt;&lt; (i - 1))) != 0 ? -1 : 1));</span>
 
-<span class="fc" id="L105">			return demoBlock;</span>
+<span class="fc" id="L106">			return demoBlock;</span>
 		}
 
 	}

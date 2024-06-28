@@ -154,7 +154,7 @@ class Paths {
 <span class="fc bfc" id="L154" title="All 2 branches covered.">		return new IndexPath(g, source, target, unmodifiable ? edges : IntLists.unmodifiable(edges));</span>
 	}
 
-<span class="fc" id="L157">	static class IndexPath extends AbstractPath&lt;Integer, Integer&gt; implements IPath {</span>
+<span class="fc" id="L157">	static final class IndexPath extends AbstractPath&lt;Integer, Integer&gt; implements IPath {</span>
 
 		private final IndexGraph g;
 		private final int source;

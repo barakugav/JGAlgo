@@ -52,7 +52,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
  * @see    Digraph6GraphWriter
  * @author Barak Ugav
  */
-public class Digraph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
+public final class Digraph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
 	/**
 	 * Create a new reader.

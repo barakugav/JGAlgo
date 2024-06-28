@@ -78,14 +78,14 @@ public class Graphs {
 	static interface ImmutableGraph {
 	}
 
-	static class EdgeSetSourceTargetSingleton extends AbstractIntSet implements IEdgeSet {
+	static class EdgeSetSourceTargetSingleEdge extends AbstractIntSet implements IEdgeSet {
 
 		private final IndexGraph g;
 		private final int source, target;
 		private int edge;
 		private static final int EdgeNone = -1;
 
-<span class="fc" id="L88">		EdgeSetSourceTargetSingleton(IndexGraph g, int source, int target, int edge) {</span>
+<span class="fc" id="L88">		EdgeSetSourceTargetSingleEdge(IndexGraph g, int source, int target, int edge) {</span>
 <span class="fc" id="L89">			this.g = g;</span>
 <span class="fc" id="L90">			this.source = source;</span>
 <span class="fc" id="L91">			this.target = target;</span>

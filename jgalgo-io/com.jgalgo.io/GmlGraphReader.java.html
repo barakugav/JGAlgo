@@ -133,7 +133,7 @@ import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
  * @param  &lt;E&gt; the edges type
  * @author     Barak Ugav
  */
-<span class="fc" id="L136">public class GmlGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReader&lt;V, E&gt; {</span>
+<span class="fc" id="L136">public final class GmlGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReader&lt;V, E&gt; {</span>
 
 	private Class&lt;V&gt; vType;
 	private Class&lt;E&gt; eType;
@@ -572,7 +572,7 @@ import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
 <span class="fc" id="L572">				throw new IllegalArgumentException(&quot;unexpected nested list&quot;);</span>
 <span class="fc" id="L573">	}</span>
 
-	private static class CharReader {
+	private static final class CharReader {
 		private final BufferedReader reader;
 		private String line;
 		private int linePos;

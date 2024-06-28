@@ -16,9 +16,10 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Numbers.log2;
+import static com.jgalgo.internal.util.Numbers.log2ceil;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Objects;
-import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * Static RMQ algorithm using \(O(n \log n)\) space and answering a query in \(O(1)\) time.
@@ -39,18 +40,18 @@ public class RmqStaticPowerOf2Table implements RmqStatic {
 	 * Please prefer using {@link RmqStatic#newInstance()} to get a default implementation for the {@link RmqStatic}
 	 * interface.
 	 */
-<span class="fc" id="L42">	public RmqStaticPowerOf2Table() {}</span>
+<span class="fc" id="L43">	public RmqStaticPowerOf2Table() {}</span>
 
 	@Override
 	public RmqStatic.DataStructure preProcessSequence(RmqStaticComparator c, int n) {
-<span class="pc bpc" id="L46" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
-<span class="nc" id="L47">			throw new IllegalArgumentException(&quot;Invalid length: &quot; + n);</span>
-<span class="fc" id="L48">		Objects.requireNonNull(c);</span>
-<span class="fc bfc" id="L49" title="All 2 branches covered.">		if (n &lt;= DSu08.LIMIT)</span>
-<span class="fc" id="L50">			return new DSu08(c, (byte) n);</span>
-<span class="fc bfc" id="L51" title="All 2 branches covered.">		if (n &lt;= DSu16.LIMIT)</span>
-<span class="fc" id="L52">			return new DSu16(c, (short) n);</span>
-<span class="fc" id="L53">		return new DSu32(c, n);</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
+<span class="nc" id="L48">			throw new IllegalArgumentException(&quot;Invalid length: &quot; + n);</span>
+<span class="fc" id="L49">		Objects.requireNonNull(c);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		if (n &lt;= DSu08.LIMIT)</span>
+<span class="fc" id="L51">			return new DSu08(c, (byte) n);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (n &lt;= DSu16.LIMIT)</span>
+<span class="fc" id="L53">			return new DSu16(c, (short) n);</span>
+<span class="fc" id="L54">		return new DSu32(c, n);</span>
 	}
 
 	private static class DSu32 implements RmqStatic.DataStructure {
@@ -58,49 +59,49 @@ public class RmqStaticPowerOf2Table implements RmqStatic {
 		private final int[][] arr;
 		private final RmqStaticComparator c;
 
-<span class="fc" id="L61">		DSu32(RmqStaticComparator c, int n) {</span>
-<span class="fc" id="L62">			this.n = n;</span>
-<span class="fc" id="L63">			arr = new int[JGAlgoUtils.log2ceil(n + 1) - 1][n - 1];</span>
-<span class="fc" id="L64">			this.c = c;</span>
+<span class="fc" id="L62">		DSu32(RmqStaticComparator c, int n) {</span>
+<span class="fc" id="L63">			this.n = n;</span>
+<span class="fc" id="L64">			arr = new int[log2ceil(n + 1) - 1][n - 1];</span>
+<span class="fc" id="L65">			this.c = c;</span>
 
-<span class="fc bfc" id="L66" title="All 2 branches covered.">			for (int i : range(n - 1))</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">				arr[0][i] = c.compare(i, i + 1) &lt; 0 ? i : i + 1;</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">			for (int i : range(n - 1))</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">				arr[0][i] = c.compare(i, i + 1) &lt; 0 ? i : i + 1;</span>
 
-<span class="fc bfc" id="L69" title="All 2 branches covered.">			for (int k : range(1, arr.length)) {</span>
-<span class="fc" id="L70">				int pkSize = 1 &lt;&lt; k;</span>
-<span class="fc" id="L71">				int kSize = 1 &lt;&lt; (k + 1);</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">				for (int i : range(n - kSize + 1)) {</span>
-<span class="fc" id="L73">					int idx0 = arr[k - 1][i];</span>
-<span class="fc" id="L74">					int idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">					arr[k][i] = c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
-<span class="fc" id="L76">				}</span>
-<span class="fc" id="L77">			}</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">			for (int k : range(1, arr.length)) {</span>
+<span class="fc" id="L71">				int pkSize = 1 &lt;&lt; k;</span>
+<span class="fc" id="L72">				int kSize = 1 &lt;&lt; (k + 1);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">				for (int i : range(n - kSize + 1)) {</span>
+<span class="fc" id="L74">					int idx0 = arr[k - 1][i];</span>
+<span class="fc" id="L75">					int idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">					arr[k][i] = c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
+<span class="fc" id="L77">				}</span>
+<span class="fc" id="L78">			}</span>
 
-<span class="fc" id="L79">		}</span>
+<span class="fc" id="L80">		}</span>
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-<span class="fc" id="L83">			RmqStatics.checkIndices(i, j, n);</span>
-<span class="pc bpc" id="L84" title="1 of 2 branches missed.">			if (i == j)</span>
-<span class="nc" id="L85">				return i;</span>
-<span class="fc" id="L86">			j++;</span>
+<span class="fc" id="L84">			RmqStatics.checkIndices(i, j, n);</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">			if (i == j)</span>
+<span class="nc" id="L86">				return i;</span>
+<span class="fc" id="L87">			j++;</span>
 
-<span class="fc" id="L88">			int k = JGAlgoUtils.log2(j - i);</span>
-<span class="fc" id="L89">			int kSize = 1 &lt;&lt; k;</span>
+<span class="fc" id="L89">			int k = log2(j - i);</span>
+<span class="fc" id="L90">			int kSize = 1 &lt;&lt; k;</span>
 
-<span class="fc" id="L91">			int idx0 = arr[k - 1][i];</span>
-<span class="fc" id="L92">			int idx1 = arr[k - 1][j - kSize];</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">			return c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
+<span class="fc" id="L92">			int idx0 = arr[k - 1][i];</span>
+<span class="fc" id="L93">			int idx1 = arr[k - 1][j - kSize];</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">			return c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
 		}
 
 		@Override
 		public long sizeInBytes() {
 			int len;
-<span class="nc" id="L99">			long s = 0;</span>
-<span class="nc" id="L100">			s += 4; // n</span>
-<span class="nc bnc" id="L101" title="All 2 branches missed.">			s += 8 + ((len = arr.length) == 0 ? 0 : len * (8 + 4 * arr[0].length));</span>
-<span class="nc" id="L102">			s += 8; // c</span>
-<span class="nc" id="L103">			return s;</span>
+<span class="nc" id="L100">			long s = 0;</span>
+<span class="nc" id="L101">			s += 4; // n</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">			s += 8 + ((len = arr.length) == 0 ? 0 : len * (8 + 4 * arr[0].length));</span>
+<span class="nc" id="L103">			s += 8; // c</span>
+<span class="nc" id="L104">			return s;</span>
 		}
 	}
 
@@ -110,49 +111,49 @@ public class RmqStaticPowerOf2Table implements RmqStatic {
 		private final RmqStaticComparator c;
 		private static final int LIMIT = (1 &lt;&lt; (Short.SIZE - 1)) - 1;
 
-<span class="fc" id="L113">		DSu16(RmqStaticComparator c, short n) {</span>
-<span class="fc" id="L114">			this.n = n;</span>
-<span class="fc" id="L115">			arr = new short[JGAlgoUtils.log2ceil(n + 1) - 1][n - 1];</span>
-<span class="fc" id="L116">			this.c = c;</span>
+<span class="fc" id="L114">		DSu16(RmqStaticComparator c, short n) {</span>
+<span class="fc" id="L115">			this.n = n;</span>
+<span class="fc" id="L116">			arr = new short[log2ceil(n + 1) - 1][n - 1];</span>
+<span class="fc" id="L117">			this.c = c;</span>
 
-<span class="fc bfc" id="L118" title="All 2 branches covered.">			for (short i = 0; i &lt; n - 1; i++)</span>
-<span class="fc bfc" id="L119" title="All 2 branches covered.">				arr[0][i] = c.compare(i, i + 1) &lt; 0 ? i : (short) (i + 1);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">			for (short i = 0; i &lt; n - 1; i++)</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">				arr[0][i] = c.compare(i, i + 1) &lt; 0 ? i : (short) (i + 1);</span>
 
-<span class="fc bfc" id="L121" title="All 2 branches covered.">			for (int k : range(1, arr.length)) {</span>
-<span class="fc" id="L122">				int pkSize = 1 &lt;&lt; k;</span>
-<span class="fc" id="L123">				int kSize = 1 &lt;&lt; (k + 1);</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">				for (int i : range(n - kSize + 1)) {</span>
-<span class="fc" id="L125">					short idx0 = arr[k - 1][i];</span>
-<span class="fc" id="L126">					short idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">					arr[k][i] = c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
-<span class="fc" id="L128">				}</span>
-<span class="fc" id="L129">			}</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">			for (int k : range(1, arr.length)) {</span>
+<span class="fc" id="L123">				int pkSize = 1 &lt;&lt; k;</span>
+<span class="fc" id="L124">				int kSize = 1 &lt;&lt; (k + 1);</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">				for (int i : range(n - kSize + 1)) {</span>
+<span class="fc" id="L126">					short idx0 = arr[k - 1][i];</span>
+<span class="fc" id="L127">					short idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">					arr[k][i] = c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
+<span class="fc" id="L129">				}</span>
+<span class="fc" id="L130">			}</span>
 
-<span class="fc" id="L131">		}</span>
+<span class="fc" id="L132">		}</span>
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-<span class="fc" id="L135">			RmqStatics.checkIndices(i, j, n);</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">			if (i == j)</span>
-<span class="fc" id="L137">				return i;</span>
-<span class="fc" id="L138">			j++;</span>
+<span class="fc" id="L136">			RmqStatics.checkIndices(i, j, n);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L138">				return i;</span>
+<span class="fc" id="L139">			j++;</span>
 
-<span class="fc" id="L140">			int k = JGAlgoUtils.log2(j - i);</span>
-<span class="fc" id="L141">			int kSize = 1 &lt;&lt; k;</span>
+<span class="fc" id="L141">			int k = log2(j - i);</span>
+<span class="fc" id="L142">			int kSize = 1 &lt;&lt; k;</span>
 
-<span class="fc" id="L143">			int idx0 = arr[k - 1][i];</span>
-<span class="fc" id="L144">			int idx1 = arr[k - 1][j - kSize];</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">			return c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
+<span class="fc" id="L144">			int idx0 = arr[k - 1][i];</span>
+<span class="fc" id="L145">			int idx1 = arr[k - 1][j - kSize];</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			return c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
 		}
 
 		@Override
 		public long sizeInBytes() {
 			int len;
-<span class="nc" id="L151">			long s = 0;</span>
-<span class="nc" id="L152">			s += 2; // n</span>
-<span class="nc bnc" id="L153" title="All 2 branches missed.">			s += 8 + ((len = arr.length) == 0 ? 0 : len * (8 + 2 * arr[0].length));</span>
-<span class="nc" id="L154">			s += 8; // c</span>
-<span class="nc" id="L155">			return s;</span>
+<span class="nc" id="L152">			long s = 0;</span>
+<span class="nc" id="L153">			s += 2; // n</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">			s += 8 + ((len = arr.length) == 0 ? 0 : len * (8 + 2 * arr[0].length));</span>
+<span class="nc" id="L155">			s += 8; // c</span>
+<span class="nc" id="L156">			return s;</span>
 		}
 	}
 
@@ -162,49 +163,49 @@ public class RmqStaticPowerOf2Table implements RmqStatic {
 		private final RmqStaticComparator c;
 		private static final int LIMIT = (1 &lt;&lt; (Byte.SIZE - 1)) - 1;
 
-<span class="fc" id="L165">		DSu08(RmqStaticComparator c, byte n) {</span>
-<span class="fc" id="L166">			this.n = n;</span>
-<span class="fc" id="L167">			arr = new byte[JGAlgoUtils.log2ceil(n + 1) - 1][n - 1];</span>
-<span class="fc" id="L168">			this.c = c;</span>
+<span class="fc" id="L166">		DSu08(RmqStaticComparator c, byte n) {</span>
+<span class="fc" id="L167">			this.n = n;</span>
+<span class="fc" id="L168">			arr = new byte[log2ceil(n + 1) - 1][n - 1];</span>
+<span class="fc" id="L169">			this.c = c;</span>
 
-<span class="fc bfc" id="L170" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 1; i++)</span>
-<span class="fc bfc" id="L171" title="All 2 branches covered.">				arr[0][i] = c.compare(i, i + 1) &lt; 0 ? i : (byte) (i + 1);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 1; i++)</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">				arr[0][i] = c.compare(i, i + 1) &lt; 0 ? i : (byte) (i + 1);</span>
 
-<span class="fc bfc" id="L173" title="All 2 branches covered.">			for (int k : range(1, arr.length)) {</span>
-<span class="fc" id="L174">				int pkSize = 1 &lt;&lt; k;</span>
-<span class="fc" id="L175">				int kSize = 1 &lt;&lt; (k + 1);</span>
-<span class="fc bfc" id="L176" title="All 2 branches covered.">				for (int i : range(n - kSize + 1)) {</span>
-<span class="fc" id="L177">					byte idx0 = arr[k - 1][i];</span>
-<span class="fc" id="L178">					byte idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];</span>
-<span class="fc bfc" id="L179" title="All 2 branches covered.">					arr[k][i] = c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
-<span class="fc" id="L180">				}</span>
-<span class="fc" id="L181">			}</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			for (int k : range(1, arr.length)) {</span>
+<span class="fc" id="L175">				int pkSize = 1 &lt;&lt; k;</span>
+<span class="fc" id="L176">				int kSize = 1 &lt;&lt; (k + 1);</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">				for (int i : range(n - kSize + 1)) {</span>
+<span class="fc" id="L178">					byte idx0 = arr[k - 1][i];</span>
+<span class="fc" id="L179">					byte idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">					arr[k][i] = c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
+<span class="fc" id="L181">				}</span>
+<span class="fc" id="L182">			}</span>
 
-<span class="fc" id="L183">		}</span>
+<span class="fc" id="L184">		}</span>
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-<span class="fc" id="L187">			RmqStatics.checkIndices(i, j, n);</span>
-<span class="fc bfc" id="L188" title="All 2 branches covered.">			if (i == j)</span>
-<span class="fc" id="L189">				return i;</span>
-<span class="fc" id="L190">			j++;</span>
+<span class="fc" id="L188">			RmqStatics.checkIndices(i, j, n);</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L190">				return i;</span>
+<span class="fc" id="L191">			j++;</span>
 
-<span class="fc" id="L192">			int k = JGAlgoUtils.log2(j - i);</span>
-<span class="fc" id="L193">			int kSize = 1 &lt;&lt; k;</span>
+<span class="fc" id="L193">			int k = log2(j - i);</span>
+<span class="fc" id="L194">			int kSize = 1 &lt;&lt; k;</span>
 
-<span class="fc" id="L195">			int idx0 = arr[k - 1][i];</span>
-<span class="fc" id="L196">			int idx1 = arr[k - 1][j - kSize];</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">			return c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
+<span class="fc" id="L196">			int idx0 = arr[k - 1][i];</span>
+<span class="fc" id="L197">			int idx1 = arr[k - 1][j - kSize];</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">			return c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
 		}
 
 		@Override
 		public long sizeInBytes() {
 			int len;
-<span class="nc" id="L203">			long s = 0;</span>
-<span class="nc" id="L204">			s += 1; // n</span>
-<span class="nc bnc" id="L205" title="All 2 branches missed.">			s += 8 + ((len = arr.length) == 0 ? 0 : len * (8 + 1 * arr[0].length));</span>
-<span class="nc" id="L206">			s += 8; // c</span>
-<span class="nc" id="L207">			return s;</span>
+<span class="nc" id="L204">			long s = 0;</span>
+<span class="nc" id="L205">			s += 1; // n</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">			s += 8 + ((len = arr.length) == 0 ? 0 : len * (8 + 1 * arr[0].length));</span>
+<span class="nc" id="L207">			s += 8; // c</span>
+<span class="nc" id="L208">			return s;</span>
 		}
 	}
 

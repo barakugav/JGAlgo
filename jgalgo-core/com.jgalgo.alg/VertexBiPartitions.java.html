@@ -29,7 +29,7 @@ class VertexBiPartitions {
 
 	private VertexBiPartitions() {}
 
-	static class IndexImpl implements IVertexBiPartition {
+	static final class IndexImpl implements IVertexBiPartition {
 
 		/* Avoid using standard IntPredicate so JVM will see few impls for the interface */
 		@FunctionalInterface
@@ -201,7 +201,7 @@ class VertexBiPartitions {
 		}
 	}
 
-	static class IntBiPartitionFromIndexBiPartition extends VertexPartitions.IntPartitionFromIndexPartition
+	static final class IntBiPartitionFromIndexBiPartition extends VertexPartitions.IntPartitionFromIndexPartition
 			implements IVertexBiPartition {
 
 		IntBiPartitionFromIndexBiPartition(IntGraph g, IVertexBiPartition indexPartition) {
@@ -218,8 +218,8 @@ class VertexBiPartitions {
 		}
 	}
 
-	static class ObjBiPartitionFromIndexBiPartition&lt;V, E&gt; extends VertexPartitions.ObjPartitionFromIndexPartition&lt;V, E&gt;
-			implements VertexBiPartition&lt;V, E&gt; {
+	static final class ObjBiPartitionFromIndexBiPartition&lt;V, E&gt;
+			extends VertexPartitions.ObjPartitionFromIndexPartition&lt;V, E&gt; implements VertexBiPartition&lt;V, E&gt; {
 
 		ObjBiPartitionFromIndexBiPartition(Graph&lt;V, E&gt; g, IVertexBiPartition indexPartition) {
 <span class="fc" id="L225">			super(g, indexPartition);</span>

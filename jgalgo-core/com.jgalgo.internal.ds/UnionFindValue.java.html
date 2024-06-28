@@ -99,20 +99,5 @@ public interface UnionFindValue extends UnionFind {
 <span class="fc" id="L99">		return new UnionFindValueArray();</span>
 	}
 
-	/**
-	 * Create a new union find algorithm with values and expected size.
-	 *
-	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link UnionFindValue} object.
-	 *
-	 * @param  expectedSize expected number of elements in the data structure
-	 * @return              a default implementation of {@link UnionFindValue}
-	 */
-	static UnionFindValue newInstance(int expectedSize) {
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		if (expectedSize &lt; 0)</span>
-<span class="nc" id="L113">			throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
-<span class="fc" id="L114">		return new UnionFindValueArray(expectedSize);</span>
-	}
-
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

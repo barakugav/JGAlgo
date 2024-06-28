@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Numbers.log2ceil;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -58,8 +59,8 @@ class HeapBinary&lt;E&gt; extends HeapAbstract&lt;E&gt; {
 	 * are integers), the {@code insert} call will throw a {@code ClassCastException}.
 	 */
 	HeapBinary() {
-<span class="nc" id="L61">		this(null);</span>
-<span class="nc" id="L62">	}</span>
+<span class="nc" id="L62">		this(null);</span>
+<span class="nc" id="L63">	}</span>
 
 	/**
 	 * Constructs a new, empty binary heap, ordered according to the specified comparator.
@@ -74,224 +75,224 @@ class HeapBinary&lt;E&gt; extends HeapAbstract&lt;E&gt; {
 	 *                       {@linkplain Comparable natural ordering} of the elements will be used.
 	 */
 	HeapBinary(Comparator&lt;? super E&gt; comparator) {
-<span class="fc" id="L77">		super(comparator);</span>
+<span class="fc" id="L78">		super(comparator);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L79">		E[] arr0 = (E[]) ObjectArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L80">		arr = arr0;</span>
-<span class="fc" id="L81">		size = 0;</span>
-<span class="fc" id="L82">	}</span>
+<span class="fc" id="L80">		E[] arr0 = (E[]) ObjectArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L81">		arr = arr0;</span>
+<span class="fc" id="L82">		size = 0;</span>
+<span class="fc" id="L83">	}</span>
 
 	@Override
 	public boolean isEmpty() {
-<span class="fc bfc" id="L86" title="All 2 branches covered.">		return size == 0;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		return size == 0;</span>
 	}
 
 	@Override
 	public boolean isNotEmpty() {
-<span class="fc bfc" id="L91" title="All 2 branches covered.">		return size != 0;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		return size != 0;</span>
 	}
 
 	@Override
 	public void insert(E elm) {
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (arr.length == size)</span>
-<span class="fc" id="L97">			arr = Arrays.copyOf(arr, Math.max(2, arr.length * 2));</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">		if (arr.length == size)</span>
+<span class="fc" id="L98">			arr = Arrays.copyOf(arr, Math.max(2, arr.length * 2));</span>
 
-<span class="fc" id="L99">		moveUp(size, elm);</span>
-<span class="fc" id="L100">		size++;</span>
-<span class="fc" id="L101">	}</span>
+<span class="fc" id="L100">		moveUp(size, elm);</span>
+<span class="fc" id="L101">		size++;</span>
+<span class="fc" id="L102">	}</span>
 
 	@Override
 	public boolean remove(Object e0) {
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L106">		E e = (E) e0;</span>
-<span class="fc" id="L107">		int s = size;</span>
-<span class="fc" id="L108">		E[] a = arr;</span>
+<span class="fc" id="L107">		E e = (E) e0;</span>
+<span class="fc" id="L108">		int s = size;</span>
+<span class="fc" id="L109">		E[] a = arr;</span>
 
 		int i;
-<span class="fc bfc" id="L111" title="All 2 branches covered.">		if (c == null) {</span>
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">			for (i = 0; i &lt; s; i++)</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">				if (JGAlgoUtils.cmpDefault(e, a[i]) == 0)</span>
-<span class="fc" id="L114">					break;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">			for (i = 0; i &lt; s; i++)</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">				if (JGAlgoUtils.cmpDefault(e, a[i]) == 0)</span>
+<span class="fc" id="L115">					break;</span>
 		} else {
-<span class="pc bpc" id="L116" title="1 of 2 branches missed.">			for (i = 0; i &lt; s; i++)</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">				if (c.compare(e, a[i]) == 0)</span>
-<span class="fc" id="L118">					break;</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">			for (i = 0; i &lt; s; i++)</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">				if (c.compare(e, a[i]) == 0)</span>
+<span class="fc" id="L119">					break;</span>
 		}
-<span class="pc bpc" id="L120" title="1 of 2 branches missed.">		if (i == s)</span>
-<span class="nc" id="L121">			return false; /* not found */</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">		if (i == s)</span>
+<span class="nc" id="L122">			return false; /* not found */</span>
 
-<span class="fc" id="L123">		remove(i);</span>
-<span class="fc" id="L124">		return true;</span>
+<span class="fc" id="L124">		remove(i);</span>
+<span class="fc" id="L125">		return true;</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc" id="L129">		Arrays.fill(arr, 0, size, null);</span>
-<span class="fc" id="L130">		size = 0;</span>
-<span class="fc" id="L131">	}</span>
+<span class="fc" id="L130">		Arrays.fill(arr, 0, size, null);</span>
+<span class="fc" id="L131">		size = 0;</span>
+<span class="fc" id="L132">	}</span>
 
 	@Override
 	public E findMin() {
-<span class="fc" id="L135">		Assertions.notEmpty(this);</span>
-<span class="fc" id="L136">		return arr[0];</span>
+<span class="fc" id="L136">		Assertions.notEmpty(this);</span>
+<span class="fc" id="L137">		return arr[0];</span>
 	}
 
 	private void remove(int idx) {
-<span class="fc" id="L140">		E[] a = arr;</span>
+<span class="fc" id="L141">		E[] a = arr;</span>
 
-<span class="fc" id="L142">		E old = a[idx];</span>
-<span class="fc" id="L143">		E e = a[size-- - 1];</span>
-<span class="fc" id="L144">		a[size] = null;</span>
+<span class="fc" id="L143">		E old = a[idx];</span>
+<span class="fc" id="L144">		E e = a[size-- - 1];</span>
+<span class="fc" id="L145">		a[size] = null;</span>
 
-<span class="fc bfc" id="L146" title="All 2 branches covered.">		if (compare(e, old) &lt;= 0)</span>
-<span class="fc" id="L147">			moveUp(idx, e);</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">		if (compare(e, old) &lt;= 0)</span>
+<span class="fc" id="L148">			moveUp(idx, e);</span>
 		else
-<span class="fc" id="L149">			moveDown(idx, e);</span>
-<span class="fc" id="L150">	}</span>
+<span class="fc" id="L150">			moveDown(idx, e);</span>
+<span class="fc" id="L151">	}</span>
 
 	@Override
 	public E extractMin() {
-<span class="fc" id="L154">		Assertions.notEmpty(this);</span>
-<span class="fc" id="L155">		E min = arr[0];</span>
-<span class="fc" id="L156">		remove(0);</span>
-<span class="fc" id="L157">		return min;</span>
+<span class="fc" id="L155">		Assertions.notEmpty(this);</span>
+<span class="fc" id="L156">		E min = arr[0];</span>
+<span class="fc" id="L157">		remove(0);</span>
+<span class="fc" id="L158">		return min;</span>
 	}
 
 	@Override
 	public void insertAll(Collection&lt;? extends E&gt; elms) {
-<span class="nc" id="L162">		int combinedSize = size + elms.size();</span>
-<span class="nc bnc" id="L163" title="All 2 branches missed.">		if (arr.length &lt;= combinedSize)</span>
-<span class="nc" id="L164">			arr = Arrays.copyOf(arr, Math.max(arr.length * 2, combinedSize * 3 / 2));</span>
+<span class="nc" id="L163">		int combinedSize = size + elms.size();</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">		if (arr.length &lt;= combinedSize)</span>
+<span class="nc" id="L165">			arr = Arrays.copyOf(arr, Math.max(arr.length * 2, combinedSize * 3 / 2));</span>
 
-<span class="nc" id="L166">		int reconstructionCost = combinedSize;</span>
-<span class="nc" id="L167">		int addAllCost = elms.size() * JGAlgoUtils.log2ceil(combinedSize);</span>
-<span class="nc bnc" id="L168" title="All 2 branches missed.">		if (reconstructionCost &gt;= addAllCost) {</span>
-<span class="nc bnc" id="L169" title="All 2 branches missed.">			for (E e : elms)</span>
-<span class="nc" id="L170">				insert(e);</span>
+<span class="nc" id="L167">		int reconstructionCost = combinedSize;</span>
+<span class="nc" id="L168">		int addAllCost = elms.size() * log2ceil(combinedSize);</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">		if (reconstructionCost &gt;= addAllCost) {</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">			for (E e : elms)</span>
+<span class="nc" id="L171">				insert(e);</span>
 		} else {
-<span class="nc" id="L172">			E[] a = arr;</span>
-<span class="nc" id="L173">			int s = size;</span>
-<span class="nc bnc" id="L174" title="All 2 branches missed.">			for (E e : elms)</span>
-<span class="nc" id="L175">				a[s++] = e;</span>
-<span class="nc" id="L176">			size = s;</span>
+<span class="nc" id="L173">			E[] a = arr;</span>
+<span class="nc" id="L174">			int s = size;</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">			for (E e : elms)</span>
+<span class="nc" id="L176">				a[s++] = e;</span>
+<span class="nc" id="L177">			size = s;</span>
 
-<span class="nc bnc" id="L178" title="All 2 branches missed.">			if (s &gt; 1) {</span>
-<span class="nc" id="L179">				int lastLayer = JGAlgoUtils.log2ceil(s + 1) - 1;</span>
-<span class="nc" id="L180">				int lastParent = (1 &lt;&lt; lastLayer) - 2;</span>
-<span class="nc bnc" id="L181" title="All 2 branches missed.">				for (int parent = lastParent; parent &gt;= 0; parent--)</span>
-<span class="nc" id="L182">					moveDown(parent, a[parent]);</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">			if (s &gt; 1) {</span>
+<span class="nc" id="L180">				int lastLayer = log2ceil(s + 1) - 1;</span>
+<span class="nc" id="L181">				int lastParent = (1 &lt;&lt; lastLayer) - 2;</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">				for (int parent = lastParent; parent &gt;= 0; parent--)</span>
+<span class="nc" id="L183">					moveDown(parent, a[parent]);</span>
 			}
 		}
-<span class="nc" id="L185">	}</span>
+<span class="nc" id="L186">	}</span>
 
 	@Override
 	public Iterator&lt;E&gt; iterator() {
-<span class="fc" id="L189">		return new It();</span>
+<span class="fc" id="L190">		return new It();</span>
 	}
 
 	private class It implements Iterator&lt;E&gt; {
 
 		int i;
 
-<span class="fc" id="L196">		It() {</span>
-<span class="fc" id="L197">			i = 0;</span>
-<span class="fc" id="L198">		}</span>
+<span class="fc" id="L197">		It() {</span>
+<span class="fc" id="L198">			i = 0;</span>
+<span class="fc" id="L199">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L202" title="All 2 branches covered.">			return i &lt; size;</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">			return i &lt; size;</span>
 		}
 
 		@Override
 		public E next() {
-<span class="fc" id="L207">			Assertions.hasNext(this);</span>
-<span class="fc" id="L208">			return arr[i++];</span>
+<span class="fc" id="L208">			Assertions.hasNext(this);</span>
+<span class="fc" id="L209">			return arr[i++];</span>
 		}
 
 	}
 
 	private void moveUp(int i, E e) {
-<span class="fc" id="L214">		E[] a = arr;</span>
+<span class="fc" id="L215">		E[] a = arr;</span>
 
-<span class="fc bfc" id="L216" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">		if (c == null) {</span>
 			for (;;) {
 				int p;
-<span class="fc bfc" id="L219" title="All 2 branches covered.">				if (i == 0</span>
-<span class="fc bfc" id="L220" title="All 2 branches covered.">						|| JGAlgoUtils.cmpDefault(e, a[p = (i - 1) / 2]) &gt;= 0) { /* reached root or parent is smaller */</span>
-<span class="fc" id="L221">					a[i] = e;</span>
-<span class="fc" id="L222">					return;</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">				if (i == 0</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">						|| JGAlgoUtils.cmpDefault(e, a[p = (i - 1) / 2]) &gt;= 0) { /* reached root or parent is smaller */</span>
+<span class="fc" id="L222">					a[i] = e;</span>
+<span class="fc" id="L223">					return;</span>
 				}
 
 				/* e is smaller than parent, continue up */
-<span class="fc" id="L226">				a[i] = a[p];</span>
-<span class="fc" id="L227">				i = p;</span>
-<span class="fc" id="L228">			}</span>
+<span class="fc" id="L227">				a[i] = a[p];</span>
+<span class="fc" id="L228">				i = p;</span>
+<span class="fc" id="L229">			}</span>
 		} else {
 			for (;;) {
 				int p;
-<span class="fc bfc" id="L232" title="All 4 branches covered.">				if (i == 0 || c.compare(e, a[p = (i - 1) / 2]) &gt;= 0) { /* reached root or parent is smaller */</span>
-<span class="fc" id="L233">					a[i] = e;</span>
-<span class="fc" id="L234">					return;</span>
+<span class="fc bfc" id="L233" title="All 4 branches covered.">				if (i == 0 || c.compare(e, a[p = (i - 1) / 2]) &gt;= 0) { /* reached root or parent is smaller */</span>
+<span class="fc" id="L234">					a[i] = e;</span>
+<span class="fc" id="L235">					return;</span>
 				}
 
 				/* e is smaller than parent, continue up */
-<span class="fc" id="L238">				a[i] = a[p];</span>
-<span class="fc" id="L239">				i = p;</span>
-<span class="fc" id="L240">			}</span>
+<span class="fc" id="L239">				a[i] = a[p];</span>
+<span class="fc" id="L240">				i = p;</span>
+<span class="fc" id="L241">			}</span>
 		}
 	}
 
 	private void moveDown(int i, E e) {
-<span class="fc" id="L245">		E[] a = arr;</span>
-<span class="fc" id="L246">		int s = size;</span>
+<span class="fc" id="L246">		E[] a = arr;</span>
+<span class="fc" id="L247">		int s = size;</span>
 
-<span class="fc bfc" id="L248" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">		if (c == null) {</span>
 			for (;;) {
-<span class="fc" id="L250">				int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;</span>
-<span class="fc bfc" id="L251" title="All 2 branches covered.">				if (c0i &gt;= s)</span>
-<span class="fc" id="L252">					break;</span>
+<span class="fc" id="L251">				int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">				if (c0i &gt;= s)</span>
+<span class="fc" id="L253">					break;</span>
 
-<span class="fc" id="L254">				E c01, c0 = a[c0i], c1;</span>
-<span class="fc bfc" id="L255" title="All 4 branches covered.">				if (c1i &lt; s &amp;&amp; JGAlgoUtils.cmpDefault(c1 = a[c1i], c0) &lt; 0) {</span>
-<span class="fc" id="L256">					c01i = c1i;</span>
-<span class="fc" id="L257">					c01 = c1;</span>
+<span class="fc" id="L255">				E c01, c0 = a[c0i], c1;</span>
+<span class="fc bfc" id="L256" title="All 4 branches covered.">				if (c1i &lt; s &amp;&amp; JGAlgoUtils.cmpDefault(c1 = a[c1i], c0) &lt; 0) {</span>
+<span class="fc" id="L257">					c01i = c1i;</span>
+<span class="fc" id="L258">					c01 = c1;</span>
 				} else {
-<span class="fc" id="L259">					c01i = c0i;</span>
-<span class="fc" id="L260">					c01 = c0;</span>
+<span class="fc" id="L260">					c01i = c0i;</span>
+<span class="fc" id="L261">					c01 = c0;</span>
 				}
 
-<span class="fc bfc" id="L263" title="All 2 branches covered.">				if (JGAlgoUtils.cmpDefault(e, c01) &lt;= 0)</span>
-<span class="fc" id="L264">					break;</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">				if (JGAlgoUtils.cmpDefault(e, c01) &lt;= 0)</span>
+<span class="fc" id="L265">					break;</span>
 
 				/* continue down */
-<span class="fc" id="L267">				a[i] = c01;</span>
-<span class="fc" id="L268">				i = c01i;</span>
-<span class="fc" id="L269">			}</span>
+<span class="fc" id="L268">				a[i] = c01;</span>
+<span class="fc" id="L269">				i = c01i;</span>
+<span class="fc" id="L270">			}</span>
 		} else {
 			for (;;) {
-<span class="fc" id="L272">				int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;</span>
-<span class="fc bfc" id="L273" title="All 2 branches covered.">				if (c0i &gt;= s)</span>
-<span class="fc" id="L274">					break;</span>
+<span class="fc" id="L273">				int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">				if (c0i &gt;= s)</span>
+<span class="fc" id="L275">					break;</span>
 
-<span class="fc" id="L276">				E c01, c0 = a[c0i], c1;</span>
-<span class="fc bfc" id="L277" title="All 4 branches covered.">				if (c1i &lt; s &amp;&amp; c.compare(c1 = a[c1i], c0) &lt; 0) {</span>
-<span class="fc" id="L278">					c01i = c1i;</span>
-<span class="fc" id="L279">					c01 = c1;</span>
+<span class="fc" id="L277">				E c01, c0 = a[c0i], c1;</span>
+<span class="fc bfc" id="L278" title="All 4 branches covered.">				if (c1i &lt; s &amp;&amp; c.compare(c1 = a[c1i], c0) &lt; 0) {</span>
+<span class="fc" id="L279">					c01i = c1i;</span>
+<span class="fc" id="L280">					c01 = c1;</span>
 				} else {
-<span class="fc" id="L281">					c01i = c0i;</span>
-<span class="fc" id="L282">					c01 = c0;</span>
+<span class="fc" id="L282">					c01i = c0i;</span>
+<span class="fc" id="L283">					c01 = c0;</span>
 				}
 
-<span class="fc bfc" id="L285" title="All 2 branches covered.">				if (c.compare(e, c01) &lt;= 0)</span>
-<span class="fc" id="L286">					break;</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">				if (c.compare(e, c01) &lt;= 0)</span>
+<span class="fc" id="L287">					break;</span>
 
 				/* continue down */
-<span class="fc" id="L289">				a[i] = c01;</span>
-<span class="fc" id="L290">				i = c01i;</span>
-<span class="fc" id="L291">			}</span>
+<span class="fc" id="L290">				a[i] = c01;</span>
+<span class="fc" id="L291">				i = c01i;</span>
+<span class="fc" id="L292">			}</span>
 		}
-<span class="fc" id="L293">		a[i] = e;</span>
-<span class="fc" id="L294">	}</span>
+<span class="fc" id="L294">		a[i] = e;</span>
+<span class="fc" id="L295">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

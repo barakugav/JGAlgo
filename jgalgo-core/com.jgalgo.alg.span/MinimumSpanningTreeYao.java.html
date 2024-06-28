@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg.span;
 
+import static com.jgalgo.internal.util.Numbers.log2ceil;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IWeightFunction;
@@ -41,9 +42,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L44">public class MinimumSpanningTreeYao extends MinimumSpanningTreeAbstract {</span>
+<span class="fc" id="L45">public class MinimumSpanningTreeYao extends MinimumSpanningTreeAbstract {</span>
 
-<span class="fc" id="L46">	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;</span>
+<span class="fc" id="L47">	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;</span>
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -52,7 +53,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	 * Please prefer using {@link MinimumSpanningTree#newInstance()} to get a default implementation for the
 	 * {@link MinimumSpanningTree} interface.
 	 */
-<span class="fc" id="L55">	public MinimumSpanningTreeYao() {}</span>
+<span class="fc" id="L56">	public MinimumSpanningTreeYao() {}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -61,155 +62,155 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	 */
 	@Override
 	protected MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L64">		Assertions.onlyUndirected(g);</span>
-<span class="fc" id="L65">		int n = g.vertices().size();</span>
+<span class="fc" id="L65">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L66">		int n = g.vertices().size();</span>
 
-<span class="fc" id="L67">		int[][][] edges = partitionEdgesToBuckets(g, w);</span>
-<span class="fc" id="L68">		int[] firstValidBucketIdxs = new int[n];</span>
+<span class="fc" id="L68">		int[][][] edges = partitionEdgesToBuckets(g, w);</span>
+<span class="fc" id="L69">		int[] firstValidBucketIdxs = new int[n];</span>
 
-<span class="fc" id="L70">		int treeNum = n;</span>
-<span class="fc" id="L71">		int[] vTree = new int[n];</span>
-<span class="fc" id="L72">		int[] vTreeNext = new int[n];</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">		for (int v : range(n))</span>
-<span class="fc" id="L74">			vTree[v] = v;</span>
+<span class="fc" id="L71">		int treeNum = n;</span>
+<span class="fc" id="L72">		int[] vTree = new int[n];</span>
+<span class="fc" id="L73">		int[] vTreeNext = new int[n];</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">		for (int v : range(n))</span>
+<span class="fc" id="L75">			vTree[v] = v;</span>
 
-<span class="fc" id="L76">		int[] minEdges = new int[n];</span>
-<span class="fc" id="L77">		Arrays.fill(minEdges, -1);</span>
-<span class="fc" id="L78">		double[] minEdgeWeights = new double[n];</span>
-<span class="fc" id="L79">		int[] path = new int[n];</span>
+<span class="fc" id="L77">		int[] minEdges = new int[n];</span>
+<span class="fc" id="L78">		Arrays.fill(minEdges, -1);</span>
+<span class="fc" id="L79">		double[] minEdgeWeights = new double[n];</span>
+<span class="fc" id="L80">		int[] path = new int[n];</span>
 
-<span class="fc" id="L81">		IntArrayList mst = new IntArrayList(n - 1);</span>
+<span class="fc" id="L82">		IntArrayList mst = new IntArrayList(n - 1);</span>
 		for (;;) {
-<span class="fc" id="L83">			Arrays.fill(minEdgeWeights, 0, treeNum, Double.MAX_VALUE);</span>
+<span class="fc" id="L84">			Arrays.fill(minEdgeWeights, 0, treeNum, Double.MAX_VALUE);</span>
 
 			/* find minimum edge going out of each tree */
-<span class="fc bfc" id="L86" title="All 2 branches covered.">			for (int u : range(n)) {</span>
-<span class="fc" id="L87">				int tree = vTree[u];</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">			for (int u : range(n)) {</span>
+<span class="fc" id="L88">				int tree = vTree[u];</span>
 
-<span class="fc" id="L89">				int[][] vertexBuckets = edges[u];</span>
+<span class="fc" id="L90">				int[][] vertexBuckets = edges[u];</span>
 				int b;
-<span class="fc bfc" id="L91" title="All 2 branches covered.">				for (b = firstValidBucketIdxs[u]; b &lt; vertexBuckets.length; b++) {</span>
-<span class="fc" id="L92">					boolean foundEdge = false;</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">					for (int i : range(vertexBuckets[b].length)) {</span>
-<span class="fc" id="L94">						int e = vertexBuckets[b][i];</span>
-<span class="fc bfc" id="L95" title="All 4 branches covered.">						if (tree == vTree[g.edgeSource(e)] &amp;&amp; tree == vTree[g.edgeTarget(e)])</span>
-<span class="fc" id="L96">							continue;</span>
-<span class="fc" id="L97">						foundEdge = true;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">				for (b = firstValidBucketIdxs[u]; b &lt; vertexBuckets.length; b++) {</span>
+<span class="fc" id="L93">					boolean foundEdge = false;</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">					for (int i : range(vertexBuckets[b].length)) {</span>
+<span class="fc" id="L95">						int e = vertexBuckets[b][i];</span>
+<span class="fc bfc" id="L96" title="All 4 branches covered.">						if (tree == vTree[g.edgeSource(e)] &amp;&amp; tree == vTree[g.edgeTarget(e)])</span>
+<span class="fc" id="L97">							continue;</span>
+<span class="fc" id="L98">						foundEdge = true;</span>
 
-<span class="fc" id="L99">						double eWeight = w.weight(e);</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">						if (eWeight &lt; minEdgeWeights[tree]) {</span>
-<span class="fc" id="L101">							minEdges[tree] = e;</span>
-<span class="fc" id="L102">							minEdgeWeights[tree] = eWeight;</span>
+<span class="fc" id="L100">						double eWeight = w.weight(e);</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">						if (eWeight &lt; minEdgeWeights[tree]) {</span>
+<span class="fc" id="L102">							minEdges[tree] = e;</span>
+<span class="fc" id="L103">							minEdgeWeights[tree] = eWeight;</span>
 						}
-<span class="fc" id="L104">					}</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">					if (foundEdge)</span>
-<span class="fc" id="L106">						break;</span>
+<span class="fc" id="L105">					}</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">					if (foundEdge)</span>
+<span class="fc" id="L107">						break;</span>
 				}
-<span class="fc" id="L108">				firstValidBucketIdxs[u] = b;</span>
-<span class="fc" id="L109">			}</span>
+<span class="fc" id="L109">				firstValidBucketIdxs[u] = b;</span>
+<span class="fc" id="L110">			}</span>
 
 			/* add min edges to MST */
-<span class="fc bfc" id="L112" title="All 2 branches covered.">			for (int tree : range(treeNum)) {</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">				if (minEdges[tree] &gt;= 0) {</span>
-<span class="fc" id="L114">					int e = minEdges[tree];</span>
-<span class="fc" id="L115">					int ut = vTree[g.edgeSource(e)], vt = vTree[g.edgeTarget(e)];</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">					if (tree == vt) {</span>
-<span class="fc" id="L117">						int temp = ut;</span>
-<span class="fc" id="L118">						ut = vt;</span>
-<span class="fc" id="L119">						vt = temp;</span>
-<span class="fc" id="L120">					} else {</span>
-<span class="pc bpc" id="L121" title="1 of 2 branches missed.">						assert tree == ut;</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			for (int tree : range(treeNum)) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">				if (minEdges[tree] &gt;= 0) {</span>
+<span class="fc" id="L115">					int e = minEdges[tree];</span>
+<span class="fc" id="L116">					int ut = vTree[g.edgeSource(e)], vt = vTree[g.edgeTarget(e)];</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">					if (tree == vt) {</span>
+<span class="fc" id="L118">						int temp = ut;</span>
+<span class="fc" id="L119">						ut = vt;</span>
+<span class="fc" id="L120">						vt = temp;</span>
+<span class="fc" id="L121">					} else {</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">						assert tree == ut;</span>
 					}
-<span class="fc bfc" id="L123" title="All 4 branches covered.">					if (minEdges[vt] != e || ut &lt; vt)</span>
-<span class="fc" id="L124">						mst.add(minEdges[tree]);</span>
+<span class="fc bfc" id="L124" title="All 4 branches covered.">					if (minEdges[vt] != e || ut &lt; vt)</span>
+<span class="fc" id="L125">						mst.add(minEdges[tree]);</span>
 				}
-<span class="fc" id="L126">			}</span>
+<span class="fc" id="L127">			}</span>
 
 			/*
 			 * the graph of the trees (vertex per tree, minimum out edges of the trees) is a graph where each vertex has
 			 * one out edge at most we want to find all the connectivity components between the trees and label the
 			 * vertices of G with new trees indices
 			 */
-<span class="fc" id="L133">			final int UNVISITED = -1;</span>
-<span class="fc" id="L134">			final int IN_PATH = -2;</span>
-<span class="fc" id="L135">			Arrays.fill(vTreeNext, 0, treeNum, UNVISITED);</span>
-<span class="fc" id="L136">			int treeNumNext = 0;</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">			for (int t : range(treeNum)) {</span>
-<span class="fc" id="L138">				int pathLength = 0;</span>
+<span class="fc" id="L134">			final int UNVISITED = -1;</span>
+<span class="fc" id="L135">			final int IN_PATH = -2;</span>
+<span class="fc" id="L136">			Arrays.fill(vTreeNext, 0, treeNum, UNVISITED);</span>
+<span class="fc" id="L137">			int treeNumNext = 0;</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			for (int t : range(treeNum)) {</span>
+<span class="fc" id="L139">				int pathLength = 0;</span>
 				/* find all reachable trees from t */
-<span class="fc" id="L140">				for (int tPtr = t;;) {</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">					if (vTreeNext[tPtr] == UNVISITED) {</span>
+<span class="fc" id="L141">				for (int tPtr = t;;) {</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">					if (vTreeNext[tPtr] == UNVISITED) {</span>
 						/* another vertex on the path, continue */
-<span class="fc" id="L143">						path[pathLength++] = tPtr;</span>
-<span class="fc" id="L144">						vTreeNext[tPtr] = IN_PATH;</span>
+<span class="fc" id="L144">						path[pathLength++] = tPtr;</span>
+<span class="fc" id="L145">						vTreeNext[tPtr] = IN_PATH;</span>
 
-<span class="fc bfc" id="L146" title="All 2 branches covered.">						if (minEdges[tPtr] &gt;= 0) {</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">						if (minEdges[tPtr] &gt;= 0) {</span>
 							int nextTPtr;
-<span class="fc bfc" id="L148" title="All 2 branches covered.">							if ((nextTPtr = vTree[g.edgeSource(minEdges[tPtr])]) == tPtr)</span>
-<span class="fc" id="L149">								nextTPtr = vTree[g.edgeTarget(minEdges[tPtr])];</span>
-<span class="pc bpc" id="L150" title="1 of 2 branches missed.">							assert nextTPtr != tPtr;</span>
-<span class="fc" id="L151">							tPtr = nextTPtr;</span>
-<span class="fc" id="L152">							continue;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">							if ((nextTPtr = vTree[g.edgeSource(minEdges[tPtr])]) == tPtr)</span>
+<span class="fc" id="L150">								nextTPtr = vTree[g.edgeTarget(minEdges[tPtr])];</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">							assert nextTPtr != tPtr;</span>
+<span class="fc" id="L152">							tPtr = nextTPtr;</span>
+<span class="fc" id="L153">							continue;</span>
 						}
 					}
 
 					/* if found label tree use it label, else - add new label */
-<span class="fc bfc" id="L157" title="All 2 branches covered.">					int newTree = vTreeNext[tPtr] &gt;= 0 ? vTreeNext[tPtr] : treeNumNext++;</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">					int newTree = vTreeNext[tPtr] &gt;= 0 ? vTreeNext[tPtr] : treeNumNext++;</span>
 					/* assign the new label to all trees on path */
-<span class="fc bfc" id="L159" title="All 2 branches covered.">					while (pathLength-- &gt; 0)</span>
-<span class="fc" id="L160">						vTreeNext[path[pathLength]] = newTree;</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">					while (pathLength-- &gt; 0)</span>
+<span class="fc" id="L161">						vTreeNext[path[pathLength]] = newTree;</span>
 					break;
 				}
-<span class="fc" id="L163">			}</span>
+<span class="fc" id="L164">			}</span>
 
-<span class="fc bfc" id="L165" title="All 2 branches covered.">			if (treeNum == treeNumNext)</span>
-<span class="fc" id="L166">				break;</span>
-<span class="fc" id="L167">			treeNum = treeNumNext;</span>
-<span class="fc" id="L168">			Arrays.fill(minEdges, 0, treeNum, -1);</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">			if (treeNum == treeNumNext)</span>
+<span class="fc" id="L167">				break;</span>
+<span class="fc" id="L168">			treeNum = treeNumNext;</span>
+<span class="fc" id="L169">			Arrays.fill(minEdges, 0, treeNum, -1);</span>
 
 			/* assign new tree indices to G's vertices */
-<span class="fc bfc" id="L171" title="All 2 branches covered.">			for (int v : range(n))</span>
-<span class="fc" id="L172">				vTree[v] = vTreeNext[vTree[v]];</span>
-<span class="fc" id="L173">		}</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">			for (int v : range(n))</span>
+<span class="fc" id="L173">				vTree[v] = vTreeNext[vTree[v]];</span>
+<span class="fc" id="L174">		}</span>
 
-<span class="fc" id="L175">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
-<span class="fc" id="L176">		return newIndexResult(mstSet);</span>
+<span class="fc" id="L176">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
+<span class="fc" id="L177">		return newIndexResult(mstSet);</span>
 	}
 
 	private int[][][] partitionEdgesToBuckets(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L180">		int n = g.vertices().size(), k = JGAlgoUtils.log2ceil(n);</span>
+<span class="fc" id="L181">		int n = g.vertices().size(), k = log2ceil(n);</span>
 
-<span class="fc" id="L182">		int[][][] edges = new int[n][][];</span>
-<span class="fc" id="L183">		int[] edgesTemp = new int[n];</span>
+<span class="fc" id="L183">		int[][][] edges = new int[n][][];</span>
+<span class="fc" id="L184">		int[] edgesTemp = new int[n];</span>
 
-<span class="fc bfc" id="L185" title="All 2 branches covered.">		for (int u : range(n)) {</span>
-<span class="fc" id="L186">			int edgesCount = 0;</span>
-<span class="fc bfc" id="L187" title="All 2 branches covered.">			for (int e : g.outEdges(u))</span>
-<span class="fc" id="L188">				edgesTemp[edgesCount++] = e;</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">		for (int u : range(n)) {</span>
+<span class="fc" id="L187">			int edgesCount = 0;</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">			for (int e : g.outEdges(u))</span>
+<span class="fc" id="L189">				edgesTemp[edgesCount++] = e;</span>
 
-<span class="fc bfc" id="L190" title="All 2 branches covered.">			if (edgesCount &lt;= k) {</span>
-<span class="fc" id="L191">				JGAlgoUtils.sort(edgesTemp, 0, edgesCount, w, parallel);</span>
-<span class="fc" id="L192">				edges[u] = new int[edgesCount][];</span>
-<span class="fc bfc" id="L193" title="All 2 branches covered.">				for (int i : range(edgesCount))</span>
-<span class="fc" id="L194">					edges[u][i] = new int[] { edgesTemp[i] };</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">			if (edgesCount &lt;= k) {</span>
+<span class="fc" id="L192">				JGAlgoUtils.sort(edgesTemp, 0, edgesCount, w, parallel);</span>
+<span class="fc" id="L193">				edges[u] = new int[edgesCount][];</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">				for (int i : range(edgesCount))</span>
+<span class="fc" id="L195">					edges[u][i] = new int[] { edgesTemp[i] };</span>
 
 			} else {
-<span class="fc" id="L197">				int bucketSize = (edgesCount - 1) / k + 1;</span>
-<span class="fc" id="L198">				int bucketNum = (edgesCount - 1) / bucketSize + 1;</span>
-<span class="fc" id="L199">				ArraysUtils.bucketPartition(edgesTemp, 0, edgesCount, w, bucketSize);</span>
-<span class="fc" id="L200">				edges[u] = new int[bucketNum][];</span>
+<span class="fc" id="L198">				int bucketSize = (edgesCount - 1) / k + 1;</span>
+<span class="fc" id="L199">				int bucketNum = (edgesCount - 1) / bucketSize + 1;</span>
+<span class="fc" id="L200">				ArraysUtils.bucketPartition(edgesTemp, 0, edgesCount, w, bucketSize);</span>
+<span class="fc" id="L201">				edges[u] = new int[bucketNum][];</span>
 
-<span class="fc bfc" id="L202" title="All 2 branches covered.">				for (int b : range(bucketNum)) {</span>
-<span class="fc" id="L203">					int bucketBegin = b * bucketSize;</span>
-<span class="fc" id="L204">					int bucketEnd = Math.min(bucketBegin + bucketSize, edgesCount);</span>
-<span class="fc" id="L205">					int[] bucket = new int[bucketEnd - bucketBegin];</span>
-<span class="fc" id="L206">					System.arraycopy(edgesTemp, bucketBegin, bucket, 0, bucketEnd - bucketBegin);</span>
-<span class="fc" id="L207">					edges[u][b] = bucket;</span>
-<span class="fc" id="L208">				}</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">				for (int b : range(bucketNum)) {</span>
+<span class="fc" id="L204">					int bucketBegin = b * bucketSize;</span>
+<span class="fc" id="L205">					int bucketEnd = Math.min(bucketBegin + bucketSize, edgesCount);</span>
+<span class="fc" id="L206">					int[] bucket = new int[bucketEnd - bucketBegin];</span>
+<span class="fc" id="L207">					System.arraycopy(edgesTemp, bucketBegin, bucket, 0, bucketEnd - bucketBegin);</span>
+<span class="fc" id="L208">					edges[u][b] = bucket;</span>
+<span class="fc" id="L209">				}</span>
 			}
-<span class="fc" id="L210">		}</span>
+<span class="fc" id="L211">		}</span>
 
-<span class="fc" id="L212">		return edges;</span>
+<span class="fc" id="L213">		return edges;</span>
 	}
 
 }

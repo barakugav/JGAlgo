@@ -64,7 +64,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L64">		}</span>
 	}
 
-<span class="fc" id="L67">	static class UnweightedIndexIter extends IndexIterBase {</span>
+<span class="fc" id="L67">	static final class UnweightedIndexIter extends IndexIterBase {</span>
 
 		private final int[] edges;
 
@@ -100,7 +100,7 @@ import com.jgalgo.internal.util.Assertions;
 		}
 	}
 
-<span class="fc" id="L103">	static class WeightedIndexIter extends IndexIterBase {</span>
+<span class="fc" id="L103">	static final class WeightedIndexIter extends IndexIterBase {</span>
 
 		private final int[] edges;
 		private final double[] edgesWeights;

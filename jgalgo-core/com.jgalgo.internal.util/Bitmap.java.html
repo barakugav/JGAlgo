@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
  *
  * @author Barak Ugav
  */
-public class Bitmap extends BitmapBase {
+public final class Bitmap extends BitmapBase {
 
 	/**
 	 * Creates a new bitmap of the specified size.

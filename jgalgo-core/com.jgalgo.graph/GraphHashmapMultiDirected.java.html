@@ -21,7 +21,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
-class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract implements GraphDefaultsDirected {
+final class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract implements GraphDefaultsDirected {
 
 	private Int2IntMap[] edgesOut;
 	private Int2IntMap[] edgesIn;
