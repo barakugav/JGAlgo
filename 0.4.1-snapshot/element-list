@@ -1,11 +1,11 @@
 com.jgalgo
 com.jgalgo.adapt.guava
 com.jgalgo.adapt.jgrapht
-com.jgalgo.alg
 com.jgalgo.alg.bipartite
 com.jgalgo.alg.clique
 com.jgalgo.alg.closure
 com.jgalgo.alg.color
+com.jgalgo.alg.common
 com.jgalgo.alg.connect
 com.jgalgo.alg.cores
 com.jgalgo.alg.cover
@@ -17,7 +17,7 @@ com.jgalgo.alg.flow
 com.jgalgo.alg.hamilton
 com.jgalgo.alg.isomorphism
 com.jgalgo.alg.match
-com.jgalgo.alg.path
+com.jgalgo.alg.shortestpath
 com.jgalgo.alg.span
 com.jgalgo.alg.traversal
 com.jgalgo.alg.tree
