@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Random;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.alg.path.ShortestPathSingleSource;
+import com.jgalgo.alg.shortestpath.ShortestPathSingleSource;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.NoSuchVertexException;

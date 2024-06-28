@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.alg.common.Path;
-import com.jgalgo.alg.path.SimplePathsEnumerator;
+import com.jgalgo.alg.shortestpath.SimplePathsEnumerator;
 import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;

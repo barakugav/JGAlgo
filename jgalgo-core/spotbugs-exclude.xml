@@ -226,7 +226,7 @@
     <!-- The function is documented -->
     <!-- The input graph should not be modified, it is an input to the algorithm -->
     <!-- the mask SHOULD be modified by the caller before calling the subroutine -->
-    <Class name="com.jgalgo.alg.path.KShortestPathsStBasedPathsTree$ShortestPathSubroutine" />
+    <Class name="com.jgalgo.alg.shortestpath.KShortestPathsStBasedPathsTree$ShortestPathSubroutine" />
     <Constructor />
     <Or>
       <Local name="g" />
@@ -236,21 +236,21 @@
   </Match>
   <Match>
     <!-- The stored graph is not a state of the exception -->
-    <Class name="com.jgalgo.alg.path.NegativeCycleException" />
+    <Class name="com.jgalgo.alg.shortestpath.NegativeCycleException" />
     <Constructor />
     <!-- <Local name="graph" /> -->
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
   <Match>
     <!-- The function is documented, the graph should not be modified during the lifetime of the result object -->
-    <Class name="com.jgalgo.alg.path.ShortestPathAllPairsAbstract$IndexResult" />
+    <Class name="com.jgalgo.alg.shortestpath.ShortestPathAllPairsAbstract$IndexResult" />
     <Constructor />
     <Local name="g" />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
   <Match>
     <!-- The function is documented, the arguments should not be used by the caller after constructing the result -->
-    <Class name="com.jgalgo.alg.path.VoronoiAlgoAbstract$IndexResult" />
+    <Class name="com.jgalgo.alg.shortestpath.VoronoiAlgoAbstract$IndexResult" />
     <Constructor />
     <!-- <Or>
       <Local name="distances" />
@@ -296,12 +296,12 @@
   </Match>
   <Match>
     <!-- The constructor is documented, and given graph and arrays should not be modified after constructing the result -->
-    <Class name="com.jgalgo.alg.path.ShortestPathSingleSourceAbstract$IndexResult" />
+    <Class name="com.jgalgo.alg.shortestpath.ShortestPathSingleSourceAbstract$IndexResult" />
     <Constructor />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
   <Match>
-    <Class name="com.jgalgo.alg.path.ShortestPathSingleSourceAbstract$IndexResult" />
+    <Class name="com.jgalgo.alg.shortestpath.ShortestPathSingleSourceAbstract$IndexResult" />
     <Or>
       <!-- The returned graph is the input graph, not internal state of the result object -->
       <Method name="graph" />
@@ -317,7 +317,7 @@
       <Class name="com.jgalgo.alg.connect.ContractableGraph$1" />
       <Class name="com.jgalgo.alg.cycle.CyclesEnumeratorJohnson$1" />
       <Class name="com.jgalgo.alg.cycle.CyclesEnumeratorTarjan$1" />
-      <Class name="com.jgalgo.alg.path.SimplePathsEnumeratorSedgewick$1" />
+      <Class name="com.jgalgo.alg.shortestpath.SimplePathsEnumeratorSedgewick$1" />
     </Or>
     <Bug pattern="CT_CONSTRUCTOR_THROW" />
   </Match>

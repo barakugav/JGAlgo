@@ -16,8 +16,7 @@
 package com.jgalgo.alg.distancemeasures;
 
 import java.util.Set;
-import com.jgalgo.alg.path.ShortestPathAllPairs;
-import com.jgalgo.alg.path.ShortestPathAllPairs.IResult;
+import com.jgalgo.alg.shortestpath.ShortestPathAllPairs;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;

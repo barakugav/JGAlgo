@@ -18,7 +18,7 @@ package com.jgalgo.alg.span;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.function.IntConsumer;
-import com.jgalgo.alg.path.VoronoiAlgo;
+import com.jgalgo.alg.shortestpath.VoronoiAlgo;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;

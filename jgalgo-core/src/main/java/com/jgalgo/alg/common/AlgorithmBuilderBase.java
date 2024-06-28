@@ -15,7 +15,7 @@
  */
 package com.jgalgo.alg.common;
 
-import com.jgalgo.alg.path.ShortestPathSingleSource;
+import com.jgalgo.alg.shortestpath.ShortestPathSingleSource;
 
 /**
  * A base interface for all algorithm builders.

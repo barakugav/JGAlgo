@@ -17,7 +17,7 @@ package com.jgalgo.graph;
 
 import com.jgalgo.alg.bipartite.BipartiteGraphs;
 import com.jgalgo.alg.match.MatchingAlgo;
-import com.jgalgo.alg.path.ShortestPathSingleSource;
+import com.jgalgo.alg.shortestpath.ShortestPathSingleSource;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**

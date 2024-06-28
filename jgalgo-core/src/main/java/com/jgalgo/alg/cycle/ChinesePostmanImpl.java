@@ -21,7 +21,7 @@ import com.jgalgo.alg.common.IPath;
 import com.jgalgo.alg.euler.EulerianTourAlgo;
 import com.jgalgo.alg.match.IMatching;
 import com.jgalgo.alg.match.MatchingAlgo;
-import com.jgalgo.alg.path.ShortestPathAllPairs;
+import com.jgalgo.alg.shortestpath.ShortestPathAllPairs;
 import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
