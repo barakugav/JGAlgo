@@ -77,7 +77,7 @@ import com.jgalgo.graph.WeightsShort;
  * @see    DimacsGraphReader
  * @author Barak Ugav
  */
-public class DimacsGraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer, Integer> {
+public final class DimacsGraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer, Integer> {
 
 	private String weightsKey;
 

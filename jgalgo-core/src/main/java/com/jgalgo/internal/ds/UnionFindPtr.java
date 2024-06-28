@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    UnionFindArray
  * @author Barak Ugav
  */
-public class UnionFindPtr implements UnionFind {
+public final class UnionFindPtr implements UnionFind {
 
 	private Elm[] elements;
 	private int size;

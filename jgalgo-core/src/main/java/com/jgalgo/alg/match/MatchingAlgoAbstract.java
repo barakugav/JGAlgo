@@ -125,7 +125,7 @@ public abstract class MatchingAlgoAbstract implements MatchingAlgo {
 	 *
 	 * @author Barak Ugav
 	 */
-	protected static class IndexMatching implements IMatching {
+	protected static final class IndexMatching implements IMatching {
 
 		private final IndexGraph g;
 		private IntSet edges;

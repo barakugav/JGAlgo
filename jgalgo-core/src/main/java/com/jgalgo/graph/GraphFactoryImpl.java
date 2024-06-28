@@ -18,7 +18,7 @@ package com.jgalgo.graph;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-class GraphFactoryImpl<V, E> implements GraphFactory<V, E> {
+final class GraphFactoryImpl<V, E> implements GraphFactory<V, E> {
 
 	final IndexGraphFactoryImpl indexFactory;
 	Supplier<? extends IdBuilder<V>> vertexFactory;

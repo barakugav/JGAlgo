@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Numbers.log2;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -244,7 +245,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		if (u == v)
 			return; /* ignore edge within same sub tree */
 
-		int span = JGAlgoUtils.log2(edge.u.depth - edge.v.depth + 1);
+		int span = log2(edge.u.depth - edge.v.depth + 1);
 		int uRank = u.rank(), vRank = v.rank();
 
 		if (uRank < span)
@@ -390,7 +391,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		}
 
 		int rank() {
-			return JGAlgoUtils.log2(size);
+			return log2(size);
 		}
 
 		void clear() {

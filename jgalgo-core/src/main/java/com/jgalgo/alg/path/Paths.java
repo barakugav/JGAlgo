@@ -154,7 +154,7 @@ class Paths {
 		return new IndexPath(g, source, target, unmodifiable ? edges : IntLists.unmodifiable(edges));
 	}
 
-	static class IndexPath extends AbstractPath<Integer, Integer> implements IPath {
+	static final class IndexPath extends AbstractPath<Integer, Integer> implements IPath {
 
 		private final IndexGraph g;
 		private final int source;

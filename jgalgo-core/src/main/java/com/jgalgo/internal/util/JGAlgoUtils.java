@@ -42,34 +42,6 @@ import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 public class JGAlgoUtils {
 	private JGAlgoUtils() {}
 
-	private static final double LOG2 = Math.log(2);
-	private static final double LOG2_INV = 1 / LOG2;
-
-	public static double log2(double x) {
-		return Math.log(x) * LOG2_INV;
-	}
-
-	public static int log2(int x) {
-		int r = 0xFFFF - x >> 31 & 0x10;
-		x >>= r;
-		int shift = 0xFF - x >> 31 & 0x8;
-		x >>= shift;
-		r |= shift;
-		shift = 0xF - x >> 31 & 0x4;
-		x >>= shift;
-		r |= shift;
-		shift = 0x3 - x >> 31 & 0x2;
-		x >>= shift;
-		r |= shift;
-		r |= (x >> 1);
-		return r;
-	}
-
-	public static int log2ceil(int x) {
-		int r = log2(x);
-		return (1 << r) == x ? r : r + 1;
-	}
-
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static final Comparator DEFAULT_COMPARATOR = (a, b) -> ((Comparable) a).compareTo(b);
 
@@ -81,30 +53,6 @@ public class JGAlgoUtils {
 	@SuppressWarnings("unchecked")
 	public static <E> int cmpDefault(E e1, E e2) {
 		return ((Comparable<E>) e1).compareTo(e2);
-	}
-
-	static class NullIterator<E> implements Iterator<E> {
-
-		private int size;
-
-		NullIterator(int size) {
-			if (size < 0)
-				throw new IllegalArgumentException();
-			this.size = size;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return size > 0;
-		}
-
-		@Override
-		public E next() {
-			Assertions.hasNext(this);
-			size--;
-			return null;
-		}
-
 	}
 
 	@FunctionalInterface
@@ -304,5 +252,4 @@ public class JGAlgoUtils {
 			return n - i - 1;
 		}
 	}
-
 }

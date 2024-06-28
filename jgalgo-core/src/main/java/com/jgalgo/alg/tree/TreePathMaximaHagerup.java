@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg.tree;
 
+import static com.jgalgo.internal.util.Numbers.log2ceil;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.alg.traversal.DfsIter;
@@ -27,7 +28,6 @@ import com.jgalgo.internal.ds.BitsLookupTable;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2IntFunc;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
@@ -90,7 +90,7 @@ public class TreePathMaximaHagerup extends TreePathMaximaAbstract {
 		return new Worker(tree, w, useBitsLookupTables).calcTPM(queries);
 	}
 
-	private static class Worker {
+	private static final class Worker {
 
 		private final IndexGraph tOrig;
 		private final IWeightFunction w;
@@ -116,7 +116,7 @@ public class TreePathMaximaHagerup extends TreePathMaximaAbstract {
 
 			if (useBitsLookupTables) {
 				int n = tOrig.vertices().size();
-				int wordsize = n > 1 ? JGAlgoUtils.log2ceil(n) : 1;
+				int wordsize = n > 1 ? log2ceil(n) : 1;
 				BitsLookupTable.Count count = new BitsLookupTable.Count(wordsize);
 				BitsLookupTable.Ith ith = new BitsLookupTable.Ith(wordsize, count);
 

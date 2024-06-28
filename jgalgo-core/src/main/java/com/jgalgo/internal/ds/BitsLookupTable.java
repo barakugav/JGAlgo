@@ -63,7 +63,7 @@ public class BitsLookupTable {
 	 *
 	 * @author Barak Ugav
 	 */
-	public static class Count {
+	public static final class Count {
 
 		private final int wordsize;
 		private final byte[] bitCountTable;
@@ -136,7 +136,7 @@ public class BitsLookupTable {
 	 *
 	 * @author Barak Ugav
 	 */
-	public static class Ith {
+	public static final class Ith {
 
 		private final int wordsize;
 		private final BitsLookupTable.Count count;

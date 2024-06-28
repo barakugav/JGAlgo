@@ -74,7 +74,12 @@ public abstract class ShortestPathSingleSourceAbstract implements ShortestPathSi
 	protected abstract ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w,
 			int source);
 
-	static class IndexResult implements ShortestPathSingleSource.IResult {
+	/**
+	 * Result of a single source shortest path computation on an {@linkplain IndexGraph index graph}.
+	 *
+	 * @author Barak Ugav
+	 */
+	protected static final class IndexResult implements ShortestPathSingleSource.IResult {
 
 		private final IndexGraph g;
 		private final int source;
@@ -84,8 +89,15 @@ public abstract class ShortestPathSingleSourceAbstract implements ShortestPathSi
 		private IntGraph shortestPathTreeUndirected;
 		private IntGraph shortestPathTreeDirected;
 
-		IndexResult(IndexGraph g, int source) {
-			this.g = g;
+		/**
+		 * Create a new result object for an index graph, initialized with {@code Double.POSITIVE_INFINITY} distances
+		 * and {@code -1} backtrack edges.
+		 *
+		 * @param g      the index graph. Should not be modified as long as this object is used.
+		 * @param source the source vertex
+		 */
+		public IndexResult(IndexGraph g, int source) {
+			this.g = Objects.requireNonNull(g);
 			this.source = source;
 			int n = g.vertices().size();
 			distances = new double[n];
@@ -94,7 +106,15 @@ public abstract class ShortestPathSingleSourceAbstract implements ShortestPathSi
 			Arrays.fill(backtrack, -1);
 		}
 
-		IndexResult(IndexGraph g, int source, double[] distances, int[] backtrack) {
+		/**
+		 * Create a new result object for an index graph, initialized with the given distances and backtrack edges.
+		 *
+		 * @param g         the index graph. Should not be modified as long as this object is used.
+		 * @param source    the source vertex
+		 * @param distances array with distance from the source per vertex in the graph
+		 * @param backtrack array with the edge used to reach each vertex from the source
+		 */
+		public IndexResult(IndexGraph g, int source, double[] distances, int[] backtrack) {
 			int n = g.vertices().size();
 			if (distances.length != n || backtrack.length != n)
 				throw new IllegalArgumentException("distances and backtrack arrays must be of size " + n);

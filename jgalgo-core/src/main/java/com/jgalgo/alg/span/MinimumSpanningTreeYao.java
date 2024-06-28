@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg.span;
 
+import static com.jgalgo.internal.util.Numbers.log2ceil;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IWeightFunction;
@@ -177,7 +178,7 @@ public class MinimumSpanningTreeYao extends MinimumSpanningTreeAbstract {
 	}
 
 	private int[][][] partitionEdgesToBuckets(IndexGraph g, IWeightFunction w) {
-		int n = g.vertices().size(), k = JGAlgoUtils.log2ceil(n);
+		int n = g.vertices().size(), k = log2ceil(n);
 
 		int[][][] edges = new int[n][][];
 		int[] edgesTemp = new int[n];

@@ -16,7 +16,6 @@
 
 package com.jgalgo.internal.util;
 
-import java.io.Serializable;
 import java.util.NoSuchElementException;
 import it.unimi.dsi.fastutil.HashCommon;
 import it.unimi.dsi.fastutil.PriorityQueue;
@@ -31,9 +30,8 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
  *
  * @author Barak Ugav
  */
-public class FIFOQueueLongNoReduce implements LongPriorityQueue, Serializable, LongIterable {
+public final class FIFOQueueLongNoReduce implements LongPriorityQueue, LongIterable {
 
-	private static final long serialVersionUID = 0L;
 	/** The standard initial capacity of a queue. */
 	static final int INITIAL_CAPACITY = 4;
 	/** The backing array. */

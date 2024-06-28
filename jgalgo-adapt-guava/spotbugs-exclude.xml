@@ -20,4 +20,16 @@
     </Or>
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
+
+  <Match>
+    <!-- TODO: no good reason to exclude these errors, hopefully finalize() will be removed -->
+    <Or>
+      <Class name="com.jgalgo.adapt.guava.GuavaGraphAdapter" />
+      <Class name="com.jgalgo.adapt.guava.GuavaMutableGraphAdapter" />
+      <Class name="com.jgalgo.adapt.guava.GuavaMutableValueGraphAdapter" />
+      <Class name="com.jgalgo.adapt.guava.GuavaNetworkWrapper" />
+      <Class name="com.jgalgo.adapt.guava.GuavaValueGraphAdapter" />
+    </Or>
+    <Bug pattern="CT_CONSTRUCTOR_THROW" />
+  </Match>
 </FindBugsFilter>

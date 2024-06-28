@@ -31,7 +31,7 @@ import com.jgalgo.internal.ds.DynamicTreeSplayExtension.SplayNodeExtended;
  * @see    DynamicTreeSplayExtension
  * @author Barak Ugav
  */
-class DynamicTreeSplayExtended extends DynamicTreeSplay {
+final class DynamicTreeSplayExtended extends DynamicTreeSplay {
 
 	private Node[] nodes;
 	private int nodesCount;

@@ -189,7 +189,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 		}
 	}
 
-	class EdgeIterOut extends EdgeIterBase {
+	final class EdgeIterOut extends EdgeIterBase {
 
 		EdgeIterOut(int source, Int2IntMap edges) {
 			super(source, edges);
@@ -206,7 +206,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 		}
 	}
 
-	class EdgeIterIn extends EdgeIterBase {
+	final class EdgeIterIn extends EdgeIterBase {
 
 		EdgeIterIn(int target, Int2IntMap edges) {
 			super(target, edges);

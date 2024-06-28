@@ -29,7 +29,7 @@ class TreePathMaximaQueriesImpl {
 
 	private TreePathMaximaQueriesImpl() {}
 
-	static class ObjQueriesImpl<V, E> implements TreePathMaxima.Queries<V, E> {
+	static final class ObjQueriesImpl<V, E> implements TreePathMaxima.Queries<V, E> {
 		private final TreePathMaxima.IQueries indexQueries = new IntQueriesImpl();
 		private final IndexIdMap<V> viMap;
 

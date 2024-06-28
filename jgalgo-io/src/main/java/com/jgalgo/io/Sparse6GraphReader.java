@@ -15,13 +15,13 @@
  */
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Numbers.log2ceil;
 import static com.jgalgo.internal.util.Range.range;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 /**
@@ -49,7 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
  * @see    Sparse6GraphWriter
  * @author Barak Ugav
  */
-public class Sparse6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
+public final class Sparse6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
 	/**
 	 * Create a new reader.
@@ -83,7 +83,7 @@ public class Sparse6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 		g.addVertices(range(n)); /* vertices ids are 0,1,2,...,n-1 */
 
 		/* Read all edges */
-		final int k = n == 0 ? n : JGAlgoUtils.log2ceil(n);
+		final int k = n == 0 ? n : log2ceil(n);
 		Graph6.BitsReader bitsReader = new Graph6.BitsReader(bytes, cursor);
 		edgesLoop: for (int v = 0;;) {
 			if (!bitsReader.hasNext())

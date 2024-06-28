@@ -16,9 +16,10 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Numbers.log2;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Objects;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.alg.tree.LowestCommonAncestorStaticRmq;
 
 /**
  * Static RMQ for sequences for which the different between any pair of consecutive elements is \(\pm 1\).
@@ -69,7 +70,7 @@ public class RmqStaticPlusMinusOne extends RmqStaticLinearAbstract {
 
 		@Override
 		byte getBlockSize(int n) {
-			int s = n <= 1 ? 1 : (int) Math.ceil(JGAlgoUtils.log2((double) n) * 2 / 3);
+			int s = n <= 1 ? 1 : (int) Math.ceil(log2((double) n) * 2 / 3);
 			/* choose block size of at least 5, as 2^(5-1) is 16 (small) */
 			return (byte) Math.min(Math.max(s, 5), n);
 		}

@@ -66,7 +66,7 @@ import com.jgalgo.graph.WeightsShort;
  * @param  <E> the edges type
  * @author     Barak Ugav
  */
-public class GraphMlGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V, E> {
+public final class GraphMlGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V, E> {
 
 	/**
 	 * Create a new writer.

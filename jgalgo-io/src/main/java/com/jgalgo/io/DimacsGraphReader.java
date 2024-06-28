@@ -77,7 +77,7 @@ import com.jgalgo.graph.WeightsInt;
  * @see    DimacsGraphWriter
  * @author Barak Ugav
  */
-public class DimacsGraphReader extends GraphIoUtils.AbstractIntGraphReader {
+public final class DimacsGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
 	private String weightsKey = "weight";
 

@@ -99,19 +99,4 @@ public interface UnionFindValue extends UnionFind {
 		return new UnionFindValueArray();
 	}
 
-	/**
-	 * Create a new union find algorithm with values and expected size.
-	 *
-	 * <p>
-	 * This is the recommended way to instantiate a new {@link UnionFindValue} object.
-	 *
-	 * @param  expectedSize expected number of elements in the data structure
-	 * @return              a default implementation of {@link UnionFindValue}
-	 */
-	static UnionFindValue newInstance(int expectedSize) {
-		if (expectedSize < 0)
-			throw new IllegalArgumentException("negative expected size: " + expectedSize);
-		return new UnionFindValueArray(expectedSize);
-	}
-
 }

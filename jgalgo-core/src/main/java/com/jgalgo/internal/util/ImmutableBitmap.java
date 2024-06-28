@@ -26,7 +26,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  *
  * @author Barak Ugav
  */
-public class ImmutableBitmap extends BitmapBase {
+public final class ImmutableBitmap extends BitmapBase {
 
 	private int hashCode;
 

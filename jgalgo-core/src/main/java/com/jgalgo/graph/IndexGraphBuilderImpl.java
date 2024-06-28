@@ -25,7 +25,7 @@ import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongArrays;
 
-class IndexGraphBuilderImpl implements IndexGraphBuilder {
+final class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	private final boolean directed;
 	final GraphElementSet.Mutable vertices;

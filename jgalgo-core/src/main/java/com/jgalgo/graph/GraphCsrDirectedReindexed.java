@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 
-class GraphCsrDirectedReindexed extends GraphCsrBase {
+final class GraphCsrDirectedReindexed extends GraphCsrBase {
 
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;

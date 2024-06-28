@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg.path;
 
+import static com.jgalgo.internal.util.Numbers.log2;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
@@ -33,7 +34,6 @@ import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.Fastutil;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -159,7 +159,7 @@ public class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceAb
 		final double alpha = Math.max(0.25, Math.min(3 / -Math.log(density), 2));
 
 		/* Run log(-minWeight) scaling iterations */
-		final int minWeightWordsize = JGAlgoUtils.log2(-minWeight);
+		final int minWeightWordsize = log2(-minWeight);
 		for (int weightMask = minWeightWordsize; weightMask >= 0; weightMask--) {
 			if (weightMask != minWeightWordsize)
 				for (int v : range(n))

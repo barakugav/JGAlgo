@@ -460,10 +460,4 @@ public class Assertions {
 		}
 	}
 
-	public static boolean isEqual(double a, double b) {
-		double mag = Math.max(Math.abs(a), Math.abs(b));
-		double eps = mag * 1E-6;
-		return Math.abs(a - b) <= eps;
-	}
-
 }

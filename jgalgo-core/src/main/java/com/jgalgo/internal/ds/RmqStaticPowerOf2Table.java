@@ -16,9 +16,10 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Numbers.log2;
+import static com.jgalgo.internal.util.Numbers.log2ceil;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Objects;
-import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * Static RMQ algorithm using \(O(n \log n)\) space and answering a query in \(O(1)\) time.
@@ -60,7 +61,7 @@ public class RmqStaticPowerOf2Table implements RmqStatic {
 
 		DSu32(RmqStaticComparator c, int n) {
 			this.n = n;
-			arr = new int[JGAlgoUtils.log2ceil(n + 1) - 1][n - 1];
+			arr = new int[log2ceil(n + 1) - 1][n - 1];
 			this.c = c;
 
 			for (int i : range(n - 1))
@@ -85,7 +86,7 @@ public class RmqStaticPowerOf2Table implements RmqStatic {
 				return i;
 			j++;
 
-			int k = JGAlgoUtils.log2(j - i);
+			int k = log2(j - i);
 			int kSize = 1 << k;
 
 			int idx0 = arr[k - 1][i];
@@ -112,7 +113,7 @@ public class RmqStaticPowerOf2Table implements RmqStatic {
 
 		DSu16(RmqStaticComparator c, short n) {
 			this.n = n;
-			arr = new short[JGAlgoUtils.log2ceil(n + 1) - 1][n - 1];
+			arr = new short[log2ceil(n + 1) - 1][n - 1];
 			this.c = c;
 
 			for (short i = 0; i < n - 1; i++)
@@ -137,7 +138,7 @@ public class RmqStaticPowerOf2Table implements RmqStatic {
 				return i;
 			j++;
 
-			int k = JGAlgoUtils.log2(j - i);
+			int k = log2(j - i);
 			int kSize = 1 << k;
 
 			int idx0 = arr[k - 1][i];
@@ -164,7 +165,7 @@ public class RmqStaticPowerOf2Table implements RmqStatic {
 
 		DSu08(RmqStaticComparator c, byte n) {
 			this.n = n;
-			arr = new byte[JGAlgoUtils.log2ceil(n + 1) - 1][n - 1];
+			arr = new byte[log2ceil(n + 1) - 1][n - 1];
 			this.c = c;
 
 			for (byte i = 0; i < n - 1; i++)
@@ -189,7 +190,7 @@ public class RmqStaticPowerOf2Table implements RmqStatic {
 				return i;
 			j++;
 
-			int k = JGAlgoUtils.log2(j - i);
+			int k = log2(j - i);
 			int kSize = 1 << k;
 
 			int idx0 = arr[k - 1][i];

@@ -20,7 +20,7 @@ import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 
-public class BitmapSet extends AbstractIntSet {
+public final class BitmapSet extends AbstractIntSet {
 
 	private final int capacity;
 	private final long[] words;

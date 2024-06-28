@@ -159,7 +159,7 @@ abstract class GraphCsrAbstractUnindexed extends GraphCsrBase {
 
 		if (!containsParallelEdges()) {
 			int edge = fastGetEdge(source, target);
-			return new Graphs.EdgeSetSourceTargetSingleton(this, source, target, edge);
+			return new Graphs.EdgeSetSourceTargetSingleEdge(this, source, target, edge);
 		}
 
 		return new SourceTargetEdgesSetFastLookup(source, target);

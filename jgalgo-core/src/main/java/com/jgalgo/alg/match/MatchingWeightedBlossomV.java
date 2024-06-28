@@ -131,7 +131,7 @@ public class MatchingWeightedBlossomV extends MatchingAlgoAbstractBasedMinimum {
 		return new Worker(g, w).solve();
 	}
 
-	private static class Worker {
+	private static final class Worker {
 
 		/* The input graph */
 		private final IndexGraph g;
@@ -1915,7 +1915,7 @@ public class MatchingWeightedBlossomV extends MatchingAlgoAbstractBasedMinimum {
 			IsTreeRoot_True = (byte) (1 << f.shift);
 		}
 
-		private static class BitmapBuilder {
+		private static final class BitmapBuilder {
 			private int usedBits;
 			private final int maxSize;
 
@@ -2306,7 +2306,7 @@ public class MatchingWeightedBlossomV extends MatchingAlgoAbstractBasedMinimum {
 	 *
 	 * @author Barak Ugav
 	 */
-	private static class Edge {
+	private static final class Edge {
 		/* The input graph id of the edge */
 		final int id;
 		/* The endpoints of the edge */

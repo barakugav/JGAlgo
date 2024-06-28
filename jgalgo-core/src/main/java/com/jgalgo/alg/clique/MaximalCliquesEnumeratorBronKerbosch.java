@@ -52,7 +52,7 @@ public class MaximalCliquesEnumeratorBronKerbosch extends MaximalCliquesEnumerat
 		return new Iter(g);
 	}
 
-	private static class Iter implements Iterator<IntSet> {
+	private static final class Iter implements Iterator<IntSet> {
 
 		private final int n;
 		private final Bitmap edges;

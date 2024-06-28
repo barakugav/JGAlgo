@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Numbers.log2ceil;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -164,7 +165,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 			arr = Arrays.copyOf(arr, Math.max(arr.length * 2, combinedSize * 3 / 2));
 
 		int reconstructionCost = combinedSize;
-		int addAllCost = elms.size() * JGAlgoUtils.log2ceil(combinedSize);
+		int addAllCost = elms.size() * log2ceil(combinedSize);
 		if (reconstructionCost >= addAllCost) {
 			for (E e : elms)
 				insert(e);
@@ -176,7 +177,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 			size = s;
 
 			if (s > 1) {
-				int lastLayer = JGAlgoUtils.log2ceil(s + 1) - 1;
+				int lastLayer = log2ceil(s + 1) - 1;
 				int lastParent = (1 << lastLayer) - 2;
 				for (int parent = lastParent; parent >= 0; parent--)
 					moveDown(parent, a[parent]);

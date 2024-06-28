@@ -19,7 +19,7 @@ import static com.jgalgo.internal.util.Range.range;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public class BitmapBase implements IntIterable {
+class BitmapBase implements IntIterable {
 
 	final int size;
 	final long[] words;

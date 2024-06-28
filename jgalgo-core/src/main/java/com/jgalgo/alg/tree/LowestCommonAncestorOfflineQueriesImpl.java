@@ -29,7 +29,7 @@ class LowestCommonAncestorOfflineQueriesImpl {
 
 	private LowestCommonAncestorOfflineQueriesImpl() {}
 
-	static class ObjQueriesImpl<V, E> implements LowestCommonAncestorOffline.Queries<V, E> {
+	static final class ObjQueriesImpl<V, E> implements LowestCommonAncestorOffline.Queries<V, E> {
 
 		private final LowestCommonAncestorOffline.IQueries indexQueries = new IntQueriesImpl();
 		private final IndexIdMap<V> viMap;

@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntBigArrays;
  * @see    GraphArrayDirected
  * @author Barak Ugav
  */
-class GraphArrayUndirected extends GraphArrayAbstract implements GraphDefaultsUndirected {
+final class GraphArrayUndirected extends GraphArrayAbstract implements GraphDefaultsUndirected {
 
 	private int[][] edges;
 	private int[] edgesNum;

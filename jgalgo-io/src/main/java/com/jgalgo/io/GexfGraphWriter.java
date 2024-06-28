@@ -103,7 +103,7 @@ import it.unimi.dsi.fastutil.shorts.ShortList;
  * @param  <E> the edges type
  * @author     Barak Ugav
  */
-public class GexfGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V, E> {
+public final class GexfGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V, E> {
 
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat(Gexf.DateFormat);
 

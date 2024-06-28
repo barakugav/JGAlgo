@@ -213,10 +213,11 @@ public class MinimumDirectedSpanningTreeTarjan extends MinimumDirectedSpanningTr
 		int n = g.vertices().size();
 		int VMaxNum = n * 2; // max super vertex number
 
-		UnionFindValue uf = UnionFindValue.newInstance(n);
+		UnionFindValue uf = UnionFindValue.newInstance();
+		uf.makeMany(n);
 		int[] ufIdxToV = new int[VMaxNum];
 		for (int v : range(n))
-			ufIdxToV[uf.make()] = v;
+			ufIdxToV[v] = v;
 
 		IWeightFunction w;
 		if (WeightFunction.isInteger(wOrig)) {

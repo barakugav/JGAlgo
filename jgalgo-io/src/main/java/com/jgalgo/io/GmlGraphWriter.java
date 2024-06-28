@@ -114,7 +114,7 @@ import it.unimi.dsi.fastutil.Pair;
  * @param  <E> the edges type
  * @author     Barak Ugav
  */
-public class GmlGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V, E> {
+public final class GmlGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V, E> {
 
 	/*
 	 * TODO: we can write some additional comments to the GML file that describe the type of weights exactly, and avoid

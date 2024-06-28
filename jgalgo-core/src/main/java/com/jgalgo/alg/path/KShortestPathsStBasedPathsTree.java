@@ -312,7 +312,7 @@ public abstract class KShortestPathsStBasedPathsTree extends KShortestPathsStAbs
 	 *
 	 * @author Barak Ugav
 	 */
-	private static class Node {
+	private static final class Node {
 
 		/* The local path of the node, the full path can be reconstructed by following the parent pointers */
 		IntList localPath;

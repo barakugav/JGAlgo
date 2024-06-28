@@ -54,7 +54,7 @@ import com.jgalgo.graph.Graph;
  * @see    Digraph6GraphReader
  * @author Barak Ugav
  */
-public class Digraph6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer, Integer> {
+public final class Digraph6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer, Integer> {
 
 	private boolean keepEdgesIds = true;
 

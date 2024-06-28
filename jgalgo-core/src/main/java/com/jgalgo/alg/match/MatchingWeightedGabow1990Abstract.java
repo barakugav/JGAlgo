@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg.match;
 
+import static com.jgalgo.internal.util.Numbers.isEqual;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Collections;
@@ -628,7 +629,7 @@ abstract class MatchingWeightedGabow1990Abstract extends MatchingAlgoAbstractBas
 						growStep();
 					} else if (deltaNext == delta3) {
 						EdgeEvent event = extractNextBlossomEvent();
-						assert Assertions.isEqual(delta, event.slack / 2);
+						assert isEqual(delta, event.slack / 2, 1e-6);
 						int e = event.e;
 						int u = g.edgeSource(e), v = g.edgeTarget(e);
 						assert isEven(u) && isEven(v);
@@ -691,7 +692,7 @@ abstract class MatchingWeightedGabow1990Abstract extends MatchingAlgoAbstractBas
 		void expandStep() {
 			debug.println("expandStep");
 
-			assert Assertions.isEqual(delta, expandEvents.findMin().key());
+			assert isEqual(delta, expandEvents.findMin().key(), 1e-6);
 			final Blossom B = expandEvents.extractMin().value();
 
 			assert B.root >= 0 && !B.isEven && !B.isSingleton() && dualVal(B) <= 1e-5;

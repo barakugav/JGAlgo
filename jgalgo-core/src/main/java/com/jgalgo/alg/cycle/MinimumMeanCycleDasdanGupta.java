@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg.cycle;
 
+import static com.jgalgo.internal.util.Numbers.isEqual;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.alg.IVertexPartition;
@@ -44,7 +45,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-public class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
+public final class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 
 	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();
 
@@ -166,7 +167,7 @@ public class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 						bestVertexCycleMeanWeight = cycleMeanWeight;
 						bestVertexCycleLengths.clear();
 						bestVertexCycleLengths.add(len);
-					} else if (bestVertexCycleMeanWeight == cycleMeanWeight) {
+					} else if (isEqual(bestVertexCycleMeanWeight, cycleMeanWeight, 1e-8)) {
 						bestVertexCycleLengths.add(len);
 					}
 				}

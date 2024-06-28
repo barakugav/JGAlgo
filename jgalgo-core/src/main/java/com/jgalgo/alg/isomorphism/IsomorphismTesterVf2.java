@@ -188,9 +188,10 @@ public class IsomorphismTesterVf2 extends IsomorphismTesterAbstract {
 		boolean canMatchEdges(int e1, int e2) {
 			return edgeMatcher == null || edgeMatcher.isMatch(e1, e2);
 		}
+
 	}
 
-	private static class IsomorphismIterDirected extends IsomorphismIterBase {
+	private static final class IsomorphismIterDirected extends IsomorphismIterBase {
 
 		private final int[] in1;
 		private final int[] in2;
@@ -506,7 +507,7 @@ public class IsomorphismTesterVf2 extends IsomorphismTesterAbstract {
 		}
 	}
 
-	private static class IsomorphismIterUndirected extends IsomorphismIterBase {
+	private static final class IsomorphismIterUndirected extends IsomorphismIterBase {
 
 		private final int[] out1;
 		private final int[] out2;

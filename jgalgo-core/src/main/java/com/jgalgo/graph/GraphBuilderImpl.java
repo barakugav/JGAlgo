@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
+final class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 
 	final GraphFactoryImpl<V, E> factory;
 	final IndexGraphBuilder iBuilder;

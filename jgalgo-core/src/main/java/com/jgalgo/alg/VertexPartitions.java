@@ -449,6 +449,7 @@ class VertexPartitions {
 					.map(Object::toString)
 					.collect(Collectors.joining(", ", "[", "]"));
 		}
+
 	}
 
 }

@@ -101,7 +101,7 @@ public abstract class ShortestPathAllPairsAbstract implements ShortestPathAllPai
 	 *
 	 * @author Barak Ugav
 	 */
-	protected static class IndexResult implements ShortestPathAllPairs.IResult {
+	protected static final class IndexResult implements ShortestPathAllPairs.IResult {
 
 		final IndexGraph g;
 		private final boolean directed;

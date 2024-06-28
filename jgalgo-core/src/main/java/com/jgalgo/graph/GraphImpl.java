@@ -25,7 +25,7 @@ import com.jgalgo.graph.Graphs.ImmutableGraph;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
-class GraphImpl<V, E> extends AbstractGraphImpl<V, E> {
+final class GraphImpl<V, E> extends AbstractGraphImpl<V, E> {
 
 	final IndexIdMapImpl<V> viMap;
 	final IndexIdMapImpl<E> eiMap;

@@ -215,7 +215,7 @@ public class HamiltonianPathRubin extends HamiltonianPathAlgoAbstractBasedCycle 
 
 	}
 
-	private static class IterDirected extends IterBase {
+	private static final class IterDirected extends IterBase {
 
 		private final Bitmap requiredEdges;
 		private final Bitmap hasRequiredOutEdge;
@@ -591,7 +591,7 @@ public class HamiltonianPathRubin extends HamiltonianPathAlgoAbstractBasedCycle 
 		}
 	}
 
-	private static class IterUndirected extends IterBase {
+	private static final class IterUndirected extends IterBase {
 
 		private final Bitmap requiredEdges;
 		private final Bitmap hasRequiredEdge;

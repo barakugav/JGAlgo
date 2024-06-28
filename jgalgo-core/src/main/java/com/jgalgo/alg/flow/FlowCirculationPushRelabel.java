@@ -83,7 +83,7 @@ class FlowCirculationPushRelabel extends FlowCirculationAbstract {
 		}
 	}
 
-	private static class WorkerDouble extends Worker {
+	private static final class WorkerDouble extends Worker {
 
 		final double[] capacity;
 		final double[] flow;
@@ -228,7 +228,7 @@ class FlowCirculationPushRelabel extends FlowCirculationAbstract {
 		}
 	}
 
-	private static class WorkerInt extends Worker {
+	private static final class WorkerInt extends Worker {
 
 		final int[] capacity;
 		final int[] flow;

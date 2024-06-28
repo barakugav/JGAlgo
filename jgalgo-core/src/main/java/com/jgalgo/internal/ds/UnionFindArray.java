@@ -44,19 +44,7 @@ public class UnionFindArray implements UnionFind {
 	 * Create an empty Union Find data structure with no elements.
 	 */
 	public UnionFindArray() {
-		this(0);
-	}
-
-	/**
-	 * Create a new empty Union Find data structure with expected number of elements.
-	 *
-	 * @param expectedSize the expended number of elements in the data structure
-	 */
-	public UnionFindArray(int expectedSize) {
-		if (expectedSize < 0)
-			throw new IllegalArgumentException("negative expected size: " + expectedSize);
-		int arrSize = expectedSize == 0 ? 2 : expectedSize;
-		parent = new int[arrSize];
+		parent = new int[2];
 		Arrays.fill(parent, -1);
 		size = 0;
 	}

@@ -48,7 +48,7 @@ import com.jgalgo.graph.WeightsShort;
  * @see    LedaGraphReader
  * @author Barak Ugav
  */
-public class LedaGraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer, Integer> {
+public final class LedaGraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer, Integer> {
 
 	private String verticesWeightsKey;
 	private String edgesWeightsKey;

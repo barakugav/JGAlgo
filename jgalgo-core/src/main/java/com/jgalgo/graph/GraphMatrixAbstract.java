@@ -143,7 +143,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 		checkVertex(source);
 		checkVertex(target);
 		int edge = edges[source].data[target];
-		return new Graphs.EdgeSetSourceTargetSingleton(this, source, target, edge);
+		return new Graphs.EdgeSetSourceTargetSingleEdge(this, source, target, edge);
 	}
 
 	@Override

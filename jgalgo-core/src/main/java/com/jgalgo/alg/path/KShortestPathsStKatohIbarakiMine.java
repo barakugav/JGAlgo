@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg.path;
 
+import static com.jgalgo.internal.util.Numbers.isEqual;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.List;
@@ -181,7 +182,8 @@ public class KShortestPathsStKatohIbarakiMine extends KShortestPathsStBasedPaths
 							heap.insert(v);
 							backtrack[v] = e;
 							heapXi[v] = uXi;
-						} else if (distance < heapDistances[v] || (distance == heapDistances[v] && uXi < heapXi[v])) {
+						} else if (distance < heapDistances[v]
+								|| (isEqual(distance, heapDistances[v], 0) && uXi < heapXi[v])) {
 							heapDistances[v] = distance;
 							heap.decreaseKey(v);
 							backtrack[v] = e;

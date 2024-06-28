@@ -30,44 +30,11 @@
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
   <Match>
-    <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
-    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*HeapBinomial" />
-    <Method name="refsSet" />
-    <Bug pattern="EI_EXPOSE_REP" />
-  </Match>
-  <Match>
-    <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
-    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*FibonacciHeap" />
-    <Method name="refsSet" />
-    <Bug pattern="EI_EXPOSE_REP" />
-  </Match>
-  <Match>
-    <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
-    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*PairingHeap" />
-    <Method name="refsSet" />
-    <Bug pattern="EI_EXPOSE_REP" />
-  </Match>
-  <Match>
-    <!-- The return value is a view of the tree, and the user SHOULD modify the tree through it -->
-    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*RedBlackTree" />
-    <Method name="refsSet" />
-    <Bug pattern="EI_EXPOSE_REP" />
-  </Match>
-  <Match>
-    <!-- The return value is a view of the tree, and the user SHOULD modify the tree through it -->
-    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*SplayTree" />
-    <Method name="refsSet" />
-    <Bug pattern="EI_EXPOSE_REP" />
-  </Match>
-  <Match>
-    <!-- The return value is reference to the minimum root node, and its desire to expose it -->
-    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*FibonacciHeap" />
-    <Method name="findMin" />
-    <Bug pattern="EI_EXPOSE_REP" />
-  </Match>
-  <Match>
-    <!-- The return value is reference to the root node, and its desire to expose it -->
-    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*PairingHeap" />
+    <!-- The return value is a reference to the minimum root node, and its desire to expose it -->
+    <Or>
+      <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*FibonacciHeap" />
+      <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*PairingHeap" />
+    </Or>
     <Method name="findMin" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
@@ -155,7 +122,6 @@
       <Class name="com.jgalgo.alg.match.MatchingWeightedBlossomV$Worker$2$1" />
       <Class name="com.jgalgo.alg.match.MatchingWeightedBlossomV$Worker$3$1" />
       <Class name="com.jgalgo.internal.util.IterTools$IterPeekableImpl" />
-      <Class name="com.jgalgo.internal.util.JGAlgoUtils$NullIterator" />
       <Class name="com.jgalgo.internal.util.JGAlgoUtils$NullListIterator" />
       <Class name="com.jgalgo.internal.util.JGAlgoUtils$PermutationsIter" />
       <Class name="com.jgalgo.internal.util.JGAlgoUtils$PermutationsIterInt" />
@@ -164,7 +130,7 @@
     <Bug pattern="IT_NO_SUCH_ELEMENT" />
   </Match>
   <Match>
-    <!-- used when Debug=trues -->
+    <!-- used when Debug=true -->
     <Or>
       <Class name="com.jgalgo.alg.match.MatchingWeightedBlossomV$Debug" />
       <Class name="com.jgalgo.alg.match.MatchingWeightedBlossomV$Debug$Impl" />
@@ -203,25 +169,19 @@
   </Match>
   <Match>
     <!-- Provided graph is input, not internal state of the generator -->
-    <Class name="com.jgalgo.gen.LineGraphGenerator" />
-    <Method name="graph" />
-    <Bug pattern="EI_EXPOSE_REP2" />
-  </Match>
-  <Match>
-    <!-- Provided graph is input, not internal state of the generator -->
-    <Class name="com.jgalgo.gen.ComplementGraphGenerator" />
+    <Or>
+      <Class name="com.jgalgo.gen.LineGraphGenerator" />
+      <Class name="com.jgalgo.gen.ComplementGraphGenerator" />
+    </Or>
     <Method name="graph" />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
   <Match>
     <!-- Provided graphs are input, not internal state of the generator -->
-    <Class name="com.jgalgo.gen.DifferenceGraphGenerator" />
-    <Method name="graphs" />
-    <Bug pattern="EI_EXPOSE_REP2" />
-  </Match>
-  <Match>
-    <!-- Provided graphs are input, not internal state of the generator -->
-    <Class name="com.jgalgo.gen.SymmetricDifferenceGraphGenerator" />
+    <Or>
+      <Class name="com.jgalgo.gen.DifferenceGraphGenerator" />
+      <Class name="com.jgalgo.gen.SymmetricDifferenceGraphGenerator" />
+    </Or>
     <Method name="graphs" />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
@@ -333,5 +293,51 @@
       <Method name="getCutVertices" />
     </Or>
     <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The constructor is documented, and given graph and arrays should not be modified after constructing the result -->
+    <Class name="com.jgalgo.alg.path.ShortestPathSingleSourceAbstract$IndexResult" />
+    <Constructor />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <Class name="com.jgalgo.alg.path.ShortestPathSingleSourceAbstract$IndexResult" />
+    <Or>
+      <!-- The returned graph is the input graph, not internal state of the result object -->
+      <Method name="graph" />
+      <!-- The returned graph is immutable -->
+      <Method name="shortestPathTree" />
+    </Or>
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The class is anonymous, effectively final, impossible to override `finalize()` -->
+    <Or>
+      <Class name="com.jgalgo.alg.clique.MaximalCliquesEnumeratorBronKerboschPivot$1" />
+      <Class name="com.jgalgo.alg.connect.ContractableGraph$1" />
+      <Class name="com.jgalgo.alg.cycle.CyclesEnumeratorJohnson$1" />
+      <Class name="com.jgalgo.alg.cycle.CyclesEnumeratorTarjan$1" />
+      <Class name="com.jgalgo.alg.path.SimplePathsEnumeratorSedgewick$1" />
+    </Or>
+    <Bug pattern="CT_CONSTRUCTOR_THROW" />
+  </Match>
+  <Match>
+    <!-- The class is not public and all its subclasses are final -->
+    <Or>
+      <Class name="com.jgalgo.alg.VertexPartitions$IntPartitionFromIndexPartition" />
+      <Class name="com.jgalgo.alg.VertexPartitions$ObjPartitionFromIndexPartition" />
+      <Class name="com.jgalgo.alg.hamilton.HamiltonianPathRubin$IterBase" />
+      <Class name="com.jgalgo.alg.isomorphism.IsomorphismTesterVf2$IsomorphismIterBase" />
+      <Class name="com.jgalgo.graph.GraphBaseMutable" />
+      <Class name="com.jgalgo.graph.GraphCsrAbstractUnindexed" />
+      <Class name="com.jgalgo.graph.GraphCsrBase" />
+      <Class name="com.jgalgo.graph.GraphElementSet" />
+      <Class name="com.jgalgo.graph.GraphHashmapMultiAbstract$EdgeIterBase" />
+      <Class name="com.jgalgo.graph.GraphMatrixAbstract" />
+      <Class name="com.jgalgo.graph.UndirectedGraphViews$UndirectedViewIntBase" />
+      <Class name="com.jgalgo.internal.util.BitmapBase" />
+      <Class name="com.jgalgo.internal.util.Range$Iter" />
+    </Or>
+    <Bug pattern="CT_CONSTRUCTOR_THROW" />
   </Match>
 </FindBugsFilter>

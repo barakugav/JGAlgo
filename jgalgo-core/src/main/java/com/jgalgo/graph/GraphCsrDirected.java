@@ -18,7 +18,7 @@ package com.jgalgo.graph;
 import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.internal.util.Assertions;
 
-class GraphCsrDirected extends GraphCsrAbstractUnindexed {
+final class GraphCsrDirected extends GraphCsrAbstractUnindexed {
 
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;

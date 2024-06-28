@@ -69,7 +69,7 @@ public class DominatingSetAlgoGreedy extends DominatingSetAlgoAbstract implement
 		return new Worker(g).solve(dominanceDirection);
 	}
 
-	private class Worker {
+	private final class Worker {
 
 		private final IndexGraph g;
 		private final Bitmap dominated;

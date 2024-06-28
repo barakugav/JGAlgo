@@ -115,7 +115,7 @@ import it.unimi.dsi.fastutil.shorts.ShortUnaryOperator;
  * @param  <E> the edges type
  * @author     Barak Ugav
  */
-public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E> {
+public final class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E> {
 
 	private Class<V> vertexType;
 	private Class<E> edgeType;

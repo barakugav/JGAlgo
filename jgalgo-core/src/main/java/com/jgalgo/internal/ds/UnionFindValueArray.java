@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
+final class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
 
 	private double[] deltas;
 
@@ -41,18 +41,7 @@ class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
 	 * Create an empty Union Find data structure with no elements.
 	 */
 	UnionFindValueArray() {
-		this(0);
-	}
-
-	/**
-	 * Create a new empty Union Find data structure with expected number of elements.
-	 *
-	 * @param expectedSize the expended number of elements in the data structure
-	 */
-	UnionFindValueArray(int expectedSize) {
-		super(expectedSize);
-		int arrSize = expectedSize == 0 ? 2 : expectedSize;
-		deltas = new double[arrSize];
+		deltas = new double[2];
 	}
 
 	@Override

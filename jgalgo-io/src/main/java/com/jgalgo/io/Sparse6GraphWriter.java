@@ -15,6 +15,7 @@
  */
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Numbers.log2ceil;
 import static com.jgalgo.internal.util.Range.range;
 import java.io.IOException;
 import java.io.Writer;
@@ -22,7 +23,6 @@ import java.util.Arrays;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Fastutil;
-import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * Write a graph in 'sparse6' format.
@@ -53,7 +53,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  * @see    Sparse6GraphReader
  * @author Barak Ugav
  */
-public class Sparse6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer, Integer> {
+public final class Sparse6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer, Integer> {
 
 	private boolean keepEdgesIds = true;
 
@@ -220,7 +220,7 @@ public class Sparse6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer
 
 		/* write all edges */
 		Graph6.BitsWriter bitsWriter = new Graph6.BitsWriter(out);
-		final int k = n == 0 ? 0 : JGAlgoUtils.log2ceil(n);
+		final int k = n == 0 ? 0 : log2ceil(n);
 		int currentVertex = 0;
 		for (int e : edges) {
 			int u = graph.edgeSource(Integer.valueOf(e)).intValue();

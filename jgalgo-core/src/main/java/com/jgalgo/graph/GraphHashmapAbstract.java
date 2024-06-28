@@ -50,7 +50,7 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 	@Override
 	public IEdgeSet getEdges(int source, int target) {
 		int edge = getEdge(source, target);
-		return new Graphs.EdgeSetSourceTargetSingleton(this, source, target, edge);
+		return new Graphs.EdgeSetSourceTargetSingleEdge(this, source, target, edge);
 	}
 
 	private abstract class EdgeIterBase implements IEdgeIter {

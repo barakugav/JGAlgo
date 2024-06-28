@@ -18,7 +18,7 @@ package com.jgalgo.graph;
 import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.internal.util.Assertions;
 
-class GraphCsrUndirected extends GraphCsrAbstractUnindexed {
+final class GraphCsrUndirected extends GraphCsrAbstractUnindexed {
 
 	GraphCsrUndirected(IndexGraphBuilderImpl builder, ProcessedEdgesUndirected processEdges, boolean fastLookup) {
 		super(false, builder, processEdges, fastLookup);

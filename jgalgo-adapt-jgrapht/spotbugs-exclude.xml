@@ -28,4 +28,13 @@
     </Or>
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
+
+  <Match>
+    <!-- TODO: no good reason to exclude these errors, hopefully finalize() will be removed -->
+    <Or>
+      <Class name="com.jgalgo.adapt.jgrapht.JGraphTAdapter" />
+      <Class name="com.jgalgo.adapt.jgrapht.JGraphTWrapper" />
+    </Or>
+    <Bug pattern="CT_CONSTRUCTOR_THROW" />
+  </Match>
 </FindBugsFilter>

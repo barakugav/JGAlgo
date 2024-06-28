@@ -64,7 +64,7 @@ class RandomWalkIters {
 		}
 	}
 
-	static class UnweightedIndexIter extends IndexIterBase {
+	static final class UnweightedIndexIter extends IndexIterBase {
 
 		private final int[] edges;
 
@@ -100,7 +100,7 @@ class RandomWalkIters {
 		}
 	}
 
-	static class WeightedIndexIter extends IndexIterBase {
+	static final class WeightedIndexIter extends IndexIterBase {
 
 		private final int[] edges;
 		private final double[] edgesWeights;

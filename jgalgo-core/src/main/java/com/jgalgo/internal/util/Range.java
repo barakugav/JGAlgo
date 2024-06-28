@@ -260,7 +260,7 @@ public final class Range extends AbstractIntSortedSet {
 		}
 	}
 
-	private static class SplitIter implements IntSpliterator {
+	private static final class SplitIter implements IntSpliterator {
 
 		private int x;
 		private final int to;
@@ -405,7 +405,7 @@ public final class Range extends AbstractIntSortedSet {
 		}
 	}
 
-	private static class ListIter extends Iter implements IntListIterator {
+	private static final class ListIter extends Iter implements IntListIterator {
 
 		ListIter(int from, int to, int startVal) {
 			super(from, to, startVal);

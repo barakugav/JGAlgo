@@ -29,7 +29,7 @@ abstract class GraphElementSet extends AbstractIntSet {
 	int size;
 	final boolean isVertices;
 
-	GraphElementSet(int initSize, boolean isVertices) {
+	private GraphElementSet(int initSize, boolean isVertices) {
 		if (initSize < 0)
 			throw new IllegalArgumentException("Initial size can not be negative: " + initSize);
 		size = initSize;
@@ -70,7 +70,7 @@ abstract class GraphElementSet extends AbstractIntSet {
 		Assertions.checkGraphId(idx, size, isVertices);
 	}
 
-	static class Immutable extends GraphElementSet {
+	static final class Immutable extends GraphElementSet {
 
 		private Immutable(int size, boolean isVertices) {
 			super(size, isVertices);
@@ -85,7 +85,7 @@ abstract class GraphElementSet extends AbstractIntSet {
 		}
 	}
 
-	static class Mutable extends GraphElementSet {
+	static final class Mutable extends GraphElementSet {
 
 		private final List<IndexRemoveListener> removeListeners = new CopyOnWriteArrayList<>();
 

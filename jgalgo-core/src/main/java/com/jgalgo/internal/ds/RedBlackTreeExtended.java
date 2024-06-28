@@ -55,7 +55,7 @@ import java.util.Objects;
  * @param  <V> the values type
  * @author     Barak Ugav
  */
-class RedBlackTreeExtended<K, V> extends ObjObjRedBlackTree<K, V> {
+final class RedBlackTreeExtended<K, V> extends ObjObjRedBlackTree<K, V> {
 
 	private int size;
 	private Node<K, V>[] nodes;

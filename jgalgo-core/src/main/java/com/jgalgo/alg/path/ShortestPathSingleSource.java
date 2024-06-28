@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg.path;
 
+import static com.jgalgo.internal.util.Numbers.log2ceil;
 import com.jgalgo.alg.AlgorithmBuilderBase;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
@@ -26,7 +27,6 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * Single Source Shortest Path algorithm.
@@ -399,7 +399,7 @@ public interface ShortestPathSingleSource {
 									IWeightFunction w, int source) {
 								final int n = g.vertices().size(), m = g.edges().size();
 								int dialWork = n + m + maxDistance0;
-								int dijkstraWork = m + n * JGAlgoUtils.log2ceil(n);
+								int dijkstraWork = m + n * log2ceil(n);
 								if (dialWork < dijkstraWork) {
 									return ssspDial
 											.computeShortestPaths(g, (IWeightFunctionInt) w, source, maxDistance0);
