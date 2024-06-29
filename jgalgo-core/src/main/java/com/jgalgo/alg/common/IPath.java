@@ -316,8 +316,8 @@ public interface IPath extends Path<Integer, Integer> {
 
 		while (iSources.hasNext()) {
 			int source = iSources.nextInt();
-			visited.set(source);
-			queue.enqueue(source);
+			if (visited.set(source))
+				queue.enqueue(source);
 		}
 
 		while (!queue.isEmpty()) {

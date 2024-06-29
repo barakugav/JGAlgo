@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg.closure;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import com.jgalgo.alg.common.IPath;
@@ -22,6 +23,7 @@ import com.jgalgo.alg.common.Path;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -90,13 +92,13 @@ public interface ClosuresEnumerator {
 	 * @param  <V> the vertices type
 	 * @param  <E> the edges type
 	 * @param  g   a graph
-	 * @param  c   a set of vertices
+	 * @param  c   a set of vertices. There should not be any duplicate vertices, otherwise the behavior is undefined
 	 * @return     {@code true} if the set is a closure, {@code false} otherwise
 	 */
 	@SuppressWarnings("unchecked")
-	static <V, E> boolean isClosure(Graph<V, E> g, Set<V> c) {
+	static <V, E> boolean isClosure(Graph<V, E> g, Collection<V> c) {
 		if (g instanceof IntGraph) {
-			IntSet c0 = IntAdapters.asIntSet((Set<Integer>) c);
+			IntCollection c0 = IntAdapters.asIntCollection((Collection<Integer>) c);
 			for (int w : IPath.reachableVertices((IntGraph) g, c0.iterator()))
 				if (!(c0.contains(w)))
 					return false;

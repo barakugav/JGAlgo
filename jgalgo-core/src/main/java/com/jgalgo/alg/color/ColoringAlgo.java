@@ -17,6 +17,7 @@
 package com.jgalgo.alg.color;
 
 import static com.jgalgo.internal.util.Range.range;
+import java.util.Arrays;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
 import com.jgalgo.alg.common.IVertexPartition;
@@ -108,47 +109,41 @@ public interface ColoringAlgo {
 		final int n = g.vertices().size();
 		IndexGraph ig;
 		int[] vertexToColor = new int[n];
-		int maxColor = -1;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
 			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction<Integer>) mapping);
-			for (int v : range(n)) {
+			for (int v : range(n))
 				vertexToColor[v] = mapping0.applyAsInt(v);
-				maxColor = Math.max(maxColor, vertexToColor[v]);
-			}
 
 		} else if (g instanceof IntGraph) {
 			ig = g.indexGraph();
 			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction<Integer>) mapping);
 			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-			for (int v : range(n)) {
+			for (int v : range(n))
 				vertexToColor[v] = mapping0.applyAsInt(viMap.indexToIdInt(v));
-				maxColor = Math.max(maxColor, vertexToColor[v]);
-			}
 
 		} else {
 			ig = g.indexGraph();
 			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-			for (int v : range(n)) {
+			for (int v : range(n))
 				vertexToColor[v] = mapping.applyAsInt(viMap.indexToId(v));
-				maxColor = Math.max(maxColor, vertexToColor[v]);
-			}
 		}
-		final int colorNum = maxColor + 1;
+
+		if (Arrays.stream(vertexToColor).anyMatch(b -> b < 0))
+			return false;
+		int maxColor = Arrays.stream(vertexToColor).max().orElse(-1);
 		if (maxColor > n)
 			return false;
+
+		final int colorNum = maxColor + 1;
 		Bitmap seenColors = new Bitmap(colorNum);
-		for (int b : vertexToColor) {
-			if (b < 0)
-				return false;
+		for (int b : vertexToColor)
 			seenColors.set(b);
-		}
 		if (seenColors.nextClearBit(0) != colorNum)
 			return false;
-		for (int e : range(ig.edges().size()))
-			if (vertexToColor[ig.edgeSource(e)] == vertexToColor[ig.edgeTarget(e)])
-				return false;
-		return true;
+
+		return range(ig.edges().size())
+				.allMatch(e -> vertexToColor[ig.edgeSource(e)] != vertexToColor[ig.edgeTarget(e)]);
 	}
 
 	/**
