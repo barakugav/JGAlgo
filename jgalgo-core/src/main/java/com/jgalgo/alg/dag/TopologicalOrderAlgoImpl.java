@@ -17,13 +17,10 @@
 package com.jgalgo.alg.dag;
 
 import static com.jgalgo.internal.util.Range.range;
-import java.util.Arrays;
 import java.util.Optional;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
  * A simple algorithm that compute a topological order in a DAG graph.
@@ -56,33 +53,29 @@ public class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
 		Assertions.onlyDirected(g);
 		int n = g.vertices().size();
 		int[] inDegree = new int[n];
-		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
+		// Same array is used both as a queue and as the result
 		int[] topolSort = new int[n];
-		int topolSortSize = 0;
+		int beginIdx = 0, endIdx = 0;
 
-		// calc in degree of all vertices
-		// Find vertices with zero in degree and insert them to the queue
-		Arrays.fill(inDegree, 0);
-		for (int v : range(n)) {
-			inDegree[v] = g.inEdges(v).size();
-			if (inDegree[v] == 0)
-				queue.enqueue(v);
-		}
+		// calc in-degree of all vertices
+		// Find vertices with zero in-degree and insert them to the queue
+		for (int v : range(n))
+			if ((inDegree[v] = g.inEdges(v).size()) == 0)
+				topolSort[endIdx++] = v;
 
-		// Poll vertices from the queue and "remove" each one from the tree and add new
-		// zero in degree vertices to the queue
-		while (!queue.isEmpty()) {
-			int u = queue.dequeueInt();
-			topolSort[topolSortSize++] = u;
+		// Poll vertices from the queue and "remove" each one from the graph and add the new
+		// zero in-degree vertices to the queue
+		while (beginIdx < endIdx) {
+			int u = topolSort[beginIdx++];
 			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.targetInt();
 				if (--inDegree[v] == 0)
-					queue.enqueue(v);
+					topolSort[endIdx++] = v;
 			}
 		}
 
-		return topolSortSize == n ? Optional.of(new IndexResult(topolSort)) : Optional.empty();
+		return beginIdx == n ? Optional.of(new IndexResult(topolSort)) : Optional.empty();
 	}
 
 }
