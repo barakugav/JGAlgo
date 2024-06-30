@@ -70,7 +70,11 @@ public abstract class StronglyConnectedComponentsAlgoAbstract implements Strongl
 
 	@Override
 	public <V, E> boolean isStronglyConnected(Graph<V, E> g) {
-		return g instanceof IndexGraph ? isStronglyConnected((IndexGraph) g) : isStronglyConnected(g.indexGraph());
+		if (g.isDirected()) {
+			return isStronglyConnectedDirected(g.indexGraph());
+		} else {
+			return weaklyConnectedComponentsAlgo.isWeaklyConnected(g);
+		}
 	}
 
 	/**
@@ -89,6 +93,6 @@ public abstract class StronglyConnectedComponentsAlgoAbstract implements Strongl
 	 * @param  g a graph
 	 * @return   {@code true} if the graph is strongly connected, {@code false} otherwise
 	 */
-	protected abstract boolean isStronglyConnected(IndexGraph g);
+	protected abstract boolean isStronglyConnectedDirected(IndexGraph g);
 
 }

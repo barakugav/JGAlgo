@@ -95,17 +95,15 @@ public class StronglyConnectedComponentsTarjan extends StronglyConnectedComponen
 
 				/* u is a 'root' of a strongly connected component */
 				if (lowLink[u] == visitIdx[u]) {
-					int c = compNum++;
-					for (;;) {
+					for (final int c = compNum++;;) {
 						int v = s.popInt();
 						comp[v] = c;
 						if (v == u)
 							break;
 					}
 					if (stopAfterOneBlock) {
-						for (int w : range(n))
-							if (comp[w] < 0)
-								return null;
+						if (Arrays.stream(comp).anyMatch(c -> c < 0))
+							return null;
 						return IVertexPartition.fromArray(g, comp, compNum);
 					}
 				}
@@ -125,7 +123,7 @@ public class StronglyConnectedComponentsTarjan extends StronglyConnectedComponen
 	}
 
 	@Override
-	protected boolean isStronglyConnected(IndexGraph g) {
+	protected boolean isStronglyConnectedDirected(IndexGraph g) {
 		return findStronglyConnectedComponentsDirected(g, true) != null;
 	}
 
