@@ -7,7 +7,7 @@
   <groupId>com.jgalgo</groupId>
   <artifactId>jgalgo</artifactId>
   <name>JGAlgo - Parent</name>
-  <version>0.5.0</version>
+  <version>0.5.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <url>https://www.jgalgo.com/</url>
   <description>A performant Java library for graph algorithms</description>
@@ -76,6 +76,7 @@
     <module>jgalgo-io</module>
     <module>jgalgo-adapt-guava</module>
     <module>jgalgo-adapt-jgrapht</module>
+    <module>jgalgo-bench</module>
     <module>jgalgo-example</module>
   </modules>
 
