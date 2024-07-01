@@ -52,7 +52,7 @@ public abstract class WeaklyConnectedComponentsAlgoAbstract implements WeaklyCon
 
 	@Override
 	public &lt;V, E&gt; boolean isWeaklyConnected(Graph&lt;V, E&gt; g) {
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">		return g instanceof IndexGraph ? isWeaklyConnected((IndexGraph) g) : isWeaklyConnected(g.indexGraph());</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		return g instanceof IndexGraph ? isWeaklyConnected((IndexGraph) g) : isWeaklyConnected(g.indexGraph());</span>
 	}
 
 	/**

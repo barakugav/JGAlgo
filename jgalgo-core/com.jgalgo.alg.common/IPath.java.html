@@ -316,8 +316,8 @@ public interface IPath extends Path&lt;Integer, Integer&gt; {
 
 <span class="fc bfc" id="L317" title="All 2 branches covered.">		while (iSources.hasNext()) {</span>
 <span class="fc" id="L318">			int source = iSources.nextInt();</span>
-<span class="fc" id="L319">			visited.set(source);</span>
-<span class="fc" id="L320">			queue.enqueue(source);</span>
+<span class="pc bpc" id="L319" title="1 of 2 branches missed.">			if (visited.set(source))</span>
+<span class="fc" id="L320">				queue.enqueue(source);</span>
 <span class="fc" id="L321">		}</span>
 
 <span class="fc bfc" id="L323" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>

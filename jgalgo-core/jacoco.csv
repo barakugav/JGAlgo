@@ -3,7 +3,7 @@ JGAlgo - Core,com.jgalgo.alg.dag,TopologicalOrderAlgoAbstract.ObjResultFromIndex
 JGAlgo - Core,com.jgalgo.alg.dag,TopologicalOrderAlgo.Result,0,11,0,0,0,1,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg.dag,TopologicalOrderAlgoAbstract,4,52,1,5,0,11,1,8,0,6
 JGAlgo - Core,com.jgalgo.alg.dag,TopologicalOrderAlgoAbstract.IntResultFromIndexResult,0,27,0,0,0,6,0,3,0,3
-JGAlgo - Core,com.jgalgo.alg.dag,TopologicalOrderAlgoImpl,0,101,0,12,0,24,0,8,0,2
+JGAlgo - Core,com.jgalgo.alg.dag,TopologicalOrderAlgoImpl,0,95,0,12,0,19,0,8,0,2
 JGAlgo - Core,com.jgalgo.alg.dag,TopologicalOrderAlgoAbstract.IndexResult,3,55,2,6,1,10,2,5,0,3
 JGAlgo - Core,com.jgalgo.alg.dag,TopologicalOrderAlgo,0,16,0,0,0,3,0,3,0,3
 JGAlgo - Core,com.jgalgo.alg.dag,TopologicalOrderAlgo.IResult,0,16,0,0,0,2,0,3,0,3
@@ -409,7 +409,7 @@ JGAlgo - Core,com.jgalgo.gen,BipartiteGenerators.Direction,0,44,0,0,0,5,0,1,0,1
 JGAlgo - Core,com.jgalgo.gen,EmptyGraphGenerator,0,143,0,14,0,36,0,16,0,9
 JGAlgo - Core,com.jgalgo.gen,RecursiveMatrixGraphGenerator,14,647,7,81,0,134,7,51,0,14
 JGAlgo - Core,com.jgalgo.gen,SymmetricDifferenceGraphGenerator,4,421,1,53,0,100,1,34,0,8
-JGAlgo - Core,com.jgalgo.gen,GnpGraphGenerator,0,354,0,44,0,80,0,34,0,12
+JGAlgo - Core,com.jgalgo.gen,GnpGraphGenerator,0,354,1,43,0,80,1,33,0,12
 JGAlgo - Core,com.jgalgo.graph,WeightsImplObj.IndexImpl,0,97,0,4,0,20,0,7,0,5
 JGAlgo - Core,com.jgalgo.graph,GraphViews.GraphView,0,100,0,0,0,29,0,20,0,20
 JGAlgo - Core,com.jgalgo.graph,IndexIntIdMapImpl.IdSet,0,73,0,2,0,12,0,9,0,8
@@ -894,7 +894,7 @@ JGAlgo - Core,com.jgalgo.alg.common,VertexBiPartitions.IntBiPartitionFromIndexBi
 JGAlgo - Core,com.jgalgo.alg.common,Paths.IndexPath,12,283,3,31,0,61,3,24,0,10
 JGAlgo - Core,com.jgalgo.alg.common,AlgorithmBuilderBase,6,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo.alg.common,VertexPartitions,7,144,4,24,0,34,3,13,0,2
-JGAlgo - Core,com.jgalgo.alg.common,IPath,0,274,0,24,0,73,0,21,0,9
+JGAlgo - Core,com.jgalgo.alg.common,IPath,0,274,1,25,0,73,1,21,0,9
 JGAlgo - Core,com.jgalgo.alg.common,Paths.ObjPathFromIndexPath,0,72,0,0,0,14,0,9,0,9
 JGAlgo - Core,com.jgalgo.alg.common,Paths.IntPathFromIndexPath,0,72,0,0,0,14,0,9,0,9
 JGAlgo - Core,com.jgalgo,JGAlgoConfig,4,0,0,0,2,0,1,0,1,0
@@ -1013,7 +1013,7 @@ JGAlgo - Core,com.jgalgo.alg.closure,ClosuresEnumeratorSchrageBaker.new Iterator
 JGAlgo - Core,com.jgalgo.alg.closure,ClosuresEnumeratorAbstract,0,30,0,2,0,7,0,4,0,3
 JGAlgo - Core,com.jgalgo.alg.closure,ClosuresEnumerator,0,54,0,10,0,11,0,7,0,2
 JGAlgo - Core,com.jgalgo.alg.closure,ClosuresEnumeratorSchrageBaker,0,267,0,26,0,50,0,18,0,5
-JGAlgo - Core,com.jgalgo.alg.connect,StronglyConnectedComponentsTarjan,0,223,0,28,0,57,0,18,0,4
+JGAlgo - Core,com.jgalgo.alg.connect,StronglyConnectedComponentsTarjan,0,217,0,28,0,56,0,19,0,5
 JGAlgo - Core,com.jgalgo.alg.connect,BiConnectedComponentsAlgoAbstract.IntResultFromIndexResult,0,63,0,0,0,12,0,8,0,8
 JGAlgo - Core,com.jgalgo.alg.connect,KVertexConnectedComponentsWhiteMoody.new Object() {...},0,23,0,0,0,3,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg.connect,MinimumVertexCutAllGlobal,0,12,0,0,0,2,0,2,0,2
@@ -1041,7 +1041,7 @@ JGAlgo - Core,com.jgalgo.alg.connect,BiConnectedComponentsAlgoAbstract.ObjResult
 JGAlgo - Core,com.jgalgo.alg.connect,KEdgeConnectedComponentsAlgoAbstract,0,24,0,2,0,6,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg.connect,KVertexConnectedComponentsWhiteMoody,10,1017,5,121,3,208,5,67,0,9
 JGAlgo - Core,com.jgalgo.alg.connect,MinimumEdgeCutAllStPicardQueyranne,10,629,6,86,1,156,6,45,0,5
-JGAlgo - Core,com.jgalgo.alg.connect,WeaklyConnectedComponentsAlgoAbstract,5,30,1,3,0,7,1,4,0,3
+JGAlgo - Core,com.jgalgo.alg.connect,WeaklyConnectedComponentsAlgoAbstract,0,35,0,4,0,7,0,5,0,3
 JGAlgo - Core,com.jgalgo.alg.connect,MinimumEdgeCutStAbstract,0,109,0,4,0,26,0,5,0,3
 JGAlgo - Core,com.jgalgo.alg.connect,BiConnectedComponentsAlgoAbstract,0,38,0,4,0,9,0,5,0,3
 JGAlgo - Core,com.jgalgo.alg.connect,MinimumEdgeCutGlobalAbstract,7,25,1,1,2,7,1,2,0,2
@@ -1050,7 +1050,7 @@ JGAlgo - Core,com.jgalgo.alg.connect,WeaklyConnectedComponentsAlgo,0,4,0,0,0,1,0
 JGAlgo - Core,com.jgalgo.alg.connect,BiConnectedComponentsAlgo,0,4,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg.connect,MinimumVertexCutStAbstract,0,58,0,4,0,12,0,4,0,2
 JGAlgo - Core,com.jgalgo.alg.connect,KEdgeConnectedComponentsWang,48,483,17,59,0,112,17,27,0,6
-JGAlgo - Core,com.jgalgo.alg.connect,StronglyConnectedComponentsAlgoAbstract,0,51,0,6,0,12,0,7,0,4
+JGAlgo - Core,com.jgalgo.alg.connect,StronglyConnectedComponentsAlgoAbstract,0,51,0,6,0,14,0,7,0,4
 JGAlgo - Core,com.jgalgo.alg.connect,KEdgeConnectedComponentsAlgo,4,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo.alg.connect,BiConnectedComponentsAlgo.IResult,0,10,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg.connect,MinimumVertexCutAllGlobalKanevsky,0,294,0,14,0,53,0,12,0,5
@@ -1064,7 +1064,7 @@ JGAlgo - Core,com.jgalgo.alg.connect,MinimumEdgeCutAllStPicardQueyranne.new Iter
 JGAlgo - Core,com.jgalgo.alg.color,ColoringRecursiveLargestFirst,0,246,0,38,0,61,0,21,0,2
 JGAlgo - Core,com.jgalgo.alg.color,ColoringAlgoAbstract,5,17,1,1,1,5,1,2,0,2
 JGAlgo - Core,com.jgalgo.alg.color,ColoringDSatur,6,181,0,10,2,42,1,10,1,5
-JGAlgo - Core,com.jgalgo.alg.color,ColoringAlgo,44,153,7,15,11,29,7,6,1,1
+JGAlgo - Core,com.jgalgo.alg.color,ColoringAlgo,39,147,8,14,8,24,8,7,1,3
 JGAlgo - Core,com.jgalgo.alg.color,ColoringGreedy,0,102,0,6,0,24,0,6,0,3
 JGAlgo - Core,com.jgalgo.alg.distancemeasures,IDistanceMeasures,0,5,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg.distancemeasures,DistanceMeasures,0,44,0,2,0,10,0,2,0,1

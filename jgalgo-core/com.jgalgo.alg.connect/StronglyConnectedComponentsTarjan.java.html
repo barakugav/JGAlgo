@@ -95,38 +95,36 @@ public class StronglyConnectedComponentsTarjan extends StronglyConnectedComponen
 
 				/* u is a 'root' of a strongly connected component */
 <span class="fc bfc" id="L97" title="All 2 branches covered.">				if (lowLink[u] == visitIdx[u]) {</span>
-<span class="fc" id="L98">					int c = compNum++;</span>
-					for (;;) {
-<span class="fc" id="L100">						int v = s.popInt();</span>
-<span class="fc" id="L101">						comp[v] = c;</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">						if (v == u)</span>
-<span class="fc" id="L103">							break;</span>
-<span class="fc" id="L104">					}</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">					if (stopAfterOneBlock) {</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">						for (int w : range(n))</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">							if (comp[w] &lt; 0)</span>
-<span class="fc" id="L108">								return null;</span>
-<span class="fc" id="L109">						return IVertexPartition.fromArray(g, comp, compNum);</span>
+<span class="fc" id="L98">					for (final int c = compNum++;;) {</span>
+<span class="fc" id="L99">						int v = s.popInt();</span>
+<span class="fc" id="L100">						comp[v] = c;</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">						if (v == u)</span>
+<span class="fc" id="L102">							break;</span>
+<span class="fc" id="L103">					}</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">					if (stopAfterOneBlock) {</span>
+<span class="fc bfc" id="L105" title="All 4 branches covered.">						if (Arrays.stream(comp).anyMatch(c -&gt; c &lt; 0))</span>
+<span class="fc" id="L106">							return null;</span>
+<span class="fc" id="L107">						return IVertexPartition.fromArray(g, comp, compNum);</span>
 					}
 				}
 
 				/* go one vertex up in the dfs stack */
-<span class="fc bfc" id="L114" title="All 2 branches covered.">				if (depth == 0)</span>
-<span class="fc" id="L115">					break;</span>
-<span class="fc" id="L116">				depth--;</span>
-<span class="fc" id="L117">				int child = u;</span>
-<span class="fc" id="L118">				u = edges[depth].sourceInt();</span>
-<span class="fc bfc" id="L119" title="All 2 branches covered.">				if (lowLink[u] &gt; lowLink[child])</span>
-<span class="fc" id="L120">					lowLink[u] = lowLink[child];</span>
-<span class="fc" id="L121">			}</span>
-<span class="fc" id="L122">		}</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">				if (depth == 0)</span>
+<span class="fc" id="L113">					break;</span>
+<span class="fc" id="L114">				depth--;</span>
+<span class="fc" id="L115">				int child = u;</span>
+<span class="fc" id="L116">				u = edges[depth].sourceInt();</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">				if (lowLink[u] &gt; lowLink[child])</span>
+<span class="fc" id="L118">					lowLink[u] = lowLink[child];</span>
+<span class="fc" id="L119">			}</span>
+<span class="fc" id="L120">		}</span>
 
-<span class="fc" id="L124">		return IVertexPartition.fromArray(g, comp, compNum);</span>
+<span class="fc" id="L122">		return IVertexPartition.fromArray(g, comp, compNum);</span>
 	}
 
 	@Override
-	protected boolean isStronglyConnected(IndexGraph g) {
-<span class="fc bfc" id="L129" title="All 2 branches covered.">		return findStronglyConnectedComponentsDirected(g, true) != null;</span>
+	protected boolean isStronglyConnectedDirected(IndexGraph g) {
+<span class="fc bfc" id="L127" title="All 2 branches covered.">		return findStronglyConnectedComponentsDirected(g, true) != null;</span>
 	}
 
 }

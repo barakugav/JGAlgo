@@ -116,7 +116,7 @@ public class StronglyConnectedComponentsPathBasedDfs extends StronglyConnectedCo
 	}
 
 	@Override
-	protected boolean isStronglyConnected(IndexGraph g) {
+	protected boolean isStronglyConnectedDirected(IndexGraph g) {
 <span class="fc bfc" id="L120" title="All 2 branches covered.">		return findStronglyConnectedComponentsDirected(g, true) != null;</span>
 	}
 
