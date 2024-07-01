@@ -12,7 +12,7 @@ The library runs on Java 11 or higher, and it is installed using [Maven](https:/
 
 JGAlgo offer [unparalleled speed](https://github.com/barakugav/JGAlgo/actions/workflows/benchmarks.yaml) and efficiency by implementing algorithms with theoretically guaranteed running times using the most efficient underlying building blocks and data-structures. A few concrete reasons for the library performance are:
 - All building blocks of the library are primitives, rather than Objects
-- The underlying [Graph](https://barakugav.github.io/JGAlgo/0.4.0/com/jgalgo/graph/Graph.html) implementations and algorithms do not use costly hash maps, only plain primitive arrays, yielding faster query time, smaller memory footprint and better cache hit rate
+- The underlying [Graph](https://barakugav.github.io/JGAlgo/0.5.0/com/jgalgo/graph/Graph.html) implementations and algorithms do not use costly hash maps, only plain primitive arrays, yielding faster query time, smaller memory footprint and better cache hit rate
 - Extensive use of [fastutil](https://fastutil.di.unimi.it/) for all collections
 - Memory allocations are postpone and reused by algorithms objects
 
@@ -30,12 +30,12 @@ Add the following lines to your `pom.xml`:
 <dependency>
 	<groupId>com.jgalgo</groupId>
 	<artifactId>jgalgo-core</artifactId>
-	<version>0.4.0</version>
+	<version>0.5.0</version>
 </dependency>
 ```
 
 
-The most basic object in the library is a [Graph](https://barakugav.github.io/JGAlgo/0.4.0/com/jgalgo/graph/Graph.html). A graph consist of vertices and edges (directed or undirected) connecting between pairs of vertices, all represented by some hashable objects. Algorithms such as [shortest path algorithm](https://barakugav.github.io/JGAlgo/0.4.0/com/jgalgo/alg/ShortestPathSingleSource.html) accept a graph as an input and perform some computation on it. Here is a snippet creating an undirected graph representing the roads between cities in Germany, and computing the shortest path from a source city to all others with respect to a weight function:
+The most basic object in the library is a [Graph](https://barakugav.github.io/JGAlgo/0.5.0/com/jgalgo/graph/Graph.html). A graph consist of vertices and edges (directed or undirected) connecting between pairs of vertices, all represented by some hashable objects. Algorithms such as [shortest path algorithm](https://barakugav.github.io/JGAlgo/0.5.0/com/jgalgo/alg/shortestpath/ShortestPathSingleSource.html) accept a graph as an input and perform some computation on it. Here is a snippet creating an undirected graph representing the roads between cities in Germany, and computing the shortest path from a source city to all others with respect to a weight function:
 
 ```java
 /* Create an undirected graph with three vertices and edges between them */
