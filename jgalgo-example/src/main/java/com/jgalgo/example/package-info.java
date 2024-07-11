@@ -15,6 +15,6 @@
  */
 
 /**
- * Simple examples using the basics of {@link com.jgalgo.graph} and {@link com.jgalgo.alg}.
+ * Simple examples using the basics of {@link com.jgalgo.graph} and algorithms.
  */
 package com.jgalgo.example;
