@@ -16,20 +16,20 @@ JGAlgo - IO,com.jgalgo.io,Digraph6GraphWriter,0,204,0,22,0,41,0,14,0,3
 JGAlgo - IO,com.jgalgo.io,Sparse6GraphWriter,20,648,10,78,0,137,9,40,0,5
 JGAlgo - IO,com.jgalgo.io,XmlUtils,0,112,0,12,0,23,0,16,0,10
 JGAlgo - IO,com.jgalgo.io,GexfGraphWriter,6,1235,0,156,2,236,0,133,0,55
-JGAlgo - IO,com.jgalgo.io,Writer2,48,72,0,0,12,17,6,8,6,8
 JGAlgo - IO,com.jgalgo.io,LedaGraphWriter,4,295,1,45,0,71,1,28,0,6
-JGAlgo - IO,com.jgalgo.io,WeightsStringifier.Builder,30,231,0,16,10,53,5,23,5,15
+JGAlgo - IO,com.jgalgo.io,Writer2,48,72,0,0,12,17,6,8,6,8
 JGAlgo - IO,com.jgalgo.io,GraphIoUtils.AbstractIntGraphReader,10,13,0,0,2,3,2,3,2,3
+JGAlgo - IO,com.jgalgo.io,WeightsStringifier.Builder,30,231,0,16,10,53,5,23,5,15
 JGAlgo - IO,com.jgalgo.io,GraphReader,36,5,0,0,8,1,2,1,2,1
 JGAlgo - IO,com.jgalgo.io,GmlGraphReader.KeySearcher,0,51,0,6,0,13,0,6,0,3
-JGAlgo - IO,com.jgalgo.io,GraphIoUtils.AbstractGraphWriter,6,9,0,0,2,4,0,2,0,2
 JGAlgo - IO,com.jgalgo.io,Graph6GraphWriter,0,229,0,26,0,47,0,16,0,3
+JGAlgo - IO,com.jgalgo.io,GraphIoUtils.AbstractGraphWriter,6,9,0,0,2,4,0,2,0,2
 JGAlgo - IO,com.jgalgo.io,GraphMlGraphWriter,6,522,0,70,2,118,0,41,0,6
 JGAlgo - IO,com.jgalgo.io,GmlGraphReader,4,1051,1,151,0,227,1,103,0,27
 JGAlgo - IO,com.jgalgo.io,Digraph6GraphReader,0,140,0,20,0,34,0,12,0,2
-JGAlgo - IO,com.jgalgo.io,XmlUtils.new Iterator() {...},0,66,0,6,0,14,0,7,0,4
-JGAlgo - IO,com.jgalgo.io,GraphIoUtils,3,109,1,29,0,28,1,20,0,6
 JGAlgo - IO,com.jgalgo.io,GmlGraphReader.CharReader,0,146,2,18,0,37,2,18,0,10
+JGAlgo - IO,com.jgalgo.io,GraphIoUtils,3,109,1,29,0,28,1,20,0,6
+JGAlgo - IO,com.jgalgo.io,XmlUtils.new Iterator() {...},0,66,0,6,0,14,0,7,0,4
 JGAlgo - IO,com.jgalgo.io,Graph6GraphReader,0,125,0,18,0,31,0,11,0,2
 JGAlgo - IO,com.jgalgo.io,Graph6.BitsWriter,4,89,1,11,0,17,1,10,0,5
 JGAlgo - IO,com.jgalgo.io,GraphMlGraphReader,0,611,0,59,0,148,0,54,0,21
