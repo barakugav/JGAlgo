@@ -409,7 +409,7 @@ JGAlgo - Core,com.jgalgo.gen,BipartiteGenerators.Direction,0,44,0,0,0,5,0,1,0,1
 JGAlgo - Core,com.jgalgo.gen,EmptyGraphGenerator,0,143,0,14,0,36,0,16,0,9
 JGAlgo - Core,com.jgalgo.gen,RecursiveMatrixGraphGenerator,14,647,7,81,0,134,7,51,0,14
 JGAlgo - Core,com.jgalgo.gen,SymmetricDifferenceGraphGenerator,4,421,1,53,0,100,1,34,0,8
-JGAlgo - Core,com.jgalgo.gen,GnpGraphGenerator,0,354,1,43,0,80,1,33,0,12
+JGAlgo - Core,com.jgalgo.gen,GnpGraphGenerator,0,354,0,44,0,80,0,34,0,12
 JGAlgo - Core,com.jgalgo.graph,WeightsImplObj.IndexImpl,0,97,0,4,0,20,0,7,0,5
 JGAlgo - Core,com.jgalgo.graph,GraphViews.GraphView,0,100,0,0,0,29,0,20,0,20
 JGAlgo - Core,com.jgalgo.graph,IndexIntIdMapImpl.IdSet,0,73,0,2,0,12,0,9,0,8
