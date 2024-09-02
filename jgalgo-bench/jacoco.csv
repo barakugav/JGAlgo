@@ -1,8 +1,8 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SsspPositiveWeightsBench.GraphArgs,0,12,0,0,0,5,0,1,0,1
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,RmqStaticBench.Query,3,218,1,11,1,39,1,11,0,6
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Edge.MatrixDirected,0,26,0,0,0,7,0,4,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SsspPositiveWeightsBench.Gnp,0,85,0,2,0,17,0,5,0,4
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Edge.MatrixDirected,0,26,0,0,0,7,0,4,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,LcaDynamicBench,12,294,3,14,3,64,3,14,0,8
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SsspNegativeWeightsBench.GraphArgs,0,12,0,0,0,5,0,1,0,1
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Edge.LinkedDirected,0,26,0,0,0,7,0,4,0,4
@@ -10,8 +10,8 @@ JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.new LongIterator() {...},7
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,LcaDynamicBench.OpLcaQuery,0,9,0,0,0,4,0,1,0,1
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.new IntIterator() {...},7,21,1,1,2,5,2,2,1,2
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.Supply.RecursiveMatrix,0,80,0,2,0,17,0,5,0,4
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,IntGraphIdBuilderBench.Query.MurmurHash3.new Object() {...},0,9,0,0,0,2,0,1,0,1
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.EdgesRead.ArrayUndirected,0,71,0,0,0,29,0,15,0,15
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,IntGraphIdBuilderBench.Query.MurmurHash3.new Object() {...},0,9,0,0,0,2,0,1,0,1
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MaximumFlowBench.BarabasiAlbert,5,126,1,3,0,31,1,11,0,10
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Vertex.LinkedUndirected,0,26,0,0,0,7,0,4,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,ReferenceableHeapBench.GraphArgs,12,0,0,0,5,0,1,0,1,0
@@ -22,8 +22,8 @@ JGAlgo - Benchmarks,com.jgalgo.bench.impls,RmqStaticBench.PreProcess,0,107,0,2,0
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.MaxFlow.Task,0,54,0,0,0,15,0,2,0,2
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.EdgesRead.ArrayDirected,0,71,0,0,0,29,0,15,0,15
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.EdgesRead.MatrixDirected,0,71,0,0,0,29,0,15,0,15
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,IntGraphIdBuilderBench.Query.Increment0x61c88647.new Object() {...},0,9,0,0,0,2,0,1,0,1
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.MaxFlow,0,39,0,0,0,5,0,3,0,3
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,IntGraphIdBuilderBench.Query.Increment0x61c88647.new Object() {...},0,9,0,0,0,2,0,1,0,1
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.EdgesRead.CsrDirected,8,96,2,2,0,40,2,17,0,17
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SsspPositiveWeightsBench.BarabasiAlbert,0,85,0,2,0,17,0,5,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Edge.LinkedPtrDirected,0,26,0,0,0,7,0,4,0,4
@@ -37,17 +37,17 @@ JGAlgo - Benchmarks,com.jgalgo.bench.impls,SsspPositiveWeightsBench.RecursiveMat
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Vertex.MatrixDirected,0,26,0,0,0,7,0,4,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench,3,10,0,0,1,2,1,2,1,2
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.MaxFlow.RecursiveMatrix,0,80,0,2,0,17,0,5,0,4
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.EdgesRead.MatrixUndirected,0,71,0,0,0,29,0,15,0,15
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.Supply,0,37,0,0,0,5,0,3,0,3
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Vertex.ArrayDirected,0,26,0,0,0,7,0,4,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.EdgesRead.HashtableMultiDirected,0,71,0,0,0,29,0,15,0,15
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.EdgesRead.MatrixUndirected,0,71,0,0,0,29,0,15,0,15
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.new Object() {...},0,3,0,0,0,1,0,1,0,1
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,KShortestPathsStBench.BenchArgs,0,18,0,0,0,7,0,1,0,1
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,IntGraphIdBuilderBench.Query.Mult0x7ffb01f,0,45,1,3,0,14,1,7,0,6
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinimumMeanCycleBench,0,115,0,2,0,23,0,7,0,6
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,KShortestPathsStBench.BenchArgs,0,18,0,0,0,7,0,1,0,1
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,ApspBench,0,109,0,2,0,22,0,7,0,6
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.MaxFlow.BarabasiAlbert,0,73,0,2,0,16,0,5,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MaximalCliquesEnumeratorBench.RecursiveMatrix,0,64,0,2,0,14,0,5,0,4
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,ApspBench,0,109,0,2,0,22,0,7,0,6
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,RmqStaticBench.Query.LookupTable,0,18,0,0,0,7,0,4,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SsspNegativeWeightsBench.RecursiveMatrix,0,95,0,2,0,19,0,5,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Vertex.LinkedPtrDirected,0,26,0,0,0,7,0,4,0,4
@@ -57,10 +57,10 @@ JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.EdgesRead.LinkedUndirected
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.Supply.BarabasiAlbert,0,73,0,2,0,16,0,5,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench,32,710,8,60,0,140,8,32,0,6
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.EdgesRead.HashtableDirected,0,71,0,0,0,29,0,15,0,15
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,MaximumFlowBench.Gnp,5,119,1,3,0,29,1,10,0,9
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,RmqStaticBench.PreProcessPlusMinusOne,0,118,0,6,0,18,0,7,0,4
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,HeapBench.HeapFromReferenceableHeap,57,29,4,0,14,8,9,5,7,5
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,MaximumFlowBench.Gnp,5,119,1,3,0,29,1,10,0,9
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,IntGraphIdBuilderBench.Query.Rand,0,36,1,3,0,13,1,7,0,6
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,HeapBench.HeapFromReferenceableHeap,57,29,4,0,14,8,9,5,7,5
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,IntGraphIdBuilderBench.Query.Mult0x7ffb01f.new Object() {...},0,9,0,0,0,2,0,1,0,1
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,IntGraphIdBuilderBench.Query.Counter,0,16,0,0,0,7,0,4,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,ShortestPathStBench.Gnp,0,98,0,2,0,19,0,5,0,4
@@ -68,14 +68,14 @@ JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Edge.HashtableUndir
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove,47,175,13,19,8,44,9,13,0,6
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,ShortestPathStBench,4,129,1,7,1,25,1,7,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,IntGraphIdBuilderBench.Query.Increment0x61c88647,0,44,1,3,0,14,1,7,0,6
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,ShortestPathStBench.GraphArgs,0,18,0,0,0,7,0,1,0,1
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,RmqStaticBench,3,0,0,0,1,0,1,0,1,0
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,ShortestPathStBench.GraphArgs,0,18,0,0,0,7,0,1,0,1
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Vertex.LinkedPtrUndirected,0,26,0,0,0,7,0,4,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MinCostFlowBench.Supply.Task,0,79,0,2,0,16,0,3,0,2
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,KShortestPathsStBench,0,126,0,2,0,21,0,5,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Edge.HashtableDirected,0,26,0,0,0,7,0,4,0,4
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,MatchingBench.MaximumCardinality,0,91,0,2,0,18,0,6,0,5
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MatchingBench,3,0,0,0,1,0,1,0,1,0
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,MatchingBench.MaximumCardinality,0,91,0,2,0,18,0,6,0,5
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,RmqStaticBench.Query.PlusMinusOne,0,58,0,4,0,12,0,7,0,5
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,RmqStaticBench.Query.CartesianTrees,0,18,0,0,0,7,0,4,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Vertex.MatrixUndirected,0,26,0,0,0,7,0,4,0,4
@@ -108,15 +108,15 @@ JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Edge.HashtableMulti
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Edge.ArrayDirected,0,26,0,0,0,7,0,4,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Vertex.HashtableUndirected,0,26,0,0,0,7,0,4,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.EdgesRead.HashtableUndirected,0,71,0,0,0,29,0,15,0,15
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.EdgesRead.LinkedPtrUndirected,0,71,0,0,0,29,0,15,0,15
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MaximalCliquesEnumeratorBench.Gnp,0,57,0,2,0,13,0,5,0,4
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.EdgesRead.LinkedPtrUndirected,0,71,0,0,0,29,0,15,0,15
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SsspPositiveWeightsBench,0,42,0,0,0,8,0,3,0,3
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,MatchingBench.MinimumPerfect,40,161,4,6,5,30,4,7,0,6
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.EdgesRead.LinkedDirected,0,71,0,0,0,29,0,15,0,15
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,IntGraphIdBuilderBench.Query.MurmurHash3,0,44,1,3,0,14,1,7,0,6
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,HeapBench.new Heap.Builder() {...},0,16,0,0,0,2,0,2,0,2
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Edge.LinkedPtrUndirected,0,26,0,0,0,7,0,4,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Vertex.LinkedDirected,0,26,0,0,0,7,0,4,0,4
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Edge.LinkedPtrUndirected,0,26,0,0,0,7,0,4,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,IntGraphIdBuilderBench,3,0,0,0,1,0,1,0,1,0
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SsspNegativeWeightsBench,0,47,0,0,0,11,0,3,0,3
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SsspNegativeWeightsBench.BarabasiAlbert,0,88,0,2,0,18,0,5,0,4
@@ -124,8 +124,8 @@ JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.EdgesRead.CsrUndirected,8,
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,HeapBench.Op.Insert,0,6,0,0,0,3,0,1,0,1
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.EdgesRead.CsrDirectedReindexed,8,99,2,2,0,40,2,17,0,17
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,LcaDynamicBench.OpAddLeaf,0,6,0,0,0,3,0,1,0,1
-JGAlgo - Benchmarks,com.jgalgo.bench.impls,StrongConnectedComponentsBench,0,97,0,2,0,20,0,7,0,6
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,TreePathMaximaBench.TPMArgs,0,12,0,0,0,5,0,1,0,1
+JGAlgo - Benchmarks,com.jgalgo.bench.impls,StrongConnectedComponentsBench,0,97,0,2,0,20,0,7,0,6
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,IntGraphIdBuilderBench.Query,0,142,0,8,0,24,0,8,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Edge.LinkedUndirected,0,26,0,0,0,7,0,4,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.util,GraphsTestUtils,66,210,8,6,11,59,10,12,4,11
