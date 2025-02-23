@@ -16,6 +16,7 @@
 package com.jgalgo.internal.util;
 
 import java.util.NoSuchElementException;
+import java.util.RandomAccess;
 import java.util.Spliterator;
 import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
@@ -331,7 +332,7 @@ public final class Range extends AbstractIntSortedSet {
 		return new RangeList(from, to);
 	}
 
-	private static class RangeList extends AbstractIntList {
+	private static class RangeList extends AbstractIntList implements RandomAccess {
 
 		private final int from, to;
 		private int hash;
