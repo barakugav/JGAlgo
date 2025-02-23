@@ -307,6 +307,8 @@
       <Method name="graph" />
       <!-- The returned graph is immutable -->
       <Method name="shortestPathTree" />
+      <!-- The returned set is immutable -->
+      <Method name="reachableVertices" />
     </Or>
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>

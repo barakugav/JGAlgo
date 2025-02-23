@@ -152,7 +152,7 @@ public interface VoronoiAlgo {
 		 *
 		 * @param  vertex a vertex
 		 * @return        the site vertex with the shortest path from any site to the vertex, or {@code null} if the
-		 *                block is the unreachable block
+		 *                vertex can not be reached from any site
 		 */
 		V vertexSite(V vertex);
 	}
@@ -256,7 +256,8 @@ public interface VoronoiAlgo {
 		 * vertex, namely the site with the shortest path from any site to the vertex.
 		 *
 		 * @param  vertex a vertex
-		 * @return        the site vertex with the shortest path from any site to the vertex
+		 * @return        the site vertex with the shortest path from any site to the vertex, or {@code -1} if the
+		 *                vertex can not be reached from any site
 		 */
 		int vertexSite(int vertex);
 

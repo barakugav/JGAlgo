@@ -31,8 +31,10 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
@@ -113,8 +115,7 @@ public class ShortestPathAllPairsJohnson extends ShortestPathAllPairsAbstract {
 			boolean allVertices) {
 		final int verticesSubsetSize = verticesSubset.size();
 		final ShortestPathSingleSource.IResult[] ssspResults = new ShortestPathSingleSource.IResult[verticesSubsetSize];
-		int[] vToSubsetIdx = ShortestPathAllPairsAbstract.IndexResultVerticesSubsetFromSssp
-				.indexVerticesSubset(g, allVertices ? null : verticesSubset);
+		int[] vToSubsetIdx = ShortestPathAllPairsAbstract.indexVerticesSubset(g, allVertices ? null : verticesSubset);
 
 		ForkJoinPool pool = JGAlgoUtils.getPool();
 		if (verticesSubsetSize < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
@@ -217,6 +218,8 @@ public class ShortestPathAllPairsJohnson extends ShortestPathAllPairsAbstract {
 
 		private static class AllVertices extends Res {
 
+			private IntSet[] reachableVerticesTo;
+
 			AllVertices(ShortestPathSingleSource.IResult[] ssspResults) {
 				super(ssspResults);
 			}
@@ -231,6 +234,53 @@ public class ShortestPathAllPairsJohnson extends ShortestPathAllPairsAbstract {
 			public IPath getPath(int source, int target) {
 				Assertions.checkVertex(source, ssspResults.length);
 				return ssspResults[source].getPath(target);
+			}
+
+			@Override
+			public boolean isReachable(int source, int target) {
+				Assertions.checkVertex(source, ssspResults.length);
+				return ssspResults[source].isReachable(target);
+			}
+
+			@Override
+			public IntSet reachableVerticesFrom(int source) {
+				Assertions.checkVertex(source, ssspResults.length);
+				return ssspResults[source].reachableVertices();
+			}
+
+			@Override
+			public IntSet reachableVerticesTo(int target) {
+				if (!ssspResults[0].graph().isDirected())
+					return reachableVerticesFrom(target);
+
+				final int n = potential.length;
+				if (reachableVerticesTo == null)
+					reachableVerticesTo = new IntSet[n];
+
+				if (reachableVerticesTo[target] == null) {
+					int reachableNum = 0;
+					for (int u = 0; u < target; u++)
+						if (ssspResults[u].isReachable(target))
+							reachableNum += 1;
+					reachableNum += 1; // target can reach itself
+					for (int u = target + 1; u < ssspResults.length; u++)
+						if (ssspResults[u].isReachable(target))
+							reachableNum += 1;
+
+					int[] vs = new int[reachableNum];
+					int resIdx = 0;
+					for (int u = 0; u < target; u++)
+						if (ssspResults[u].isReachable(target))
+							vs[resIdx++] = ssspResults[u].sourceInt();
+					vs[resIdx++] = target; // target can reach itself
+					for (int u = target + 1; u < ssspResults.length; u++)
+						if (ssspResults[u].isReachable(target))
+							vs[resIdx++] = ssspResults[u].sourceInt();
+					reachableVerticesTo[target] = ImmutableIntArraySet
+							.newInstance(vs, u -> 0 <= u && u < n && ssspResults[u].isReachable(target));
+				}
+
+				return reachableVerticesTo[target];
 			}
 
 		}
@@ -258,6 +308,13 @@ public class ShortestPathAllPairsJohnson extends ShortestPathAllPairsAbstract {
 				return ssspResults[sourceIdx].getPath(target);
 			}
 
+			@Override
+			public boolean isReachable(int source, int target) {
+				int sourceIdx = resultIdx(source);
+				resultIdx(target); /* checks that target is in the subset */
+				return ssspResults[sourceIdx].isReachable(target);
+			}
+
 			private int resultIdx(int vertex) {
 				Assertions.checkVertex(vertex, vToSubsetIdx.length);
 				int idx = vToSubsetIdx[vertex];
@@ -266,6 +323,20 @@ public class ShortestPathAllPairsJohnson extends ShortestPathAllPairsAbstract {
 				return idx;
 			}
 
+			@Override
+			public IntSet reachableVerticesFrom(int source) {
+				int sourceIdx = resultIdx(source);
+				return ssspResults[sourceIdx].reachableVertices();
+			}
+
+			@Override
+			public IntSet reachableVerticesTo(int target) {
+				if (!ssspResults[0].graph().isDirected())
+					return reachableVerticesFrom(target);
+				throw new UnsupportedOperationException(
+						"Computing reachableVerticesTo from a partial (vertices subset) APSP is not supported."
+								+ " As an alternative, consider computing the APSP or Path.reachableVertices of the reverse graph (Graph.reverseView())");
+			}
 		}
 
 	}

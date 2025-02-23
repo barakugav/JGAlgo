@@ -17,6 +17,7 @@
 package com.jgalgo.alg.shortestpath;
 
 import java.util.Collection;
+import java.util.Set;
 import com.jgalgo.alg.common.AlgorithmBuilderBase;
 import com.jgalgo.alg.common.IPath;
 import com.jgalgo.alg.common.Path;
@@ -26,6 +27,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * An algorithm that compute all pairs shortest path (APSP) in a graph.
@@ -130,6 +132,52 @@ public interface ShortestPathAllPairs {
 		 *                                      {@code target} are not in the subset
 		 */
 		public Path<V, E> getPath(V source, V target);
+
+		/**
+		 * Check if a target vertex is reachable from a source vertex.
+		 *
+		 * <p>
+		 * A vertex is reachable from itself.
+		 *
+		 * @param  source                the source vertex
+		 * @param  target                the target vertex
+		 * @return                       {@code true} if there is a path from the source to the target, {@code false}
+		 *                               otherwise
+		 * @throws NoSuchVertexException if {@code source} or {@code target} are not vertices in the graph
+		 */
+		public boolean isReachable(V source, V target);
+
+		/**
+		 * Get the set of vertices that are reachable from a source vertex.
+		 *
+		 * <p>
+		 * A vertex is reachable from itself.
+		 *
+		 * <p>
+		 * If the result was obtained from a calculation on a subset of the vertices of the graph, this method may throw
+		 * an exception, return only the vertices in the subset, or return all vertices reachable.
+		 *
+		 * @param  source                the source vertex
+		 * @return                       the set of vertices that are reachable from the source vertex
+		 * @throws NoSuchVertexException if {@code source} is not a vertex in the graph
+		 */
+		public Set<V> reachableVerticesFrom(V source);
+
+		/**
+		 * Get the set of vertices that can reach a target vertex.
+		 *
+		 * <p>
+		 * A vertex can reach itself.
+		 *
+		 * <p>
+		 * If the result was obtained from a calculation on a subset of the vertices of the graph, this method may throw
+		 * an exception, return only the vertices in the subset, or return all vertices reachable.
+		 *
+		 * @param  target                the target vertex
+		 * @return                       the set of vertices that can reach the target vertex
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
+		 */
+		public Set<V> reachableVerticesTo(V target);
 	}
 
 	/**
@@ -187,6 +235,85 @@ public interface ShortestPathAllPairs {
 		@Override
 		default IPath getPath(Integer source, Integer target) {
 			return getPath(source.intValue(), target.intValue());
+		}
+
+		/**
+		 * Check if a target vertex is reachable from a source vertex.
+		 *
+		 * <p>
+		 * A vertex is reachable from itself.
+		 *
+		 * @param  source                the source vertex
+		 * @param  target                the target vertex
+		 * @return                       {@code true} if there is a path from the source to the target, {@code false}
+		 *                               otherwise
+		 * @throws NoSuchVertexException if {@code source} or {@code target} are not vertices in the graph
+		 */
+		public boolean isReachable(int source, int target);
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #isReachable(int, int)} instead to avoid un/boxing.
+		 */
+		@Deprecated
+		@Override
+		default boolean isReachable(Integer source, Integer target) {
+			return isReachable(source.intValue(), target.intValue());
+		}
+
+		/**
+		 * Get the set of vertices that are reachable from a source vertex.
+		 *
+		 * <p>
+		 * A vertex is reachable from itself.
+		 *
+		 * <p>
+		 * If the result was obtained from a calculation on a subset of the vertices of the graph, this method may throw
+		 * an exception, return only the vertices in the subset, or return all vertices reachable.
+		 *
+		 * @param  source                the source vertex
+		 * @return                       the set of vertices that are reachable from the source vertex
+		 * @throws NoSuchVertexException if {@code source} is not a vertex in the graph
+		 */
+		public IntSet reachableVerticesFrom(int source);
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #reachableVerticesFrom(int)} instead to avoid un/boxing.
+		 */
+		@Deprecated
+		@Override
+		default IntSet reachableVerticesFrom(Integer source) {
+			return reachableVerticesFrom(source.intValue());
+		}
+
+		/**
+		 * Get the set of vertices that can reach a target vertex.
+		 *
+		 * <p>
+		 * A vertex can reach itself.
+		 *
+		 * <p>
+		 * If the result was obtained from a calculation on a subset of the vertices of the graph, this method may throw
+		 * an exception, return only the vertices in the subset, or return all vertices reachable.
+		 *
+		 * @param  target                the target vertex
+		 * @return                       the set of vertices that can reach the target vertex
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
+		 */
+		public IntSet reachableVerticesTo(int target);
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #reachableVerticesTo(int)} instead to avoid un/boxing.
+		 */
+		@Deprecated
+		@Override
+		default IntSet reachableVerticesTo(Integer target) {
+			return reachableVerticesTo(target.intValue());
 		}
 	}
 

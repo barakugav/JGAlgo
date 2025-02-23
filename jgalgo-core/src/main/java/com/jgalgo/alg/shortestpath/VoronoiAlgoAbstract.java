@@ -120,7 +120,7 @@ public abstract class VoronoiAlgoAbstract implements VoronoiAlgo {
 
 		@Override
 		public IPath getPath(int target) {
-			if (distance[target] == Double.POSITIVE_INFINITY)
+			if (vertexSite(target) < 0)
 				return null;
 			IntArrayList path = new IntArrayList();
 			int site;

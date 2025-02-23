@@ -18,6 +18,7 @@ package com.jgalgo.alg.shortestpath;
 
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.IntToDoubleFunction;
 import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
@@ -223,6 +224,11 @@ public class ShortestPathAStarTest extends TestBase {
 								return edges.get(edges.size() - 1);
 						}
 						return null;
+					}
+
+					@Override
+					public Set<V> reachableVertices() {
+						return paths.keySet();
 					}
 
 					@Override

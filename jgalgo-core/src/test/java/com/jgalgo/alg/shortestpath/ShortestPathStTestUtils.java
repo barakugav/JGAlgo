@@ -15,7 +15,10 @@
  */
 package com.jgalgo.alg.shortestpath;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import com.jgalgo.alg.common.Path;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.NoSuchVertexException;
@@ -36,6 +39,12 @@ class ShortestPathStTestUtils {
 						new Object2ObjectOpenHashMap<>(g.vertices().size());
 				for (V target : g.vertices())
 					paths.put(target, spst.computeShortestPathAndWeight(g, w, source, target));
+				Set<V> reachableVertices = paths
+						.entrySet()
+						.stream()
+						.filter(e -> e.getValue() != null)
+						.map(e -> e.getKey())
+						.collect(Collectors.toSet());
 				return new ShortestPathSingleSource.Result<>() {
 
 					@Override
@@ -67,6 +76,11 @@ class ShortestPathStTestUtils {
 								return edges.get(edges.size() - 1);
 						}
 						return null;
+					}
+
+					@Override
+					public Set<V> reachableVertices() {
+						return Collections.unmodifiableSet(reachableVertices);
 					}
 
 					@Override
