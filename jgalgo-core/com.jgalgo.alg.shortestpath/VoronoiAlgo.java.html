@@ -152,7 +152,7 @@ public interface VoronoiAlgo {
 		 *
 		 * @param  vertex a vertex
 		 * @return        the site vertex with the shortest path from any site to the vertex, or {@code null} if the
-		 *                block is the unreachable block
+		 *                vertex can not be reached from any site
 		 */
 		V vertexSite(V vertex);
 	}
@@ -256,7 +256,8 @@ public interface VoronoiAlgo {
 		 * vertex, namely the site with the shortest path from any site to the vertex.
 		 *
 		 * @param  vertex a vertex
-		 * @return        the site vertex with the shortest path from any site to the vertex
+		 * @return        the site vertex with the shortest path from any site to the vertex, or {@code -1} if the
+		 *                vertex can not be reached from any site
 		 */
 		int vertexSite(int vertex);
 
@@ -268,8 +269,8 @@ public interface VoronoiAlgo {
 		@Deprecated
 		@Override
 		default Integer vertexSite(Integer vertex) {
-<span class="fc" id="L271">			int site = vertexSite(vertex.intValue());</span>
-<span class="fc bfc" id="L272" title="All 2 branches covered.">			return site &lt; 0 ? null : Integer.valueOf(site);</span>
+<span class="fc" id="L272">			int site = vertexSite(vertex.intValue());</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">			return site &lt; 0 ? null : Integer.valueOf(site);</span>
 		}
 	}
 
@@ -282,7 +283,7 @@ public interface VoronoiAlgo {
 	 * @return a default implementation of {@link VoronoiAlgo}
 	 */
 	static VoronoiAlgo newInstance() {
-<span class="fc" id="L285">		return new VoronoiAlgoDijkstra();</span>
+<span class="fc" id="L286">		return new VoronoiAlgoDijkstra();</span>
 	}
 
 }

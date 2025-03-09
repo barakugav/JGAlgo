@@ -120,7 +120,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 		@Override
 		public IPath getPath(int target) {
-<span class="fc bfc" id="L123" title="All 2 branches covered.">			if (distance[target] == Double.POSITIVE_INFINITY)</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">			if (vertexSite(target) &lt; 0)</span>
 <span class="fc" id="L124">				return null;</span>
 <span class="fc" id="L125">			IntArrayList path = new IntArrayList();</span>
 			int site;

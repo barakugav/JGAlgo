@@ -17,6 +17,7 @@
 package com.jgalgo.alg.shortestpath;
 
 import java.util.Collection;
+import java.util.Set;
 import com.jgalgo.alg.common.AlgorithmBuilderBase;
 import com.jgalgo.alg.common.IPath;
 import com.jgalgo.alg.common.Path;
@@ -26,6 +27,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * An algorithm that compute all pairs shortest path (APSP) in a graph.
@@ -130,6 +132,52 @@ public interface ShortestPathAllPairs {
 		 *                                      {@code target} are not in the subset
 		 */
 		public Path&lt;V, E&gt; getPath(V source, V target);
+
+		/**
+		 * Check if a target vertex is reachable from a source vertex.
+		 *
+		 * &lt;p&gt;
+		 * A vertex is reachable from itself.
+		 *
+		 * @param  source                the source vertex
+		 * @param  target                the target vertex
+		 * @return                       {@code true} if there is a path from the source to the target, {@code false}
+		 *                               otherwise
+		 * @throws NoSuchVertexException if {@code source} or {@code target} are not vertices in the graph
+		 */
+		public boolean isReachable(V source, V target);
+
+		/**
+		 * Get the set of vertices that are reachable from a source vertex.
+		 *
+		 * &lt;p&gt;
+		 * A vertex is reachable from itself.
+		 *
+		 * &lt;p&gt;
+		 * If the result was obtained from a calculation on a subset of the vertices of the graph, this method may throw
+		 * an exception, return only the vertices in the subset, or return all vertices reachable.
+		 *
+		 * @param  source                the source vertex
+		 * @return                       the set of vertices that are reachable from the source vertex
+		 * @throws NoSuchVertexException if {@code source} is not a vertex in the graph
+		 */
+		public Set&lt;V&gt; reachableVerticesFrom(V source);
+
+		/**
+		 * Get the set of vertices that can reach a target vertex.
+		 *
+		 * &lt;p&gt;
+		 * A vertex can reach itself.
+		 *
+		 * &lt;p&gt;
+		 * If the result was obtained from a calculation on a subset of the vertices of the graph, this method may throw
+		 * an exception, return only the vertices in the subset, or return all vertices reachable.
+		 *
+		 * @param  target                the target vertex
+		 * @return                       the set of vertices that can reach the target vertex
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
+		 */
+		public Set&lt;V&gt; reachableVerticesTo(V target);
 	}
 
 	/**
@@ -161,7 +209,7 @@ public interface ShortestPathAllPairs {
 		@Deprecated
 		@Override
 		default double distance(Integer source, Integer target) {
-<span class="fc" id="L164">			return distance(source.intValue(), target.intValue());</span>
+<span class="fc" id="L212">			return distance(source.intValue(), target.intValue());</span>
 		}
 
 		/**
@@ -186,7 +234,86 @@ public interface ShortestPathAllPairs {
 		@Deprecated
 		@Override
 		default IPath getPath(Integer source, Integer target) {
-<span class="fc" id="L189">			return getPath(source.intValue(), target.intValue());</span>
+<span class="fc" id="L237">			return getPath(source.intValue(), target.intValue());</span>
+		}
+
+		/**
+		 * Check if a target vertex is reachable from a source vertex.
+		 *
+		 * &lt;p&gt;
+		 * A vertex is reachable from itself.
+		 *
+		 * @param  source                the source vertex
+		 * @param  target                the target vertex
+		 * @return                       {@code true} if there is a path from the source to the target, {@code false}
+		 *                               otherwise
+		 * @throws NoSuchVertexException if {@code source} or {@code target} are not vertices in the graph
+		 */
+		public boolean isReachable(int source, int target);
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #isReachable(int, int)} instead to avoid un/boxing.
+		 */
+		@Deprecated
+		@Override
+		default boolean isReachable(Integer source, Integer target) {
+<span class="fc" id="L262">			return isReachable(source.intValue(), target.intValue());</span>
+		}
+
+		/**
+		 * Get the set of vertices that are reachable from a source vertex.
+		 *
+		 * &lt;p&gt;
+		 * A vertex is reachable from itself.
+		 *
+		 * &lt;p&gt;
+		 * If the result was obtained from a calculation on a subset of the vertices of the graph, this method may throw
+		 * an exception, return only the vertices in the subset, or return all vertices reachable.
+		 *
+		 * @param  source                the source vertex
+		 * @return                       the set of vertices that are reachable from the source vertex
+		 * @throws NoSuchVertexException if {@code source} is not a vertex in the graph
+		 */
+		public IntSet reachableVerticesFrom(int source);
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #reachableVerticesFrom(int)} instead to avoid un/boxing.
+		 */
+		@Deprecated
+		@Override
+		default IntSet reachableVerticesFrom(Integer source) {
+<span class="fc" id="L289">			return reachableVerticesFrom(source.intValue());</span>
+		}
+
+		/**
+		 * Get the set of vertices that can reach a target vertex.
+		 *
+		 * &lt;p&gt;
+		 * A vertex can reach itself.
+		 *
+		 * &lt;p&gt;
+		 * If the result was obtained from a calculation on a subset of the vertices of the graph, this method may throw
+		 * an exception, return only the vertices in the subset, or return all vertices reachable.
+		 *
+		 * @param  target                the target vertex
+		 * @return                       the set of vertices that can reach the target vertex
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
+		 */
+		public IntSet reachableVerticesTo(int target);
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #reachableVerticesTo(int)} instead to avoid un/boxing.
+		 */
+		@Deprecated
+		@Override
+		default IntSet reachableVerticesTo(Integer target) {
+<span class="fc" id="L316">			return reachableVerticesTo(target.intValue());</span>
 		}
 	}
 
@@ -200,7 +327,7 @@ public interface ShortestPathAllPairs {
 	 * @return a default implementation of {@link ShortestPathAllPairs}
 	 */
 	static ShortestPathAllPairs newInstance() {
-<span class="fc" id="L203">		return builder().build();</span>
+<span class="fc" id="L330">		return builder().build();</span>
 	}
 
 	/**
@@ -212,34 +339,34 @@ public interface ShortestPathAllPairs {
 	 * @return a new builder that can build {@link ShortestPathAllPairs} objects
 	 */
 	static ShortestPathAllPairs.Builder builder() {
-<span class="fc" id="L215">		return new ShortestPathAllPairs.Builder() {</span>
+<span class="fc" id="L342">		return new ShortestPathAllPairs.Builder() {</span>
 			private boolean cardinalityWeight;
 
 			@Override
 			public ShortestPathAllPairs build() {
-<span class="fc" id="L220">				ShortestPathAllPairs cardinalityAlgo = new ShortestPathAllPairsCardinality();</span>
-<span class="pc bpc" id="L221" title="1 of 2 branches missed.">				if (cardinalityWeight)</span>
-<span class="nc" id="L222">					return cardinalityAlgo;</span>
-<span class="fc" id="L223">				return new ShortestPathAllPairs() {</span>
-<span class="fc" id="L224">					final ShortestPathAllPairs weightedAlgo = new ShortestPathAllPairsJohnson();</span>
+<span class="fc" id="L347">				ShortestPathAllPairs cardinalityAlgo = new ShortestPathAllPairsCardinality();</span>
+<span class="pc bpc" id="L348" title="1 of 2 branches missed.">				if (cardinalityWeight)</span>
+<span class="nc" id="L349">					return cardinalityAlgo;</span>
+<span class="fc" id="L350">				return new ShortestPathAllPairs() {</span>
+<span class="fc" id="L351">					final ShortestPathAllPairs weightedAlgo = new ShortestPathAllPairsJohnson();</span>
 
 					@Override
 					public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeAllShortestPaths(Graph&lt;V, E&gt; g,
 							WeightFunction&lt;E&gt; w) {
-<span class="fc bfc" id="L229" title="All 2 branches covered.">						if (WeightFunction.isCardinality(w)) {</span>
-<span class="fc" id="L230">							return cardinalityAlgo.computeAllShortestPaths(g, null);</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">						if (WeightFunction.isCardinality(w)) {</span>
+<span class="fc" id="L357">							return cardinalityAlgo.computeAllShortestPaths(g, null);</span>
 						} else {
-<span class="fc" id="L232">							return weightedAlgo.computeAllShortestPaths(g, w);</span>
+<span class="fc" id="L359">							return weightedAlgo.computeAllShortestPaths(g, w);</span>
 						}
 					}
 
 					@Override
 					public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeSubsetShortestPaths(Graph&lt;V, E&gt; g,
 							Collection&lt;V&gt; verticesSubset, WeightFunction&lt;E&gt; w) {
-<span class="pc bpc" id="L239" title="1 of 2 branches missed.">						if (WeightFunction.isCardinality(w)) {</span>
-<span class="nc" id="L240">							return cardinalityAlgo.computeSubsetShortestPaths(g, verticesSubset, null);</span>
+<span class="pc bpc" id="L366" title="1 of 2 branches missed.">						if (WeightFunction.isCardinality(w)) {</span>
+<span class="nc" id="L367">							return cardinalityAlgo.computeSubsetShortestPaths(g, verticesSubset, null);</span>
 						} else {
-<span class="fc" id="L242">							return weightedAlgo.computeSubsetShortestPaths(g, verticesSubset, w);</span>
+<span class="fc" id="L369">							return weightedAlgo.computeSubsetShortestPaths(g, verticesSubset, w);</span>
 						}
 					}
 				};
@@ -247,8 +374,8 @@ public interface ShortestPathAllPairs {
 
 			@Override
 			public ShortestPathAllPairs.Builder cardinality(boolean cardinalityWeight) {
-<span class="nc" id="L250">				this.cardinalityWeight = cardinalityWeight;</span>
-<span class="nc" id="L251">				return this;</span>
+<span class="nc" id="L377">				this.cardinalityWeight = cardinalityWeight;</span>
+<span class="nc" id="L378">				return this;</span>
 			}
 		};
 	}

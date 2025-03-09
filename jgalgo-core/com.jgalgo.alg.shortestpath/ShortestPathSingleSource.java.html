@@ -17,6 +17,7 @@
 package com.jgalgo.alg.shortestpath;
 
 import static com.jgalgo.internal.util.Numbers.log2ceil;
+import java.util.Set;
 import com.jgalgo.alg.common.AlgorithmBuilderBase;
 import com.jgalgo.alg.common.IPath;
 import com.jgalgo.alg.common.Path;
@@ -29,6 +30,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Single Source Shortest Path algorithm.
@@ -157,11 +159,35 @@ public interface ShortestPathSingleSource {
 		 * The backtrack edge is an in-edge of the given target vertex. The set of all backtrack edges of all vertices
 		 * define the shortest path tree of the source, and each shortest path can be constructed from them.
 		 *
-		 * @param  target a target vertex in the graph
-		 * @return        the backtrack edge, the last edge on the shortest path from the source to th given target, or
-		 *                {@code null} if there is no path to the target or the target is the source
+		 * @param  target                a target vertex in the graph
+		 * @return                       the backtrack edge, the last edge on the shortest path from the source to the
+		 *                               given target, or {@code null} if there is no path to the target or the target
+		 *                               is the source
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
 		 */
 		public E backtrackEdge(V target);
+
+		/**
+		 * Check if a target vertex is reachable from the source.
+		 *
+		 * @param  target                a target vertex in the graph
+		 * @return                       {@code true} if the target is reachable from the source, {@code false}
+		 *                               otherwise
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
+		 */
+		default boolean isReachable(V target) {
+<span class="fc bfc" id="L179" title="All 4 branches covered.">			return backtrackEdge(target) != null || source().equals(target);</span>
+		}
+
+		/**
+		 * Get the set of vertices reachable from the source.
+		 *
+		 * &lt;p&gt;
+		 * The source vertex itself is included in the returned set.
+		 *
+		 * @return the set of vertices reachable from the source
+		 */
+		public Set&lt;V&gt; reachableVertices();
 
 		/**
 		 * Get the shortest path tree.
@@ -180,7 +206,7 @@ public interface ShortestPathSingleSource {
 		 * @return undirected shortest path tree
 		 */
 		default Graph&lt;V, E&gt; shortestPathTree() {
-<span class="fc" id="L183">			return shortestPathTree(graph().isDirected());</span>
+<span class="fc" id="L209">			return shortestPathTree(graph().isDirected());</span>
 		}
 
 		/**
@@ -198,19 +224,19 @@ public interface ShortestPathSingleSource {
 		 * @return          un/directed shortest path tree
 		 */
 		default Graph&lt;V, E&gt; shortestPathTree(boolean directed) {
-<span class="fc" id="L201">			Graph&lt;V, E&gt; g = graph();</span>
-<span class="fc" id="L202">			GraphBuilder&lt;V, E&gt; b = GraphBuilder.newInstance(directed);</span>
-<span class="fc" id="L203">			final V source = source();</span>
-<span class="fc" id="L204">			b.addVertex(source);</span>
-<span class="fc bfc" id="L205" title="All 2 branches covered.">			for (V v : g.vertices())</span>
-<span class="fc bfc" id="L206" title="All 2 branches covered.">				if (backtrackEdge(v) != null)</span>
-<span class="fc" id="L207">					b.addVertex(v);</span>
-<span class="fc bfc" id="L208" title="All 2 branches covered.">			for (V v : g.vertices()) {</span>
-<span class="fc" id="L209">				E e = backtrackEdge(v);</span>
-<span class="fc bfc" id="L210" title="All 2 branches covered.">				if (e != null)</span>
-<span class="fc" id="L211">					b.addEdge(g.edgeEndpoint(e, v), v, e);</span>
-<span class="fc" id="L212">			}</span>
-<span class="fc" id="L213">			return b.build();</span>
+<span class="fc" id="L227">			Graph&lt;V, E&gt; g = graph();</span>
+<span class="fc" id="L228">			GraphBuilder&lt;V, E&gt; b = GraphBuilder.newInstance(directed);</span>
+<span class="fc" id="L229">			final V source = source();</span>
+<span class="fc" id="L230">			b.addVertex(source);</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">			for (V v : g.vertices())</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">				if (backtrackEdge(v) != null)</span>
+<span class="fc" id="L233">					b.addVertex(v);</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">			for (V v : g.vertices()) {</span>
+<span class="fc" id="L235">				E e = backtrackEdge(v);</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">				if (e != null)</span>
+<span class="fc" id="L237">					b.addEdge(g.edgeEndpoint(e, v), v, e);</span>
+<span class="fc" id="L238">			}</span>
+<span class="fc" id="L239">			return b.build();</span>
 		}
 
 		/**
@@ -253,7 +279,7 @@ public interface ShortestPathSingleSource {
 		@Deprecated
 		@Override
 		default double distance(Integer target) {
-<span class="fc" id="L256">			return distance(target.intValue());</span>
+<span class="fc" id="L282">			return distance(target.intValue());</span>
 		}
 
 		/**
@@ -274,7 +300,7 @@ public interface ShortestPathSingleSource {
 		@Deprecated
 		@Override
 		default IPath getPath(Integer target) {
-<span class="fc" id="L277">			return getPath(target.intValue());</span>
+<span class="fc" id="L303">			return getPath(target.intValue());</span>
 		}
 
 		/**
@@ -284,9 +310,11 @@ public interface ShortestPathSingleSource {
 		 * The backtrack edge is an in-edge of the given target vertex. The set of all backtrack edges of all vertices
 		 * define the shortest path tree of the source, and each shortest path can be constructed from them.
 		 *
-		 * @param  target a target vertex in the graph
-		 * @return        the backtrack edge, the last edge on the shortest path from the source to th given target, or
-		 *                {@code -1} if there is no path to the target or the target is the source
+		 * @param  target                a target vertex in the graph
+		 * @return                       the backtrack edge, the last edge on the shortest path from the source to the
+		 *                               given target, or {@code -1} if there is no path to the target or the target is
+		 *                               the source
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
 		 */
 		public int backtrackEdge(int target);
 
@@ -298,30 +326,56 @@ public interface ShortestPathSingleSource {
 		@Deprecated
 		@Override
 		default Integer backtrackEdge(Integer target) {
-<span class="fc" id="L301">			int e = backtrackEdge(target.intValue());</span>
-<span class="fc bfc" id="L302" title="All 2 branches covered.">			return e &lt; 0 ? null : Integer.valueOf(e);</span>
+<span class="fc" id="L329">			int e = backtrackEdge(target.intValue());</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">			return e &lt; 0 ? null : Integer.valueOf(e);</span>
+		}
+
+		/**
+		 * Check if a target vertex is reachable from the source.
+		 *
+		 * @param  target                a target vertex in the graph
+		 * @return                       {@code true} if the target is reachable from the source, {@code false}
+		 *                               otherwise
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
+		 */
+		default boolean isReachable(int target) {
+<span class="fc bfc" id="L342" title="All 4 branches covered.">			return backtrackEdge(target) &gt;= 0 || sourceInt() == target;</span>
+		}
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #isReachable(int)} instead to avoid un/boxing.
+		 */
+		@Deprecated
+		@Override
+		default boolean isReachable(Integer target) {
+<span class="fc" id="L353">			return isReachable(target.intValue());</span>
 		}
 
 		@Override
+		public IntSet reachableVertices();
+
+		@Override
 		default IntGraph shortestPathTree() {
-<span class="fc" id="L307">			return (IntGraph) Result.super.shortestPathTree();</span>
+<span class="fc" id="L361">			return (IntGraph) Result.super.shortestPathTree();</span>
 		}
 
 		@Override
 		default IntGraph shortestPathTree(boolean directed) {
-<span class="fc" id="L312">			IntGraph g = graph();</span>
-<span class="fc" id="L313">			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);</span>
-<span class="fc" id="L314">			final int source = sourceInt();</span>
-<span class="fc" id="L315">			b.addVertex(source);</span>
-<span class="fc bfc" id="L316" title="All 2 branches covered.">			for (int v : g.vertices())</span>
-<span class="fc bfc" id="L317" title="All 2 branches covered.">				if (backtrackEdge(v) &gt;= 0)</span>
-<span class="fc" id="L318">					b.addVertex(v);</span>
-<span class="fc bfc" id="L319" title="All 2 branches covered.">			for (int v : g.vertices()) {</span>
-<span class="fc" id="L320">				int e = backtrackEdge(v);</span>
-<span class="fc bfc" id="L321" title="All 2 branches covered.">				if (e &gt;= 0)</span>
-<span class="fc" id="L322">					b.addEdge(g.edgeEndpoint(e, v), v, e);</span>
-<span class="fc" id="L323">			}</span>
-<span class="fc" id="L324">			return b.build();</span>
+<span class="fc" id="L366">			IntGraph g = graph();</span>
+<span class="fc" id="L367">			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);</span>
+<span class="fc" id="L368">			final int source = sourceInt();</span>
+<span class="fc" id="L369">			b.addVertex(source);</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">			for (int v : g.vertices())</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">				if (backtrackEdge(v) &gt;= 0)</span>
+<span class="fc" id="L372">					b.addVertex(v);</span>
+<span class="fc bfc" id="L373" title="All 2 branches covered.">			for (int v : g.vertices()) {</span>
+<span class="fc" id="L374">				int e = backtrackEdge(v);</span>
+<span class="fc bfc" id="L375" title="All 2 branches covered.">				if (e &gt;= 0)</span>
+<span class="fc" id="L376">					b.addEdge(g.edgeEndpoint(e, v), v, e);</span>
+<span class="fc" id="L377">			}</span>
+<span class="fc" id="L378">			return b.build();</span>
 		}
 
 		/**
@@ -339,7 +393,7 @@ public interface ShortestPathSingleSource {
 		@Deprecated
 		@Override
 		default Integer source() {
-<span class="fc" id="L342">			return Integer.valueOf(sourceInt());</span>
+<span class="fc" id="L396">			return Integer.valueOf(sourceInt());</span>
 		}
 
 		@Override
@@ -356,7 +410,7 @@ public interface ShortestPathSingleSource {
 	 * @return a default implementation of {@link ShortestPathSingleSource}
 	 */
 	static ShortestPathSingleSource newInstance() {
-<span class="fc" id="L359">		return builder().build();</span>
+<span class="fc" id="L413">		return builder().build();</span>
 	}
 
 	/**
@@ -368,81 +422,81 @@ public interface ShortestPathSingleSource {
 	 * @return a new builder that can build {@link ShortestPathSingleSource} objects
 	 */
 	static ShortestPathSingleSource.Builder builder() {
-<span class="fc" id="L371">		return new ShortestPathSingleSource.Builder() {</span>
+<span class="fc" id="L425">		return new ShortestPathSingleSource.Builder() {</span>
 
 			private boolean intWeights;
 			private boolean negativeWeights;
-<span class="fc" id="L375">			private double maxDistance = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L429">			private double maxDistance = Double.POSITIVE_INFINITY;</span>
 			private boolean dagGraphs;
 			private boolean cardinalityWeight;
 
 			@Override
 			public ShortestPathSingleSource build() {
-<span class="fc bfc" id="L381" title="All 2 branches covered.">				if (cardinalityWeight)</span>
-<span class="fc" id="L382">					return new ShortestPathSingleSourceCardinality();</span>
-<span class="fc bfc" id="L383" title="All 2 branches covered.">				if (dagGraphs)</span>
-<span class="fc" id="L384">					return new ShortestPathSingleSourceDag();</span>
-<span class="fc bfc" id="L385" title="All 2 branches covered.">				if (negativeWeights) {</span>
-<span class="pc bpc" id="L386" title="1 of 2 branches missed.">					if (intWeights) {</span>
-<span class="nc" id="L387">						return new ShortestPathSingleSourceGoldberg();</span>
+<span class="fc bfc" id="L435" title="All 2 branches covered.">				if (cardinalityWeight)</span>
+<span class="fc" id="L436">					return new ShortestPathSingleSourceCardinality();</span>
+<span class="fc bfc" id="L437" title="All 2 branches covered.">				if (dagGraphs)</span>
+<span class="fc" id="L438">					return new ShortestPathSingleSourceDag();</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">				if (negativeWeights) {</span>
+<span class="pc bpc" id="L440" title="1 of 2 branches missed.">					if (intWeights) {</span>
+<span class="nc" id="L441">						return new ShortestPathSingleSourceGoldberg();</span>
 					} else {
-<span class="fc" id="L389">						return new ShortestPathSingleSourceBellmanFord();</span>
+<span class="fc" id="L443">						return new ShortestPathSingleSourceBellmanFord();</span>
 					}
 				} else {
-<span class="fc" id="L392">					final ShortestPathSingleSourceDijkstra ssspDijkstra = new ShortestPathSingleSourceDijkstra();</span>
+<span class="fc" id="L446">					final ShortestPathSingleSourceDijkstra ssspDijkstra = new ShortestPathSingleSourceDijkstra();</span>
 
-<span class="pc bpc" id="L394" title="3 of 4 branches missed.">					if (intWeights &amp;&amp; maxDistance &lt; Integer.MAX_VALUE) {</span>
-<span class="nc" id="L395">						return new ShortestPathSingleSourceAbstract() {</span>
-<span class="nc" id="L396">							private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();</span>
-<span class="nc" id="L397">							private final int maxDistance0 = (int) maxDistance;</span>
+<span class="pc bpc" id="L448" title="3 of 4 branches missed.">					if (intWeights &amp;&amp; maxDistance &lt; Integer.MAX_VALUE) {</span>
+<span class="nc" id="L449">						return new ShortestPathSingleSourceAbstract() {</span>
+<span class="nc" id="L450">							private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();</span>
+<span class="nc" id="L451">							private final int maxDistance0 = (int) maxDistance;</span>
 
 							@Override
 							public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g,
 									IWeightFunction w, int source) {
-<span class="nc" id="L402">								final int n = g.vertices().size(), m = g.edges().size();</span>
-<span class="nc" id="L403">								int dialWork = n + m + maxDistance0;</span>
-<span class="nc" id="L404">								int dijkstraWork = m + n * log2ceil(n);</span>
-<span class="nc bnc" id="L405" title="All 2 branches missed.">								if (dialWork &lt; dijkstraWork) {</span>
-<span class="nc" id="L406">									return ssspDial</span>
-<span class="nc" id="L407">											.computeShortestPaths(g, (IWeightFunctionInt) w, source, maxDistance0);</span>
+<span class="nc" id="L456">								final int n = g.vertices().size(), m = g.edges().size();</span>
+<span class="nc" id="L457">								int dialWork = n + m + maxDistance0;</span>
+<span class="nc" id="L458">								int dijkstraWork = m + n * log2ceil(n);</span>
+<span class="nc bnc" id="L459" title="All 2 branches missed.">								if (dialWork &lt; dijkstraWork) {</span>
+<span class="nc" id="L460">									return ssspDial</span>
+<span class="nc" id="L461">											.computeShortestPaths(g, (IWeightFunctionInt) w, source, maxDistance0);</span>
 								} else {
-<span class="nc" id="L409">									return ssspDijkstra.computeShortestPaths(g, w, source);</span>
+<span class="nc" id="L463">									return ssspDijkstra.computeShortestPaths(g, w, source);</span>
 								}
 							}
 						};
 					}
-<span class="fc" id="L414">					return ssspDijkstra;</span>
+<span class="fc" id="L468">					return ssspDijkstra;</span>
 				}
 			}
 
 			@Override
 			public ShortestPathSingleSource.Builder integerWeights(boolean enable) {
-<span class="nc" id="L420">				intWeights = enable;</span>
-<span class="nc" id="L421">				return this;</span>
+<span class="nc" id="L474">				intWeights = enable;</span>
+<span class="nc" id="L475">				return this;</span>
 			}
 
 			@Override
 			public ShortestPathSingleSource.Builder negativeWeights(boolean enable) {
-<span class="fc" id="L426">				negativeWeights = enable;</span>
-<span class="fc" id="L427">				return this;</span>
+<span class="fc" id="L480">				negativeWeights = enable;</span>
+<span class="fc" id="L481">				return this;</span>
 			}
 
 			@Override
 			public ShortestPathSingleSource.Builder maxDistance(double maxDistance) {
-<span class="nc" id="L432">				this.maxDistance = maxDistance;</span>
-<span class="nc" id="L433">				return this;</span>
+<span class="nc" id="L486">				this.maxDistance = maxDistance;</span>
+<span class="nc" id="L487">				return this;</span>
 			}
 
 			@Override
 			public ShortestPathSingleSource.Builder dag(boolean dagGraphs) {
-<span class="fc" id="L438">				this.dagGraphs = dagGraphs;</span>
-<span class="fc" id="L439">				return this;</span>
+<span class="fc" id="L492">				this.dagGraphs = dagGraphs;</span>
+<span class="fc" id="L493">				return this;</span>
 			}
 
 			@Override
 			public ShortestPathSingleSource.Builder cardinality(boolean cardinalityWeight) {
-<span class="fc" id="L444">				this.cardinalityWeight = cardinalityWeight;</span>
-<span class="fc" id="L445">				return this;</span>
+<span class="fc" id="L498">				this.cardinalityWeight = cardinalityWeight;</span>
+<span class="fc" id="L499">				return this;</span>
 			}
 		};
 	}
