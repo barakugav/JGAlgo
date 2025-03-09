@@ -17,6 +17,7 @@
 package com.jgalgo.alg.shortestpath;
 
 import static com.jgalgo.internal.util.Numbers.log2ceil;
+import java.util.Set;
 import com.jgalgo.alg.common.AlgorithmBuilderBase;
 import com.jgalgo.alg.common.IPath;
 import com.jgalgo.alg.common.Path;
@@ -29,6 +30,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Single Source Shortest Path algorithm.
@@ -157,11 +159,35 @@ public interface ShortestPathSingleSource {
 		 * The backtrack edge is an in-edge of the given target vertex. The set of all backtrack edges of all vertices
 		 * define the shortest path tree of the source, and each shortest path can be constructed from them.
 		 *
-		 * @param  target a target vertex in the graph
-		 * @return        the backtrack edge, the last edge on the shortest path from the source to th given target, or
-		 *                {@code null} if there is no path to the target or the target is the source
+		 * @param  target                a target vertex in the graph
+		 * @return                       the backtrack edge, the last edge on the shortest path from the source to the
+		 *                               given target, or {@code null} if there is no path to the target or the target
+		 *                               is the source
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
 		 */
 		public E backtrackEdge(V target);
+
+		/**
+		 * Check if a target vertex is reachable from the source.
+		 *
+		 * @param  target                a target vertex in the graph
+		 * @return                       {@code true} if the target is reachable from the source, {@code false}
+		 *                               otherwise
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
+		 */
+		default boolean isReachable(V target) {
+			return backtrackEdge(target) != null || source().equals(target);
+		}
+
+		/**
+		 * Get the set of vertices reachable from the source.
+		 *
+		 * <p>
+		 * The source vertex itself is included in the returned set.
+		 *
+		 * @return the set of vertices reachable from the source
+		 */
+		public Set<V> reachableVertices();
 
 		/**
 		 * Get the shortest path tree.
@@ -284,9 +310,11 @@ public interface ShortestPathSingleSource {
 		 * The backtrack edge is an in-edge of the given target vertex. The set of all backtrack edges of all vertices
 		 * define the shortest path tree of the source, and each shortest path can be constructed from them.
 		 *
-		 * @param  target a target vertex in the graph
-		 * @return        the backtrack edge, the last edge on the shortest path from the source to th given target, or
-		 *                {@code -1} if there is no path to the target or the target is the source
+		 * @param  target                a target vertex in the graph
+		 * @return                       the backtrack edge, the last edge on the shortest path from the source to the
+		 *                               given target, or {@code -1} if there is no path to the target or the target is
+		 *                               the source
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
 		 */
 		public int backtrackEdge(int target);
 
@@ -301,6 +329,32 @@ public interface ShortestPathSingleSource {
 			int e = backtrackEdge(target.intValue());
 			return e < 0 ? null : Integer.valueOf(e);
 		}
+
+		/**
+		 * Check if a target vertex is reachable from the source.
+		 *
+		 * @param  target                a target vertex in the graph
+		 * @return                       {@code true} if the target is reachable from the source, {@code false}
+		 *                               otherwise
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
+		 */
+		default boolean isReachable(int target) {
+			return backtrackEdge(target) >= 0 || sourceInt() == target;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #isReachable(int)} instead to avoid un/boxing.
+		 */
+		@Deprecated
+		@Override
+		default boolean isReachable(Integer target) {
+			return isReachable(target.intValue());
+		}
+
+		@Override
+		public IntSet reachableVertices();
 
 		@Override
 		default IntGraph shortestPathTree() {

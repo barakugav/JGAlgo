@@ -18,6 +18,7 @@ package com.jgalgo.alg.shortestpath;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Set;
 import com.jgalgo.alg.common.IPath;
 import com.jgalgo.alg.common.Path;
 import com.jgalgo.graph.Graph;
@@ -32,8 +33,10 @@ import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Abstract class for computing shortest path from a single source in graphs.
@@ -87,6 +90,7 @@ public abstract class ShortestPathSingleSourceAbstract implements ShortestPathSi
 		private final int source;
 		final double[] distances;
 		final int[] backtrack;
+		IntSet reachableVertices;
 
 		private IntGraph shortestPathTreeUndirected;
 		private IntGraph shortestPathTreeDirected;
@@ -134,7 +138,8 @@ public abstract class ShortestPathSingleSourceAbstract implements ShortestPathSi
 
 		@Override
 		public IPath getPath(int target) {
-			if (distance(target) == Double.POSITIVE_INFINITY)
+			Assertions.checkVertex(target, backtrack.length);
+			if (backtrack[target] < 0 && target != source)
 				return null;
 			IntArrayList path = new IntArrayList();
 			if (g.isDirected()) {
@@ -166,6 +171,34 @@ public abstract class ShortestPathSingleSourceAbstract implements ShortestPathSi
 		public int backtrackEdge(int target) {
 			Assertions.checkVertex(target, backtrack.length);
 			return backtrack[target];
+		}
+
+		@Override
+		public IntSet reachableVertices() {
+			if (reachableVertices == null) {
+				int reachableNum = 0;
+				for (int v = 0; v < source; v++)
+					if (backtrack[v] >= 0)
+						reachableNum++;
+				reachableNum++; // source can reach itself
+				for (int v = source + 1; v < backtrack.length; v++)
+					if (backtrack[v] >= 0)
+						reachableNum++;
+
+				int[] vs = new int[reachableNum];
+				int resIdx = 0;
+				for (int v = 0; v < source; v++)
+					if (backtrack[v] >= 0)
+						vs[resIdx++] = v;
+				vs[resIdx++] = source; // source can reach itself
+				for (int v = source + 1; v < backtrack.length; v++)
+					if (backtrack[v] >= 0)
+						vs[resIdx++] = v;
+
+				reachableVertices = ImmutableIntArraySet
+						.newInstance(vs, v -> 0 <= v && v < backtrack.length && (backtrack[v] >= 0 || v == source));
+			}
+			return reachableVertices;
 		}
 
 		@Override
@@ -235,6 +268,11 @@ public abstract class ShortestPathSingleSourceAbstract implements ShortestPathSi
 			int tIdx = viMap.idToIndex(target);
 			int eIdx = indexRes.backtrackEdge(tIdx);
 			return eIdx < 0 ? null : eiMap.indexToId(eIdx);
+		}
+
+		@Override
+		public Set<V> reachableVertices() {
+			return IndexIdMaps.indexToIdSet(indexRes.reachableVertices(), viMap);
 		}
 
 		@Override
@@ -313,6 +351,11 @@ public abstract class ShortestPathSingleSourceAbstract implements ShortestPathSi
 			int tIdx = viMap.idToIndex(target);
 			int eIdx = indexRes.backtrackEdge(tIdx);
 			return eIdx < 0 ? -1 : eiMap.indexToIdInt(eIdx);
+		}
+
+		@Override
+		public IntSet reachableVertices() {
+			return IndexIdMaps.indexToIdSet(indexRes.reachableVertices(), viMap);
 		}
 
 		@Override

@@ -18,6 +18,7 @@ package com.jgalgo.alg.shortestpath;
 
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -141,9 +142,10 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 				assertTrue(cycleWeight < 0, "Cycle is not negative: " + cycle);
 				if (expectedNegCycle == null)
 					throw new IllegalStateException("validation algorithm didn't find negative cycle: " + cycle);
-				return;
+				continue;
 			}
 
+			Set<Integer> reachableVerticesFrom = result.reachableVerticesFrom(source);
 			for (Integer target : verticesSubset) {
 				double expectedDistance = expectedRes.distance(target);
 				double actualDistance = result.distance(source, target);
@@ -153,12 +155,25 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 					double pathWeight = WeightFunction.weightSum(w, path.edges());
 					assertEquals(pathWeight, actualDistance, "Path to vertex " + target + " doesn't match distance ("
 							+ actualDistance + " != " + pathWeight + "): " + path);
+
+					assertTrue(result.isReachable(source, target));
+					assertTrue(reachableVerticesFrom.contains(target));
 				} else {
 					assertEquals(Double.POSITIVE_INFINITY, actualDistance,
 							"Distance to vertex " + target + " is not infinity but path is null");
+
+					assertFalse(result.isReachable(source, target));
+					assertFalse(reachableVerticesFrom.contains(target));
 				}
 			}
+
+			if (allVertices || !g.isDirected()) {
+				Set<Integer> reachableVerticesTo = result.reachableVerticesTo(source);
+				assertEquals(reachableVerticesTo, Path.reachableVertices(g.reverseView(), source));
+			}
 		}
+		if (result == null)
+			return;
 
 		Integer existingVertex = verticesSubset.iterator().next();
 		Integer nonExistingVertex = GraphsTestUtils.nonExistingVertex(g, rand);

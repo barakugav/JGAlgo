@@ -20,6 +20,7 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 import com.jgalgo.alg.common.IPath;
 import com.jgalgo.alg.common.Path;
 import com.jgalgo.graph.Graph;
@@ -32,11 +33,13 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.BigArrays;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Abstract class for computing shortest path between all pairs in a graph.
@@ -110,6 +113,8 @@ public abstract class ShortestPathAllPairsAbstract implements ShortestPathAllPai
 		private final int n;
 		private final int[][] edges;
 		private final double[] distances;
+		private IntSet[] reachableVerticesFrom;
+		private IntSet[] reachableVerticesTo;
 
 		/**
 		 * Create a new result object for the given graph.
@@ -212,6 +217,8 @@ public abstract class ShortestPathAllPairsAbstract implements ShortestPathAllPai
 		}
 
 		public int getEdgeTo(int source, int target) {
+			Assertions.checkVertex(source, n);
+			Assertions.checkVertex(target, n);
 			return edges[source][target];
 		}
 
@@ -249,7 +256,7 @@ public abstract class ShortestPathAllPairsAbstract implements ShortestPathAllPai
 
 		@Override
 		public IPath getPath(int source, int target) {
-			if (distance(source, target) == Double.POSITIVE_INFINITY)
+			if (getEdgeTo(source, target) < 0 && source != target)
 				return null;
 			IntList path = new IntArrayList();
 			if (directed) {
@@ -269,6 +276,72 @@ public abstract class ShortestPathAllPairsAbstract implements ShortestPathAllPai
 				}
 			}
 			return IPath.valueOf(g, source, target, path);
+		}
+
+		@Override
+		public boolean isReachable(int source, int target) {
+			return getEdgeTo(source, target) >= 0 || source == target;
+		}
+
+		@Override
+		public IntSet reachableVerticesFrom(int source) {
+			if (reachableVerticesFrom == null)
+				reachableVerticesFrom = new IntSet[n];
+			if (reachableVerticesFrom[source] == null) {
+				int reachableNum = 0;
+				for (int v = 0; v < source; v++)
+					if (getEdgeTo(source, v) >= 0)
+						reachableNum += 1;
+				reachableNum += 1; // source can reach itself
+				for (int v = source + 1; v < n; v++)
+					if (getEdgeTo(source, v) >= 0)
+						reachableNum += 1;
+
+				int[] vs = new int[reachableNum];
+				int resIdx = 0;
+				for (int v = 0; v < source; v++)
+					if (getEdgeTo(source, v) >= 0)
+						vs[resIdx++] = v;
+				vs[resIdx++] = source; // source can reach itself
+				for (int v = source + 1; v < n; v++)
+					if (getEdgeTo(source, v) >= 0)
+						vs[resIdx++] = v;
+				reachableVerticesFrom[source] = ImmutableIntArraySet
+						.newInstance(vs, v -> 0 <= v && v < n && (getEdgeTo(source, v) >= 0 || v == source));
+			}
+			return reachableVerticesFrom[source];
+		}
+
+		@Override
+		public IntSet reachableVerticesTo(int target) {
+			if (!g.isDirected())
+				return reachableVerticesFrom(target);
+
+			if (reachableVerticesTo == null)
+				reachableVerticesTo = new IntSet[n];
+			if (reachableVerticesTo[target] == null) {
+				int reachableNum = 0;
+				for (int u = 0; u < target; u++)
+					if (getEdgeTo(u, target) >= 0)
+						reachableNum += 1;
+				reachableNum += 1; // target can reach itself
+				for (int u = target + 1; u < n; u++)
+					if (getEdgeTo(u, target) >= 0)
+						reachableNum += 1;
+
+				int[] vs = new int[reachableNum];
+				int resIdx = 0;
+				for (int u = 0; u < target; u++)
+					if (getEdgeTo(u, target) >= 0)
+						vs[resIdx++] = u;
+				vs[resIdx++] = target; // target can reach itself
+				for (int u = target + 1; u < n; u++)
+					if (getEdgeTo(u, target) >= 0)
+						vs[resIdx++] = u;
+				reachableVerticesTo[target] = ImmutableIntArraySet
+						.newInstance(vs, u -> 0 <= u && u < n && (getEdgeTo(u, target) >= 0 || u == target));
+			}
+			return reachableVerticesTo[target];
 		}
 	}
 
@@ -304,16 +377,38 @@ public abstract class ShortestPathAllPairsAbstract implements ShortestPathAllPai
 			return idx;
 		}
 
-		static int[] indexVerticesSubset(IndexGraph g, IntCollection verticesSubset) {
-			if (verticesSubset == null)
-				return range(g.vertices().size()).toIntArray();
-			int[] vToSubsetIdx = new int[g.vertices().size()];
-			Arrays.fill(vToSubsetIdx, -1);
-			int resIdx = 0;
-			for (int v : verticesSubset)
-				vToSubsetIdx[v] = resIdx++;
-			return vToSubsetIdx;
+		@Override
+		public boolean isReachable(int source, int target) {
+			int sourceIdx = resultIdx(source);
+			resultIdx(target); /* checks that target is in the subset */
+			return ssspResults[sourceIdx].isReachable(target);
 		}
+
+		@Override
+		public IntSet reachableVerticesFrom(int source) {
+			int sourceIdx = resultIdx(source);
+			return ssspResults[sourceIdx].reachableVertices();
+		}
+
+		@Override
+		public IntSet reachableVerticesTo(int target) {
+			if (!ssspResults[0].graph().isDirected())
+				return reachableVerticesFrom(target);
+			throw new UnsupportedOperationException(
+					"Computing reachableVerticesTo from a partial (vertices subset) APSP is not supported."
+							+ " As an alternative, consider computing the APSP or Path.reachableVertices of the reverse graph (Graph.reverseView())");
+		}
+	}
+
+	static int[] indexVerticesSubset(IndexGraph g, IntCollection verticesSubset) {
+		if (verticesSubset == null)
+			return range(g.vertices().size()).toIntArray();
+		int[] vToSubsetIdx = new int[g.vertices().size()];
+		Arrays.fill(vToSubsetIdx, -1);
+		int resIdx = 0;
+		for (int v : verticesSubset)
+			vToSubsetIdx[v] = resIdx++;
+		return vToSubsetIdx;
 	}
 
 	private static class ObjResultFromIndexResult<V, E> implements ShortestPathAllPairs.Result<V, E> {
@@ -338,6 +433,21 @@ public abstract class ShortestPathAllPairsAbstract implements ShortestPathAllPai
 			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));
 			return Path.pathFromIndexPath(g, indexPath);
 		}
+
+		@Override
+		public boolean isReachable(V source, V target) {
+			return indexRes.isReachable(viMap.idToIndex(source), viMap.idToIndex(target));
+		}
+
+		@Override
+		public Set<V> reachableVerticesFrom(V source) {
+			return IndexIdMaps.indexToIdSet(indexRes.reachableVerticesFrom(viMap.idToIndex(source)), viMap);
+		}
+
+		@Override
+		public Set<V> reachableVerticesTo(V target) {
+			return IndexIdMaps.indexToIdSet(indexRes.reachableVerticesTo(viMap.idToIndex(target)), viMap);
+		}
 	}
 
 	private static class IntResultFromIndexResult implements ShortestPathAllPairs.IResult {
@@ -361,6 +471,21 @@ public abstract class ShortestPathAllPairsAbstract implements ShortestPathAllPai
 		public IPath getPath(int source, int target) {
 			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));
 			return (IPath) Path.pathFromIndexPath(g, indexPath);
+		}
+
+		@Override
+		public boolean isReachable(int source, int target) {
+			return indexRes.isReachable(viMap.idToIndex(source), viMap.idToIndex(target));
+		}
+
+		@Override
+		public IntSet reachableVerticesFrom(int source) {
+			return IndexIdMaps.indexToIdSet(indexRes.reachableVerticesFrom(viMap.idToIndex(source)), viMap);
+		}
+
+		@Override
+		public IntSet reachableVerticesTo(int target) {
+			return IndexIdMaps.indexToIdSet(indexRes.reachableVerticesTo(viMap.idToIndex(target)), viMap);
 		}
 	}
 

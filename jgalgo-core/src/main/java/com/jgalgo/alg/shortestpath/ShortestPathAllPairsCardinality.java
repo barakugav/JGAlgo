@@ -72,8 +72,7 @@ public class ShortestPathAllPairsCardinality extends ShortestPathAllPairsAbstrac
 			boolean allVertices) {
 		final int verticesSubsetSize = verticesSubset.size();
 		final ShortestPathSingleSource.IResult[] ssspResults = new ShortestPathSingleSource.IResult[verticesSubsetSize];
-		int[] vToSubsetIdx = ShortestPathAllPairsAbstract.IndexResultVerticesSubsetFromSssp
-				.indexVerticesSubset(g, allVertices ? null : verticesSubset);
+		int[] vToSubsetIdx = ShortestPathAllPairsAbstract.indexVerticesSubset(g, allVertices ? null : verticesSubset);
 
 		ForkJoinPool pool = JGAlgoUtils.getPool();
 		if (verticesSubsetSize < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {

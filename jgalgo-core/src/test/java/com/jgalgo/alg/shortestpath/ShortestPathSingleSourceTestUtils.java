@@ -18,6 +18,7 @@ package com.jgalgo.alg.shortestpath;
 
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -25,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.alg.common.Path;
 import com.jgalgo.alg.tree.Trees;
@@ -154,6 +156,11 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 							}
 
 							@Override
+							public Set<V> reachableVertices() {
+								return IndexIdMaps.indexToIdSet(res.reachableVertices(), viMap);
+							}
+
+							@Override
 							public V source() {
 								return source;
 							}
@@ -254,6 +261,7 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		assertEquals(source, result.source());
 		assertTrue(g == result.graph());
 
+		Set<Integer> reachableVertices = result.reachableVertices();
 		for (Integer target : g.vertices()) {
 			double expectedDistance = expectedRes.distance(target);
 			double actualDistance = result.distance(target);
@@ -269,10 +277,16 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 					Integer lastEdge = path.edges().get(path.edges().size() - 1);
 					assertEquals(lastEdge, result.backtrackEdge(target));
 				}
+
+				assertTrue(result.isReachable(target));
+				assertTrue(reachableVertices.contains(target));
 			} else {
 				assertNull(result.backtrackEdge(target));
 				assertEquals(Double.POSITIVE_INFINITY, actualDistance,
 						"Distance to vertex " + target + " is not infinity but path is null");
+
+				assertFalse(result.isReachable(target));
+				assertFalse(reachableVertices.contains(target));
 			}
 		}
 		assertThrows(NoSuchVertexException.class, () -> result.distance(GraphsTestUtils.nonExistingVertex(g, rand)));
