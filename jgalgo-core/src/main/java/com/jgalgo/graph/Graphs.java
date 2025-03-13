@@ -175,7 +175,7 @@ public class Graphs {
 	 *
 	 * <p>
 	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
-	 * creation, see {@link #subGraph(Graph, Collection, Collection, boolean, boolean)}.
+	 * creation, see {@link #subGraphCopy(Graph, Collection, Collection, boolean, boolean)}.
 	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned sub graph is also an {@link IntGraph}.
@@ -186,8 +186,8 @@ public class Graphs {
 	 * @param  vertices the vertices of the sub graph
 	 * @return          a new graph that is an induced subgraph of the given graph
 	 */
-	public static <V, E> Graph<V, E> subGraph(Graph<V, E> g, Collection<V> vertices) {
-		return subGraph(g, Objects.requireNonNull(vertices), null);
+	public static <V, E> Graph<V, E> subGraphCopy(Graph<V, E> g, Collection<V> vertices) {
+		return subGraphCopy(g, Objects.requireNonNull(vertices), null);
 	}
 
 	/**
@@ -196,8 +196,8 @@ public class Graphs {
 	 * <p>
 	 * If {@code edges} is {@code null}, then the created graph will be an induced subgraph of the given graph, namely
 	 * an induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' =
-	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The behavior is similar to {@link #subGraph(Graph, Collection)}.
-	 * {@code vertices} must not be {@code null} in this case.
+	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The behavior is similar to
+	 * {@link #subGraphCopy(Graph, Collection)}. {@code vertices} must not be {@code null} in this case.
 	 *
 	 * <p>
 	 * If {@code vertices} is {@code null}, then {@code edges} must not be {@code null}, and the sub graph will contain
@@ -209,7 +209,7 @@ public class Graphs {
 	 *
 	 * <p>
 	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
-	 * creation, see {@link #subGraph(Graph, Collection, Collection, boolean, boolean)}.
+	 * creation, see {@link #subGraphCopy(Graph, Collection, Collection, boolean, boolean)}.
 	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned sub graph is also an {@link IntGraph}.
@@ -225,8 +225,8 @@ public class Graphs {
 	 * @return                      a new graph that is a subgraph of the given graph
 	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
 	 */
-	public static <V, E> Graph<V, E> subGraph(Graph<V, E> g, Collection<V> vertices, Collection<E> edges) {
-		return subGraph(g, vertices, edges, false, false);
+	public static <V, E> Graph<V, E> subGraphCopy(Graph<V, E> g, Collection<V> vertices, Collection<E> edges) {
+		return subGraphCopy(g, vertices, edges, false, false);
 	}
 
 	/**
@@ -235,8 +235,8 @@ public class Graphs {
 	 * <p>
 	 * If {@code edges} is {@code null}, then the created graph will be an induced subgraph of the given graph, namely
 	 * an induced subgraph of a graph \(G=(V,E)\) is a graph \(G'=(V',E')\) where \(V' \subseteq V\) and \(E' =
-	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The behavior is similar to {@link #subGraph(Graph, Collection)}.
-	 * {@code vertices} must not be {@code null} in this case.
+	 * \{\{u,v\} \mid u,v \in V', \{u,v\} \in E\}\). The behavior is similar to
+	 * {@link #subGraphCopy(Graph, Collection)}. {@code vertices} must not be {@code null} in this case.
 	 *
 	 * <p>
 	 * If {@code vertices} is {@code null}, then {@code edges} must not be {@code null}, and the sub graph will contain
@@ -271,12 +271,12 @@ public class Graphs {
 	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes", "cast" })
-	public static <V, E> Graph<V, E> subGraph(Graph<V, E> g, Collection<V> vertices, Collection<E> edges,
+	public static <V, E> Graph<V, E> subGraphCopy(Graph<V, E> g, Collection<V> vertices, Collection<E> edges,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		if (g instanceof IntGraph) {
 			IntCollection vs = vertices == null ? null : IntAdapters.asIntCollection((Collection<Integer>) vertices);
 			IntCollection es = edges == null ? null : IntAdapters.asIntCollection((Collection<Integer>) edges);
-			return (Graph<V, E>) subGraph((IntGraph) g, vs, es, copyVerticesWeights, copyEdgesWeights);
+			return (Graph<V, E>) subGraphCopy((IntGraph) g, vs, es, copyVerticesWeights, copyEdgesWeights);
 		}
 		if (vertices == null && edges == null)
 			throw new NullPointerException("Either vertices or edges can be null, not both.");
@@ -394,12 +394,12 @@ public class Graphs {
 	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes", "cast" })
-	public static IntGraph subGraph(IntGraph g, IntCollection vertices, IntCollection edges,
+	public static IntGraph subGraphCopy(IntGraph g, IntCollection vertices, IntCollection edges,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		if (vertices == null && edges == null)
 			throw new NullPointerException("Either vertices or edges can be null, not both.");
 		if (g instanceof IndexGraph)
-			return subGraph((IndexGraph) g, vertices, edges, copyVerticesWeights, copyEdgesWeights);
+			return subGraphCopy((IndexGraph) g, vertices, edges, copyVerticesWeights, copyEdgesWeights);
 
 		IntGraphBuilder gb = IntGraphBuilder.newInstance(g.isDirected());
 		IndexGraph ig = g.indexGraph();
@@ -479,7 +479,7 @@ public class Graphs {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes", "cast" })
-	private static IntGraph subGraph(IndexGraph g, IntCollection vertices, IntCollection edges,
+	private static IntGraph subGraphCopy(IndexGraph g, IntCollection vertices, IntCollection edges,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		IntGraphBuilder gb = IntGraphBuilder.newInstance(g.isDirected());
 

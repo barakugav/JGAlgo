@@ -1120,7 +1120,7 @@ public interface Graph<V, E> {
 	 *
 	 * <p>
 	 * The weights of both vertices and edges will not be copied to the new sub graph. For more flexible sub graph
-	 * creation, see {@link Graphs#subGraph(Graph, Collection, Collection, boolean, boolean)}.
+	 * creation, see {@link Graphs#subGraphCopy(Graph, Collection, Collection, boolean, boolean)}.
 	 *
 	 * @param  vertices             the vertices of the sub graph, if {@code null} then {@code edges} must not be
 	 *                                  {@code null} and the vertices of the sub graph will be all the vertices which
@@ -1131,7 +1131,7 @@ public interface Graph<V, E> {
 	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
 	 */
 	default Graph<V, E> subGraphCopy(Collection<V> vertices, Collection<E> edges) {
-		return Graphs.subGraph(this, vertices, edges);
+		return Graphs.subGraphCopy(this, vertices, edges);
 	}
 
 	/**

@@ -137,7 +137,8 @@ public interface VertexPartition<V, E> {
 	 * @return                     a new graph that contains only the vertices and edges that are contained in the block
 	 */
 	default Graph<V, E> blockSubGraph(int block, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		return Graphs.subGraph(graph(), blockVertices(block), blockEdges(block), copyVerticesWeights, copyEdgesWeights);
+		return Graphs
+				.subGraphCopy(graph(), blockVertices(block), blockEdges(block), copyVerticesWeights, copyEdgesWeights);
 	}
 
 	/**
