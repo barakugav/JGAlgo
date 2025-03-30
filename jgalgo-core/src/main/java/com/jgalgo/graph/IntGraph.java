@@ -747,11 +747,22 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * {@inheritDoc}
 	 *
 	 * <p>
-	 * Prefer to pass a IntCollection instead of Collection&lt;Integer&gt; as collections of vertices and edges.
+	 * Prefer to pass an IntCollection instead of Collection&lt;Integer&gt; as collections of vertices and edges.
 	 */
 	@Override
 	default IntGraph subGraphCopy(Collection<Integer> vertices, Collection<Integer> edges) {
 		return (IntGraph) Graph.super.subGraphCopy(vertices, edges);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * Prefer to pass an IntCollection instead of Collection&lt;Integer&gt; as collections of vertices and edges.
+	 */
+	@Override
+	default IntGraph maskedGraphView(Collection<Integer> verticesMask, Collection<Integer> edgesMask) {
+		return new MaskedGraphs.MaskedIntGraph(this, verticesMask, edgesMask);
 	}
 
 	/**

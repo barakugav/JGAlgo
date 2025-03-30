@@ -164,12 +164,12 @@ class ImmutableGraphViews {
 
 		@Override
 		public IdBuilder<V> vertexBuilder() {
-			return null;
+			return graph.vertexBuilder();
 		}
 
 		@Override
 		public IdBuilder<E> edgeBuilder() {
-			return null;
+			return graph.edgeBuilder();
 		}
 
 		@Override

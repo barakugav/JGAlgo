@@ -22,7 +22,7 @@ public class JGAlgoConfigImpl {
 			JGAlgoConfigNonFrozen.assertionsGraphsBipartitePartition;
 	public static final boolean AssertionsGraphsPositiveWeights = JGAlgoConfigNonFrozen.assertionsGraphsPositiveWeights;
 	public static final boolean AssertionsGraphsIsTree = JGAlgoConfigNonFrozen.assertionsGraphsIsTree;
-	public static final boolean AssertionsGraphIdCheck = JGAlgoConfigNonFrozen.assertionsGraphIdCheck;
+	public static final boolean AssertionsGraphIdxCheck = JGAlgoConfigNonFrozen.assertionsGraphIdxCheck;
 	public static final boolean AssertionsIterNotEmpty = JGAlgoConfigNonFrozen.assertionsIterNotEmpty;
 	public static final boolean AssertionsHeapsDecreaseKeyLegal = JGAlgoConfigNonFrozen.assertionsHeapsDecreaseKeyLegal;
 	public static final boolean AssertionsHeapsNotEmpty = JGAlgoConfigNonFrozen.assertionsHeapsNotEmpty;

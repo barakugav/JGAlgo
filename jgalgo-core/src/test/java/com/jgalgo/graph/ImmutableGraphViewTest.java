@@ -132,6 +132,28 @@ public class ImmutableGraphViewTest extends TestBase {
 
 	@Test
 	public void testAddRemoveEdge() {
+		final Random rand = new Random(0x585a01ec4163da27L);
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+			Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+
+			Iterator<Integer> vit = gImmutable.vertices().iterator();
+			Integer u = vit.next();
+			Integer v = vit.next();
+
+			Integer nonExistingEdge = gImmutable instanceof IndexGraph ? Integer.valueOf(gImmutable.edges().size())
+					: GraphsTestUtils.nonExistingEdgeNonNegative(gImmutable, rand);
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addEdge(u, v));
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addEdge(u, v, nonExistingEdge));
+
+			Integer edgeToRemove = gImmutable.edges().iterator().next();
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeEdge(edgeToRemove));
+		});
+	}
+
+	@Test
+	public void addEdges() {
 		final Random rand = new Random(0xa8355997d3be68e3L);
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
@@ -152,28 +174,6 @@ public class ImmutableGraphViewTest extends TestBase {
 			if (gImmutable instanceof IndexGraph)
 				assertThrows(UnsupportedOperationException.class,
 						() -> ((IndexGraph) gImmutable).addEdgesReassignIds(edges));
-		});
-	}
-
-	@Test
-	public void addEdges() {
-		final Random rand = new Random(0x585a01ec4163da27L);
-		foreachBoolConfig((intGraph, directed, index) -> {
-			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
-			Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
-			Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
-
-			Iterator<Integer> vit = gImmutable.vertices().iterator();
-			Integer u = vit.next();
-			Integer v = vit.next();
-
-			Integer nonExistingEdge = gImmutable instanceof IndexGraph ? Integer.valueOf(gImmutable.edges().size())
-					: GraphsTestUtils.nonExistingEdgeNonNegative(gImmutable, rand);
-			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addEdge(u, v));
-			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addEdge(u, v, nonExistingEdge));
-
-			Integer edgeToRemove = gImmutable.edges().iterator().next();
-			assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeEdge(edgeToRemove));
 		});
 	}
 
@@ -244,13 +244,9 @@ public class ImmutableGraphViewTest extends TestBase {
 				}
 
 				assertEquals(edges.size(), iteratedEdges.size());
-				for (Integer e : gOrig.edges()) {
-					if (iteratedEdges.contains(e)) {
-						assertTrue(edges.contains(e));
-					} else {
-						assertFalse(edges.contains(e));
-					}
-				}
+				for (Integer e : gOrig.edges())
+					assertEqualsBool(iteratedEdges.contains(e), edges.contains(e));
+				assertFalse(edges.contains(GraphsTestUtils.nonExistingEdge(gImmutable, rand)));
 			}
 			for (Integer v : gImmutable.vertices()) {
 				EdgeSet<Integer, Integer> edges = gImmutable.inEdges(v);
@@ -272,13 +268,9 @@ public class ImmutableGraphViewTest extends TestBase {
 				}
 
 				assertEquals(edges.size(), iteratedEdges.size());
-				for (Integer e : gOrig.edges()) {
-					if (iteratedEdges.contains(e)) {
-						assertTrue(edges.contains(e));
-					} else {
-						assertFalse(edges.contains(e));
-					}
-				}
+				for (Integer e : gOrig.edges())
+					assertEqualsBool(iteratedEdges.contains(e), edges.contains(e));
+				assertFalse(edges.contains(GraphsTestUtils.nonExistingEdge(gImmutable, rand)));
 			}
 
 			for (Integer u : gImmutable.vertices()) {

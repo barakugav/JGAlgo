@@ -24,12 +24,14 @@ import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterators;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 class WeightsImpl {
 
@@ -53,7 +55,7 @@ class WeightsImpl {
 		}
 
 		final void checkIdx(int idx) {
-			Assertions.checkGraphId(idx, elements.size(), isVertices);
+			Assertions.checkGraphIdx(idx, elements.size(), isVertices);
 		}
 
 	}
@@ -769,4 +771,81 @@ class WeightsImpl {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	static <T> IWeights<T> maskedIndexWeights(IWeights<T> weights, IntSet elements, boolean isVertices,
+			Int2IntMap api2orig) {
+		if (weights instanceof IWeightsByte)
+			return (IWeights<T>) new WeightsImplByte.IndexMasked((IWeightsByte) weights, elements, isVertices,
+					api2orig);
+		if (weights instanceof IWeightsShort)
+			return (IWeights<T>) new WeightsImplShort.IndexMasked((IWeightsShort) weights, elements, isVertices,
+					api2orig);
+		if (weights instanceof IWeightsInt)
+			return (IWeights<T>) new WeightsImplInt.IndexMasked((IWeightsInt) weights, elements, isVertices, api2orig);
+		if (weights instanceof IWeightsLong)
+			return (IWeights<T>) new WeightsImplLong.IndexMasked((IWeightsLong) weights, elements, isVertices,
+					api2orig);
+		if (weights instanceof IWeightsFloat)
+			return (IWeights<T>) new WeightsImplFloat.IndexMasked((IWeightsFloat) weights, elements, isVertices,
+					api2orig);
+		if (weights instanceof IWeightsDouble)
+			return (IWeights<T>) new WeightsImplDouble.IndexMasked((IWeightsDouble) weights, elements, isVertices,
+					api2orig);
+		if (weights instanceof IWeightsBool)
+			return (IWeights<T>) new WeightsImplBool.IndexMasked((IWeightsBool) weights, elements, isVertices,
+					api2orig);
+		if (weights instanceof IWeightsChar)
+			return (IWeights<T>) new WeightsImplChar.IndexMasked((IWeightsChar) weights, elements, isVertices,
+					api2orig);
+		if (weights instanceof IWeightsObj)
+			return new WeightsImplObj.IndexMasked<>((IWeightsObj<T>) weights, elements, isVertices, api2orig);
+		throw new IllegalArgumentException("Unsupported weights type: " + weights.getClass());
+	}
+
+	@SuppressWarnings("unchecked")
+	static <T> IWeights<T> maskedIntWeights(IWeights<T> weights, IntSet mask, boolean isVertices) {
+		if (weights instanceof IWeightsByte)
+			return (IWeights<T>) new WeightsImplByte.IntMappedMasked((IWeightsByte) weights, mask, isVertices);
+		if (weights instanceof IWeightsShort)
+			return (IWeights<T>) new WeightsImplShort.IntMappedMasked((IWeightsShort) weights, mask, isVertices);
+		if (weights instanceof IWeightsInt)
+			return (IWeights<T>) new WeightsImplInt.IntMappedMasked((IWeightsInt) weights, mask, isVertices);
+		if (weights instanceof IWeightsLong)
+			return (IWeights<T>) new WeightsImplLong.IntMappedMasked((IWeightsLong) weights, mask, isVertices);
+		if (weights instanceof IWeightsFloat)
+			return (IWeights<T>) new WeightsImplFloat.IntMappedMasked((IWeightsFloat) weights, mask, isVertices);
+		if (weights instanceof IWeightsDouble)
+			return (IWeights<T>) new WeightsImplDouble.IntMappedMasked((IWeightsDouble) weights, mask, isVertices);
+		if (weights instanceof IWeightsBool)
+			return (IWeights<T>) new WeightsImplBool.IntMappedMasked((IWeightsBool) weights, mask, isVertices);
+		if (weights instanceof IWeightsChar)
+			return (IWeights<T>) new WeightsImplChar.IntMappedMasked((IWeightsChar) weights, mask, isVertices);
+		if (weights instanceof IWeightsObj)
+			return new WeightsImplObj.IntMappedMasked<>((IWeightsObj<T>) weights, mask, isVertices);
+		throw new IllegalArgumentException("Unsupported weights type: " + weights.getClass());
+	}
+
+	@SuppressWarnings("unchecked")
+	static <K, T> Weights<K, T> maskedObjWeights(Weights<K, T> weights, ObjectSet<K> mask, boolean isVertices) {
+		if (weights instanceof WeightsByte)
+			return (Weights<K, T>) new WeightsImplByte.ObjMappedMasked<>((WeightsByte<K>) weights, mask, isVertices);
+		if (weights instanceof WeightsShort)
+			return (Weights<K, T>) new WeightsImplShort.ObjMappedMasked<>((WeightsShort<K>) weights, mask, isVertices);
+		if (weights instanceof WeightsInt)
+			return (Weights<K, T>) new WeightsImplInt.ObjMappedMasked<>((WeightsInt<K>) weights, mask, isVertices);
+		if (weights instanceof WeightsLong)
+			return (Weights<K, T>) new WeightsImplLong.ObjMappedMasked<>((WeightsLong<K>) weights, mask, isVertices);
+		if (weights instanceof WeightsFloat)
+			return (Weights<K, T>) new WeightsImplFloat.ObjMappedMasked<>((WeightsFloat<K>) weights, mask, isVertices);
+		if (weights instanceof WeightsDouble)
+			return (Weights<K, T>) new WeightsImplDouble.ObjMappedMasked<>((WeightsDouble<K>) weights, mask,
+					isVertices);
+		if (weights instanceof WeightsBool)
+			return (Weights<K, T>) new WeightsImplBool.ObjMappedMasked<>((WeightsBool<K>) weights, mask, isVertices);
+		if (weights instanceof WeightsChar)
+			return (Weights<K, T>) new WeightsImplChar.ObjMappedMasked<>((WeightsChar<K>) weights, mask, isVertices);
+		if (weights instanceof WeightsObj)
+			return new WeightsImplObj.ObjMappedMasked<>((WeightsObj<K, T>) weights, mask, isVertices);
+		throw new IllegalArgumentException("Unsupported weights type: " + weights.getClass());
+	}
 }

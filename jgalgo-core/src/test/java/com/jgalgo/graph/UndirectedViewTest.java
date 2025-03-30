@@ -415,13 +415,9 @@ public class UndirectedViewTest extends TestBase {
 
 				assertEquals(edges.size(), iteratedEdges.size());
 				assertEquals(edges, iteratedEdges);
-				for (Integer e : g.edges()) {
-					if (iteratedEdges.contains(e)) {
-						assertTrue(edges.contains(e));
-					} else {
-						assertFalse(edges.contains(e));
-					}
-				}
+				for (Integer e : g.edges())
+					assertEqualsBool(iteratedEdges.contains(e), edges.contains(e));
+				assertFalse(edges.contains(GraphsTestUtils.nonExistingEdge(undirectedG, rand)));
 			}
 			for (Integer v : undirectedG.vertices()) {
 				Set<Integer> expectedEdges = new IntOpenHashSet();
@@ -447,13 +443,9 @@ public class UndirectedViewTest extends TestBase {
 
 				assertEquals(edges.size(), iteratedEdges.size());
 				assertEquals(edges, iteratedEdges);
-				for (Integer e : g.edges()) {
-					if (iteratedEdges.contains(e)) {
-						assertTrue(edges.contains(e));
-					} else {
-						assertFalse(edges.contains(e));
-					}
-				}
+				for (Integer e : g.edges())
+					assertEqualsBool(iteratedEdges.contains(e), edges.contains(e));
+				assertFalse(edges.contains(GraphsTestUtils.nonExistingEdge(undirectedG, rand)));
 			}
 
 			for (Integer u : undirectedG.vertices()) {

@@ -315,13 +315,9 @@ public class ImmutableGraphCopyTest extends TestBase {
 					}
 
 					assertEquals(edges.size(), iteratedEdges.size());
-					for (Integer e : gOrig.edges()) {
-						if (iteratedEdges.contains(e)) {
-							assertTrue(edges.contains(e));
-						} else {
-							assertFalse(edges.contains(e));
-						}
-					}
+					for (Integer e : gOrig.edges())
+						assertEqualsBool(iteratedEdges.contains(e), edges.contains(e));
+					assertFalse(edges.contains(GraphsTestUtils.nonExistingEdge(gImmutable, rand)));
 				}
 				for (Integer v : gImmutable.vertices()) {
 					EdgeSet<Integer, Integer> edges = gImmutable.inEdges(v);
@@ -343,13 +339,9 @@ public class ImmutableGraphCopyTest extends TestBase {
 					}
 
 					assertEquals(edges.size(), iteratedEdges.size());
-					for (Integer e : gOrig.edges()) {
-						if (iteratedEdges.contains(e)) {
-							assertTrue(edges.contains(e));
-						} else {
-							assertFalse(edges.contains(e));
-						}
-					}
+					for (Integer e : gOrig.edges())
+						assertEqualsBool(iteratedEdges.contains(e), edges.contains(e));
+					assertFalse(edges.contains(GraphsTestUtils.nonExistingEdge(gImmutable, rand)));
 				}
 
 				for (Integer u : gImmutable.vertices()) {

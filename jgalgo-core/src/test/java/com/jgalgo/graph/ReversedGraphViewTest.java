@@ -432,13 +432,9 @@ public class ReversedGraphViewTest extends TestBase {
 				}
 
 				assertEquals(edges.size(), iteratedEdges.size());
-				for (Integer e : gOrig.edges()) {
-					if (iteratedEdges.contains(e)) {
-						assertTrue(edges.contains(e));
-					} else {
-						assertFalse(edges.contains(e));
-					}
-				}
+				for (Integer e : gOrig.edges())
+					assertEqualsBool(iteratedEdges.contains(e), edges.contains(e));
+				assertFalse(edges.contains(GraphsTestUtils.nonExistingEdge(gRev, rand)));
 			}
 			for (Integer v : gRev.vertices()) {
 				EdgeSet<Integer, Integer> edges = gRev.inEdges(v);
@@ -460,13 +456,9 @@ public class ReversedGraphViewTest extends TestBase {
 				}
 
 				assertEquals(edges.size(), iteratedEdges.size());
-				for (Integer e : gOrig.edges()) {
-					if (iteratedEdges.contains(e)) {
-						assertTrue(edges.contains(e));
-					} else {
-						assertFalse(edges.contains(e));
-					}
-				}
+				for (Integer e : gOrig.edges())
+					assertEqualsBool(iteratedEdges.contains(e), edges.contains(e));
+				assertFalse(edges.contains(GraphsTestUtils.nonExistingEdge(gRev, rand)));
 			}
 
 			for (Integer u : gRev.vertices()) {

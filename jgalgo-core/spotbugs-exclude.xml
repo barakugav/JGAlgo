@@ -339,6 +339,9 @@
       <Class name="com.jgalgo.graph.UndirectedGraphViews$UndirectedViewIntBase" />
       <Class name="com.jgalgo.internal.util.BitmapBase" />
       <Class name="com.jgalgo.internal.util.Range$Iter" />
+      <Class name="com.jgalgo.graph.MaskedGraphs$MaskedRenamedIndexGraph" />
+      <Class name="com.jgalgo.graph.MaskedGraphs$MaskedIntGraph" />
+      <Class name="com.jgalgo.graph.MaskedGraphs$MaskedObjGraph" />
     </Or>
     <Bug pattern="CT_CONSTRUCTOR_THROW" />
   </Match>

@@ -24,6 +24,8 @@ import FASTUTIL_PACKAGE.FASTUTIL_TYPEArrays;
 import it.unimi.dsi.fastutil.longs.LongArrays;
 #endif
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 class WEIGHTS_IMPL {
 
@@ -376,6 +378,119 @@ class WEIGHTS_IMPL {
 		@Override
 		public PRIMITIVE_TYPE defaultWeight() {
 			return weights().defaultWeight();
+		}
+	}
+
+	static class IndexMasked TYPE_GENERIC extends WeightsImpl.IndexAbstract<TYPE_GENERIC_CLASS> implements IWEIGHTS TYPE_GENERIC {
+
+		private final IWEIGHTS TYPE_GENERIC orig;
+		private final Int2IntMap api2orig;
+
+		IndexMasked(IWEIGHTS TYPE_GENERIC orig, IntSet elements, boolean isVertices, Int2IntMap api2orig) {
+			super(elements, isVertices);
+			this.orig = orig;
+			this.api2orig = api2orig;
+		}
+
+		private int api2orig(int idx) {
+			return api2orig.getOrDefault(idx, idx);
+		}
+
+		@Override
+		public PRIMITIVE_TYPE get(int idx) {
+			checkIdx(idx);
+			return orig.get(api2orig(idx));
+		}
+
+		@Override
+		public void set(int idx, PRIMITIVE_TYPE weight) {
+			checkIdx(idx);
+			orig.set(api2orig(idx), weight);
+		}
+
+		@Override
+		public PRIMITIVE_TYPE defaultWeight() {
+			return orig.defaultWeight();
+		}
+	}
+
+	static class IntMappedMasked TYPE_GENERIC implements IWEIGHTS TYPE_GENERIC {
+
+		private final IWEIGHTS TYPE_GENERIC orig;
+		private final IntSet mask;
+		private final boolean isVertices;
+
+		IntMappedMasked(IWEIGHTS TYPE_GENERIC orig, IntSet mask, boolean isVertices) {
+			this.orig = orig;
+			this.mask = mask;
+			this.isVertices = isVertices;
+		}
+
+		private void checkId(int id) {
+			if (mask.contains(id)) {
+				if (isVertices) {
+					throw NoSuchVertexException.ofVertex(id);
+				} else {
+					throw NoSuchEdgeException.ofEdge(id);
+				}
+			}
+		}
+
+		@Override
+		public PRIMITIVE_TYPE get(int id) {
+			checkId(id);
+			return orig.get(id);
+		}
+
+		@Override
+		public void set(int idx, PRIMITIVE_TYPE weight) {
+			checkId(idx);
+			orig.set(idx, weight);
+		}
+
+		@Override
+		public PRIMITIVE_TYPE defaultWeight() {
+			return orig.defaultWeight();
+		}
+	}
+
+	static class ObjMappedMasked<K TYPE_GENERIC_IN_TEMPLATE_LIST> implements WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> {
+
+		private final WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> orig;
+		private final ObjectSet<K> mask;
+		private final boolean isVertices;
+
+		ObjMappedMasked(WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> orig, ObjectSet<K> mask, boolean isVertices) {
+			this.orig = orig;
+			this.mask = mask;
+			this.isVertices = isVertices;
+		}
+
+		private void checkId(K id) {
+			if (mask.contains(id)) {
+				if (isVertices) {
+					throw NoSuchVertexException.ofVertex(id);
+				} else {
+					throw NoSuchEdgeException.ofEdge(id);
+				}
+			}
+		}
+
+		@Override
+		public PRIMITIVE_TYPE get(K id) {
+			checkId(id);
+			return orig.get(id);
+		}
+
+		@Override
+		public void set(K idx, PRIMITIVE_TYPE weight) {
+			checkId(idx);
+			orig.set(idx, weight);
+		}
+
+		@Override
+		public PRIMITIVE_TYPE defaultWeight() {
+			return orig.defaultWeight();
 		}
 	}
 
