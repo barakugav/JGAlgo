@@ -10,3 +10,4 @@ bin/
 /.vscode/
 **/__pycache__/
 .metadata/
+**/.DS_Store
