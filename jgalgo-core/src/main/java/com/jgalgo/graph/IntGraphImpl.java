@@ -256,9 +256,9 @@ class IntGraphImpl extends AbstractGraphImpl<Integer, Integer> implements IntGra
 
 		@Override
 		public IEdgeIter iterator() {
-			return new IEdgeIter() {
+			return new EdgeIters.IBase() {
 
-				EdgeIter<Integer, Integer> idIter = idSet.iterator();
+				private final EdgeIter<Integer, Integer> idIter = idSet.iterator();
 
 				@Override
 				public boolean hasNext() {

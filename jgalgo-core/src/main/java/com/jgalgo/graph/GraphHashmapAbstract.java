@@ -53,7 +53,7 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 		return new Graphs.EdgeSetSourceTargetSingleEdge(this, source, target, edge);
 	}
 
-	private abstract class EdgeIterBase implements IEdgeIter {
+	private abstract class EdgeIterBase implements EdgeIters.IBase {
 
 		// either the source or target of the iterator
 		final int vertex;

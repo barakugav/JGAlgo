@@ -303,7 +303,7 @@ abstract class IndexGraphBase extends AbstractGraph<Integer, Integer> implements
 		}
 	}
 
-	private class EdgeIterSourceTarget implements IEdgeIter {
+	private class EdgeIterSourceTarget implements EdgeIters.IBase {
 
 		private final int source, target;
 		private IntIterator it;

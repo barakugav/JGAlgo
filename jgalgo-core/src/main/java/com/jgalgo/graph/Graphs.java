@@ -121,7 +121,7 @@ public class Graphs {
 
 		@Override
 		public IEdgeIter iterator() {
-			return new IEdgeIter() {
+			return new EdgeIters.IBase() {
 
 				boolean beforeNext = edge != EdgeNone;
 

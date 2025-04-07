@@ -437,7 +437,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 		return super.immutableCopy(copyVerticesWeights, copyEdgesWeights);
 	}
 
-	abstract static class EdgeIterAbstract implements IEdgeIter {
+	abstract static class EdgeIterAbstract implements EdgeIters.IBase {
 
 		private final int[] edges;
 		private int idx;

@@ -163,7 +163,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 		super.clear();
 	}
 
-	class EdgeIterOut implements IEdgeIter {
+	class EdgeIterOut implements EdgeIters.IBase {
 
 		private final int source;
 		private int target;
@@ -224,7 +224,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 		}
 	}
 
-	class EdgeIterInUndirected implements IEdgeIter {
+	class EdgeIterInUndirected implements EdgeIters.IBase {
 
 		private int source;
 		private final int target;
@@ -285,7 +285,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 		}
 	}
 
-	class EdgeIterInDirected implements IEdgeIter {
+	class EdgeIterInDirected implements EdgeIters.IBase {
 
 		private int source;
 		private final int target;

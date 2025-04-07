@@ -53,23 +53,29 @@ public class IterTools {
 		};
 	}
 
-	public static interface IterPeekable<E> extends Iterator<E> {
+	public static interface Peek<E> extends Iterator<E> {
 
 		E peekNext();
 
-		static interface Int extends IntIterator {
+		static interface Int extends IntIterator, Peek<Integer> {
 
 			int peekNextInt();
+
+			@Deprecated
+			@Override
+			default Integer peekNext() {
+				return Integer.valueOf(peekNextInt());
+			}
 		}
 	}
 
-	static class IterPeekableImpl<E> implements IterPeekable<E> {
+	static class PeekImpl<E> implements Peek<E> {
 
 		private final Iterator<? super E> it;
 		private Object nextElm;
 		private static final Object nextNone = new Object();
 
-		IterPeekableImpl(Iterator<? super E> it) {
+		PeekImpl(Iterator<? super E> it) {
 			this.it = Objects.requireNonNull(it);
 			advance();
 		}
@@ -103,7 +109,7 @@ public class IterTools {
 			return (E) nextElm;
 		}
 
-		static class Int implements IterPeekable.Int {
+		static class Int implements Peek.Int {
 
 			private final IntIterator it;
 			private int next;

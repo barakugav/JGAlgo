@@ -34,6 +34,7 @@ import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.IntImmutableList2;
+import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -274,7 +275,7 @@ class Paths {
 			return isSimple;
 		}
 
-		private static class IterUndirected implements IEdgeIter {
+		private static class IterUndirected implements IEdgeIter, IterTools.Peek.Int {
 
 			private final IndexGraph g;
 			private final IntListIterator it;
@@ -316,9 +317,14 @@ class Paths {
 				return v;
 			}
 
+			@Deprecated
+			@Override
+			public Integer peekNext() {
+				return IEdgeIter.super.peekNext();
+			}
 		}
 
-		private static class IterDirected implements IEdgeIter {
+		private static class IterDirected implements IEdgeIter, IterTools.Peek.Int {
 
 			private final IndexGraph g;
 			private final IntListIterator it;
@@ -365,6 +371,12 @@ class Paths {
 				int skipped = it.skip(n);
 				e = -1;
 				return skipped;
+			}
+
+			@Deprecated
+			@Override
+			public Integer peekNext() {
+				return IEdgeIter.super.peekNext();
 			}
 		}
 	}

@@ -245,9 +245,8 @@ final class GraphImpl<V, E> extends AbstractGraphImpl<V, E> {
 
 		@Override
 		public IEdgeIter iterator() {
-			return new IEdgeIter() {
-
-				EdgeIter<? extends V, ?> idIter = idSet.iterator();
+			return new EdgeIters.IBase() {
+				private final EdgeIter<? extends V, ?> idIter = idSet.iterator();
 
 				@Override
 				public boolean hasNext() {
