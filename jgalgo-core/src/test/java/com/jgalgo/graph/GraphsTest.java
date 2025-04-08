@@ -52,7 +52,7 @@ public class GraphsTest extends TestBase {
 				Set<Integer> subVs = new IntOpenHashSet();
 				while (subVs.size() < n / 3)
 					subVs.add(Graphs.randVertex(g, rand));
-				Graph<Integer, Integer> subGraph = Graphs.subGraphCopy(g, subVs);
+				Graph<Integer, Integer> subGraph = Graphs.subGraph(g, subVs);
 
 				assertEquals(subVs, subGraph.vertices());
 				assertEquals(g
@@ -83,7 +83,7 @@ public class GraphsTest extends TestBase {
 				Set<Integer> subEs = new IntOpenHashSet();
 				while (subEs.size() < m / 6)
 					subEs.add(Graphs.randEdge(g, rand));
-				Graph<Integer, Integer> subGraph = Graphs.subGraphCopy(g, null, subEs);
+				Graph<Integer, Integer> subGraph = Graphs.subGraph(g, null, subEs);
 
 				assertEquals(subEs
 						.stream()
@@ -116,7 +116,7 @@ public class GraphsTest extends TestBase {
 				Set<Integer> subVs = new IntOpenHashSet();
 				while (subVs.size() < n / 3)
 					subVs.add(Graphs.randVertex(g, rand));
-				Graph<Integer, Integer> subGraph = Graphs.subGraphCopy(g, subVs, null, false, false);
+				Graph<Integer, Integer> subGraph = Graphs.subGraph(g, subVs, null, false, false);
 
 				assertNull(subGraph.verticesWeights("weights1"));
 				assertNull(subGraph.verticesWeights("weights2"));
@@ -179,7 +179,7 @@ public class GraphsTest extends TestBase {
 				Set<Integer> subVs = new IntOpenHashSet();
 				while (subVs.size() < n / 3)
 					subVs.add(Graphs.randVertex(g, rand));
-				Graph<Integer, Integer> subGraph = Graphs.subGraphCopy(g, subVs, null, true, true);
+				Graph<Integer, Integer> subGraph = Graphs.subGraph(g, subVs, null, true, true);
 
 				WeightsByte<Integer> vertexWeightsSub1 = subGraph.verticesWeights("weights1");
 				WeightsShort<Integer> vertexWeightsSub2 = subGraph.verticesWeights("weights2");
@@ -254,7 +254,7 @@ public class GraphsTest extends TestBase {
 					GraphsTestUtils.randGraph(20, 50, directed, true, true, intGraph, seedGen.nextSeed());
 			Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 
-			assertThrows(NullPointerException.class, () -> Graphs.subGraphCopy(g, null, null, false, false));
+			assertThrows(NullPointerException.class, () -> Graphs.subGraph(g, null, null, false, false));
 		});
 	}
 
