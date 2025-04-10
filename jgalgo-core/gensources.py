@@ -46,8 +46,8 @@ def format_source_files(filenames):
         return
 
     # The formatter config file is an xml file used by vscode. Eclipse uses a different format. We read the xml and write a new config file for eclipse.
-    ECT_DIR = os.path.abspath(os.path.join(TOP_DIR, "..", "ect"))
-    ECLIPSE_FORMATTER_CONFIG_FILE = os.path.join(ECT_DIR, "eclipse-java-style.xml")
+    ETC_DIR = os.path.abspath(os.path.join(TOP_DIR, "..", "etc"))
+    ECLIPSE_FORMATTER_CONFIG_FILE = os.path.join(ETC_DIR, "eclipse-java-style.xml")
 
     profiles_root = xml.etree.ElementTree.parse(ECLIPSE_FORMATTER_CONFIG_FILE).getroot()
     if profiles_root.tag != "profiles":
@@ -58,7 +58,7 @@ def format_source_files(filenames):
     settings = [setting for setting in profiles[0] if setting.tag == "setting"]
     settings = [(setting.attrib["id"], setting.attrib["value"]) for setting in settings]
 
-    formatter_config_file = os.path.join(ECT_DIR, ".eclipse-java-style")
+    formatter_config_file = os.path.join(ETC_DIR, ".eclipse-java-style")
     try:
         with open(formatter_config_file, "w") as f:
             for id, val in settings:
