@@ -37,17 +37,17 @@ abstract class GraphElementSet extends AbstractIntSet {
 <span class="fc" id="L37">	}</span>
 
 	@Override
-	public int size() {
+	public final int size() {
 <span class="fc" id="L41">		return size;</span>
 	}
 
 	@Override
-	public boolean contains(int key) {
+	public final boolean contains(int key) {
 <span class="fc bfc" id="L46" title="All 4 branches covered.">		return 0 &lt;= key &amp;&amp; key &lt; size;</span>
 	}
 
 	@Override
-	public IntIterator iterator() {
+	public final IntIterator iterator() {
 <span class="fc" id="L51">		return range(size).iterator();</span>
 	}
 
@@ -66,8 +66,8 @@ abstract class GraphElementSet extends AbstractIntSet {
 <span class="fc" id="L66">		return size * (size - 1) / 2;</span>
 	}
 
-	void checkIdx(int idx) {
-<span class="fc" id="L70">		Assertions.checkGraphId(idx, size, isVertices);</span>
+	final void checkIdx(int idx) {
+<span class="fc" id="L70">		Assertions.checkGraphIdx(idx, size, isVertices);</span>
 <span class="fc" id="L71">	}</span>
 
 	static final class Immutable extends GraphElementSet {

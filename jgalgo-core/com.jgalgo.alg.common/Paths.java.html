@@ -34,6 +34,7 @@ import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.Fastutil;
 import com.jgalgo.internal.util.IntImmutableList2;
+import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -47,114 +48,114 @@ class Paths {
 
 	private Paths() {}
 
-<span class="fc" id="L50">	private abstract static class AbstractPath&lt;V, E&gt; implements Path&lt;V, E&gt; {</span>
+<span class="fc" id="L51">	private abstract static class AbstractPath&lt;V, E&gt; implements Path&lt;V, E&gt; {</span>
 
 		@Override
 		public String toString() {
-<span class="fc" id="L54">			return edges().toString();</span>
+<span class="fc" id="L55">			return edges().toString();</span>
 		}
 
 		@Override
 		public boolean equals(Object obj) {
-<span class="fc bfc" id="L59" title="All 2 branches covered.">			if (obj == this)</span>
-<span class="fc" id="L60">				return true;</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">			if (!(obj instanceof Path))</span>
-<span class="fc" id="L62">				return false;</span>
-<span class="fc" id="L63">			Path&lt;?, ?&gt; o = (Path&lt;?, ?&gt;) obj;</span>
-<span class="fc" id="L64">			Graph&lt;?, ?&gt; g = graph();</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">			if (g != o.graph())</span>
-<span class="fc" id="L66">				return false;</span>
-<span class="fc" id="L67">			final boolean isCycle = isCycle();</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">			if (isCycle != o.isCycle())</span>
-<span class="fc" id="L69">				return false;</span>
-<span class="fc" id="L70">			final List&lt;?&gt; es1 = edges(), es2 = o.edges();</span>
-<span class="fc" id="L71">			final int size = es1.size();</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">			if (size != es2.size())</span>
-<span class="fc" id="L73">				return false;</span>
-<span class="fc" id="L74">			final Object s1 = source(), s2 = o.source(), t1 = target(), t2 = o.target();</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">			if (size == 0) {</span>
-<span class="pc bpc" id="L76" title="2 of 4 branches missed.">				assert s1.equals(t1) &amp;&amp; s2.equals(t2);</span>
-<span class="fc" id="L77">				return s1.equals(s2);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">			if (obj == this)</span>
+<span class="fc" id="L61">				return true;</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">			if (!(obj instanceof Path))</span>
+<span class="fc" id="L63">				return false;</span>
+<span class="fc" id="L64">			Path&lt;?, ?&gt; o = (Path&lt;?, ?&gt;) obj;</span>
+<span class="fc" id="L65">			Graph&lt;?, ?&gt; g = graph();</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">			if (g != o.graph())</span>
+<span class="fc" id="L67">				return false;</span>
+<span class="fc" id="L68">			final boolean isCycle = isCycle();</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">			if (isCycle != o.isCycle())</span>
+<span class="fc" id="L70">				return false;</span>
+<span class="fc" id="L71">			final List&lt;?&gt; es1 = edges(), es2 = o.edges();</span>
+<span class="fc" id="L72">			final int size = es1.size();</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">			if (size != es2.size())</span>
+<span class="fc" id="L74">				return false;</span>
+<span class="fc" id="L75">			final Object s1 = source(), s2 = o.source(), t1 = target(), t2 = o.target();</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			if (size == 0) {</span>
+<span class="pc bpc" id="L77" title="2 of 4 branches missed.">				assert s1.equals(t1) &amp;&amp; s2.equals(t2);</span>
+<span class="fc" id="L78">				return s1.equals(s2);</span>
 			}
-<span class="fc bfc" id="L79" title="All 2 branches covered.">			if (g.isDirected()) {</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">				if (isCycle) {</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">					for (int offset : range(size)) {</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">						boolean eq = es1.subList(0, size - offset).equals(es2.subList(offset, size))</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">								&amp;&amp; es1.subList(size - offset, size).equals(es2.subList(0, offset));</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">						if (eq)</span>
-<span class="fc" id="L85">							return true;</span>
-<span class="fc" id="L86">					}</span>
-<span class="fc" id="L87">					return false;</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">				if (isCycle) {</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">					for (int offset : range(size)) {</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">						boolean eq = es1.subList(0, size - offset).equals(es2.subList(offset, size))</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">								&amp;&amp; es1.subList(size - offset, size).equals(es2.subList(0, offset));</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">						if (eq)</span>
+<span class="fc" id="L86">							return true;</span>
+<span class="fc" id="L87">					}</span>
+<span class="fc" id="L88">					return false;</span>
 
 				} else {
-<span class="fc bfc" id="L90" title="All 6 branches covered.">					return s1.equals(s2) &amp;&amp; t1.equals(t2) &amp;&amp; es1.equals(es2);</span>
+<span class="fc bfc" id="L91" title="All 6 branches covered.">					return s1.equals(s2) &amp;&amp; t1.equals(t2) &amp;&amp; es1.equals(es2);</span>
 				}
 			} else {
-<span class="fc bfc" id="L93" title="All 2 branches covered.">				if (isCycle) {</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">					for (int offset : range(size)) {</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">						boolean eq1 = es1.subList(0, size - offset).equals(es2.subList(offset, size))</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">								&amp;&amp; es1.subList(size - offset, size).equals(es2.subList(0, offset));</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">						if (eq1)</span>
-<span class="fc" id="L98">							return true;</span>
-<span class="fc bfc" id="L99" title="All 4 branches covered.">						boolean eq2 = reverseEquals(es1.subList(0, offset + 1), es2.subList(0, offset + 1))</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">				if (isCycle) {</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">					for (int offset : range(size)) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">						boolean eq1 = es1.subList(0, size - offset).equals(es2.subList(offset, size))</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">								&amp;&amp; es1.subList(size - offset, size).equals(es2.subList(0, offset));</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">						if (eq1)</span>
+<span class="fc" id="L99">							return true;</span>
+<span class="fc bfc" id="L100" title="All 4 branches covered.">						boolean eq2 = reverseEquals(es1.subList(0, offset + 1), es2.subList(0, offset + 1))</span>
 								&amp;&amp; (offset == size - 1
-<span class="fc bfc" id="L101" title="All 2 branches covered.">										|| reverseEquals(es1.subList(offset + 1, size), es2.subList(offset + 1, size)));</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">						if (eq2)</span>
-<span class="fc" id="L103">							return true;</span>
-<span class="fc" id="L104">					}</span>
-<span class="fc" id="L105">					return false;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">										|| reverseEquals(es1.subList(offset + 1, size), es2.subList(offset + 1, size)));</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">						if (eq2)</span>
+<span class="fc" id="L104">							return true;</span>
+<span class="fc" id="L105">					}</span>
+<span class="fc" id="L106">					return false;</span>
 
-<span class="fc bfc" id="L107" title="All 4 branches covered.">				} else if (s1.equals(s2) &amp;&amp; t1.equals(t2)) {</span>
-<span class="fc" id="L108">					return es1.equals(es2);</span>
-<span class="fc bfc" id="L109" title="All 4 branches covered.">				} else if (t1.equals(s2) &amp;&amp; s1.equals(t2)) {</span>
-<span class="fc" id="L110">					return reverseEquals(es1, es2);</span>
+<span class="fc bfc" id="L108" title="All 4 branches covered.">				} else if (s1.equals(s2) &amp;&amp; t1.equals(t2)) {</span>
+<span class="fc" id="L109">					return es1.equals(es2);</span>
+<span class="fc bfc" id="L110" title="All 4 branches covered.">				} else if (t1.equals(s2) &amp;&amp; s1.equals(t2)) {</span>
+<span class="fc" id="L111">					return reverseEquals(es1, es2);</span>
 				} else {
-<span class="fc" id="L112">					return false;</span>
+<span class="fc" id="L113">					return false;</span>
 				}
 			}
 		}
 
 		private static boolean reverseEquals(List&lt;?&gt; es1, List&lt;?&gt; es2) {
-<span class="pc bpc" id="L118" title="1 of 2 branches missed.">			assert es1.size() == es2.size();</span>
-<span class="pc bpc" id="L119" title="1 of 4 branches missed.">			if (es1 instanceof IntList &amp;&amp; es2 instanceof IntList) {</span>
-<span class="fc" id="L120">				IntIterator it1 = ((IntList) es1).iterator();</span>
-<span class="fc" id="L121">				IntListIterator it2 = ((IntList) es2).listIterator(es2.size());</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">				for (int i = es1.size(); i-- &gt; 0;)</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">					if (it1.nextInt() != it2.previousInt())</span>
-<span class="fc" id="L124">						return false;</span>
-<span class="fc" id="L125">			} else {</span>
-<span class="fc" id="L126">				Iterator&lt;?&gt; it1 = es1.iterator();</span>
-<span class="fc" id="L127">				ListIterator&lt;?&gt; it2 = es2.listIterator(es2.size());</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">				for (int i = es1.size(); i-- &gt; 0;)</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">					if (!it1.next().equals(it2.previous()))</span>
-<span class="fc" id="L130">						return false;</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">			assert es1.size() == es2.size();</span>
+<span class="pc bpc" id="L120" title="1 of 4 branches missed.">			if (es1 instanceof IntList &amp;&amp; es2 instanceof IntList) {</span>
+<span class="fc" id="L121">				IntIterator it1 = ((IntList) es1).iterator();</span>
+<span class="fc" id="L122">				IntListIterator it2 = ((IntList) es2).listIterator(es2.size());</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">				for (int i = es1.size(); i-- &gt; 0;)</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">					if (it1.nextInt() != it2.previousInt())</span>
+<span class="fc" id="L125">						return false;</span>
+<span class="fc" id="L126">			} else {</span>
+<span class="fc" id="L127">				Iterator&lt;?&gt; it1 = es1.iterator();</span>
+<span class="fc" id="L128">				ListIterator&lt;?&gt; it2 = es2.listIterator(es2.size());</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">				for (int i = es1.size(); i-- &gt; 0;)</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">					if (!it1.next().equals(it2.previous()))</span>
+<span class="fc" id="L131">						return false;</span>
 			}
-<span class="fc" id="L132">			return true;</span>
+<span class="fc" id="L133">			return true;</span>
 		}
 
 		@Override
 		public int hashCode() {
-<span class="fc" id="L137">			int hash = System.identityHashCode(graph());</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">			if (!isCycle())</span>
-<span class="fc" id="L139">				hash ^= source().hashCode() ^ target().hashCode();</span>
-<span class="fc" id="L140">			List&lt;?&gt; es = edges();</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">			if (es instanceof IntList) {</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">				for (int e : (IntList) es)</span>
-<span class="fc" id="L143">					hash ^= e;</span>
+<span class="fc" id="L138">			int hash = System.identityHashCode(graph());</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">			if (!isCycle())</span>
+<span class="fc" id="L140">				hash ^= source().hashCode() ^ target().hashCode();</span>
+<span class="fc" id="L141">			List&lt;?&gt; es = edges();</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">			if (es instanceof IntList) {</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">				for (int e : (IntList) es)</span>
+<span class="fc" id="L144">					hash ^= e;</span>
 			} else {
-<span class="fc bfc" id="L145" title="All 2 branches covered.">				for (Object e : es)</span>
-<span class="fc" id="L146">					hash ^= e.hashCode();</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">				for (Object e : es)</span>
+<span class="fc" id="L147">					hash ^= e.hashCode();</span>
 			}
-<span class="fc" id="L148">			return hash;</span>
+<span class="fc" id="L149">			return hash;</span>
 		}
 	}
 
 	static IndexPath valueOf(IndexGraph g, int source, int target, IntList edges) {
-<span class="fc bfc" id="L153" title="All 4 branches covered.">		boolean unmodifiable = edges instanceof IntLists.UnmodifiableList || edges instanceof IntImmutableList2;</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">		return new IndexPath(g, source, target, unmodifiable ? edges : IntLists.unmodifiable(edges));</span>
+<span class="fc bfc" id="L154" title="All 4 branches covered.">		boolean unmodifiable = edges instanceof IntLists.UnmodifiableList || edges instanceof IntImmutableList2;</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">		return new IndexPath(g, source, target, unmodifiable ? edges : IntLists.unmodifiable(edges));</span>
 	}
 
-<span class="fc" id="L157">	static final class IndexPath extends AbstractPath&lt;Integer, Integer&gt; implements IPath {</span>
+<span class="fc" id="L158">	static final class IndexPath extends AbstractPath&lt;Integer, Integer&gt; implements IPath {</span>
 
 		private final IndexGraph g;
 		private final int source;
@@ -163,287 +164,298 @@ class Paths {
 		private IntList vertices;
 		private boolean isSimple, isSimpleValid;
 
-<span class="fc" id="L166">		private IndexPath(IndexGraph g, int source, int target, IntList edges) {</span>
-<span class="pc bpc" id="L167" title="1 of 2 branches missed.">			assert IPath.isPath(g, source, target, edges);</span>
-<span class="fc" id="L168">			this.g = g;</span>
-<span class="fc" id="L169">			this.source = source;</span>
-<span class="fc" id="L170">			this.target = target;</span>
-<span class="fc" id="L171">			this.edges = edges;</span>
-<span class="fc" id="L172">		}</span>
+<span class="fc" id="L167">		private IndexPath(IndexGraph g, int source, int target, IntList edges) {</span>
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">			assert IPath.isPath(g, source, target, edges);</span>
+<span class="fc" id="L169">			this.g = g;</span>
+<span class="fc" id="L170">			this.source = source;</span>
+<span class="fc" id="L171">			this.target = target;</span>
+<span class="fc" id="L172">			this.edges = edges;</span>
+<span class="fc" id="L173">		}</span>
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L176">			return source;</span>
+<span class="fc" id="L177">			return source;</span>
 		}
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L181">			return target;</span>
+<span class="fc" id="L182">			return target;</span>
 		}
 
 		@Override
 		public IEdgeIter edgeIter() {
-<span class="fc bfc" id="L186" title="All 2 branches covered.">			return g.isDirected() ? new IterDirected(g, edges) : new IterUndirected(g, edges, source);</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">			return g.isDirected() ? new IterDirected(g, edges) : new IterUndirected(g, edges, source);</span>
 		}
 
 		@Override
 		public IntList edges() {
-<span class="fc" id="L191">			return edges;</span>
+<span class="fc" id="L192">			return edges;</span>
 		}
 
 		@Override
 		public IntList vertices() {
-<span class="fc bfc" id="L196" title="All 2 branches covered.">			if (vertices == null) {</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">				if (edges.isEmpty()) {</span>
-<span class="pc bpc" id="L198" title="1 of 2 branches missed.">					assert isCycle();</span>
-<span class="fc" id="L199">					vertices = Fastutil.list(source);</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">			if (vertices == null) {</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">				if (edges.isEmpty()) {</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">					assert isCycle();</span>
+<span class="fc" id="L200">					vertices = Fastutil.list(source);</span>
 				} else {
-<span class="fc" id="L201">					int[] res = new int[edges().size() + 1];</span>
-<span class="fc" id="L202">					IntIterator vit = IPath.verticesIter(g, source, edges);</span>
-<span class="fc bfc" id="L203" title="All 2 branches covered.">					for (int i = 0; i &lt; res.length; i++)</span>
-<span class="fc" id="L204">						res[i] = vit.nextInt();</span>
-<span class="pc bpc" id="L205" title="1 of 2 branches missed.">					assert !vit.hasNext();</span>
-<span class="fc" id="L206">					vertices = Fastutil.list(res);</span>
+<span class="fc" id="L202">					int[] res = new int[edges().size() + 1];</span>
+<span class="fc" id="L203">					IntIterator vit = IPath.verticesIter(g, source, edges);</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">					for (int i = 0; i &lt; res.length; i++)</span>
+<span class="fc" id="L205">						res[i] = vit.nextInt();</span>
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">					assert !vit.hasNext();</span>
+<span class="fc" id="L207">					vertices = Fastutil.list(res);</span>
 				}
 			}
-<span class="fc" id="L209">			return vertices;</span>
+<span class="fc" id="L210">			return vertices;</span>
 		}
 
 		@Override
 		public IndexGraph graph() {
-<span class="fc" id="L214">			return g;</span>
+<span class="fc" id="L215">			return g;</span>
 		}
 
 		@Override
 		public IPath subPath(int fromEdgeIndex, int toEdgeIndex) {
-<span class="fc" id="L219">			IntList subEdges = edges.subList(fromEdgeIndex, toEdgeIndex);</span>
+<span class="fc" id="L220">			IntList subEdges = edges.subList(fromEdgeIndex, toEdgeIndex);</span>
 			int subSource, subTarget;
-<span class="fc bfc" id="L221" title="All 2 branches covered.">			if (vertices != null) {</span>
-<span class="fc" id="L222">				subSource = vertices.getInt(fromEdgeIndex);</span>
-<span class="fc" id="L223">				subTarget = vertices.getInt(toEdgeIndex);</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">			if (vertices != null) {</span>
+<span class="fc" id="L223">				subSource = vertices.getInt(fromEdgeIndex);</span>
+<span class="fc" id="L224">				subTarget = vertices.getInt(toEdgeIndex);</span>
 			} else {
-<span class="fc" id="L225">				IntIterator vit = IPath.verticesIter(g, source, edges);</span>
-<span class="fc" id="L226">				vit.skip(fromEdgeIndex);</span>
-<span class="fc" id="L227">				subSource = vit.nextInt();</span>
+<span class="fc" id="L226">				IntIterator vit = IPath.verticesIter(g, source, edges);</span>
+<span class="fc" id="L227">				vit.skip(fromEdgeIndex);</span>
+<span class="fc" id="L228">				subSource = vit.nextInt();</span>
 
-<span class="fc bfc" id="L229" title="All 2 branches covered.">				if (fromEdgeIndex == toEdgeIndex) {</span>
-<span class="fc" id="L230">					subTarget = subSource;</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">				if (fromEdgeIndex == toEdgeIndex) {</span>
+<span class="fc" id="L231">					subTarget = subSource;</span>
 				} else {
-<span class="fc" id="L232">					vit.skip(toEdgeIndex - fromEdgeIndex - 1);</span>
-<span class="fc" id="L233">					subTarget = vit.nextInt();</span>
+<span class="fc" id="L233">					vit.skip(toEdgeIndex - fromEdgeIndex - 1);</span>
+<span class="fc" id="L234">					subTarget = vit.nextInt();</span>
 				}
 			}
-<span class="fc" id="L236">			return new IndexPath(g, subSource, subTarget, subEdges);</span>
+<span class="fc" id="L237">			return new IndexPath(g, subSource, subTarget, subEdges);</span>
 		}
 
 		@Override
 		public boolean isSimple() {
-<span class="fc bfc" id="L241" title="All 2 branches covered.">			if (!isSimpleValid) {</span>
-<span class="fc" id="L242">				final int n = g.vertices().size();</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">			if (!isSimpleValid) {</span>
+<span class="fc" id="L243">				final int n = g.vertices().size();</span>
 				IntList vs;
-<span class="fc bfc" id="L244" title="All 2 branches covered.">				if (source == target) {</span>
-<span class="fc" id="L245">					isSimple = edges().isEmpty(); /* a cycle or isolated vertex */</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">				if (source == target) {</span>
+<span class="fc" id="L246">					isSimple = edges().isEmpty(); /* a cycle or isolated vertex */</span>
 
-<span class="fc bfc" id="L247" title="All 2 branches covered.">				} else if ((vs = vertices()).size() &gt; n) {</span>
-<span class="fc" id="L248">					isSimple = false; /* path with length greater than the vertices num */</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">				} else if ((vs = vertices()).size() &gt; n) {</span>
+<span class="fc" id="L249">					isSimple = false; /* path with length greater than the vertices num */</span>
 
-<span class="fc bfc" id="L250" title="All 2 branches covered.">				} else if (vs.size() * 4 &gt; n / 8) {</span>
-<span class="fc" id="L251">					Bitmap visited = new Bitmap(n);</span>
-<span class="fc" id="L252">					isSimple = true;</span>
-<span class="fc bfc" id="L253" title="All 2 branches covered.">					for (int v : vs) {</span>
-<span class="fc bfc" id="L254" title="All 2 branches covered.">						if (visited.get(v)) {</span>
-<span class="fc" id="L255">							isSimple = false;</span>
-<span class="fc" id="L256">							break;</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">				} else if (vs.size() * 4 &gt; n / 8) {</span>
+<span class="fc" id="L252">					Bitmap visited = new Bitmap(n);</span>
+<span class="fc" id="L253">					isSimple = true;</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">					for (int v : vs) {</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">						if (visited.get(v)) {</span>
+<span class="fc" id="L256">							isSimple = false;</span>
+<span class="fc" id="L257">							break;</span>
 						}
-<span class="fc" id="L258">						visited.set(v);</span>
-<span class="fc" id="L259">					}</span>
+<span class="fc" id="L259">						visited.set(v);</span>
+<span class="fc" id="L260">					}</span>
 
-<span class="fc" id="L261">				} else {</span>
-<span class="fc" id="L262">					IntSet visited = new IntOpenHashSet();</span>
-<span class="fc" id="L263">					isSimple = true;</span>
-<span class="fc bfc" id="L264" title="All 2 branches covered.">					for (int v : vs) {</span>
-<span class="fc bfc" id="L265" title="All 2 branches covered.">						if (!visited.add(v)) {</span>
-<span class="fc" id="L266">							isSimple = false;</span>
-<span class="fc" id="L267">							break;</span>
+<span class="fc" id="L262">				} else {</span>
+<span class="fc" id="L263">					IntSet visited = new IntOpenHashSet();</span>
+<span class="fc" id="L264">					isSimple = true;</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">					for (int v : vs) {</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">						if (!visited.add(v)) {</span>
+<span class="fc" id="L267">							isSimple = false;</span>
+<span class="fc" id="L268">							break;</span>
 						}
-<span class="fc" id="L269">					}</span>
+<span class="fc" id="L270">					}</span>
 
 				}
-<span class="fc" id="L272">				isSimpleValid = true;</span>
+<span class="fc" id="L273">				isSimpleValid = true;</span>
 			}
-<span class="fc" id="L274">			return isSimple;</span>
+<span class="fc" id="L275">			return isSimple;</span>
 		}
 
-		private static class IterUndirected implements IEdgeIter {
+		private static class IterUndirected implements IEdgeIter, IterTools.Peek.Int {
 
 			private final IndexGraph g;
 			private final IntListIterator it;
-<span class="fc" id="L281">			private int e = -1, v = -1;</span>
+<span class="fc" id="L282">			private int e = -1, v = -1;</span>
 
-<span class="fc" id="L283">			IterUndirected(IndexGraph g, IntList path, int source) {</span>
-<span class="fc" id="L284">				Assertions.onlyUndirected(g);</span>
-<span class="fc" id="L285">				this.g = g;</span>
-<span class="fc" id="L286">				v = source;</span>
-<span class="fc" id="L287">				it = path.iterator();</span>
-<span class="fc" id="L288">			}</span>
+<span class="fc" id="L284">			IterUndirected(IndexGraph g, IntList path, int source) {</span>
+<span class="fc" id="L285">				Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L286">				this.g = g;</span>
+<span class="fc" id="L287">				v = source;</span>
+<span class="fc" id="L288">				it = path.iterator();</span>
+<span class="fc" id="L289">			}</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc" id="L292">				return it.hasNext();</span>
+<span class="fc" id="L293">				return it.hasNext();</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="fc" id="L297">				e = it.nextInt();</span>
-<span class="fc" id="L298">				v = g.edgeEndpoint(e, v);</span>
-<span class="fc" id="L299">				return e;</span>
+<span class="fc" id="L298">				e = it.nextInt();</span>
+<span class="fc" id="L299">				v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L300">				return e;</span>
 			}
 
 			@Override
 			public int peekNextInt() {
-<span class="fc" id="L304">				int peek = it.nextInt();</span>
-<span class="fc" id="L305">				it.previousInt(); /* go back */</span>
-<span class="fc" id="L306">				return peek;</span>
+<span class="fc" id="L305">				int peek = it.nextInt();</span>
+<span class="fc" id="L306">				it.previousInt(); /* go back */</span>
+<span class="fc" id="L307">				return peek;</span>
 			}
 
 			@Override
 			public int sourceInt() {
-<span class="fc" id="L311">				return g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L312">				return g.edgeEndpoint(e, v);</span>
 			}
 
 			@Override
 			public int targetInt() {
-<span class="fc" id="L316">				return v;</span>
+<span class="fc" id="L317">				return v;</span>
 			}
 
+			@Deprecated
+			@Override
+			public Integer peekNext() {
+<span class="fc" id="L323">				return IEdgeIter.super.peekNext();</span>
+			}
 		}
 
-<span class="fc" id="L321">		private static class IterDirected implements IEdgeIter {</span>
+<span class="fc" id="L327">		private static class IterDirected implements IEdgeIter, IterTools.Peek.Int {</span>
 
 			private final IndexGraph g;
 			private final IntListIterator it;
-<span class="fc" id="L325">			private int e = -1;</span>
+<span class="fc" id="L331">			private int e = -1;</span>
 
-<span class="fc" id="L327">			IterDirected(IndexGraph g, IntList path) {</span>
-<span class="fc" id="L328">				Assertions.onlyDirected(g);</span>
-<span class="fc" id="L329">				this.g = g;</span>
-<span class="fc" id="L330">				it = path.iterator();</span>
-<span class="fc" id="L331">			}</span>
+<span class="fc" id="L333">			IterDirected(IndexGraph g, IntList path) {</span>
+<span class="fc" id="L334">				Assertions.onlyDirected(g);</span>
+<span class="fc" id="L335">				this.g = g;</span>
+<span class="fc" id="L336">				it = path.iterator();</span>
+<span class="fc" id="L337">			}</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc" id="L335">				return it.hasNext();</span>
+<span class="fc" id="L341">				return it.hasNext();</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="fc" id="L340">				int eNext = it.nextInt();</span>
-<span class="fc bfc" id="L341" title="All 2 branches covered.">				if (e &gt;= 0)</span>
-<span class="pc bpc" id="L342" title="1 of 2 branches missed.">					assert g.edgeTarget(e) == g.edgeSource(eNext);</span>
-<span class="fc" id="L343">				return e = eNext;</span>
+<span class="fc" id="L346">				int eNext = it.nextInt();</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">				if (e &gt;= 0)</span>
+<span class="pc bpc" id="L348" title="1 of 2 branches missed.">					assert g.edgeTarget(e) == g.edgeSource(eNext);</span>
+<span class="fc" id="L349">				return e = eNext;</span>
 			}
 
 			@Override
 			public int peekNextInt() {
-<span class="fc" id="L348">				int peek = it.nextInt();</span>
-<span class="fc" id="L349">				it.previousInt(); /* go back */</span>
-<span class="fc" id="L350">				return peek;</span>
+<span class="fc" id="L354">				int peek = it.nextInt();</span>
+<span class="fc" id="L355">				it.previousInt(); /* go back */</span>
+<span class="fc" id="L356">				return peek;</span>
 			}
 
 			@Override
 			public int sourceInt() {
-<span class="fc" id="L355">				return g.edgeSource(e);</span>
+<span class="fc" id="L361">				return g.edgeSource(e);</span>
 			}
 
 			@Override
 			public int targetInt() {
-<span class="fc" id="L360">				return g.edgeTarget(e);</span>
+<span class="fc" id="L366">				return g.edgeTarget(e);</span>
 			}
 
 			@Override
 			public int skip(final int n) {
-<span class="fc" id="L365">				int skipped = it.skip(n);</span>
-<span class="fc" id="L366">				e = -1;</span>
-<span class="fc" id="L367">				return skipped;</span>
+<span class="fc" id="L371">				int skipped = it.skip(n);</span>
+<span class="fc" id="L372">				e = -1;</span>
+<span class="fc" id="L373">				return skipped;</span>
+			}
+
+			@Deprecated
+			@Override
+			public Integer peekNext() {
+<span class="fc" id="L379">				return IEdgeIter.super.peekNext();</span>
 			}
 		}
 	}
 
 	static IPath findPath(IndexGraph g, final int source, final int target) {
-<span class="fc bfc" id="L373" title="All 2 branches covered.">		if (source == target)</span>
-<span class="fc" id="L374">			return IPath.valueOf(g, source, target, IntLists.emptyList());</span>
-<span class="fc" id="L375">		int n = g.vertices().size();</span>
-<span class="fc" id="L376">		int[] backtrack = new int[n];</span>
-<span class="fc" id="L377">		Arrays.fill(backtrack, -1);</span>
+<span class="fc bfc" id="L385" title="All 2 branches covered.">		if (source == target)</span>
+<span class="fc" id="L386">			return IPath.valueOf(g, source, target, IntLists.emptyList());</span>
+<span class="fc" id="L387">		int n = g.vertices().size();</span>
+<span class="fc" id="L388">		int[] backtrack = new int[n];</span>
+<span class="fc" id="L389">		Arrays.fill(backtrack, -1);</span>
 
-<span class="fc" id="L379">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
-<span class="fc" id="L380">		backtrack[target] = Integer.MAX_VALUE; /* mark as visited */</span>
-<span class="fc" id="L381">		queue.enqueue(target);</span>
-<span class="fc bfc" id="L382" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
-<span class="fc" id="L383">			final int v = queue.dequeueInt();</span>
-<span class="fc bfc" id="L384" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L385">				int e = eit.nextInt();</span>
-<span class="fc" id="L386">				int u = eit.sourceInt();</span>
-<span class="fc bfc" id="L387" title="All 2 branches covered.">				if (backtrack[u] &gt;= 0)</span>
-<span class="fc" id="L388">					continue;</span>
-<span class="fc" id="L389">				backtrack[u] = e;</span>
-<span class="fc bfc" id="L390" title="All 2 branches covered.">				if (u == source) {</span>
-<span class="fc" id="L391">					IntArrayList path = new IntArrayList();</span>
-<span class="fc bfc" id="L392" title="All 2 branches covered.">					if (g.isDirected()) {</span>
-<span class="fc bfc" id="L393" title="All 2 branches covered.">						for (int p = source; p != target;) {</span>
-<span class="fc" id="L394">							e = backtrack[p];</span>
-<span class="fc" id="L395">							path.add(e);</span>
-<span class="fc" id="L396">							p = g.edgeTarget(e);</span>
+<span class="fc" id="L391">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L392">		backtrack[target] = Integer.MAX_VALUE; /* mark as visited */</span>
+<span class="fc" id="L393">		queue.enqueue(target);</span>
+<span class="fc bfc" id="L394" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
+<span class="fc" id="L395">			final int v = queue.dequeueInt();</span>
+<span class="fc bfc" id="L396" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L397">				int e = eit.nextInt();</span>
+<span class="fc" id="L398">				int u = eit.sourceInt();</span>
+<span class="fc bfc" id="L399" title="All 2 branches covered.">				if (backtrack[u] &gt;= 0)</span>
+<span class="fc" id="L400">					continue;</span>
+<span class="fc" id="L401">				backtrack[u] = e;</span>
+<span class="fc bfc" id="L402" title="All 2 branches covered.">				if (u == source) {</span>
+<span class="fc" id="L403">					IntArrayList path = new IntArrayList();</span>
+<span class="fc bfc" id="L404" title="All 2 branches covered.">					if (g.isDirected()) {</span>
+<span class="fc bfc" id="L405" title="All 2 branches covered.">						for (int p = source; p != target;) {</span>
+<span class="fc" id="L406">							e = backtrack[p];</span>
+<span class="fc" id="L407">							path.add(e);</span>
+<span class="fc" id="L408">							p = g.edgeTarget(e);</span>
 						}
 					} else {
-<span class="fc bfc" id="L399" title="All 2 branches covered.">						for (int p = source; p != target;) {</span>
-<span class="fc" id="L400">							e = backtrack[p];</span>
-<span class="fc" id="L401">							path.add(e);</span>
-<span class="fc" id="L402">							p = g.edgeEndpoint(e, p);</span>
+<span class="fc bfc" id="L411" title="All 2 branches covered.">						for (int p = source; p != target;) {</span>
+<span class="fc" id="L412">							e = backtrack[p];</span>
+<span class="fc" id="L413">							path.add(e);</span>
+<span class="fc" id="L414">							p = g.edgeEndpoint(e, p);</span>
 						}
 					}
-<span class="fc" id="L405">					return IPath.valueOf(g, source, target, path);</span>
+<span class="fc" id="L417">					return IPath.valueOf(g, source, target, path);</span>
 				}
-<span class="fc" id="L407">				queue.enqueue(u);</span>
-<span class="fc" id="L408">			}</span>
-<span class="fc" id="L409">		}</span>
-<span class="fc" id="L410">		return null;</span>
+<span class="fc" id="L419">				queue.enqueue(u);</span>
+<span class="fc" id="L420">			}</span>
+<span class="fc" id="L421">		}</span>
+<span class="fc" id="L422">		return null;</span>
 
 	}
 
 	static boolean isPath(IndexGraph g, int source, int target, IntList edges) {
-<span class="pc bpc" id="L415" title="2 of 4 branches missed.">		if (!g.vertices().contains(source) || !g.vertices().contains(target))</span>
-<span class="nc" id="L416">			return false;</span>
-<span class="fc" id="L417">		int size = edges.size();</span>
-<span class="fc bfc" id="L418" title="All 2 branches covered.">		if (size == 0)</span>
-<span class="pc bpc" id="L419" title="1 of 2 branches missed.">			return source == target;</span>
+<span class="pc bpc" id="L427" title="2 of 4 branches missed.">		if (!g.vertices().contains(source) || !g.vertices().contains(target))</span>
+<span class="nc" id="L428">			return false;</span>
+<span class="fc" id="L429">		int size = edges.size();</span>
+<span class="fc bfc" id="L430" title="All 2 branches covered.">		if (size == 0)</span>
+<span class="pc bpc" id="L431" title="1 of 2 branches missed.">			return source == target;</span>
 
-<span class="fc" id="L421">		IntIterator eit = edges.iterator();</span>
-<span class="fc bfc" id="L422" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc" id="L423">			int v = source;</span>
-<span class="fc bfc" id="L424" title="All 2 branches covered.">			for (int i = size; i-- &gt; 0;) {</span>
-<span class="fc" id="L425">				int e = eit.nextInt();</span>
-<span class="pc bpc" id="L426" title="1 of 4 branches missed.">				if (!g.edges().contains(e) || g.edgeSource(e) != v)</span>
-<span class="fc" id="L427">					return false;</span>
-<span class="fc" id="L428">				v = g.edgeTarget(e);</span>
-<span class="fc" id="L429">			}</span>
-<span class="fc bfc" id="L430" title="All 2 branches covered.">			return v == target;</span>
+<span class="fc" id="L433">		IntIterator eit = edges.iterator();</span>
+<span class="fc bfc" id="L434" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc" id="L435">			int v = source;</span>
+<span class="fc bfc" id="L436" title="All 2 branches covered.">			for (int i = size; i-- &gt; 0;) {</span>
+<span class="fc" id="L437">				int e = eit.nextInt();</span>
+<span class="pc bpc" id="L438" title="1 of 4 branches missed.">				if (!g.edges().contains(e) || g.edgeSource(e) != v)</span>
+<span class="fc" id="L439">					return false;</span>
+<span class="fc" id="L440">				v = g.edgeTarget(e);</span>
+<span class="fc" id="L441">			}</span>
+<span class="fc bfc" id="L442" title="All 2 branches covered.">			return v == target;</span>
 
 		} else {
-<span class="fc" id="L433">			int v = source;</span>
-<span class="fc bfc" id="L434" title="All 2 branches covered.">			for (int i = size; i-- &gt; 0;) {</span>
-<span class="fc" id="L435">				int e = eit.nextInt();</span>
-<span class="pc bpc" id="L436" title="1 of 2 branches missed.">				if (!g.edges().contains(e))</span>
-<span class="nc" id="L437">					return false;</span>
-<span class="fc bfc" id="L438" title="All 2 branches covered.">				if (g.edgeSource(e) == v) {</span>
-<span class="fc" id="L439">					v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L440" title="All 2 branches covered.">				} else if (g.edgeTarget(e) == v) {</span>
-<span class="fc" id="L441">					v = g.edgeSource(e);</span>
+<span class="fc" id="L445">			int v = source;</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">			for (int i = size; i-- &gt; 0;) {</span>
+<span class="fc" id="L447">				int e = eit.nextInt();</span>
+<span class="pc bpc" id="L448" title="1 of 2 branches missed.">				if (!g.edges().contains(e))</span>
+<span class="nc" id="L449">					return false;</span>
+<span class="fc bfc" id="L450" title="All 2 branches covered.">				if (g.edgeSource(e) == v) {</span>
+<span class="fc" id="L451">					v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L452" title="All 2 branches covered.">				} else if (g.edgeTarget(e) == v) {</span>
+<span class="fc" id="L453">					v = g.edgeSource(e);</span>
 				} else {
-<span class="fc" id="L443">					return false;</span>
+<span class="fc" id="L455">					return false;</span>
 				}
-<span class="fc" id="L445">			}</span>
-<span class="fc bfc" id="L446" title="All 2 branches covered.">			return v == target;</span>
+<span class="fc" id="L457">			}</span>
+<span class="fc bfc" id="L458" title="All 2 branches covered.">			return v == target;</span>
 		}
 	}
 
@@ -454,51 +466,51 @@ class Paths {
 		private final IndexIdMap&lt;V&gt; viMap;
 		private final IndexIdMap&lt;E&gt; eiMap;
 
-<span class="fc" id="L457">		ObjPathFromIndexPath(Graph&lt;V, E&gt; g, IPath indexPath) {</span>
-<span class="fc" id="L458">			this.indexPath = Objects.requireNonNull(indexPath);</span>
-<span class="fc" id="L459">			this.g = g;</span>
-<span class="fc" id="L460">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L461">			this.eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L462">		}</span>
+<span class="fc" id="L469">		ObjPathFromIndexPath(Graph&lt;V, E&gt; g, IPath indexPath) {</span>
+<span class="fc" id="L470">			this.indexPath = Objects.requireNonNull(indexPath);</span>
+<span class="fc" id="L471">			this.g = g;</span>
+<span class="fc" id="L472">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L473">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L474">		}</span>
 
 		@Override
 		public V source() {
-<span class="fc" id="L466">			return viMap.indexToId(indexPath.sourceInt());</span>
+<span class="fc" id="L478">			return viMap.indexToId(indexPath.sourceInt());</span>
 		}
 
 		@Override
 		public V target() {
-<span class="fc" id="L471">			return viMap.indexToId(indexPath.targetInt());</span>
+<span class="fc" id="L483">			return viMap.indexToId(indexPath.targetInt());</span>
 		}
 
 		@Override
 		public EdgeIter&lt;V, E&gt; edgeIter() {
-<span class="fc" id="L476">			return IndexIdMaps.indexToIdEdgeIter(g, indexPath.edgeIter());</span>
+<span class="fc" id="L488">			return IndexIdMaps.indexToIdEdgeIter(g, indexPath.edgeIter());</span>
 		}
 
 		@Override
 		public List&lt;E&gt; edges() {
-<span class="fc" id="L481">			return IndexIdMaps.indexToIdList(indexPath.edges(), eiMap);</span>
+<span class="fc" id="L493">			return IndexIdMaps.indexToIdList(indexPath.edges(), eiMap);</span>
 		}
 
 		@Override
 		public List&lt;V&gt; vertices() {
-<span class="fc" id="L486">			return IndexIdMaps.indexToIdList(indexPath.vertices(), viMap);</span>
+<span class="fc" id="L498">			return IndexIdMaps.indexToIdList(indexPath.vertices(), viMap);</span>
 		}
 
 		@Override
 		public Graph&lt;V, E&gt; graph() {
-<span class="fc" id="L491">			return g;</span>
+<span class="fc" id="L503">			return g;</span>
 		}
 
 		@Override
 		public Path&lt;V, E&gt; subPath(int fromEdgeIndex, int toEdgeIndex) {
-<span class="fc" id="L496">			return new ObjPathFromIndexPath&lt;&gt;(g, indexPath.subPath(fromEdgeIndex, toEdgeIndex));</span>
+<span class="fc" id="L508">			return new ObjPathFromIndexPath&lt;&gt;(g, indexPath.subPath(fromEdgeIndex, toEdgeIndex));</span>
 		}
 
 		@Override
 		public boolean isSimple() {
-<span class="fc" id="L501">			return indexPath.isSimple();</span>
+<span class="fc" id="L513">			return indexPath.isSimple();</span>
 		}
 	}
 
@@ -509,51 +521,51 @@ class Paths {
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-<span class="fc" id="L512">		IntPathFromIndexPath(IntGraph g, IPath indexPath) {</span>
-<span class="fc" id="L513">			this.indexPath = Objects.requireNonNull(indexPath);</span>
-<span class="fc" id="L514">			this.g = g;</span>
-<span class="fc" id="L515">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L516">			this.eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L517">		}</span>
+<span class="fc" id="L524">		IntPathFromIndexPath(IntGraph g, IPath indexPath) {</span>
+<span class="fc" id="L525">			this.indexPath = Objects.requireNonNull(indexPath);</span>
+<span class="fc" id="L526">			this.g = g;</span>
+<span class="fc" id="L527">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L528">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L529">		}</span>
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L521">			return viMap.indexToIdInt(indexPath.sourceInt());</span>
+<span class="fc" id="L533">			return viMap.indexToIdInt(indexPath.sourceInt());</span>
 		}
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L526">			return viMap.indexToIdInt(indexPath.targetInt());</span>
+<span class="fc" id="L538">			return viMap.indexToIdInt(indexPath.targetInt());</span>
 		}
 
 		@Override
 		public IEdgeIter edgeIter() {
-<span class="fc" id="L531">			return IndexIdMaps.indexToIdEdgeIter(g, indexPath.edgeIter());</span>
+<span class="fc" id="L543">			return IndexIdMaps.indexToIdEdgeIter(g, indexPath.edgeIter());</span>
 		}
 
 		@Override
 		public IntList edges() {
-<span class="fc" id="L536">			return IndexIdMaps.indexToIdList(indexPath.edges(), eiMap);</span>
+<span class="fc" id="L548">			return IndexIdMaps.indexToIdList(indexPath.edges(), eiMap);</span>
 		}
 
 		@Override
 		public IntList vertices() {
-<span class="fc" id="L541">			return IndexIdMaps.indexToIdList(indexPath.vertices(), viMap);</span>
+<span class="fc" id="L553">			return IndexIdMaps.indexToIdList(indexPath.vertices(), viMap);</span>
 		}
 
 		@Override
 		public IntGraph graph() {
-<span class="fc" id="L546">			return g;</span>
+<span class="fc" id="L558">			return g;</span>
 		}
 
 		@Override
 		public IPath subPath(int fromEdgeIndex, int toEdgeIndex) {
-<span class="fc" id="L551">			return new IntPathFromIndexPath(g, indexPath.subPath(fromEdgeIndex, toEdgeIndex));</span>
+<span class="fc" id="L563">			return new IntPathFromIndexPath(g, indexPath.subPath(fromEdgeIndex, toEdgeIndex));</span>
 		}
 
 		@Override
 		public boolean isSimple() {
-<span class="fc" id="L556">			return indexPath.isSimple();</span>
+<span class="fc" id="L568">			return indexPath.isSimple();</span>
 		}
 	}
 

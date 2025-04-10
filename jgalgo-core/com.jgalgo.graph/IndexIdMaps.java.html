@@ -355,7 +355,7 @@ public class IndexIdMaps {
 <span class="fc" id="L355">		return new IndexToIntIdEdgeIter(g, indexIter);</span>
 	}
 
-	private static class IndexToIdEdgeIter&lt;V, E&gt; extends IndexToIdIterator&lt;E&gt; implements EdgeIter&lt;V, E&gt; {
+	private static class IndexToIdEdgeIter&lt;V, E&gt; extends IndexToIdIterator&lt;E&gt; implements EdgeIters.Base&lt;V, E&gt; {
 		private final IndexIdMap&lt;V&gt; viMap;
 
 		IndexToIdEdgeIter(Graph&lt;V, E&gt; g, IEdgeIter indexIt) {
@@ -388,7 +388,7 @@ public class IndexIdMaps {
 		}
 	}
 
-	private static class IndexToIntIdEdgeIter extends IndexToIntIdIterator implements IEdgeIter {
+	private static class IndexToIntIdEdgeIter extends IndexToIntIdIterator implements EdgeIters.IBase {
 		private final IndexIntIdMap viMap;
 
 		IndexToIntIdEdgeIter(IntGraph g, IEdgeIter indexIt) {

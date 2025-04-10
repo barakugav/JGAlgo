@@ -134,8 +134,8 @@ public class Assertions {
 		}
 <span class="fc" id="L135">	}</span>
 
-	public static void checkGraphId(int elementIdx, int length, boolean isVertices) {
-<span class="pc bpc" id="L138" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphIdCheck) {</span>
+	public static void checkGraphIdx(int elementIdx, int length, boolean isVertices) {
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphIdxCheck) {</span>
 <span class="fc bfc" id="L139" title="All 4 branches covered.">			if (elementIdx &lt; 0 || elementIdx &gt;= length) {</span>
 <span class="fc bfc" id="L140" title="All 2 branches covered.">				if (isVertices) {</span>
 <span class="fc" id="L141">					throw NoSuchVertexException.ofIndex(elementIdx);</span>
@@ -147,16 +147,16 @@ public class Assertions {
 <span class="fc" id="L147">	}</span>
 
 	public static void checkVertex(int vertexIdx, int n) {
-<span class="pc bpc" id="L150" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphIdCheck) {</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphIdxCheck) {</span>
 <span class="fc bfc" id="L151" title="All 4 branches covered.">			if (vertexIdx &lt; 0 || vertexIdx &gt;= n)</span>
 <span class="fc" id="L152">				throw NoSuchVertexException.ofIndex(vertexIdx);</span>
 		}
 <span class="fc" id="L154">	}</span>
 
 	public static void checkEdge(int edgeIdx, int m) {
-<span class="pc bpc" id="L157" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphIdCheck) {</span>
-<span class="pc bpc" id="L158" title="2 of 4 branches missed.">			if (edgeIdx &lt; 0 || edgeIdx &gt;= m)</span>
-<span class="nc" id="L159">				throw NoSuchEdgeException.ofIndex(edgeIdx);</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphIdxCheck) {</span>
+<span class="fc bfc" id="L158" title="All 4 branches covered.">			if (edgeIdx &lt; 0 || edgeIdx &gt;= m)</span>
+<span class="fc" id="L159">				throw NoSuchEdgeException.ofIndex(edgeIdx);</span>
 		}
 <span class="fc" id="L161">	}</span>
 

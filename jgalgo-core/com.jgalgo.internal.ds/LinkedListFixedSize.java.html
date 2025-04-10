@@ -54,9 +54,9 @@ public class LinkedListFixedSize {
 <span class="nc" id="L54">			Arrays.fill(arr, None);</span>
 <span class="nc" id="L55">		}</span>
 
-		public IterTools.IterPeekable.Int iterator(int id) {
+		public IterTools.Peek.Int iterator(int id) {
 <span class="fc" id="L58">			Assertions.checkArrayIndex(id, 0, size());</span>
-<span class="fc" id="L59">			return new IterTools.IterPeekable.Int() {</span>
+<span class="fc" id="L59">			return new IterTools.Peek.Int() {</span>
 <span class="fc" id="L60">				int p = id;</span>
 
 				@Override
@@ -163,16 +163,16 @@ public class LinkedListFixedSize {
 <span class="fc" id="L163">			Arrays.fill(arr, None);</span>
 <span class="fc" id="L164">		}</span>
 
-		public IterTools.IterPeekable.Int iterator(int id) {
+		public IterTools.Peek.Int iterator(int id) {
 <span class="fc" id="L167">			Assertions.checkArrayIndex(id, 0, size());</span>
 <span class="fc" id="L168">			return new Iter(id);</span>
 		}
 
-		public IterTools.IterPeekable.Int emptyIter() {
+		public IterTools.Peek.Int emptyIter() {
 <span class="fc" id="L172">			return new Iter(None);</span>
 		}
 
-		private class Iter implements IterTools.IterPeekable.Int {
+		private class Iter implements IterTools.Peek.Int {
 
 			int p;
 

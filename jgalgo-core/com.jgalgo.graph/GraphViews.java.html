@@ -378,7 +378,7 @@ class GraphViews {
 		}
 	}
 
-	abstract static class EdgeIterView&lt;V, E&gt; implements EdgeIter&lt;V, E&gt;, ObjectIterator&lt;E&gt; {
+	abstract static class EdgeIterView&lt;V, E&gt; implements EdgeIters.Base&lt;V, E&gt;, ObjectIterator&lt;E&gt; {
 		final EdgeIter&lt;V, E&gt; it;
 
 <span class="fc" id="L384">		EdgeIterView(EdgeIter&lt;V, E&gt; it) {</span>
@@ -423,7 +423,7 @@ class GraphViews {
 		}
 	}
 
-	abstract static class IEdgeIterView implements IEdgeIter {
+	abstract static class IEdgeIterView implements EdgeIters.IBase {
 		final IEdgeIter it;
 
 <span class="fc" id="L429">		IEdgeIterView(IEdgeIter it) {</span>

@@ -747,11 +747,22 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * {@inheritDoc}
 	 *
 	 * &lt;p&gt;
-	 * Prefer to pass a IntCollection instead of Collection&amp;lt;Integer&amp;gt; as collections of vertices and edges.
+	 * Prefer to pass an IntCollection instead of Collection&amp;lt;Integer&amp;gt; as collections of vertices and edges.
 	 */
 	@Override
 	default IntGraph subGraphCopy(Collection&lt;Integer&gt; vertices, Collection&lt;Integer&gt; edges) {
 <span class="fc" id="L754">		return (IntGraph) Graph.super.subGraphCopy(vertices, edges);</span>
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * &lt;p&gt;
+	 * Prefer to pass an IntCollection instead of Collection&amp;lt;Integer&amp;gt; as collections of vertices and edges.
+	 */
+	@Override
+	default IntGraph maskedGraphView(Collection&lt;Integer&gt; verticesMask, Collection&lt;Integer&gt; edgesMask) {
+<span class="fc" id="L765">		return new MaskedGraphs.MaskedIntGraph(this, verticesMask, edgesMask);</span>
 	}
 
 	/**
@@ -764,7 +775,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @return a new undirected empty graph
 	 */
 	static IntGraph newUndirected() {
-<span class="fc" id="L767">		return IntGraphFactory.undirected().newGraph();</span>
+<span class="fc" id="L778">		return IntGraphFactory.undirected().newGraph();</span>
 	}
 
 	/**
@@ -777,7 +788,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @return a new directed empty graph
 	 */
 	static IntGraph newDirected() {
-<span class="fc" id="L780">		return IntGraphFactory.directed().newGraph();</span>
+<span class="fc" id="L791">		return IntGraphFactory.directed().newGraph();</span>
 	}
 
 }

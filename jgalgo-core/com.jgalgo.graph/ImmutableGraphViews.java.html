@@ -164,12 +164,12 @@ class ImmutableGraphViews {
 
 		@Override
 		public IdBuilder&lt;V&gt; vertexBuilder() {
-<span class="fc" id="L167">			return null;</span>
+<span class="fc" id="L167">			return graph.vertexBuilder();</span>
 		}
 
 		@Override
 		public IdBuilder&lt;E&gt; edgeBuilder() {
-<span class="fc" id="L172">			return null;</span>
+<span class="fc" id="L172">			return graph.edgeBuilder();</span>
 		}
 
 		@Override
@@ -597,7 +597,7 @@ class ImmutableGraphViews {
 		}
 	}
 
-	private static class ImmutableEdgeIter&lt;V, E&gt; implements EdgeIter&lt;V, E&gt;, ObjectIterator&lt;E&gt; {
+	private static class ImmutableEdgeIter&lt;V, E&gt; implements EdgeIters.Base&lt;V, E&gt;, ObjectIterator&lt;E&gt; {
 		private final EdgeIter&lt;V, E&gt; it;
 
 <span class="fc" id="L603">		ImmutableEdgeIter(EdgeIter&lt;V, E&gt; it) {</span>
@@ -635,7 +635,7 @@ class ImmutableGraphViews {
 		}
 	}
 
-	private static class ImmutableIEdgeIter implements IEdgeIter {
+	private static class ImmutableIEdgeIter implements EdgeIters.IBase {
 		private final IEdgeIter it;
 
 <span class="fc" id="L641">		ImmutableIEdgeIter(IEdgeIter it) {</span>

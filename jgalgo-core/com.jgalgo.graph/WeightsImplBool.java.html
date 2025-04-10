@@ -20,6 +20,8 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import it.unimi.dsi.fastutil.longs.LongArrays;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 class WeightsImplBool {
 
@@ -33,10 +35,8 @@ class WeightsImplBool {
 		static final int WordSize = Long.SIZE;
 
 		IndexImpl(IntSet elements, boolean isVertices, boolean defVal) {
-<span class="fc" id="L36">			super(elements, isVertices);</span>
-
-<span class="fc" id="L38">			defaultWeight = defVal;</span>
-
+<span class="fc" id="L38">			super(elements, isVertices);</span>
+<span class="fc" id="L39">			defaultWeight = defVal;</span>
 <span class="fc" id="L40">			weights = LongArrays.EMPTY_ARRAY;</span>
 <span class="fc bfc" id="L41" title="All 2 branches covered.">			if (!elements.isEmpty()) {</span>
 <span class="fc" id="L42">				weights = new long[wordsNum(elements.size())];</span>
@@ -45,234 +45,372 @@ class WeightsImplBool {
 			}
 <span class="fc" id="L46">		}</span>
 
-		IndexImpl(WeightsImplBool.IndexImpl  orig, IntSet elements, boolean isVertices) {
-<span class="fc" id="L49">			this(elements, isVertices, orig.defaultWeight);</span>
-<span class="fc" id="L50">			WeightsImpl.checkSameSize(elements, orig.elements);</span>
-<span class="fc" id="L51">			weights = Arrays.copyOf(orig.weights, wordsNum(elements.size()));</span>
-<span class="fc" id="L52">		}</span>
+		IndexImpl(IWeightsBool  orig, IntSet elements, boolean isVertices) {
+<span class="fc" id="L49">			super(elements, isVertices);</span>
+<span class="fc" id="L50">			defaultWeight = orig.defaultWeight();</span>
+<span class="fc" id="L51">			final int n = elements.size();</span>
 
-		IndexImpl(WeightsImplBool.IndexImpl  orig, IntSet elements, boolean isVertices, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-<span class="fc" id="L55">			this(elements, isVertices, orig.defaultWeight);</span>
-<span class="fc" id="L56">			WeightsImpl.checkSameSize(elements, orig.elements);</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">			if (defaultWeight) {</span>
-<span class="fc" id="L58">				Arrays.fill(weights, ~0L);</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">				for (int oldIdx : range(elements.size())) {</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">					if ((orig.weights[word(oldIdx)] &amp; bit(oldIdx)) == 0) {</span>
-<span class="fc" id="L61">						int newIdx = reIndexMap.map(oldIdx);</span>
-<span class="fc" id="L62">						weights[word(newIdx)] &amp;= ~bit(newIdx);</span>
-					}
-<span class="fc" id="L64">				}</span>
-			} else {
-<span class="fc" id="L66">				Arrays.fill(weights, 0);</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">				for (int oldIdx : range(elements.size())) {</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">					if ((orig.weights[word(oldIdx)] &amp; bit(oldIdx)) != 0) {</span>
-<span class="fc" id="L69">						int newIdx = reIndexMap.map(oldIdx);</span>
-<span class="fc" id="L70">						weights[word(newIdx)] |= bit(newIdx);</span>
-					}
-<span class="fc" id="L72">				}</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">			if (orig instanceof WeightsImplBool.IndexImpl) {</span>
+<span class="fc" id="L54">				WeightsImplBool.IndexImpl  orig0 = (WeightsImplBool.IndexImpl ) orig;</span>
+<span class="fc" id="L55">				WeightsImpl.checkSameSize(elements, orig0.elements);</span>
+<span class="fc" id="L56">				weights = Arrays.copyOf(orig0.weights, wordsNum(n));</span>
+<span class="fc" id="L57">			} else {</span>
+<span class="fc" id="L58">				weights = LongArrays.EMPTY_ARRAY;</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">				if (n &gt; 0) {</span>
+<span class="fc" id="L60">					weights = new long[wordsNum(n)];</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">					if (defaultWeight)</span>
+<span class="fc" id="L62">						weights[weights.length - 1] = ~0L;</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">					for (int i : range(n))</span>
+<span class="fc" id="L64">						setImpl(i, orig.get(i));</span>
+				}
 			}
-<span class="fc" id="L74">		}</span>
+<span class="fc" id="L67">		}</span>
+
+		IndexImpl(IWeightsBool  orig, IntSet elements, boolean isVertices, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+<span class="fc" id="L70">			super(elements, isVertices);</span>
+<span class="fc" id="L71">			defaultWeight = orig.defaultWeight();</span>
+<span class="fc" id="L72">			final int n = elements.size();</span>
+<span class="fc" id="L73">			weights = new long[wordsNum(n)];</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			if (defaultWeight)</span>
+<span class="fc" id="L75">				Arrays.fill(weights, ~0L);</span>
+
+<span class="fc bfc" id="L77" title="All 2 branches covered.">			if (orig instanceof WeightsImplBool.IndexImpl) {</span>
+<span class="fc" id="L78">				WeightsImplBool.IndexImpl  orig0 = (WeightsImplBool.IndexImpl ) orig;</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				if (defaultWeight) {</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">					for (int oldIdx : range(n))</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">						if ((orig0.weights[word(oldIdx)] &amp; bit(oldIdx)) == 0)</span>
+<span class="fc" id="L82">							setImpl(reIndexMap.map(oldIdx), false);</span>
+				} else {
+<span class="fc bfc" id="L84" title="All 2 branches covered.">					for (int oldIdx : range(n))</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">						if ((orig0.weights[word(oldIdx)] &amp; bit(oldIdx)) != 0)</span>
+<span class="fc" id="L86">							setImpl(reIndexMap.map(oldIdx), true);</span>
+				}
+<span class="fc" id="L88">			} else {</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">				if (defaultWeight) {</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">					for (int oldIdx : range(n))</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">						if (!orig.get(oldIdx))</span>
+<span class="fc" id="L92">							setImpl(reIndexMap.map(oldIdx), false);</span>
+				} else {
+<span class="fc bfc" id="L94" title="All 2 branches covered.">					for (int oldIdx : range(n))</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">						if (orig.get(oldIdx))</span>
+<span class="fc" id="L96">							setImpl(reIndexMap.map(oldIdx), true);</span>
+				}
+			}
+<span class="fc" id="L99">		}</span>
 
 		
 		@Override
 		public boolean get(int idx) {
-<span class="fc" id="L79">			checkIdx(idx);</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">			return (weights[word(idx)] &amp; bit(idx)) != 0;</span>
+<span class="fc" id="L104">			checkIdx(idx);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			return (weights[word(idx)] &amp; bit(idx)) != 0;</span>
 		}
 
 		@Override
 		public boolean defaultWeight() {
-<span class="fc" id="L85">			return defaultWeight;</span>
+<span class="fc" id="L110">			return defaultWeight;</span>
 		}
 
 		static int word(int idx) {
-<span class="fc" id="L89">			return idx / WordSize;</span>
+<span class="fc" id="L114">			return idx / WordSize;</span>
 		}
 
 		static long bit(int idx) {
-<span class="fc" id="L93">			return 1L &lt;&lt; (idx % WordSize);</span>
+<span class="fc" id="L118">			return 1L &lt;&lt; (idx % WordSize);</span>
 		}
 
 		static int wordsNum(int size) {
-<span class="fc" id="L97">			return (size + WordSize - 1) / WordSize;</span>
+<span class="fc" id="L122">			return (size + WordSize - 1) / WordSize;</span>
 		}
+
+		void setImpl(int idx, boolean weight) {
+<span class="fc bfc" id="L126" title="All 2 branches covered.">			if (weight) {</span>
+<span class="fc" id="L127">				weights[word(idx)] |= bit(idx);</span>
+			} else {
+<span class="fc" id="L129">				weights[word(idx)] &amp;= ~bit(idx);</span>
+			}
+<span class="fc" id="L131">		}</span>
 	}
 
 	static class IndexImmutable  extends WeightsImplBool.IndexImpl  implements WeightsImpl.IndexImmutable&lt;Boolean&gt; {
 
-		IndexImmutable(WeightsImplBool.IndexImpl  orig, IntSet elements, boolean isVertices) {
-<span class="fc" id="L104">			super(orig, elements, isVertices);</span>
-<span class="fc" id="L105">		}</span>
+		IndexImmutable(IWeightsBool  orig, IntSet elements, boolean isVertices) {
+<span class="fc" id="L137">			super(orig, elements, isVertices);</span>
+<span class="fc" id="L138">		}</span>
 
-		IndexImmutable(WeightsImplBool.IndexImpl  orig, IntSet elements, boolean isVertices, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-<span class="fc" id="L108">			super(orig, elements, isVertices, reIndexMap);</span>
-<span class="fc" id="L109">		}</span>
+		IndexImmutable(IWeightsBool  orig, IntSet elements, boolean isVertices, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+<span class="fc" id="L141">			super(orig, elements, isVertices, reIndexMap);</span>
+<span class="fc" id="L142">		}</span>
 
 		@Override
 		public void set(int idx, boolean weight) {
-<span class="fc" id="L113">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+<span class="fc" id="L146">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
 		}
 	}
 
 	static class IndexMutable  extends WeightsImplBool.IndexImpl  implements WeightsImpl.IndexMutable&lt;Boolean&gt; {
 
 		IndexMutable(IntSet elements, boolean isVertices, boolean defVal) {
-<span class="fc" id="L120">			super(elements, isVertices, defVal);</span>
-<span class="fc" id="L121">		}</span>
+<span class="fc" id="L153">			super(elements, isVertices, defVal);</span>
+<span class="fc" id="L154">		}</span>
 
-		IndexMutable(WeightsImplBool.IndexImpl  orig, IntSet elements, boolean isVertices) {
-<span class="fc" id="L124">			super(orig, elements, isVertices);</span>
-<span class="fc" id="L125">		}</span>
+		IndexMutable(IWeightsBool  orig, IntSet elements, boolean isVertices) {
+<span class="fc" id="L157">			super(orig, elements, isVertices);</span>
+<span class="fc" id="L158">		}</span>
 
 		@Override
 		public void set(int idx, boolean weight) {
-<span class="fc" id="L129">			checkIdx(idx);</span>
-<span class="fc" id="L130">			setImpl(idx, weight);</span>
-<span class="fc" id="L131">		}</span>
-
-		private void setImpl(int idx, boolean weight) {
-<span class="fc bfc" id="L134" title="All 2 branches covered.">			if (weight) {</span>
-<span class="fc" id="L135">				weights[word(idx)] |= bit(idx);</span>
-			} else {
-<span class="fc" id="L137">				weights[word(idx)] &amp;= ~bit(idx);</span>
-			}
-<span class="fc" id="L139">		}</span>
+<span class="fc" id="L162">			checkIdx(idx);</span>
+<span class="fc" id="L163">			setImpl(idx, weight);</span>
+<span class="fc" id="L164">		}</span>
 
 		@Override
 		public int capacity() {
-<span class="fc" id="L143">			return weights.length * WordSize;</span>
+<span class="fc" id="L168">			return weights.length * WordSize;</span>
 		}
 
 		@Override
 		public void expand(int newCapacity) {
-<span class="fc" id="L148">			int oldCapacity = capacity();</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">			if (oldCapacity &gt;= newCapacity)</span>
-<span class="fc" id="L150">				return;</span>
-<span class="fc" id="L151">			weights = Arrays.copyOf(weights, wordsNum(newCapacity));</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">			if (defaultWeight)</span>
-<span class="fc" id="L153">				Arrays.fill(weights, oldCapacity / WordSize, weights.length, ~0L);</span>
-<span class="fc" id="L154">		}</span>
+<span class="fc" id="L173">			int oldCapacity = capacity();</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			if (oldCapacity &gt;= newCapacity)</span>
+<span class="fc" id="L175">				return;</span>
+<span class="fc" id="L176">			weights = Arrays.copyOf(weights, wordsNum(newCapacity));</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">			if (defaultWeight)</span>
+<span class="fc" id="L178">				Arrays.fill(weights, oldCapacity / WordSize, weights.length, ~0L);</span>
+<span class="fc" id="L179">		}</span>
 
 		@Override
 		public void swapAndClear(int removedIdx, int swappedIdx) {
 			// checkIdx(removedIdx);
 			// checkIdx(swappedIdx);
-<span class="fc bfc" id="L160" title="All 2 branches covered.">			setImpl(removedIdx, (weights[word(swappedIdx)] &amp; bit(swappedIdx)) != 0);</span>
-<span class="fc" id="L161">			setImpl(swappedIdx, defaultWeight);</span>
-<span class="fc" id="L162">		}</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">			setImpl(removedIdx, (weights[word(swappedIdx)] &amp; bit(swappedIdx)) != 0);</span>
+<span class="fc" id="L186">			setImpl(swappedIdx, defaultWeight);</span>
+<span class="fc" id="L187">		}</span>
 
 		@Override
 		public void clear(int idx) {
-<span class="fc" id="L166">			setImpl(idx, defaultWeight);</span>
-<span class="fc" id="L167">		}</span>
+<span class="fc" id="L191">			setImpl(idx, defaultWeight);</span>
+<span class="fc" id="L192">		}</span>
 
 		@Override
 		public void clear() {
-<span class="fc bfc" id="L171" title="All 2 branches covered.">			Arrays.fill(weights, 0, wordsNum(size()), defaultWeight ? ~0L : 0);</span>
-<span class="fc" id="L172">		}</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">			Arrays.fill(weights, 0, wordsNum(size()), defaultWeight ? ~0L : 0);</span>
+<span class="fc" id="L197">		}</span>
 	}
 
 	static class IntMapped  extends WeightsImpl.IntMapped&lt;Boolean&gt; implements IWeightsBool  {
-		IntMapped(WeightsImplBool.IndexImpl  weights, IndexIntIdMap indexMap) {
-<span class="fc" id="L177">			super(weights, indexMap);</span>
-<span class="fc" id="L178">		}</span>
+		IntMapped(IWeightsBool  weights, IndexIntIdMap indexMap) {
+<span class="fc" id="L202">			super(weights, indexMap);</span>
+<span class="fc" id="L203">		}</span>
 
 		@Override
-		public WeightsImplBool.IndexImpl  weights() {
-<span class="fc" id="L182">			return (WeightsImplBool.IndexImpl ) super.weights();</span>
+		public IWeightsBool  weights() {
+<span class="fc" id="L207">			return (IWeightsBool ) super.weights();</span>
 		}
 
 		@Override
 		public boolean get(int id) {
-<span class="fc" id="L187">			return weights().get(indexMap.idToIndex(id));</span>
+<span class="fc" id="L212">			return weights().get(indexMap.idToIndex(id));</span>
 		}
 
 		@Override
 		public void set(int id, boolean weight) {
-<span class="fc" id="L192">			weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="fc" id="L193">		}</span>
+<span class="fc" id="L217">			weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L218">		}</span>
 
 		@Override
 		public boolean defaultWeight() {
-<span class="fc" id="L197">			return weights().defaultWeight();</span>
+<span class="fc" id="L222">			return weights().defaultWeight();</span>
 		}
 	}
 
 	static class ObjMapped&lt;K &gt; extends WeightsImpl.ObjMapped&lt;K, Boolean&gt; implements WeightsBool&lt;K &gt; {
-		ObjMapped(WeightsImplBool.IndexImpl  weights, IndexIdMap&lt;K&gt; indexMap) {
-<span class="fc" id="L203">			super(weights, indexMap);</span>
-<span class="fc" id="L204">		}</span>
+		ObjMapped(IWeightsBool  weights, IndexIdMap&lt;K&gt; indexMap) {
+<span class="fc" id="L228">			super(weights, indexMap);</span>
+<span class="fc" id="L229">		}</span>
 
 		@Override
-		public WeightsImplBool.IndexImpl  weights() {
-<span class="fc" id="L208">			return (WeightsImplBool.IndexImpl ) super.weights();</span>
+		public IWeightsBool  weights() {
+<span class="fc" id="L233">			return (IWeightsBool ) super.weights();</span>
 		}
 
 		@Override
 		public boolean get(K id) {
-<span class="fc" id="L213">			return weights().get(indexMap.idToIndex(id));</span>
+<span class="fc" id="L238">			return weights().get(indexMap.idToIndex(id));</span>
 		}
 
 		@Override
 		public void set(K id, boolean weight) {
-<span class="fc" id="L218">			weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="fc" id="L219">		}</span>
+<span class="fc" id="L243">			weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L244">		}</span>
 
 		@Override
 		public boolean defaultWeight() {
-<span class="fc" id="L223">			return weights().defaultWeight();</span>
+<span class="fc" id="L248">			return weights().defaultWeight();</span>
 		}
 	}
 
 	static class IntImmutableView  extends WeightsImpl.IntImmutableView&lt;Boolean&gt; implements IWeightsBool  {
 		IntImmutableView(IWeightsBool  w) {
-<span class="fc" id="L229">			super(w);</span>
-<span class="fc" id="L230">		}</span>
+<span class="fc" id="L254">			super(w);</span>
+<span class="fc" id="L255">		}</span>
 
 		@Override
 		IWeightsBool  weights() {
-<span class="fc" id="L234">			return (IWeightsBool ) super.weights();</span>
+<span class="fc" id="L259">			return (IWeightsBool ) super.weights();</span>
 		}
 
 		@Override
 		public boolean get(int id) {
-<span class="fc" id="L239">			return weights().get(id);</span>
+<span class="fc" id="L264">			return weights().get(id);</span>
 		}
 
 		@Override
 		public void set(int id, boolean weight) {
-<span class="fc" id="L244">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+<span class="fc" id="L269">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
 		}
 
 		@Override
 		public boolean defaultWeight() {
-<span class="fc" id="L249">			return weights().defaultWeight();</span>
+<span class="fc" id="L274">			return weights().defaultWeight();</span>
 		}
 	}
 
 	static class ObjImmutableView&lt;K &gt; extends WeightsImpl.ObjImmutableView&lt;K, Boolean&gt; implements WeightsBool &lt;K &gt; {
 		ObjImmutableView(WeightsBool &lt;K &gt; w) {
-<span class="fc" id="L255">			super(w);</span>
-<span class="fc" id="L256">		}</span>
+<span class="fc" id="L280">			super(w);</span>
+<span class="fc" id="L281">		}</span>
 
 		@Override
 		WeightsBool &lt;K &gt; weights() {
-<span class="fc" id="L260">			return (WeightsBool &lt;K &gt;) super.weights();</span>
+<span class="fc" id="L285">			return (WeightsBool &lt;K &gt;) super.weights();</span>
 		}
 
 		@Override
 		public boolean get(K id) {
-<span class="fc" id="L265">			return weights().get(id);</span>
+<span class="fc" id="L290">			return weights().get(id);</span>
 		}
 
 		@Override
 		public void set(K id, boolean weight) {
-<span class="fc" id="L270">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+<span class="fc" id="L295">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
 		}
 
 		@Override
 		public boolean defaultWeight() {
-<span class="fc" id="L275">			return weights().defaultWeight();</span>
+<span class="fc" id="L300">			return weights().defaultWeight();</span>
+		}
+	}
+
+	static class IndexMasked  extends WeightsImpl.IndexAbstract&lt;Boolean&gt; implements IWeightsBool  {
+
+		private final IWeightsBool  orig;
+		private final Int2IntMap api2orig;
+
+		IndexMasked(IWeightsBool  orig, IntSet elements, boolean isVertices, Int2IntMap api2orig) {
+<span class="fc" id="L310">			super(elements, isVertices);</span>
+<span class="fc" id="L311">			this.orig = orig;</span>
+<span class="fc" id="L312">			this.api2orig = api2orig;</span>
+<span class="fc" id="L313">		}</span>
+
+		private int api2orig(int idx) {
+<span class="fc" id="L316">			return api2orig.getOrDefault(idx, idx);</span>
+		}
+
+		@Override
+		public boolean get(int idx) {
+<span class="fc" id="L321">			checkIdx(idx);</span>
+<span class="fc" id="L322">			return orig.get(api2orig(idx));</span>
+		}
+
+		@Override
+		public void set(int idx, boolean weight) {
+<span class="fc" id="L327">			checkIdx(idx);</span>
+<span class="fc" id="L328">			orig.set(api2orig(idx), weight);</span>
+<span class="fc" id="L329">		}</span>
+
+		@Override
+		public boolean defaultWeight() {
+<span class="fc" id="L333">			return orig.defaultWeight();</span>
+		}
+	}
+
+	static class IntMappedMasked  implements IWeightsBool  {
+
+		private final IWeightsBool  orig;
+		private final IntSet mask;
+		private final boolean isVertices;
+
+<span class="fc" id="L343">		IntMappedMasked(IWeightsBool  orig, IntSet mask, boolean isVertices) {</span>
+<span class="fc" id="L344">			this.orig = orig;</span>
+<span class="fc" id="L345">			this.mask = mask;</span>
+<span class="fc" id="L346">			this.isVertices = isVertices;</span>
+<span class="fc" id="L347">		}</span>
+
+		private void checkId(int id) {
+<span class="fc bfc" id="L350" title="All 2 branches covered.">			if (mask.contains(id)) {</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">				if (isVertices) {</span>
+<span class="fc" id="L352">					throw NoSuchVertexException.ofVertex(id);</span>
+				} else {
+<span class="fc" id="L354">					throw NoSuchEdgeException.ofEdge(id);</span>
+				}
+			}
+<span class="fc" id="L357">		}</span>
+
+		@Override
+		public boolean get(int id) {
+<span class="fc" id="L361">			checkId(id);</span>
+<span class="fc" id="L362">			return orig.get(id);</span>
+		}
+
+		@Override
+		public void set(int idx, boolean weight) {
+<span class="fc" id="L367">			checkId(idx);</span>
+<span class="fc" id="L368">			orig.set(idx, weight);</span>
+<span class="fc" id="L369">		}</span>
+
+		@Override
+		public boolean defaultWeight() {
+<span class="fc" id="L373">			return orig.defaultWeight();</span>
+		}
+	}
+
+	static class ObjMappedMasked&lt;K &gt; implements WeightsBool&lt;K &gt; {
+
+		private final WeightsBool&lt;K &gt; orig;
+		private final ObjectSet&lt;K&gt; mask;
+		private final boolean isVertices;
+
+<span class="fc" id="L383">		ObjMappedMasked(WeightsBool&lt;K &gt; orig, ObjectSet&lt;K&gt; mask, boolean isVertices) {</span>
+<span class="fc" id="L384">			this.orig = orig;</span>
+<span class="fc" id="L385">			this.mask = mask;</span>
+<span class="fc" id="L386">			this.isVertices = isVertices;</span>
+<span class="fc" id="L387">		}</span>
+
+		private void checkId(K id) {
+<span class="fc bfc" id="L390" title="All 2 branches covered.">			if (mask.contains(id)) {</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">				if (isVertices) {</span>
+<span class="fc" id="L392">					throw NoSuchVertexException.ofVertex(id);</span>
+				} else {
+<span class="fc" id="L394">					throw NoSuchEdgeException.ofEdge(id);</span>
+				}
+			}
+<span class="fc" id="L397">		}</span>
+
+		@Override
+		public boolean get(K id) {
+<span class="fc" id="L401">			checkId(id);</span>
+<span class="fc" id="L402">			return orig.get(id);</span>
+		}
+
+		@Override
+		public void set(K idx, boolean weight) {
+<span class="fc" id="L407">			checkId(idx);</span>
+<span class="fc" id="L408">			orig.set(idx, weight);</span>
+<span class="fc" id="L409">		}</span>
+
+		@Override
+		public boolean defaultWeight() {
+<span class="fc" id="L413">			return orig.defaultWeight();</span>
 		}
 	}
 

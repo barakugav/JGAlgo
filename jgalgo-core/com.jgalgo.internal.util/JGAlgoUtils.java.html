@@ -75,39 +75,51 @@ public class JGAlgoUtils {
 		void accept(int a1, double a2);
 	}
 
-	public static void sort(int[] arr, int from, int to, IntComparator cmp, boolean parallel) {
-<span class="pc bpc" id="L79" title="1 of 2 branches missed.">		if (parallel) {</span>
-<span class="fc" id="L80">			IntArrays.parallelQuickSort(arr, from, to, cmp);</span>
+	public static void sort(int[] arr, boolean parallel) {
+<span class="fc" id="L79">		sort(arr, 0, arr.length, parallel);</span>
+<span class="fc" id="L80">	}</span>
+
+	public static void sort(int[] arr, int from, int to, boolean parallel) {
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">		if (parallel) {</span>
+<span class="fc" id="L84">			IntArrays.parallelQuickSort(arr, from, to);</span>
 		} else {
-<span class="nc" id="L82">			IntArrays.quickSort(arr, from, to, cmp);</span>
+<span class="nc" id="L86">			IntArrays.quickSort(arr, from, to);</span>
 		}
-<span class="fc" id="L84">	}</span>
+<span class="fc" id="L88">	}</span>
+
+	public static void sort(int[] arr, int from, int to, IntComparator cmp, boolean parallel) {
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">		if (parallel) {</span>
+<span class="fc" id="L92">			IntArrays.parallelQuickSort(arr, from, to, cmp);</span>
+		} else {
+<span class="nc" id="L94">			IntArrays.quickSort(arr, from, to, cmp);</span>
+		}
+<span class="fc" id="L96">	}</span>
 
 	public static ForkJoinPool getPool() {
-<span class="fc" id="L87">		ForkJoinPool current = ForkJoinTask.getPool();</span>
-<span class="pc bpc" id="L88" title="1 of 2 branches missed.">		return current == null ? ForkJoinPool.commonPool() : current;</span>
+<span class="fc" id="L99">		ForkJoinPool current = ForkJoinTask.getPool();</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">		return current == null ? ForkJoinPool.commonPool() : current;</span>
 	}
 
 	public static &lt;ExecT extends Runnable &amp; Serializable&gt; RecursiveAction recursiveAction(ExecT exec) {
-<span class="fc" id="L92">		return new RecursiveActionFromRunnable&lt;&gt;(exec);</span>
+<span class="fc" id="L104">		return new RecursiveActionFromRunnable&lt;&gt;(exec);</span>
 	}
 
 	public static &lt;V, ExecT extends Supplier&lt;? extends V&gt; &amp; Serializable&gt; RecursiveTask&lt;V&gt; recursiveTask(ExecT exec) {
-<span class="nc" id="L96">		return new RecursiveTaskFromSupplier&lt;&gt;(exec);</span>
+<span class="nc" id="L108">		return new RecursiveTaskFromSupplier&lt;&gt;(exec);</span>
 	}
 
 	private static class RecursiveActionFromRunnable&lt;ExecT extends Runnable &amp; Serializable&gt; extends RecursiveAction {
 		private ExecT exec;
 		private static final long serialVersionUID = 1L;
 
-<span class="fc" id="L103">		RecursiveActionFromRunnable(ExecT exec) {</span>
-<span class="fc" id="L104">			this.exec = exec;</span>
-<span class="fc" id="L105">		}</span>
+<span class="fc" id="L115">		RecursiveActionFromRunnable(ExecT exec) {</span>
+<span class="fc" id="L116">			this.exec = exec;</span>
+<span class="fc" id="L117">		}</span>
 
 		@Override
 		protected void compute() {
-<span class="fc" id="L109">			exec.run();</span>
-<span class="fc" id="L110">		}</span>
+<span class="fc" id="L121">			exec.run();</span>
+<span class="fc" id="L122">		}</span>
 	}
 
 	private static class RecursiveTaskFromSupplier&lt;V, ExecT extends Supplier&lt;? extends V&gt; &amp; Serializable&gt;
@@ -115,44 +127,44 @@ public class JGAlgoUtils {
 		private ExecT exec;
 		private static final long serialVersionUID = 1L;
 
-<span class="nc" id="L118">		RecursiveTaskFromSupplier(ExecT exec) {</span>
-<span class="nc" id="L119">			this.exec = exec;</span>
-<span class="nc" id="L120">		}</span>
+<span class="nc" id="L130">		RecursiveTaskFromSupplier(ExecT exec) {</span>
+<span class="nc" id="L131">			this.exec = exec;</span>
+<span class="nc" id="L132">		}</span>
 
 		@Override
 		protected V compute() {
-<span class="nc" id="L124">			return exec.get();</span>
+<span class="nc" id="L136">			return exec.get();</span>
 		}
 	}
 
 	@SuppressWarnings(&quot;rawtypes&quot;)
-<span class="fc" id="L129">	private static final Consumer ConsumerNoOp = x -&gt; {</span>
-<span class="fc" id="L130">	};</span>
+<span class="fc" id="L141">	private static final Consumer ConsumerNoOp = x -&gt; {</span>
+<span class="fc" id="L142">	};</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;T&gt; Consumer&lt;T&gt; consumerNoOp() {
-<span class="fc" id="L134">		return ConsumerNoOp;</span>
+<span class="fc" id="L146">		return ConsumerNoOp;</span>
 	}
 
 	private static class Variant {
 
 		final Object val;
 
-<span class="fc" id="L141">		private Variant(Object val) {</span>
-<span class="fc" id="L142">			this.val = Objects.requireNonNull(val);</span>
-<span class="fc" id="L143">		}</span>
+<span class="fc" id="L153">		private Variant(Object val) {</span>
+<span class="fc" id="L154">			this.val = Objects.requireNonNull(val);</span>
+<span class="fc" id="L155">		}</span>
 
 		public boolean contains(Class&lt;?&gt; type) {
-<span class="fc" id="L146">			return type.isInstance(val);</span>
+<span class="fc" id="L158">			return type.isInstance(val);</span>
 		}
 
 		public &lt;T&gt; T get(Class&lt;T&gt; type) {
-<span class="fc" id="L150">			return getOptional(type).get();</span>
+<span class="fc" id="L162">			return getOptional(type).get();</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		public &lt;T&gt; Optional&lt;T&gt; getOptional(Class&lt;T&gt; type) {
-<span class="fc bfc" id="L155" title="All 2 branches covered.">			return contains(type) ? Optional.of((T) val) : Optional.empty();</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">			return contains(type) ? Optional.of((T) val) : Optional.empty();</span>
 		}
 	}
 
@@ -161,95 +173,95 @@ public class JGAlgoUtils {
 		private final boolean isA;
 
 		private Variant2(Object val, boolean isA) {
-<span class="fc" id="L164">			super(val);</span>
-<span class="fc" id="L165">			this.isA = isA;</span>
-<span class="fc" id="L166">		}</span>
+<span class="fc" id="L176">			super(val);</span>
+<span class="fc" id="L177">			this.isA = isA;</span>
+<span class="fc" id="L178">		}</span>
 
 		public static &lt;A, B&gt; Variant2&lt;A, B&gt; ofA(A val) {
-<span class="fc" id="L169">			return new Variant2&lt;&gt;(val, true);</span>
+<span class="fc" id="L181">			return new Variant2&lt;&gt;(val, true);</span>
 		}
 
 		public static &lt;A, B&gt; Variant2&lt;A, B&gt; ofB(B val) {
-<span class="fc" id="L173">			return new Variant2&lt;&gt;(val, false);</span>
+<span class="fc" id="L185">			return new Variant2&lt;&gt;(val, false);</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		public &lt;R&gt; R map(Function&lt;A, R&gt; a, Function&lt;B, R&gt; b) {
-<span class="fc bfc" id="L178" title="All 2 branches covered.">			if (isA) {</span>
-<span class="fc" id="L179">				return a.apply((A) val);</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">			if (isA) {</span>
+<span class="fc" id="L191">				return a.apply((A) val);</span>
 			} else {
-<span class="fc" id="L181">				return b.apply((B) val);</span>
+<span class="fc" id="L193">				return b.apply((B) val);</span>
 			}
 		}
 	}
 
 	public static &lt;T&gt; void clearAllUnsafe(T[] arr, IntCollection nonNullIndices) {
 		/* TODO: need to benchmark when its better to clear each entry independently */
-<span class="nc bnc" id="L188" title="All 2 branches missed.">		if (nonNullIndices.size() &lt; arr.length / 8) {</span>
-<span class="nc bnc" id="L189" title="All 2 branches missed.">			for (int v : nonNullIndices)</span>
-<span class="nc" id="L190">				arr[v] = null;</span>
-<span class="nc bnc" id="L191" title="All 2 branches missed.">			assert Arrays.stream(arr).allMatch(Objects::isNull);</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">		if (nonNullIndices.size() &lt; arr.length / 8) {</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">			for (int v : nonNullIndices)</span>
+<span class="nc" id="L202">				arr[v] = null;</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">			assert Arrays.stream(arr).allMatch(Objects::isNull);</span>
 		} else {
-<span class="nc" id="L193">			Arrays.fill(arr, null);</span>
+<span class="nc" id="L205">			Arrays.fill(arr, null);</span>
 		}
-<span class="nc" id="L195">	}</span>
+<span class="nc" id="L207">	}</span>
 
 	public static void clearAllUnsafe(Bitmap bitmap, IntCollection setBits) {
 		/* TODO: need to benchmark when its better to clear each bit independently */
-<span class="fc bfc" id="L199" title="All 2 branches covered.">		boolean perBitClear = setBits.size() &lt; bitmap.size / Bitmap.WordSize;</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">		if (perBitClear) {</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">			for (int idx : setBits)</span>
-<span class="fc" id="L202">				bitmap.clear(idx);</span>
-<span class="pc bpc" id="L203" title="1 of 2 branches missed.">			assert bitmap.isEmpty();</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">		boolean perBitClear = setBits.size() &lt; bitmap.size / Bitmap.WordSize;</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">		if (perBitClear) {</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">			for (int idx : setBits)</span>
+<span class="fc" id="L214">				bitmap.clear(idx);</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">			assert bitmap.isEmpty();</span>
 		} else {
-<span class="fc" id="L205">			bitmap.clear();</span>
+<span class="fc" id="L217">			bitmap.clear();</span>
 		}
-<span class="fc" id="L207">	}</span>
+<span class="fc" id="L219">	}</span>
 
 	public static &lt;T&gt; Iterator&lt;T&gt; queueIter(Collection&lt;T&gt; elements) {
-<span class="fc" id="L210">		PriorityQueue&lt;T&gt; queue = new ObjectArrayFIFOQueue&lt;&gt;(elements.size());</span>
-<span class="fc bfc" id="L211" title="All 2 branches covered.">		for (T elm : elements)</span>
-<span class="fc" id="L212">			queue.enqueue(elm);</span>
-<span class="fc" id="L213">		return dequeueIter(queue);</span>
+<span class="fc" id="L222">		PriorityQueue&lt;T&gt; queue = new ObjectArrayFIFOQueue&lt;&gt;(elements.size());</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">		for (T elm : elements)</span>
+<span class="fc" id="L224">			queue.enqueue(elm);</span>
+<span class="fc" id="L225">		return dequeueIter(queue);</span>
 	}
 
 	public static &lt;T&gt; Iterator&lt;T&gt; dequeueIter(PriorityQueue&lt;T&gt; queue) {
-<span class="fc" id="L217">		return new Iterator&lt;&gt;() {</span>
+<span class="fc" id="L229">		return new Iterator&lt;&gt;() {</span>
 			@Override
 			public boolean hasNext() {
-<span class="fc bfc" id="L220" title="All 2 branches covered.">				return !queue.isEmpty();</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">				return !queue.isEmpty();</span>
 			}
 
 			@Override
 			public T next() {
-<span class="fc" id="L225">				return queue.dequeue();</span>
+<span class="fc" id="L237">				return queue.dequeue();</span>
 			}
 		};
 	}
 
 	public static int objIterSkip(Iterator&lt;?&gt; it, int n) {
-<span class="fc bfc" id="L231" title="All 2 branches covered.">		if (it instanceof ObjectIterator) {</span>
-<span class="fc" id="L232">			return ((ObjectIterator&lt;?&gt;) it).skip(n);</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">		if (it instanceof ObjectIterator) {</span>
+<span class="fc" id="L244">			return ((ObjectIterator&lt;?&gt;) it).skip(n);</span>
 		} else {
-<span class="fc bfc" id="L234" title="All 2 branches covered.">			if (n &lt; 0)</span>
-<span class="fc" id="L235">				throw new IllegalArgumentException(&quot;Argument must be nonnegative: &quot; + n);</span>
-<span class="fc" id="L236">			int i = n;</span>
-<span class="fc bfc" id="L237" title="All 4 branches covered.">			while (i-- != 0 &amp;&amp; it.hasNext())</span>
-<span class="fc" id="L238">				it.next();</span>
-<span class="fc" id="L239">			return n - i - 1;</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">			if (n &lt; 0)</span>
+<span class="fc" id="L247">				throw new IllegalArgumentException(&quot;Argument must be nonnegative: &quot; + n);</span>
+<span class="fc" id="L248">			int i = n;</span>
+<span class="fc bfc" id="L249" title="All 4 branches covered.">			while (i-- != 0 &amp;&amp; it.hasNext())</span>
+<span class="fc" id="L250">				it.next();</span>
+<span class="fc" id="L251">			return n - i - 1;</span>
 		}
 	}
 
 	public static int objIterBack(ListIterator&lt;?&gt; it, int n) {
-<span class="fc bfc" id="L244" title="All 2 branches covered.">		if (it instanceof ObjectListIterator) {</span>
-<span class="fc" id="L245">			return ((ObjectListIterator&lt;?&gt;) it).back(n);</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">		if (it instanceof ObjectListIterator) {</span>
+<span class="fc" id="L257">			return ((ObjectListIterator&lt;?&gt;) it).back(n);</span>
 		} else {
-<span class="fc bfc" id="L247" title="All 2 branches covered.">			if (n &lt; 0)</span>
-<span class="fc" id="L248">				throw new IllegalArgumentException(&quot;Argument must be nonnegative: &quot; + n);</span>
-<span class="fc" id="L249">			int i = n;</span>
-<span class="fc bfc" id="L250" title="All 4 branches covered.">			while (i-- != 0 &amp;&amp; it.hasPrevious())</span>
-<span class="fc" id="L251">				it.previous();</span>
-<span class="fc" id="L252">			return n - i - 1;</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">			if (n &lt; 0)</span>
+<span class="fc" id="L260">				throw new IllegalArgumentException(&quot;Argument must be nonnegative: &quot; + n);</span>
+<span class="fc" id="L261">			int i = n;</span>
+<span class="fc bfc" id="L262" title="All 4 branches covered.">			while (i-- != 0 &amp;&amp; it.hasPrevious())</span>
+<span class="fc" id="L263">				it.previous();</span>
+<span class="fc" id="L264">			return n - i - 1;</span>
 		}
 	}
 }

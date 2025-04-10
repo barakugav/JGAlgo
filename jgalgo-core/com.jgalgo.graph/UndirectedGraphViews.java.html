@@ -143,7 +143,7 @@ class UndirectedGraphViews {
 <span class="fc" id="L143">			}</span>
 		}
 
-		private abstract class EdgeIterOutOrInBase implements EdgeIter&lt;V, E&gt;, ObjectIterator&lt;E&gt; {
+		private abstract class EdgeIterOutOrInBase implements EdgeIters.Base&lt;V, E&gt;, ObjectIterator&lt;E&gt; {
 
 			private EdgeIter&lt;V, E&gt; outIt, inIt;
 			final V vertex;
@@ -286,7 +286,7 @@ class UndirectedGraphViews {
 			}
 		}
 
-		private static class EdgeIterSourceTarget&lt;V, E&gt; implements EdgeIter&lt;V, E&gt;, ObjectIterator&lt;E&gt; {
+		private static class EdgeIterSourceTarget&lt;V, E&gt; implements EdgeIters.Base&lt;V, E&gt;, ObjectIterator&lt;E&gt; {
 
 			private final V source, target;
 			private final EdgeIter&lt;V, E&gt; stIt;
@@ -465,7 +465,7 @@ class UndirectedGraphViews {
 			}
 		}
 
-		private abstract class EdgeIterOutOrInBase implements IEdgeIter {
+		private abstract class EdgeIterOutOrInBase implements EdgeIters.IBase {
 
 			private IEdgeIter outIt, inIt;
 			final int vertex;
@@ -530,7 +530,7 @@ class UndirectedGraphViews {
 <span class="fc bfc" id="L530" title="All 2 branches covered.">					if (n == 0)</span>
 <span class="fc" id="L531">						return skipped;</span>
 				}
-<span class="fc" id="L533">				return skipped + IEdgeIter.super.skip(n);</span>
+<span class="fc" id="L533">				return skipped + EdgeIters.IBase.super.skip(n);</span>
 			}
 		}
 
@@ -609,7 +609,7 @@ class UndirectedGraphViews {
 			}
 		}
 
-		private static class EdgeIterSourceTarget implements IEdgeIter {
+		private static class EdgeIterSourceTarget implements EdgeIters.IBase {
 
 			private final int source, target;
 			private final IEdgeIter stIt;

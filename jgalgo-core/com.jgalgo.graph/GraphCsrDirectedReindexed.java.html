@@ -241,7 +241,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 		}
 	}
 
-	private class EdgeIterOut implements IEdgeIter {
+	private class EdgeIterOut implements EdgeIters.IBase {
 		private final int source;
 		int nextEdge;
 		private final int endIdx;
@@ -376,7 +376,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 		}
 	}
 
-	private class SourceTargetEdgesIterFastLookup implements IEdgeIter {
+	private class SourceTargetEdgesIterFastLookup implements EdgeIters.IBase {
 
 		private final int source, target;
 		private final int sourceEnd;
@@ -439,7 +439,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 			/* we can't skip n, find what is the limit */
 <span class="fc bfc" id="L441" title="All 2 branches covered.">			if (n &lt; 16)</span>
-<span class="fc" id="L442">				return IEdgeIter.super.skip(n);</span>
+<span class="fc" id="L442">				return EdgeIters.IBase.super.skip(n);</span>
 
 			/* perform a binary search */
 <span class="fc" id="L445">			int from = edge, to = edge + n;</span>

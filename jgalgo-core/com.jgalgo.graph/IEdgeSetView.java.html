@@ -128,7 +128,7 @@ final class IEdgeSetView extends AbstractIntSet implements IEdgeSet {
 
 	@Override
 	public IEdgeIter iterator() {
-<span class="fc" id="L131">		return new IEdgeIter() {</span>
+<span class="fc" id="L131">		return new EdgeIters.IBase() {</span>
 
 <span class="fc" id="L133">			IntIterator it = edges.iterator();</span>
 <span class="fc" id="L134">			int lastEdge = -1;</span>

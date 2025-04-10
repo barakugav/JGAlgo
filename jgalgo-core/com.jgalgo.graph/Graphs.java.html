@@ -121,7 +121,7 @@ public class Graphs {
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L124">			return new IEdgeIter() {</span>
+<span class="fc" id="L124">			return new EdgeIters.IBase() {</span>
 
 <span class="fc bfc" id="L126" title="All 2 branches covered.">				boolean beforeNext = edge != EdgeNone;</span>
 
@@ -399,7 +399,7 @@ public class Graphs {
 <span class="fc bfc" id="L399" title="All 4 branches covered.">		if (vertices == null &amp;&amp; edges == null)</span>
 <span class="fc" id="L400">			throw new NullPointerException(&quot;Either vertices or edges can be null, not both.&quot;);</span>
 <span class="fc bfc" id="L401" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
-<span class="fc" id="L402">			return subGraph((IndexGraph) g, vertices, edges, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L402">			return subGraphCopy((IndexGraph) g, vertices, edges, copyVerticesWeights, copyEdgesWeights);</span>
 
 <span class="fc" id="L404">		IntGraphBuilder gb = IntGraphBuilder.newInstance(g.isDirected());</span>
 <span class="fc" id="L405">		IndexGraph ig = g.indexGraph();</span>
@@ -479,7 +479,7 @@ public class Graphs {
 	}
 
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot;, &quot;cast&quot; })
-	private static IntGraph subGraph(IndexGraph g, IntCollection vertices, IntCollection edges,
+	private static IntGraph subGraphCopy(IndexGraph g, IntCollection vertices, IntCollection edges,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 <span class="fc" id="L484">		IntGraphBuilder gb = IntGraphBuilder.newInstance(g.isDirected());</span>
 

@@ -53,7 +53,7 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 <span class="fc" id="L53">		return new Graphs.EdgeSetSourceTargetSingleEdge(this, source, target, edge);</span>
 	}
 
-<span class="fc" id="L56">	private abstract class EdgeIterBase implements IEdgeIter {</span>
+<span class="fc" id="L56">	private abstract class EdgeIterBase implements EdgeIters.IBase {</span>
 
 		// either the source or target of the iterator
 		final int vertex;

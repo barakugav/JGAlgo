@@ -256,9 +256,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L259">			return new IEdgeIter() {</span>
+<span class="fc" id="L259">			return new EdgeIters.IBase() {</span>
 
-<span class="fc" id="L261">				EdgeIter&lt;Integer, Integer&gt; idIter = idSet.iterator();</span>
+<span class="fc" id="L261">				private final EdgeIter&lt;Integer, Integer&gt; idIter = idSet.iterator();</span>
 
 				@Override
 				public boolean hasNext() {

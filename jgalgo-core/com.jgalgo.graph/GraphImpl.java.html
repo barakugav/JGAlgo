@@ -245,35 +245,34 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L248">			return new IEdgeIter() {</span>
-
-<span class="fc" id="L250">				EdgeIter&lt;? extends V, ?&gt; idIter = idSet.iterator();</span>
+<span class="fc" id="L248">			return new EdgeIters.IBase() {</span>
+<span class="fc" id="L249">				private final EdgeIter&lt;? extends V, ?&gt; idIter = idSet.iterator();</span>
 
 				@Override
 				public boolean hasNext() {
-<span class="fc" id="L254">					return idIter.hasNext();</span>
+<span class="fc" id="L253">					return idIter.hasNext();</span>
 				}
 
 				@Override
 				public int nextInt() {
-<span class="fc" id="L259">					idIter.next();</span>
-<span class="fc" id="L260">					return -1; /* ignore edges IDs */</span>
+<span class="fc" id="L258">					idIter.next();</span>
+<span class="fc" id="L259">					return -1; /* ignore edges IDs */</span>
 				}
 
 				@Override
 				public int peekNextInt() {
-<span class="nc" id="L265">					idIter.peekNext();</span>
-<span class="nc" id="L266">					return -1; /* ignore edges IDs */</span>
+<span class="nc" id="L264">					idIter.peekNext();</span>
+<span class="nc" id="L265">					return -1; /* ignore edges IDs */</span>
 				}
 
 				@Override
 				public int sourceInt() {
-<span class="fc" id="L271">					return viMap.idToIndex(idIter.source());</span>
+<span class="fc" id="L270">					return viMap.idToIndex(idIter.source());</span>
 				}
 
 				@Override
 				public int targetInt() {
-<span class="fc" id="L276">					return viMap.idToIndex(idIter.target());</span>
+<span class="fc" id="L275">					return viMap.idToIndex(idIter.target());</span>
 				}
 			};
 		}
@@ -281,120 +280,120 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 	@Override
 	public void removeEdge(E edge) {
-<span class="fc" id="L284">		int eIdx = eiMap.idToIndex(edge);</span>
-<span class="fc" id="L285">		indexGraph.removeEdge(eIdx);</span>
-<span class="fc" id="L286">	}</span>
+<span class="fc" id="L283">		int eIdx = eiMap.idToIndex(edge);</span>
+<span class="fc" id="L284">		indexGraph.removeEdge(eIdx);</span>
+<span class="fc" id="L285">	}</span>
 
 	@Override
 	public void removeEdges(Collection&lt;? extends E&gt; edges) {
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L291">		IntCollection eIdxs = IndexIdMaps.idToIndexCollection((Collection&lt;E&gt;) edges, eiMap);</span>
-<span class="fc" id="L292">		indexGraph.removeEdges(eIdxs);</span>
-<span class="fc" id="L293">	}</span>
+<span class="fc" id="L290">		IntCollection eIdxs = IndexIdMaps.idToIndexCollection((Collection&lt;E&gt;) edges, eiMap);</span>
+<span class="fc" id="L291">		indexGraph.removeEdges(eIdxs);</span>
+<span class="fc" id="L292">	}</span>
 
 	@Override
 	public void removeEdgesOf(V source) {
-<span class="fc" id="L297">		int uIdx = viMap.idToIndex(source);</span>
-<span class="fc" id="L298">		indexGraph.removeEdgesOf(uIdx);</span>
-<span class="fc" id="L299">	}</span>
+<span class="fc" id="L296">		int uIdx = viMap.idToIndex(source);</span>
+<span class="fc" id="L297">		indexGraph.removeEdgesOf(uIdx);</span>
+<span class="fc" id="L298">	}</span>
 
 	@Override
 	public void removeOutEdgesOf(V source) {
-<span class="fc" id="L303">		indexGraph.removeOutEdgesOf(viMap.idToIndex(source));</span>
-<span class="fc" id="L304">	}</span>
+<span class="fc" id="L302">		indexGraph.removeOutEdgesOf(viMap.idToIndex(source));</span>
+<span class="fc" id="L303">	}</span>
 
 	@Override
 	public void removeInEdgesOf(V target) {
-<span class="fc" id="L308">		indexGraph.removeInEdgesOf(viMap.idToIndex(target));</span>
-<span class="fc" id="L309">	}</span>
+<span class="fc" id="L307">		indexGraph.removeInEdgesOf(viMap.idToIndex(target));</span>
+<span class="fc" id="L308">	}</span>
 
 	@Override
 	public void renameEdge(E edge, E newId) {
-<span class="fc bfc" id="L313" title="All 2 branches covered.">		if (newId == null)</span>
-<span class="fc" id="L314">			throw new NullPointerException(&quot;Edge must be non null&quot;);</span>
-<span class="fc" id="L315">		eiMap.renameId(edge, newId);</span>
-<span class="fc" id="L316">	}</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">		if (newId == null)</span>
+<span class="fc" id="L313">			throw new NullPointerException(&quot;Edge must be non null&quot;);</span>
+<span class="fc" id="L314">		eiMap.renameId(edge, newId);</span>
+<span class="fc" id="L315">	}</span>
 
 	@Override
 	public void moveEdge(E edge, V newSource, V newTarget) {
-<span class="fc" id="L320">		indexGraph.moveEdge(eiMap.idToIndex(edge), viMap.idToIndex(newSource), viMap.idToIndex(newTarget));</span>
-<span class="fc" id="L321">	}</span>
+<span class="fc" id="L319">		indexGraph.moveEdge(eiMap.idToIndex(edge), viMap.idToIndex(newSource), viMap.idToIndex(newTarget));</span>
+<span class="fc" id="L320">	}</span>
 
 	@Override
 	public V edgeSource(E edge) {
-<span class="fc" id="L325">		int eIdx = eiMap.idToIndex(edge);</span>
-<span class="fc" id="L326">		int uIdx = indexGraph.edgeSource(eIdx);</span>
-<span class="fc" id="L327">		return viMap.indexToId(uIdx);</span>
+<span class="fc" id="L324">		int eIdx = eiMap.idToIndex(edge);</span>
+<span class="fc" id="L325">		int uIdx = indexGraph.edgeSource(eIdx);</span>
+<span class="fc" id="L326">		return viMap.indexToId(uIdx);</span>
 	}
 
 	@Override
 	public V edgeTarget(E edge) {
-<span class="fc" id="L332">		int eIdx = eiMap.idToIndex(edge);</span>
-<span class="fc" id="L333">		int vIdx = indexGraph.edgeTarget(eIdx);</span>
-<span class="fc" id="L334">		return viMap.indexToId(vIdx);</span>
+<span class="fc" id="L331">		int eIdx = eiMap.idToIndex(edge);</span>
+<span class="fc" id="L332">		int vIdx = indexGraph.edgeTarget(eIdx);</span>
+<span class="fc" id="L333">		return viMap.indexToId(vIdx);</span>
 	}
 
 	@Override
 	public V edgeEndpoint(E edge, V endpoint) {
-<span class="fc" id="L339">		int eIdx = eiMap.idToIndex(edge);</span>
-<span class="fc" id="L340">		int endpointIdx = viMap.idToIndex(endpoint);</span>
-<span class="fc" id="L341">		int resIdx = indexGraph.edgeEndpoint(eIdx, endpointIdx);</span>
-<span class="fc" id="L342">		return viMap.indexToId(resIdx);</span>
+<span class="fc" id="L338">		int eIdx = eiMap.idToIndex(edge);</span>
+<span class="fc" id="L339">		int endpointIdx = viMap.idToIndex(endpoint);</span>
+<span class="fc" id="L340">		int resIdx = indexGraph.edgeEndpoint(eIdx, endpointIdx);</span>
+<span class="fc" id="L341">		return viMap.indexToId(resIdx);</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc" id="L347">		indexGraph.clear();</span>
-<span class="fc" id="L348">		viMap.idsClear();</span>
-<span class="fc" id="L349">		eiMap.idsClear();</span>
-<span class="fc" id="L350">	}</span>
+<span class="fc" id="L346">		indexGraph.clear();</span>
+<span class="fc" id="L347">		viMap.idsClear();</span>
+<span class="fc" id="L348">		eiMap.idsClear();</span>
+<span class="fc" id="L349">	}</span>
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L354">		indexGraph.clearEdges();</span>
-<span class="fc" id="L355">		eiMap.idsClear();</span>
-<span class="fc" id="L356">	}</span>
+<span class="fc" id="L353">		indexGraph.clearEdges();</span>
+<span class="fc" id="L354">		eiMap.idsClear();</span>
+<span class="fc" id="L355">	}</span>
 
 	@Override
 	public IdBuilder&lt;V&gt; vertexBuilder() {
-<span class="fc" id="L360">		return vertexBuilder;</span>
+<span class="fc" id="L359">		return vertexBuilder;</span>
 	}
 
 	@Override
 	public IdBuilder&lt;E&gt; edgeBuilder() {
-<span class="fc" id="L365">		return edgeBuilder;</span>
+<span class="fc" id="L364">		return edgeBuilder;</span>
 	}
 
 	@Override
 	public void ensureVertexCapacity(int vertexCapacity) {
-<span class="fc" id="L370">		indexGraph.ensureVertexCapacity(vertexCapacity);</span>
-<span class="fc" id="L371">		viMap.ensureCapacity(vertexCapacity);</span>
-<span class="fc" id="L372">	}</span>
+<span class="fc" id="L369">		indexGraph.ensureVertexCapacity(vertexCapacity);</span>
+<span class="fc" id="L370">		viMap.ensureCapacity(vertexCapacity);</span>
+<span class="fc" id="L371">	}</span>
 
 	@Override
 	public void ensureEdgeCapacity(int edgeCapacity) {
-<span class="fc" id="L376">		indexGraph.ensureEdgeCapacity(edgeCapacity);</span>
-<span class="fc" id="L377">		eiMap.ensureCapacity(edgeCapacity);</span>
-<span class="fc" id="L378">	}</span>
+<span class="fc" id="L375">		indexGraph.ensureEdgeCapacity(edgeCapacity);</span>
+<span class="fc" id="L376">		eiMap.ensureCapacity(edgeCapacity);</span>
+<span class="fc" id="L377">	}</span>
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT verticesWeights(String key) {
-<span class="fc" id="L383">		WeightsImpl.Index&lt;T&gt; indexWeights = indexGraph.verticesWeights(key);</span>
-<span class="fc bfc" id="L384" title="All 2 branches covered.">		if (indexWeights == null)</span>
-<span class="fc" id="L385">			return null;</span>
-<span class="fc" id="L386">		return (WeightsT) verticesWeights</span>
-<span class="fc" id="L387">				.computeIfAbsent(indexWeights, iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, indexGraphVerticesMap()));</span>
+<span class="fc" id="L382">		WeightsImpl.Index&lt;T&gt; indexWeights = indexGraph.verticesWeights(key);</span>
+<span class="fc bfc" id="L383" title="All 2 branches covered.">		if (indexWeights == null)</span>
+<span class="fc" id="L384">			return null;</span>
+<span class="fc" id="L385">		return (WeightsT) verticesWeights</span>
+<span class="fc" id="L386">				.computeIfAbsent(indexWeights, iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, indexGraphVerticesMap()));</span>
 	}
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT edgesWeights(String key) {
-<span class="fc" id="L393">		WeightsImpl.Index&lt;T&gt; indexWeights = indexGraph.edgesWeights(key);</span>
-<span class="fc bfc" id="L394" title="All 2 branches covered.">		if (indexWeights == null)</span>
-<span class="fc" id="L395">			return null;</span>
-<span class="fc" id="L396">		return (WeightsT) edgesWeights</span>
-<span class="fc" id="L397">				.computeIfAbsent(indexWeights, iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, indexGraphEdgesMap()));</span>
+<span class="fc" id="L392">		WeightsImpl.Index&lt;T&gt; indexWeights = indexGraph.edgesWeights(key);</span>
+<span class="fc bfc" id="L393" title="All 2 branches covered.">		if (indexWeights == null)</span>
+<span class="fc" id="L394">			return null;</span>
+<span class="fc" id="L395">		return (WeightsT) edgesWeights</span>
+<span class="fc" id="L396">				.computeIfAbsent(indexWeights, iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, indexGraphEdgesMap()));</span>
 	}
 
 }

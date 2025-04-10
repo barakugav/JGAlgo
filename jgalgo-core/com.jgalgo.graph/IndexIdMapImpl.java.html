@@ -198,7 +198,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public K indexToId(int index) {
-<span class="fc" id="L201">		Assertions.checkGraphId(index, indicesSet.size(), isVertices);</span>
+<span class="fc" id="L201">		Assertions.checkGraphIdx(index, indicesSet.size(), isVertices);</span>
 <span class="fc" id="L202">		return (K) indexToId[index];</span>
 	}
 

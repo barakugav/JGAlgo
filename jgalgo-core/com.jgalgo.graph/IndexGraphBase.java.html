@@ -181,7 +181,7 @@ abstract class IndexGraphBase extends AbstractGraph&lt;Integer, Integer&gt; impl
 
 		@Override
 		public boolean contains(int edge) {
-<span class="pc bpc" id="L184" title="1 of 8 branches missed.">			return 0 &lt;= edge &amp;&amp; edge &lt; edges().size() &amp;&amp; (source == source(edge) || source == target(edge));</span>
+<span class="fc bfc" id="L184" title="All 8 branches covered.">			return 0 &lt;= edge &amp;&amp; edge &lt; edges().size() &amp;&amp; (source == source(edge) || source == target(edge));</span>
 		}
 
 		@Override
@@ -200,7 +200,7 @@ abstract class IndexGraphBase extends AbstractGraph&lt;Integer, Integer&gt; impl
 
 		@Override
 		public boolean contains(int edge) {
-<span class="pc bpc" id="L203" title="2 of 8 branches missed.">			return 0 &lt;= edge &amp;&amp; edge &lt; edges().size() &amp;&amp; (target == source(edge) || target == target(edge));</span>
+<span class="fc bfc" id="L203" title="All 8 branches covered.">			return 0 &lt;= edge &amp;&amp; edge &lt; edges().size() &amp;&amp; (target == source(edge) || target == target(edge));</span>
 		}
 
 		@Override
@@ -219,7 +219,7 @@ abstract class IndexGraphBase extends AbstractGraph&lt;Integer, Integer&gt; impl
 
 		@Override
 		public boolean contains(int edge) {
-<span class="pc bpc" id="L222" title="1 of 6 branches missed.">			return 0 &lt;= edge &amp;&amp; edge &lt; edges().size() &amp;&amp; source == source(edge);</span>
+<span class="fc bfc" id="L222" title="All 6 branches covered.">			return 0 &lt;= edge &amp;&amp; edge &lt; edges().size() &amp;&amp; source == source(edge);</span>
 		}
 
 		@Override
@@ -238,7 +238,7 @@ abstract class IndexGraphBase extends AbstractGraph&lt;Integer, Integer&gt; impl
 
 		@Override
 		public boolean contains(int edge) {
-<span class="pc bpc" id="L241" title="1 of 6 branches missed.">			return 0 &lt;= edge &amp;&amp; edge &lt; edges().size() &amp;&amp; target == target(edge);</span>
+<span class="fc bfc" id="L241" title="All 6 branches covered.">			return 0 &lt;= edge &amp;&amp; edge &lt; edges().size() &amp;&amp; target == target(edge);</span>
 		}
 
 		@Override
@@ -303,7 +303,7 @@ abstract class IndexGraphBase extends AbstractGraph&lt;Integer, Integer&gt; impl
 		}
 	}
 
-	private class EdgeIterSourceTarget implements IEdgeIter {
+	private class EdgeIterSourceTarget implements EdgeIters.IBase {
 
 		private final int source, target;
 		private IntIterator it;

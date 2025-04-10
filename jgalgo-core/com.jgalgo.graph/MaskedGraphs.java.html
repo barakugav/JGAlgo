@@ -1,0 +1,1410 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaskedGraphs.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">MaskedGraphs.java</span></div><h1>MaskedGraphs.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.graph;
+
+import java.util.AbstractSet;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
+import com.jgalgo.internal.JGAlgoConfigImpl;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.IterTools;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterables;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.AbstractObjectSet;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
+
+class MaskedGraphs {
+
+    private MaskedGraphs() {}
+
+    private abstract static class MaskedGraphBase&lt;V, E&gt; extends AbstractGraph&lt;V, E&gt; {
+
+        private final Graph&lt;V, E&gt; g;
+
+<span class="fc" id="L51">        MaskedGraphBase(Graph&lt;V, E&gt; g) {</span>
+<span class="fc" id="L52">            this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L53">        }</span>
+
+        Graph&lt;V, E&gt; g() {
+<span class="fc" id="L56">            return g;</span>
+        }
+
+        @Override
+        public final boolean isDirected() {
+<span class="fc" id="L61">            return g.isDirected();</span>
+        }
+
+        @Override
+        public Set&lt;String&gt; verticesWeightsKeys() {
+<span class="fc" id="L66">            return g.verticesWeightsKeys();</span>
+        }
+
+        @Override
+        public Set&lt;String&gt; edgesWeightsKeys() {
+<span class="fc" id="L71">            return g.edgesWeightsKeys();</span>
+        }
+
+        @Override
+        public void removeEdgesWeights(String key) {
+<span class="fc" id="L76">            g.removeEdgesWeights(key);</span>
+<span class="fc" id="L77">        }</span>
+
+        @Override
+        public void removeVertices(Collection&lt;? extends V&gt; vertices) {
+<span class="fc" id="L81">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void removeEdges(Collection&lt;? extends E&gt; edges) {
+<span class="fc" id="L86">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+<span class="fc" id="L90">        public void ensureVertexCapacity(int vertexCapacity) {}</span>
+
+        @Override
+<span class="fc" id="L93">        public void ensureEdgeCapacity(int edgeCapacity) {}</span>
+
+        @Override
+        public boolean isAllowSelfEdges() {
+<span class="fc" id="L97">            return g.isAllowSelfEdges();</span>
+        }
+
+        @Override
+        public boolean isAllowParallelEdges() {
+<span class="fc" id="L102">            return g.isAllowParallelEdges();</span>
+        }
+
+        @Override
+        public void removeVerticesWeights(String key) {
+<span class="fc" id="L107">            g.removeVerticesWeights(key);</span>
+<span class="fc" id="L108">        }</span>
+
+        @Override
+        public void addVertices(Collection&lt;? extends V&gt; vertices) {
+<span class="fc" id="L112">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void addEdges(EdgeSet&lt;? extends V, ? extends E&gt; edges) {
+<span class="fc" id="L117">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void clear() {
+<span class="fc" id="L122">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void clearEdges() {
+<span class="fc" id="L127">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+    }
+
+    private abstract static class MaskedIntGraphBase extends MaskedGraphBase&lt;Integer, Integer&gt; implements IntGraph {
+
+        MaskedIntGraphBase(IntGraph g) {
+<span class="fc" id="L134">            super(g);</span>
+<span class="fc" id="L135">        }</span>
+
+        @Override
+        IntGraph g() {
+<span class="fc" id="L139">            return (IntGraph) super.g();</span>
+        }
+
+        @Override
+        public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
+                T defVal) {
+<span class="fc" id="L145">            g().addVerticesWeights(key, type, defVal);</span>
+<span class="fc" id="L146">            return verticesWeights(key);</span>
+        }
+
+        @Override
+        public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
+                T defVal) {
+<span class="fc" id="L152">            g().addEdgesWeights(key, type, defVal);</span>
+<span class="fc" id="L153">            return edgesWeights(key);</span>
+        }
+
+        @Override
+        public int addVertexInt() {
+<span class="fc" id="L158">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void removeVertex(int vertex) {
+<span class="fc" id="L163">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public int addEdge(int source, int target) {
+<span class="fc" id="L168">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void removeEdge(int edge) {
+<span class="fc" id="L173">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void removeEdgesOf(int vertex) {
+<span class="fc" id="L178">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void removeOutEdgesOf(int source) {
+<span class="fc" id="L183">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void removeInEdgesOf(int target) {
+<span class="fc" id="L188">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+    }
+
+    static class MaskedRenamedIndexGraph extends MaskedIntGraphBase implements IndexGraph {
+
+        private final GraphElementSet vertices;
+        private final GraphElementSet edges;
+
+        // Mapping from original vertices indices to API indices.
+        //
+        // If an original vertex is not contained in this map, its index remains the same.
+        // If an original vertex is mapped to -1, it is masked.
+        // If an original vertex is mapped to any other value (always positive), its hes new index.
+        final Int2IntMap vOrig2Api;
+
+        // Mapping from API vertices indices to original indices.
+        //
+        // If an API vertex is not contained in this map, its index remains the same.
+        // If an API vertex is mapped to any value (always positive), it was renamed and its hes original index.
+        final Int2IntMap vApi2OrigRenamed;
+
+        final Int2IntMap eOrig2Api;
+        final Int2IntMap eApi2OrigRenamed;
+
+        private IndexIntIdMap verticesIdMap;
+        private IndexIntIdMap edgesIdMap;
+
+        private static final int MASKED = -1;
+
+        static final Int2IntMap EmptyMap;
+
+        static {
+<span class="fc" id="L221">            Int2IntMap emptyMap = new Int2IntOpenHashMap(0);</span>
+<span class="fc" id="L222">            emptyMap.defaultReturnValue(Integer.MAX_VALUE);</span>
+            // emptyEdgeMap = Int2IntMaps.unmodifiable(emptyEdgeMap);
+<span class="fc" id="L224">            EmptyMap = emptyMap;</span>
+<span class="fc" id="L225">        }</span>
+
+        static Int2IntMap fixedSizedMap(int size) {
+<span class="fc bfc" id="L228" title="All 2 branches covered.">            if (size == 0) {</span>
+<span class="fc" id="L229">                return EmptyMap;</span>
+            } else {
+<span class="fc" id="L231">                Int2IntMap map = new Int2IntOpenHashMap(size);</span>
+<span class="fc" id="L232">                map.defaultReturnValue(Integer.MAX_VALUE);</span>
+<span class="fc" id="L233">                return map;</span>
+            }
+        }
+
+        MaskedRenamedIndexGraph(IndexGraph graph, int[] maskedVertices, int[] maskedEdges) {
+<span class="fc" id="L238">            super(graph);</span>
+<span class="fc" id="L239">            final int nOrig = g().vertices().size();</span>
+<span class="fc" id="L240">            final int mOrig = g().edges().size();</span>
+
+<span class="fc" id="L242">            JGAlgoUtils.sort(maskedVertices, JGAlgoConfigImpl.ParallelByDefault);</span>
+<span class="pc bpc" id="L243" title="2 of 6 branches missed.">            assert maskedVertices.length == 0 || (0 &lt;= maskedVertices[0] &amp;&amp; maskedVertices[0] &lt; nOrig);</span>
+
+<span class="fc" id="L245">            JGAlgoUtils.sort(maskedEdges, JGAlgoConfigImpl.ParallelByDefault);</span>
+<span class="pc bpc" id="L246" title="3 of 6 branches missed.">            assert maskedEdges.length == 0 || (0 &lt;= maskedEdges[0] &amp;&amp; maskedEdges[0] &lt; mOrig);</span>
+
+<span class="fc" id="L248">            var verticesMaps = computeMaps(nOrig, maskedVertices);</span>
+<span class="fc" id="L249">            vOrig2Api = verticesMaps.first();</span>
+<span class="fc" id="L250">            vApi2OrigRenamed = verticesMaps.second();</span>
+
+<span class="fc" id="L252">            var edgesMaps = computeMaps(mOrig, maskedEdges);</span>
+<span class="fc" id="L253">            eOrig2Api = edgesMaps.first();</span>
+<span class="fc" id="L254">            eApi2OrigRenamed = edgesMaps.second();</span>
+
+<span class="fc" id="L256">            this.vertices = GraphElementSet.Immutable.ofVertices(nOrig - maskedVertices.length);</span>
+<span class="fc" id="L257">            this.edges = GraphElementSet.Immutable.ofEdges(mOrig - maskedEdges.length);</span>
+<span class="fc" id="L258">        }</span>
+
+        private static Pair&lt;Int2IntMap, Int2IntMap&gt; computeMaps(int origElementsNum, int[] masked) {
+<span class="fc bfc" id="L261" title="All 2 branches covered.">            int movedElementsNum = (int) Arrays.stream(masked).filter(i -&gt; i &lt; origElementsNum - masked.length).count();</span>
+
+<span class="fc" id="L263">            Int2IntMap orig2api = fixedSizedMap(masked.length + movedElementsNum);</span>
+<span class="fc" id="L264">            Int2IntMap api2origRenamed = fixedSizedMap(masked.length);</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">            for (int maskBegin = 0, maskEnd = masked.length - 1, origIdx = origElementsNum - 1; maskBegin &lt;= maskEnd;) {</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">                assert masked[maskEnd] &lt;= origIdx;</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">                if (masked[maskEnd] == origIdx) {</span>
+<span class="fc" id="L268">                    int maskedElm = masked[maskEnd--];</span>
+<span class="fc" id="L269">                    orig2api.put(maskedElm, MASKED);</span>
+<span class="fc" id="L270">                    origIdx--;</span>
+<span class="fc" id="L271">                } else {</span>
+<span class="fc" id="L272">                    int maskedElm = masked[maskBegin++];</span>
+<span class="fc" id="L273">                    orig2api.put(maskedElm, MASKED);</span>
+<span class="fc" id="L274">                    orig2api.put(origIdx, maskedElm);</span>
+<span class="fc" id="L275">                    api2origRenamed.put(maskedElm, origIdx);</span>
+<span class="fc" id="L276">                    origIdx--;</span>
+<span class="fc" id="L277">                }</span>
+            }
+
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">            assert orig2api.size() == masked.length + movedElementsNum;</span>
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">            assert api2origRenamed.size() == movedElementsNum;</span>
+
+<span class="fc" id="L283">            return Pair.of(orig2api, api2origRenamed);</span>
+        }
+
+        @Override
+        IndexGraph g() {
+<span class="fc" id="L288">            return (IndexGraph) super.g();</span>
+        }
+
+        int vOrig(int vApi) {
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">            assert vApi &gt;= 0;</span>
+<span class="fc" id="L293">            return vApi2OrigRenamed.getOrDefault(vApi, vApi);</span>
+        }
+
+        int vApi(int vOrig) {
+<span class="fc" id="L297">            return vOrig2Api.getOrDefault(vOrig, vOrig);</span>
+        }
+
+        int eOrig(int eApi) {
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">            assert eApi &gt;= 0;</span>
+<span class="fc" id="L302">            return eApi2OrigRenamed.getOrDefault(eApi, eApi);</span>
+        }
+
+        int eApi(int eOrig) {
+<span class="fc" id="L306">            return eOrig2Api.getOrDefault(eOrig, eOrig);</span>
+        }
+
+        @Override
+        public final GraphElementSet vertices() {
+<span class="fc" id="L311">            return vertices;</span>
+        }
+
+        @Override
+        public final GraphElementSet edges() {
+<span class="fc" id="L316">            return edges;</span>
+        }
+
+        void checkVertex(int vertex) {
+<span class="fc" id="L320">            Assertions.checkVertex(vertex, vertices.size);</span>
+<span class="fc" id="L321">        }</span>
+
+        void checkEdge(int edge) {
+<span class="fc" id="L324">            Assertions.checkEdge(edge, edges.size);</span>
+<span class="fc" id="L325">        }</span>
+
+        @Override
+        public final int edgeSource(int edge) {
+<span class="fc" id="L329">            checkEdge(edge);</span>
+<span class="fc" id="L330">            return vApi(g().edgeSource(eOrig(edge)));</span>
+        }
+
+        @Override
+        public final int edgeTarget(int edge) {
+<span class="fc" id="L335">            checkEdge(edge);</span>
+<span class="fc" id="L336">            return vApi(g().edgeTarget(eOrig(edge)));</span>
+        }
+
+        @Override
+        public int getEdge(int source, int target) {
+<span class="fc" id="L341">            checkVertex(source);</span>
+<span class="fc" id="L342">            checkVertex(target);</span>
+<span class="fc" id="L343">            int u = vOrig(source), v = vOrig(target);</span>
+
+<span class="fc" id="L345">            int eOrig = g().getEdge(u, v), e;</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">            if (eOrig &lt; 0)</span>
+<span class="fc" id="L347">                return -1; // not found</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">            if ((e = eApi(eOrig)) &gt;= 0)</span>
+<span class="fc" id="L349">                return e; // found an edge, not masked</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">            if (!g().isAllowParallelEdges())</span>
+<span class="fc" id="L351">                return -1; // found a masked edge, there are no more edges as the graph doesnt support parallel edges</span>
+
+<span class="fc" id="L353">            IEdgeIter iter = new MaskedEdgeSet(g().getEdges(u, v)).iterator();</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">            return iter.hasNext() ? iter.nextInt() : -1;</span>
+        }
+
+        @Override
+        public int edgeEndpoint(int edge, int endpoint) {
+<span class="fc" id="L359">            checkEdge(edge);</span>
+<span class="fc" id="L360">            checkVertex(endpoint);</span>
+<span class="fc" id="L361">            return vApi(g().edgeEndpoint(eOrig(edge), vOrig(endpoint)));</span>
+        }
+
+        @Override
+        public void moveEdge(int edge, int newSource, int newTarget) {
+<span class="fc" id="L366">            checkEdge(edge);</span>
+<span class="fc" id="L367">            checkVertex(newSource);</span>
+<span class="fc" id="L368">            checkVertex(newTarget);</span>
+<span class="fc" id="L369">            g().moveEdge(eOrig(edge), vOrig(newSource), vOrig(newTarget));</span>
+<span class="fc" id="L370">        }</span>
+
+        @Override
+        public IEdgeSet outEdges(int source) {
+<span class="fc" id="L374">            checkVertex(source);</span>
+<span class="fc" id="L375">            return new MaskedEdgeSet(g().outEdges(vOrig(source)));</span>
+        }
+
+        @Override
+        public IEdgeSet inEdges(int target) {
+<span class="fc" id="L380">            checkVertex(target);</span>
+<span class="fc" id="L381">            return new MaskedEdgeSet(g().inEdges(vOrig(target)));</span>
+        }
+
+        @Override
+        public IEdgeSet getEdges(int source, int target) {
+<span class="fc" id="L386">            checkVertex(source);</span>
+<span class="fc" id="L387">            checkVertex(target);</span>
+<span class="fc" id="L388">            return new MaskedEdgeSet(g().getEdges(vOrig(source), vOrig(target)));</span>
+        }
+
+        class MaskedEdgeSet extends AbstractIntSet implements IEdgeSet {
+
+            private final IEdgeSet set;
+
+<span class="fc" id="L395">            MaskedEdgeSet(IEdgeSet set) {</span>
+<span class="fc" id="L396">                this.set = set;</span>
+<span class="fc" id="L397">            }</span>
+
+            @Override
+            public int size() {
+<span class="fc" id="L401">                return (int) IntIterables.size(this);</span>
+            }
+
+            @Override
+            public boolean isEmpty() {
+<span class="fc bfc" id="L406" title="All 2 branches covered.">                return !iterator().hasNext();</span>
+            }
+
+            @Override
+            public boolean contains(int key) {
+<span class="fc bfc" id="L411" title="All 4 branches covered.">                return MaskedRenamedIndexGraph.this.edges().contains(key) &amp;&amp; set.contains(eOrig(key));</span>
+            }
+
+            @Override
+            public boolean containsAll(IntCollection c) {
+<span class="fc bfc" id="L416" title="All 2 branches covered.">                return MaskedRenamedIndexGraph.this.edges().containsAll(c)</span>
+<span class="fc bfc" id="L417" title="All 2 branches covered.">                        &amp;&amp; c.intStream().allMatch(key -&gt; set.contains(eOrig(key)));</span>
+            }
+
+            @Override
+            public IEdgeIter iterator() {
+<span class="fc" id="L422">                return new MaskedEdgeIter(set.iterator());</span>
+            }
+        }
+
+        class MaskedEdgeIter implements EdgeIters.IBase {
+
+            private final IEdgeIter iter;
+            private int nextEdge;
+            private int sourceOrig, targetOrig;
+
+<span class="fc" id="L432">            MaskedEdgeIter(IEdgeIter iter) {</span>
+<span class="fc" id="L433">                this.iter = iter;</span>
+<span class="fc" id="L434">                sourceOrig = targetOrig = -1;</span>
+<span class="fc" id="L435">                advance();</span>
+<span class="fc" id="L436">            }</span>
+
+            private void advance() {
+<span class="fc" id="L439">                int nextEdge = -1;</span>
+<span class="fc bfc" id="L440" title="All 4 branches covered.">                while (iter.hasNext() &amp;&amp; (nextEdge = eApi(iter.peekNextInt())) &lt; 0)</span>
+<span class="fc" id="L441">                    iter.nextInt();</span>
+<span class="fc" id="L442">                this.nextEdge = nextEdge;</span>
+<span class="fc" id="L443">            }</span>
+
+            @Override
+            public boolean hasNext() {
+<span class="fc bfc" id="L447" title="All 2 branches covered.">                return nextEdge &gt;= 0;</span>
+            }
+
+            @Override
+            public int nextInt() {
+<span class="fc" id="L452">                iter.nextInt();</span>
+<span class="fc" id="L453">                int e = nextEdge;</span>
+<span class="fc" id="L454">                sourceOrig = iter.sourceInt();</span>
+<span class="fc" id="L455">                targetOrig = iter.targetInt();</span>
+<span class="fc" id="L456">                advance();</span>
+<span class="fc" id="L457">                return e;</span>
+            }
+
+            @Override
+            public int peekNextInt() {
+<span class="fc bfc" id="L462" title="All 2 branches covered.">                if (nextEdge &lt; 0)</span>
+<span class="fc" id="L463">                    throw new NoSuchElementException();</span>
+<span class="fc" id="L464">                return nextEdge;</span>
+            }
+
+            @Override
+            public int sourceInt() {
+<span class="fc" id="L469">                return vApi(sourceOrig);</span>
+            }
+
+            @Override
+            public int targetInt() {
+<span class="fc" id="L474">                return vApi(targetOrig);</span>
+            }
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT verticesWeights(String key) {
+<span class="fc" id="L481">            IWeights&lt;T&gt; weights = g().verticesWeights(key);</span>
+<span class="fc bfc" id="L482" title="All 2 branches covered.">            if (weights == null)</span>
+<span class="fc" id="L483">                return null;</span>
+<span class="fc" id="L484">            return (WeightsT) WeightsImpl.maskedIndexWeights(weights, vertices, true, vApi2OrigRenamed);</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT edgesWeights(String key) {
+<span class="fc" id="L490">            IWeights&lt;T&gt; weights = g().edgesWeights(key);</span>
+<span class="fc bfc" id="L491" title="All 2 branches covered.">            if (weights == null)</span>
+<span class="fc" id="L492">                return null;</span>
+<span class="fc" id="L493">            return (WeightsT) WeightsImpl.maskedIndexWeights(weights, edges, false, eApi2OrigRenamed);</span>
+        }
+
+        @Override
+        public IntSet addEdgesReassignIds(IEdgeSet edges) {
+<span class="fc" id="L498">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+<span class="fc" id="L502">        public void addVertexRemoveListener(IndexRemoveListener listener) {}</span>
+
+        @Override
+<span class="fc" id="L505">        public void removeVertexRemoveListener(IndexRemoveListener listener) {}</span>
+
+        @Override
+<span class="fc" id="L508">        public void addEdgeRemoveListener(IndexRemoveListener listener) {}</span>
+
+        @Override
+<span class="fc" id="L511">        public void removeEdgeRemoveListener(IndexRemoveListener listener) {}</span>
+
+        @Deprecated
+        @Override
+        public IndexIntIdMap indexGraphVerticesMap() {
+<span class="fc bfc" id="L516" title="All 2 branches covered.">            if (verticesIdMap == null)</span>
+<span class="fc" id="L517">                verticesIdMap = IndexIntIdMap.identityVerticesMap(vertices);</span>
+<span class="fc" id="L518">            return verticesIdMap;</span>
+        }
+
+        @Deprecated
+        @Override
+        public IndexIntIdMap indexGraphEdgesMap() {
+<span class="fc bfc" id="L524" title="All 2 branches covered.">            if (edgesIdMap == null)</span>
+<span class="fc" id="L525">                edgesIdMap = IndexIntIdMap.identityEdgesMap(edges);</span>
+<span class="fc" id="L526">            return edgesIdMap;</span>
+        }
+    }
+
+<span class="fc" id="L530">    static class MaskedIntGraph extends MaskedIntGraphBase {</span>
+
+        private final IntSet maskedVertices;
+        private final IntSet maskedEdges;
+
+        private final IntSet vertices;
+        private final IntSet edges;
+
+        private MaskedRenamedIndexGraph indexGraph;
+        private IndexIntIdMap indexGraphVerticesMap;
+        private IndexIntIdMap indexGraphEdgesMap;
+
+        MaskedIntGraph(IntGraph g, Collection&lt;Integer&gt; maskedVertices, Collection&lt;Integer&gt; maskedEdges) {
+<span class="fc" id="L543">            super(g);</span>
+
+<span class="fc" id="L545">            this.maskedVertices = new IntOpenHashSet(maskedVertices);</span>
+<span class="fc bfc" id="L546" title="All 2 branches covered.">            if (this.maskedVertices.size() != maskedVertices.size())</span>
+<span class="fc" id="L547">                throw new IllegalArgumentException(&quot;masked vertices must be unique&quot;);</span>
+<span class="fc bfc" id="L548" title="All 2 branches covered.">            if (!g.vertices().containsAll(this.maskedVertices))</span>
+<span class="fc" id="L549">                throw NoSuchVertexException</span>
+<span class="fc" id="L550">                        .ofVertex(this.maskedVertices</span>
+<span class="fc" id="L551">                                .intStream()</span>
+<span class="fc bfc" id="L552" title="All 2 branches covered.">                                .filter(i -&gt; !g.vertices().contains(i))</span>
+<span class="fc" id="L553">                                .findAny()</span>
+<span class="fc" id="L554">                                .getAsInt());</span>
+<span class="fc" id="L555">            vertices = new MaskedSet(g.vertices(), this.maskedVertices);</span>
+
+<span class="fc" id="L557">            this.maskedEdges = new IntOpenHashSet(maskedEdges);</span>
+<span class="fc bfc" id="L558" title="All 2 branches covered.">            if (this.maskedEdges.size() != maskedEdges.size())</span>
+<span class="fc" id="L559">                throw new IllegalArgumentException(&quot;masked edges must be unique&quot;);</span>
+<span class="fc bfc" id="L560" title="All 2 branches covered.">            if (!g.edges().containsAll(this.maskedEdges))</span>
+<span class="fc" id="L561">                throw NoSuchEdgeException</span>
+<span class="fc bfc" id="L562" title="All 2 branches covered.">                        .ofEdge(this.maskedEdges.intStream().filter(i -&gt; !g.edges().contains(i)).findAny().getAsInt());</span>
+<span class="fc bfc" id="L563" title="All 2 branches covered.">            if (g().isDirected()) {</span>
+<span class="fc bfc" id="L564" title="All 2 branches covered.">                for (int v : this.maskedVertices) {</span>
+<span class="fc" id="L565">                    this.maskedEdges.addAll(g().outEdges(v));</span>
+<span class="fc" id="L566">                    this.maskedEdges.addAll(g().inEdges(v));</span>
+<span class="fc" id="L567">                }</span>
+            } else {
+<span class="fc bfc" id="L569" title="All 2 branches covered.">                for (int v : this.maskedVertices)</span>
+<span class="fc" id="L570">                    this.maskedEdges.addAll(g().outEdges(v));</span>
+            }
+<span class="fc" id="L572">            edges = new MaskedSet(g.edges(), this.maskedEdges);</span>
+<span class="fc" id="L573">        }</span>
+
+        @Override
+        public IntSet vertices() {
+<span class="fc" id="L577">            return vertices;</span>
+        }
+
+        @Override
+        public IntSet edges() {
+<span class="fc" id="L582">            return edges;</span>
+        }
+
+        private static class MaskedSet extends AbstractIntSet {
+
+            private final IntSet set;
+            private final IntSet mask;
+
+<span class="fc" id="L590">            MaskedSet(IntSet set, IntSet mask) {</span>
+<span class="fc" id="L591">                this.set = set;</span>
+<span class="fc" id="L592">                this.mask = mask;</span>
+<span class="fc" id="L593">            }</span>
+
+            @Override
+            public boolean contains(int key) {
+<span class="fc bfc" id="L597" title="All 4 branches covered.">                return set.contains(key) &amp;&amp; !mask.contains(key);</span>
+            }
+
+            @Override
+            public boolean containsAll(IntCollection c) {
+<span class="fc bfc" id="L602" title="All 4 branches covered.">                return set.containsAll(c) &amp;&amp; c.intStream().noneMatch(mask::contains);</span>
+            }
+
+            @Override
+            public int size() {
+<span class="fc" id="L607">                return set.size() - mask.size();</span>
+            }
+
+            @Override
+            public IntIterator iterator() {
+<span class="fc" id="L612">                return new MaskedIterator(set.iterator(), mask);</span>
+            }
+        }
+
+        private static class MaskedIterator implements IterTools.Peek.Int {
+
+            private final IterTools.Peek.Int iter;
+            private final IntSet mask;
+
+<span class="fc" id="L621">            MaskedIterator(IntIterator iter, IntSet mask) {</span>
+<span class="fc" id="L622">                this.iter =</span>
+<span class="pc bpc" id="L623" title="1 of 2 branches missed.">                        (iter instanceof IterTools.Peek.Int) ? (IterTools.Peek.Int) iter : IterTools.Peek.Int.of(iter);</span>
+<span class="fc" id="L624">                this.mask = Objects.requireNonNull(mask);</span>
+<span class="fc" id="L625">                advance();</span>
+<span class="fc" id="L626">            }</span>
+
+            private void advance() {
+<span class="fc bfc" id="L629" title="All 4 branches covered.">                while (iter.hasNext() &amp;&amp; mask.contains(iter.peekNextInt()))</span>
+<span class="fc" id="L630">                    iter.nextInt();</span>
+<span class="fc" id="L631">            }</span>
+
+            @Override
+            public boolean hasNext() {
+<span class="fc" id="L635">                return iter.hasNext();</span>
+            }
+
+            @Override
+            public int nextInt() {
+<span class="fc" id="L640">                int next = iter.nextInt();</span>
+<span class="fc" id="L641">                advance();</span>
+<span class="fc" id="L642">                return next;</span>
+            }
+
+            @Override
+            public int peekNextInt() {
+<span class="fc" id="L647">                return iter.peekNextInt();</span>
+            }
+        }
+
+        private void checkVertexNotMasked(int v) {
+<span class="fc bfc" id="L652" title="All 2 branches covered.">            if (maskedVertices.contains(v))</span>
+<span class="fc" id="L653">                throw NoSuchVertexException.ofVertex(v);</span>
+<span class="fc" id="L654">        }</span>
+
+        private void checkEdgeNotMasked(int e) {
+<span class="fc bfc" id="L657" title="All 2 branches covered.">            if (maskedEdges.contains(e))</span>
+<span class="fc" id="L658">                throw NoSuchEdgeException.ofEdge(e);</span>
+<span class="fc" id="L659">        }</span>
+
+        @Override
+        public int edgeSource(int edge) {
+<span class="fc" id="L663">            checkEdgeNotMasked(edge);</span>
+<span class="fc" id="L664">            return g().edgeSource(edge);</span>
+        }
+
+        @Override
+        public int edgeTarget(int edge) {
+<span class="fc" id="L669">            checkEdgeNotMasked(edge);</span>
+<span class="fc" id="L670">            return g().edgeTarget(edge);</span>
+        }
+
+        @Override
+        public int edgeEndpoint(int edge, int endpoint) {
+<span class="fc" id="L675">            checkEdgeNotMasked(edge);</span>
+<span class="pc bpc" id="L676" title="1 of 2 branches missed.">            assert !maskedVertices.contains(endpoint) : &quot;edges of masked vertices should be masked&quot;;</span>
+<span class="fc" id="L677">            return g().edgeEndpoint(edge, endpoint);</span>
+        }
+
+        @Override
+        public int getEdge(int source, int target) {
+<span class="fc" id="L682">            checkVertexNotMasked(source);</span>
+<span class="fc" id="L683">            checkVertexNotMasked(target);</span>
+
+<span class="fc" id="L685">            int e = g().getEdge(source, target);</span>
+<span class="fc bfc" id="L686" title="All 2 branches covered.">            if (e &lt; 0)</span>
+<span class="fc" id="L687">                return -1; // not found</span>
+<span class="fc bfc" id="L688" title="All 2 branches covered.">            if (!maskedEdges.contains(e))</span>
+<span class="fc" id="L689">                return e; // found an edge, not masked</span>
+<span class="fc bfc" id="L690" title="All 2 branches covered.">            if (!g().isAllowParallelEdges())</span>
+<span class="fc" id="L691">                return -1; // found a masked edge, there are no more edges as the graph doesnt support parallel edges</span>
+
+<span class="fc" id="L693">            IEdgeIter iter = new MaskedEdgeSet(g().getEdges(source, target), maskedEdges).iterator();</span>
+<span class="fc bfc" id="L694" title="All 2 branches covered.">            return iter.hasNext() ? iter.nextInt() : -1;</span>
+        }
+
+        @Override
+        public IEdgeSet getEdges(int source, int target) {
+<span class="fc" id="L699">            checkVertexNotMasked(source);</span>
+<span class="fc" id="L700">            checkVertexNotMasked(target);</span>
+<span class="fc" id="L701">            return new MaskedEdgeSet(g().getEdges(source, target), maskedEdges);</span>
+        }
+
+        @Override
+        public IEdgeSet outEdges(int source) {
+<span class="fc" id="L706">            checkVertexNotMasked(source);</span>
+<span class="fc" id="L707">            return new MaskedEdgeSet(g().outEdges(source), maskedEdges);</span>
+        }
+
+        @Override
+        public IEdgeSet inEdges(int target) {
+<span class="fc" id="L712">            checkVertexNotMasked(target);</span>
+<span class="fc" id="L713">            return new MaskedEdgeSet(g().inEdges(target), maskedEdges);</span>
+        }
+
+        private static class MaskedEdgeSet extends AbstractIntSet implements IEdgeSet {
+
+            private final IEdgeSet set;
+            private final IntSet maskedEdges;
+
+<span class="fc" id="L721">            MaskedEdgeSet(IEdgeSet set, IntSet mask) {</span>
+<span class="fc" id="L722">                this.set = set;</span>
+<span class="fc" id="L723">                this.maskedEdges = mask;</span>
+<span class="fc" id="L724">            }</span>
+
+            @Override
+            public int size() {
+<span class="fc" id="L728">                return (int) IntIterables.size(this);</span>
+            }
+
+            @Override
+            public boolean isEmpty() {
+<span class="fc bfc" id="L733" title="All 2 branches covered.">                return !iterator().hasNext();</span>
+            }
+
+            @Override
+            public boolean contains(int key) {
+<span class="fc bfc" id="L738" title="All 4 branches covered.">                return set.contains(key) &amp;&amp; !maskedEdges.contains(key);</span>
+            }
+
+            @Override
+            public boolean containsAll(IntCollection c) {
+<span class="fc bfc" id="L743" title="All 4 branches covered.">                return set.containsAll(c) &amp;&amp; c.intStream().noneMatch(maskedEdges::contains);</span>
+            }
+
+            @Override
+            public IEdgeIter iterator() {
+<span class="fc" id="L748">                return new MaskedEdgeIter(set.iterator(), maskedEdges);</span>
+            }
+        }
+        private static class MaskedEdgeIter implements EdgeIters.IBase {
+
+            private final IEdgeIter iter;
+            private final IntSet mask;
+            private int source, target;
+
+<span class="fc" id="L757">            MaskedEdgeIter(IEdgeIter iter, IntSet mask) {</span>
+<span class="fc" id="L758">                this.iter = iter;</span>
+<span class="fc" id="L759">                this.mask = Objects.requireNonNull(mask);</span>
+<span class="fc" id="L760">                source = target = -1;</span>
+<span class="fc" id="L761">                advance();</span>
+<span class="fc" id="L762">            }</span>
+
+            private void advance() {
+<span class="fc bfc" id="L765" title="All 4 branches covered.">                while (iter.hasNext() &amp;&amp; mask.contains(iter.peekNextInt()))</span>
+<span class="fc" id="L766">                    iter.nextInt();</span>
+<span class="fc" id="L767">            }</span>
+
+            @Override
+            public boolean hasNext() {
+<span class="fc" id="L771">                return iter.hasNext();</span>
+            }
+
+            @Override
+            public int nextInt() {
+<span class="fc" id="L776">                int next = iter.nextInt();</span>
+<span class="fc" id="L777">                source = iter.sourceInt();</span>
+<span class="fc" id="L778">                target = iter.targetInt();</span>
+<span class="fc" id="L779">                advance();</span>
+<span class="fc" id="L780">                return next;</span>
+            }
+
+            @Override
+            public int peekNextInt() {
+<span class="fc" id="L785">                return iter.peekNextInt();</span>
+            }
+
+            @Override
+            public int sourceInt() {
+<span class="fc" id="L790">                return source;</span>
+            }
+
+            @Override
+            public int targetInt() {
+<span class="fc" id="L795">                return target;</span>
+            }
+        }
+
+        @Override
+        public void moveEdge(int edge, int newSource, int newTarget) {
+<span class="fc" id="L801">            checkEdgeNotMasked(edge);</span>
+<span class="fc" id="L802">            checkVertexNotMasked(newSource);</span>
+<span class="fc" id="L803">            checkVertexNotMasked(newTarget);</span>
+<span class="fc" id="L804">            g().moveEdge(edge, newSource, newTarget);</span>
+<span class="fc" id="L805">        }</span>
+
+        @Override
+        public IdBuilderInt vertexBuilder() {
+<span class="fc" id="L809">            return g().vertexBuilder();</span>
+        }
+
+        @Override
+        public IdBuilderInt edgeBuilder() {
+<span class="fc" id="L814">            return g().edgeBuilder();</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT verticesWeights(String key) {
+<span class="fc" id="L820">            IWeights&lt;T&gt; weights = g().verticesWeights(key);</span>
+<span class="fc bfc" id="L821" title="All 2 branches covered.">            if (weights == null)</span>
+<span class="fc" id="L822">                return null;</span>
+<span class="fc" id="L823">            return (WeightsT) WeightsImpl.maskedIntWeights(weights, maskedVertices, true);</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT edgesWeights(String key) {
+<span class="fc" id="L829">            IWeights&lt;T&gt; weights = g().edgesWeights(key);</span>
+<span class="fc bfc" id="L830" title="All 2 branches covered.">            if (weights == null)</span>
+<span class="fc" id="L831">                return null;</span>
+<span class="fc" id="L832">            return (WeightsT) WeightsImpl.maskedIntWeights(weights, maskedEdges, false);</span>
+        }
+
+        @Override
+        public void addVertex(int vertex) {
+<span class="fc" id="L837">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void addEdge(int source, int target, int edge) {
+<span class="fc" id="L842">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void renameVertex(int vertex, int newId) {
+<span class="fc" id="L847">            throw new UnsupportedOperationException(&quot;Can't change identifier in a masked graph&quot;);</span>
+        }
+
+        @Override
+        public void renameEdge(int edge, int newId) {
+<span class="fc" id="L852">            throw new UnsupportedOperationException(&quot;Can't change identifier in a masked graph&quot;);</span>
+        }
+
+        @Override
+        public IndexGraph indexGraph() {
+<span class="fc bfc" id="L857" title="All 2 branches covered.">            if (indexGraph == null) {</span>
+<span class="fc" id="L858">                IndexIntIdMap viMap = g().indexGraphVerticesMap();</span>
+<span class="fc" id="L859">                IndexIntIdMap eiMap = g().indexGraphEdgesMap();</span>
+
+<span class="fc" id="L861">                int[] maskedVerticesArr = maskedVertices.intStream().map(viMap::idToIndex).toArray();</span>
+<span class="fc" id="L862">                int[] maskedEdgesArr = maskedEdges.intStream().map(eiMap::idToIndex).toArray();</span>
+
+<span class="fc" id="L864">                indexGraph = new MaskedRenamedIndexGraph(g().indexGraph(), maskedVerticesArr, maskedEdgesArr);</span>
+
+<span class="fc" id="L866">                indexGraphVerticesMap = new IndexIntIdMapImpl(viMap, indexGraph.vOrig2Api, indexGraph.vApi2OrigRenamed,</span>
+<span class="fc" id="L867">                        vertices.size(), true);</span>
+<span class="fc" id="L868">                indexGraphEdgesMap = new IndexIntIdMapImpl(eiMap, indexGraph.eOrig2Api, indexGraph.eApi2OrigRenamed,</span>
+<span class="fc" id="L869">                        edges.size(), false);</span>
+            }
+<span class="fc" id="L871">            return indexGraph;</span>
+        }
+
+        private static class IndexIntIdMapImpl implements IndexIntIdMap {
+
+            private final IndexIntIdMap origMap;
+            private final Int2IntMap orig2api;
+            private final Int2IntMap api2origRenamed;
+            private final int elementNum;
+            private final boolean isVertices;
+
+            IndexIntIdMapImpl(IndexIntIdMap origMap, Int2IntMap orig2api, Int2IntMap api2origRenamed, int elementNum,
+<span class="fc" id="L883">                    boolean isVertices) {</span>
+<span class="fc" id="L884">                this.origMap = origMap;</span>
+<span class="fc" id="L885">                this.orig2api = orig2api;</span>
+<span class="fc" id="L886">                this.api2origRenamed = api2origRenamed;</span>
+<span class="fc" id="L887">                this.elementNum = elementNum;</span>
+<span class="fc" id="L888">                this.isVertices = isVertices;</span>
+<span class="fc" id="L889">            }</span>
+
+            @Override
+            public int indexToIdInt(int index) {
+<span class="fc" id="L893">                int id = indexToIdIfExistInt(index);</span>
+<span class="fc bfc" id="L894" title="All 2 branches covered.">                if (id &lt; 0) {</span>
+<span class="fc bfc" id="L895" title="All 2 branches covered.">                    if (isVertices) {</span>
+<span class="fc" id="L896">                        throw NoSuchVertexException.ofIndex(index);</span>
+                    } else {
+<span class="fc" id="L898">                        throw NoSuchEdgeException.ofIndex(index);</span>
+                    }
+                }
+<span class="fc" id="L901">                return id;</span>
+            }
+
+            @Override
+            public int indexToIdIfExistInt(int index) {
+<span class="fc bfc" id="L906" title="All 4 branches covered.">                if (index &lt; 0 || index &gt;= elementNum)</span>
+<span class="fc" id="L907">                    return -1;</span>
+<span class="fc" id="L908">                int indexOrig = api2origRenamed.getOrDefault(index, index);</span>
+<span class="fc" id="L909">                return origMap.indexToIdInt(indexOrig);</span>
+            }
+
+            @Override
+            public int idToIndex(int id) {
+<span class="fc" id="L914">                int idxOrig = origMap.idToIndex(id);</span>
+<span class="fc" id="L915">                int idxApi = orig2api.getOrDefault(idxOrig, idxOrig);</span>
+<span class="fc bfc" id="L916" title="All 2 branches covered.">                if (idxApi &lt; 0) {</span>
+<span class="fc bfc" id="L917" title="All 2 branches covered.">                    if (isVertices) {</span>
+<span class="fc" id="L918">                        throw NoSuchVertexException.ofVertex(id);</span>
+                    } else {
+<span class="fc" id="L920">                        throw NoSuchEdgeException.ofEdge(id);</span>
+                    }
+                }
+<span class="fc" id="L923">                return idxApi;</span>
+
+            }
+
+            @Override
+            public int idToIndexIfExist(int id) {
+<span class="fc" id="L929">                int idxOrig = origMap.idToIndexIfExist(id);</span>
+<span class="fc bfc" id="L930" title="All 2 branches covered.">                if (idxOrig &lt; 0)</span>
+<span class="fc" id="L931">                    return -1;</span>
+<span class="fc" id="L932">                return orig2api.getOrDefault(idxOrig, idxOrig);</span>
+            }
+        }
+
+        @Override
+        public IndexIntIdMap indexGraphVerticesMap() {
+<span class="fc" id="L938">            indexGraph(); // init index graph and maps</span>
+<span class="pc bpc" id="L939" title="1 of 2 branches missed.">            assert indexGraphVerticesMap != null;</span>
+<span class="fc" id="L940">            return indexGraphVerticesMap;</span>
+        }
+
+        @Override
+        public IndexIntIdMap indexGraphEdgesMap() {
+<span class="fc" id="L945">            indexGraph(); // init index graph and maps</span>
+<span class="pc bpc" id="L946" title="1 of 2 branches missed.">            assert indexGraphEdgesMap != null;</span>
+<span class="fc" id="L947">            return indexGraphEdgesMap;</span>
+        }
+    }
+
+<span class="fc" id="L951">    static class MaskedObjGraph&lt;V, E&gt; extends MaskedGraphBase&lt;V, E&gt; {</span>
+
+        private final ObjectSet&lt;V&gt; maskedVertices;
+        private final ObjectSet&lt;E&gt; maskedEdges;
+
+        private final ObjectSet&lt;V&gt; vertices;
+        private final ObjectSet&lt;E&gt; edges;
+
+        private MaskedRenamedIndexGraph indexGraph;
+        private IndexIdMap&lt;V&gt; indexGraphVerticesMap;
+        private IndexIdMap&lt;E&gt; indexGraphEdgesMap;
+
+        MaskedObjGraph(Graph&lt;V, E&gt; g, Collection&lt;V&gt; maskedVertices, Collection&lt;E&gt; maskedEdges) {
+<span class="fc" id="L964">            super(g);</span>
+
+<span class="fc" id="L966">            this.maskedVertices = new ObjectOpenHashSet&lt;&gt;(maskedVertices);</span>
+<span class="fc bfc" id="L967" title="All 2 branches covered.">            if (this.maskedVertices.size() != maskedVertices.size())</span>
+<span class="fc" id="L968">                throw new IllegalArgumentException(&quot;masked vertices are not unique&quot;);</span>
+<span class="fc bfc" id="L969" title="All 2 branches covered.">            if (!g.vertices().containsAll(this.maskedVertices))</span>
+<span class="fc" id="L970">                throw NoSuchVertexException</span>
+<span class="fc bfc" id="L971" title="All 2 branches covered.">                        .ofVertex(this.maskedVertices.stream().filter(v -&gt; !g.vertices().contains(v)).findAny().get());</span>
+<span class="fc" id="L972">            vertices = new MaskedSet&lt;&gt;(g.vertices(), this.maskedVertices);</span>
+
+<span class="fc" id="L974">            this.maskedEdges = new ObjectOpenHashSet&lt;&gt;(maskedEdges);</span>
+<span class="fc bfc" id="L975" title="All 2 branches covered.">            if (this.maskedEdges.size() != maskedEdges.size())</span>
+<span class="fc" id="L976">                throw new IllegalArgumentException(&quot;masked edges are not unique&quot;);</span>
+<span class="fc bfc" id="L977" title="All 2 branches covered.">            if (!g.edges().containsAll(this.maskedEdges))</span>
+<span class="fc" id="L978">                throw NoSuchEdgeException</span>
+<span class="fc bfc" id="L979" title="All 2 branches covered.">                        .ofEdge(this.maskedEdges.stream().filter(e -&gt; !g.edges().contains(e)).findAny().get());</span>
+<span class="fc bfc" id="L980" title="All 2 branches covered.">            if (g.isDirected()) {</span>
+<span class="fc bfc" id="L981" title="All 2 branches covered.">                for (V v : this.maskedVertices) {</span>
+<span class="fc" id="L982">                    this.maskedEdges.addAll(g.outEdges(v));</span>
+<span class="fc" id="L983">                    this.maskedEdges.addAll(g.inEdges(v));</span>
+<span class="fc" id="L984">                }</span>
+            } else {
+<span class="fc bfc" id="L986" title="All 2 branches covered.">                for (V v : this.maskedVertices)</span>
+<span class="fc" id="L987">                    this.maskedEdges.addAll(g.outEdges(v));</span>
+            }
+<span class="fc" id="L989">            edges = new MaskedSet&lt;&gt;(g.edges(), this.maskedEdges);</span>
+<span class="fc" id="L990">        }</span>
+
+        @Override
+        public Set&lt;V&gt; vertices() {
+<span class="fc" id="L994">            return vertices;</span>
+        }
+
+        @Override
+        public Set&lt;E&gt; edges() {
+<span class="fc" id="L999">            return edges;</span>
+        }
+
+        private static class MaskedSet&lt;K&gt; extends AbstractObjectSet&lt;K&gt; {
+
+            private final Set&lt;K&gt; set;
+            private final Set&lt;K&gt; mask;
+
+<span class="fc" id="L1007">            MaskedSet(Set&lt;K&gt; set, Set&lt;K&gt; mask) {</span>
+<span class="fc" id="L1008">                this.set = set;</span>
+<span class="fc" id="L1009">                this.mask = mask;</span>
+<span class="fc" id="L1010">            }</span>
+
+            @Override
+            public boolean contains(Object o) {
+<span class="fc bfc" id="L1014" title="All 4 branches covered.">                return set.contains(o) &amp;&amp; !mask.contains(o);</span>
+            }
+
+            @Override
+            public boolean containsAll(Collection&lt;?&gt; c) {
+<span class="fc bfc" id="L1019" title="All 4 branches covered.">                return set.containsAll(c) &amp;&amp; c.stream().noneMatch(mask::contains);</span>
+            }
+
+            @Override
+            public int size() {
+<span class="fc" id="L1024">                return set.size() - mask.size();</span>
+            }
+
+            @Override
+            public ObjectIterator&lt;K&gt; iterator() {
+<span class="fc" id="L1029">                return new MaskedIterator&lt;&gt;(set.iterator(), mask);</span>
+            }
+        }
+
+        private static class MaskedIterator&lt;K&gt; implements ObjectIterator&lt;K&gt;, IterTools.Peek&lt;K&gt; {
+
+            private final IterTools.Peek&lt;K&gt; iter;
+            private final Set&lt;K&gt; mask;
+
+<span class="fc" id="L1038">            MaskedIterator(Iterator&lt;K&gt; iter, Set&lt;K&gt; mask) {</span>
+<span class="pc bpc" id="L1039" title="1 of 2 branches missed.">                this.iter = (iter instanceof IterTools.Peek) ? (IterTools.Peek&lt;K&gt;) iter : IterTools.Peek.of(iter);</span>
+<span class="fc" id="L1040">                this.mask = Objects.requireNonNull(mask);</span>
+<span class="fc" id="L1041">                advance();</span>
+<span class="fc" id="L1042">            }</span>
+
+            private void advance() {
+<span class="fc bfc" id="L1045" title="All 4 branches covered.">                while (iter.hasNext() &amp;&amp; mask.contains(iter.peekNext()))</span>
+<span class="fc" id="L1046">                    iter.next();</span>
+<span class="fc" id="L1047">            }</span>
+
+            @Override
+            public boolean hasNext() {
+<span class="fc" id="L1051">                return iter.hasNext();</span>
+            }
+
+            @Override
+            public K next() {
+<span class="fc" id="L1056">                K next = iter.next();</span>
+<span class="fc" id="L1057">                advance();</span>
+<span class="fc" id="L1058">                return next;</span>
+            }
+
+            @Override
+            public K peekNext() {
+<span class="fc" id="L1063">                return iter.peekNext();</span>
+            }
+        }
+
+        private void checkVertexNotMasked(V v) {
+<span class="fc bfc" id="L1068" title="All 2 branches covered.">            if (maskedVertices.contains(v))</span>
+<span class="fc" id="L1069">                throw NoSuchVertexException.ofVertex(v);</span>
+<span class="fc" id="L1070">        }</span>
+
+        private void checkEdgeNotMasked(E e) {
+<span class="fc bfc" id="L1073" title="All 2 branches covered.">            if (maskedEdges.contains(e))</span>
+<span class="fc" id="L1074">                throw NoSuchEdgeException.ofEdge(e);</span>
+<span class="fc" id="L1075">        }</span>
+
+        @Override
+        public V edgeSource(E edge) {
+<span class="fc" id="L1079">            checkEdgeNotMasked(edge);</span>
+<span class="fc" id="L1080">            return g().edgeSource(edge);</span>
+        }
+
+        @Override
+        public V edgeTarget(E edge) {
+<span class="fc" id="L1085">            checkEdgeNotMasked(edge);</span>
+<span class="fc" id="L1086">            return g().edgeTarget(edge);</span>
+        }
+
+        @Override
+        public V edgeEndpoint(E edge, V endpoint) {
+<span class="fc" id="L1091">            checkEdgeNotMasked(edge);</span>
+<span class="pc bpc" id="L1092" title="1 of 2 branches missed.">            assert !maskedVertices.contains(endpoint) : &quot;edges of masked vertices should be masked&quot;;</span>
+<span class="fc" id="L1093">            return g().edgeEndpoint(edge, endpoint);</span>
+        }
+
+        @Override
+        public E getEdge(V source, V target) {
+<span class="fc" id="L1098">            checkVertexNotMasked(source);</span>
+<span class="fc" id="L1099">            checkVertexNotMasked(target);</span>
+
+<span class="fc" id="L1101">            E e = g().getEdge(source, target);</span>
+<span class="fc bfc" id="L1102" title="All 2 branches covered.">            if (e == null)</span>
+<span class="fc" id="L1103">                return null; // not found</span>
+<span class="fc bfc" id="L1104" title="All 2 branches covered.">            if (!maskedEdges.contains(e))</span>
+<span class="fc" id="L1105">                return e; // found an edge, not masked</span>
+<span class="fc bfc" id="L1106" title="All 2 branches covered.">            if (!g().isAllowParallelEdges())</span>
+<span class="fc" id="L1107">                return null; // found a masked edge, there are no more edges as the graph doesnt support parallel edges</span>
+
+<span class="fc" id="L1109">            EdgeIter&lt;V, E&gt; iter = new MaskedEdgeSet&lt;&gt;(g().getEdges(source, target), maskedEdges).iterator();</span>
+<span class="fc bfc" id="L1110" title="All 2 branches covered.">            return iter.hasNext() ? iter.next() : null;</span>
+        }
+
+        @Override
+        public EdgeSet&lt;V, E&gt; getEdges(V source, V target) {
+<span class="fc" id="L1115">            checkVertexNotMasked(source);</span>
+<span class="fc" id="L1116">            checkVertexNotMasked(target);</span>
+<span class="fc" id="L1117">            return new MaskedEdgeSet&lt;&gt;(g().getEdges(source, target), maskedEdges);</span>
+        }
+
+        @Override
+        public EdgeSet&lt;V, E&gt; outEdges(V source) {
+<span class="fc" id="L1122">            checkVertexNotMasked(source);</span>
+<span class="fc" id="L1123">            return new MaskedEdgeSet&lt;&gt;(g().outEdges(source), maskedEdges);</span>
+        }
+
+        @Override
+        public EdgeSet&lt;V, E&gt; inEdges(V target) {
+<span class="fc" id="L1128">            checkVertexNotMasked(target);</span>
+<span class="fc" id="L1129">            return new MaskedEdgeSet&lt;&gt;(g().inEdges(target), maskedEdges);</span>
+        }
+
+        private static class MaskedEdgeSet&lt;V, E&gt; extends AbstractSet&lt;E&gt; implements EdgeSet&lt;V, E&gt; {
+
+            private final EdgeSet&lt;V, E&gt; set;
+            private final ObjectSet&lt;E&gt; maskedEdges;
+
+<span class="fc" id="L1137">            MaskedEdgeSet(EdgeSet&lt;V, E&gt; set, ObjectSet&lt;E&gt; mask) {</span>
+<span class="fc" id="L1138">                this.set = set;</span>
+<span class="fc" id="L1139">                this.maskedEdges = mask;</span>
+<span class="fc" id="L1140">            }</span>
+
+            @Override
+            public int size() {
+<span class="fc" id="L1144">                int c = 0;</span>
+                for (@SuppressWarnings(&quot;unused&quot;)
+<span class="fc bfc" id="L1146" title="All 2 branches covered.">                E dummy : this)</span>
+<span class="fc" id="L1147">                    c++;</span>
+<span class="fc" id="L1148">                return c;</span>
+            }
+
+            @Override
+            public boolean isEmpty() {
+<span class="fc bfc" id="L1153" title="All 2 branches covered.">                return !iterator().hasNext();</span>
+            }
+
+            @Override
+            public boolean contains(Object key) {
+<span class="fc bfc" id="L1158" title="All 4 branches covered.">                return set.contains(key) &amp;&amp; !maskedEdges.contains(key);</span>
+            }
+
+            @Override
+            public boolean containsAll(Collection&lt;?&gt; c) {
+<span class="pc bpc" id="L1163" title="1 of 4 branches missed.">                return set.containsAll(c) &amp;&amp; c.stream().noneMatch(maskedEdges::contains);</span>
+            }
+
+            @Override
+            public EdgeIter&lt;V, E&gt; iterator() {
+<span class="fc" id="L1168">                return new MaskedEdgeIter&lt;&gt;(set.iterator(), maskedEdges);</span>
+            }
+        }
+        private static class MaskedEdgeIter&lt;V, E&gt; implements EdgeIters.Base&lt;V, E&gt;, ObjectIterator&lt;E&gt; {
+
+            private final EdgeIter&lt;V, E&gt; iter;
+            private final Set&lt;E&gt; mask;
+            private V source, target;
+
+<span class="fc" id="L1177">            MaskedEdgeIter(EdgeIter&lt;V, E&gt; iter, ObjectSet&lt;E&gt; mask) {</span>
+<span class="fc" id="L1178">                this.iter = iter;</span>
+<span class="fc" id="L1179">                this.mask = Objects.requireNonNull(mask);</span>
+<span class="fc" id="L1180">                advance();</span>
+<span class="fc" id="L1181">            }</span>
+
+            private void advance() {
+<span class="fc bfc" id="L1184" title="All 4 branches covered.">                while (iter.hasNext() &amp;&amp; mask.contains(iter.peekNext()))</span>
+<span class="fc" id="L1185">                    iter.next();</span>
+<span class="fc" id="L1186">            }</span>
+
+            @Override
+            public boolean hasNext() {
+<span class="fc" id="L1190">                return iter.hasNext();</span>
+            }
+
+            @Override
+            public E next() {
+<span class="fc" id="L1195">                E next = iter.next();</span>
+<span class="fc" id="L1196">                source = iter.source();</span>
+<span class="fc" id="L1197">                target = iter.target();</span>
+<span class="fc" id="L1198">                advance();</span>
+<span class="fc" id="L1199">                return next;</span>
+            }
+
+            @Override
+            public E peekNext() {
+<span class="fc" id="L1204">                return iter.peekNext();</span>
+            }
+
+            @Override
+            public V source() {
+<span class="fc" id="L1209">                return source;</span>
+            }
+
+            @Override
+            public V target() {
+<span class="fc" id="L1214">                return target;</span>
+            }
+        }
+
+        @Override
+        public void moveEdge(E edge, V newSource, V newTarget) {
+<span class="fc" id="L1220">            checkEdgeNotMasked(edge);</span>
+<span class="fc" id="L1221">            checkVertexNotMasked(newSource);</span>
+<span class="fc" id="L1222">            checkVertexNotMasked(newTarget);</span>
+<span class="fc" id="L1223">            g().moveEdge(edge, newSource, newTarget);</span>
+<span class="fc" id="L1224">        }</span>
+
+        @Override
+        public void addVertex(V vertex) {
+<span class="fc" id="L1228">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void removeVertex(V vertex) {
+<span class="fc" id="L1233">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void renameVertex(V vertex, V newId) {
+<span class="fc" id="L1238">            throw new UnsupportedOperationException(&quot;Can't change identifier in a masked graph&quot;);</span>
+        }
+
+        @Override
+        public void addEdge(V source, V target, E edge) {
+<span class="fc" id="L1243">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void removeEdge(E edge) {
+<span class="fc" id="L1248">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void removeEdgesOf(V vertex) {
+<span class="fc" id="L1253">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void removeOutEdgesOf(V source) {
+<span class="fc" id="L1258">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void removeInEdgesOf(V target) {
+<span class="fc" id="L1263">            throw new UnsupportedOperationException(&quot;Can't add/remove vertices/edges&quot;);</span>
+        }
+
+        @Override
+        public void renameEdge(E edge, E newId) {
+<span class="fc" id="L1268">            throw new UnsupportedOperationException(&quot;Can't change identifier in a masked graph&quot;);</span>
+        }
+
+        @Override
+        public IdBuilder&lt;V&gt; vertexBuilder() {
+<span class="fc" id="L1273">            return g().vertexBuilder();</span>
+        }
+
+        @Override
+        public IdBuilder&lt;E&gt; edgeBuilder() {
+<span class="fc" id="L1278">            return g().edgeBuilder();</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT verticesWeights(String key) {
+<span class="fc" id="L1284">            Weights&lt;V, T&gt; weights = g().verticesWeights(key);</span>
+<span class="fc bfc" id="L1285" title="All 2 branches covered.">            if (weights == null)</span>
+<span class="fc" id="L1286">                return null;</span>
+<span class="fc" id="L1287">            return (WeightsT) WeightsImpl.&lt;V, T&gt;maskedObjWeights(weights, maskedVertices, true);</span>
+        }
+
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT edgesWeights(String key) {
+<span class="fc" id="L1293">            Weights&lt;E, T&gt; weights = g().edgesWeights(key);</span>
+<span class="fc bfc" id="L1294" title="All 2 branches covered.">            if (weights == null)</span>
+<span class="fc" id="L1295">                return null;</span>
+<span class="fc" id="L1296">            return (WeightsT) WeightsImpl.&lt;E, T&gt;maskedObjWeights(weights, maskedEdges, false);</span>
+        }
+
+        @Override
+        public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
+                T defVal) {
+<span class="fc" id="L1302">            g().addVerticesWeights(key, type, defVal);</span>
+<span class="fc" id="L1303">            return verticesWeights(key);</span>
+        }
+
+        @Override
+        public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
+                T defVal) {
+<span class="fc" id="L1309">            g().addEdgesWeights(key, type, defVal);</span>
+<span class="fc" id="L1310">            return edgesWeights(key);</span>
+        }
+
+        @Override
+        public IndexGraph indexGraph() {
+<span class="fc bfc" id="L1315" title="All 2 branches covered.">            if (indexGraph == null) {</span>
+<span class="fc" id="L1316">                IndexIdMap&lt;V&gt; viMap = g().indexGraphVerticesMap();</span>
+<span class="fc" id="L1317">                IndexIdMap&lt;E&gt; eiMap = g().indexGraphEdgesMap();</span>
+
+<span class="fc" id="L1319">                int[] maskedVerticesArr = maskedVertices.stream().mapToInt(viMap::idToIndex).toArray();</span>
+<span class="fc" id="L1320">                int[] maskedEdgesArr = maskedEdges.stream().mapToInt(eiMap::idToIndex).toArray();</span>
+
+<span class="fc" id="L1322">                indexGraph = new MaskedRenamedIndexGraph(g().indexGraph(), maskedVerticesArr, maskedEdgesArr);</span>
+
+<span class="fc" id="L1324">                indexGraphVerticesMap = new IndexIdMapImpl&lt;&gt;(viMap, indexGraph.vOrig2Api, indexGraph.vApi2OrigRenamed,</span>
+<span class="fc" id="L1325">                        vertices.size(), true);</span>
+<span class="fc" id="L1326">                indexGraphEdgesMap = new IndexIdMapImpl&lt;&gt;(eiMap, indexGraph.eOrig2Api, indexGraph.eApi2OrigRenamed,</span>
+<span class="fc" id="L1327">                        edges.size(), false);</span>
+            }
+<span class="fc" id="L1329">            return indexGraph;</span>
+        }
+
+        private static class IndexIdMapImpl&lt;K&gt; implements IndexIdMap&lt;K&gt; {
+
+            private final IndexIdMap&lt;K&gt; origMap;
+            private final Int2IntMap orig2api;
+            private final Int2IntMap api2origRenamed;
+            private final int elementNum;
+            private final boolean isVertices;
+
+            IndexIdMapImpl(IndexIdMap&lt;K&gt; origMap, Int2IntMap orig2api, Int2IntMap api2origRenamed, int elementNum,
+<span class="fc" id="L1341">                    boolean isVertices) {</span>
+<span class="fc" id="L1342">                this.origMap = origMap;</span>
+<span class="fc" id="L1343">                this.orig2api = orig2api;</span>
+<span class="fc" id="L1344">                this.api2origRenamed = api2origRenamed;</span>
+<span class="fc" id="L1345">                this.elementNum = elementNum;</span>
+<span class="fc" id="L1346">                this.isVertices = isVertices;</span>
+<span class="fc" id="L1347">            }</span>
+
+            @Override
+            public K indexToId(int index) {
+<span class="fc" id="L1351">                K id = indexToIdIfExist(index);</span>
+<span class="fc bfc" id="L1352" title="All 2 branches covered.">                if (id == null) {</span>
+<span class="fc bfc" id="L1353" title="All 2 branches covered.">                    if (isVertices) {</span>
+<span class="fc" id="L1354">                        throw NoSuchVertexException.ofIndex(index);</span>
+                    } else {
+<span class="fc" id="L1356">                        throw NoSuchEdgeException.ofIndex(index);</span>
+                    }
+                }
+<span class="fc" id="L1359">                return id;</span>
+            }
+
+            @Override
+            public K indexToIdIfExist(int index) {
+<span class="fc bfc" id="L1364" title="All 4 branches covered.">                if (index &lt; 0 || index &gt;= elementNum)</span>
+<span class="fc" id="L1365">                    return null;</span>
+<span class="fc" id="L1366">                int indexOrig = api2origRenamed.getOrDefault(index, index);</span>
+<span class="fc" id="L1367">                return origMap.indexToId(indexOrig);</span>
+            }
+
+            @Override
+            public int idToIndex(K id) {
+<span class="fc" id="L1372">                int idxOrig = origMap.idToIndex(id);</span>
+<span class="fc" id="L1373">                int idxApi = orig2api.getOrDefault(idxOrig, idxOrig);</span>
+<span class="fc bfc" id="L1374" title="All 2 branches covered.">                if (idxApi &lt; 0) {</span>
+<span class="fc bfc" id="L1375" title="All 2 branches covered.">                    if (isVertices) {</span>
+<span class="fc" id="L1376">                        throw NoSuchVertexException.ofVertex(id);</span>
+                    } else {
+<span class="fc" id="L1378">                        throw NoSuchEdgeException.ofEdge(id);</span>
+                    }
+                }
+<span class="fc" id="L1381">                return idxApi;</span>
+
+            }
+
+            @Override
+            public int idToIndexIfExist(K id) {
+<span class="fc" id="L1387">                int idxOrig = origMap.idToIndexIfExist(id);</span>
+<span class="fc bfc" id="L1388" title="All 2 branches covered.">                if (idxOrig &lt; 0)</span>
+<span class="fc" id="L1389">                    return -1;</span>
+<span class="fc" id="L1390">                return orig2api.getOrDefault(idxOrig, idxOrig);</span>
+            }
+        }
+
+        @Override
+        public IndexIdMap&lt;V&gt; indexGraphVerticesMap() {
+<span class="fc" id="L1396">            indexGraph(); // init index graph and maps</span>
+<span class="pc bpc" id="L1397" title="1 of 2 branches missed.">            assert indexGraphVerticesMap != null;</span>
+<span class="fc" id="L1398">            return indexGraphVerticesMap;</span>
+        }
+
+        @Override
+        public IndexIdMap&lt;E&gt; indexGraphEdgesMap() {
+<span class="fc" id="L1403">            indexGraph(); // init index graph and maps</span>
+<span class="pc bpc" id="L1404" title="1 of 2 branches missed.">            assert indexGraphEdgesMap != null;</span>
+<span class="fc" id="L1405">            return indexGraphEdgesMap;</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
