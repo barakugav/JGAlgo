@@ -180,9 +180,26 @@
         <version>${maven-surefire-plugin.version}</version>
         <configuration>
           <parallel>classes</parallel>
-          <forkCount>4</forkCount>
+          <forkCount>${system.numCores}</forkCount>
           <reuseForks>true</reuseForks>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>${build-helper-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>get-cpu-count</id>
+            <goals>
+              <goal>cpu-count</goal>
+            </goals>
+            <configuration>
+              <cpuCount>system.numCores</cpuCount>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
