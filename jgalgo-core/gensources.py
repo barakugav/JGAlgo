@@ -1,23 +1,25 @@
 import argparse
 import json
 import logging
-import os
 import shutil
 import subprocess
 import sys
 import xml.etree.ElementTree
 
-TOP_DIR = os.path.dirname(os.path.realpath(__file__))
-TEMPLATE_DIR = os.path.join(TOP_DIR, "template")
-GENERATED_SOURCES_DIR = os.path.join(TOP_DIR, "src-generated")
-PACKAGE_DIR = os.path.join(GENERATED_SOURCES_DIR, "main", "java", "com", "jgalgo")
-TEST_PACKAGE_DIR = os.path.join(GENERATED_SOURCES_DIR, "test", "java", "com", "jgalgo")
+# import os
+from pathlib import Path
+
+TOP_DIR = Path(__file__).parent.resolve()
+TEMPLATE_DIR = TOP_DIR / "template"
+GENERATED_SOURCES_DIR = TOP_DIR / "src-generated"
+PACKAGE_DIR = GENERATED_SOURCES_DIR / "main" / "java" / "com" / "jgalgo"
+TEST_PACKAGE_DIR = GENERATED_SOURCES_DIR / "test" / "java" / "com" / "jgalgo"
 TYPE_ALL = {"Obj", "Byte", "Short", "Int", "Long", "Float", "Double", "Bool", "Char"}
 
-HASHES_FILENAME = os.path.join(GENERATED_SOURCES_DIR, ".gen", "hashes.json")
+HASHES_FILENAME = GENERATED_SOURCES_DIR / ".gen" / "hashes.json"
 
 
-def find_eclipse():
+def find_eclipse() -> Path | None:
     path = shutil.which("eclipse")
     if path is not None:
         return path
@@ -26,13 +28,13 @@ def find_eclipse():
         return path
 
     if sys.platform == "linux" or sys.platform == "linux2":
-        path = os.path.join(os.sep, "usr", "bin", "eclipse")
-        if os.path.exists(path):
+        path = Path("/usr/bin/eclipse")
+        if path.exists():
             return path
 
     elif sys.platform == "win32":
-        path = os.path.join("C:", "Program Files", "Eclipse", "eclipse.exe")
-        if os.path.exists(path):
+        path = Path("C:") / "Program Files" / "Eclipse" / "eclipse.exe"
+        if path.exists():
             return path
 
     return None
@@ -46,8 +48,8 @@ def format_source_files(filenames):
         return
 
     # The formatter config file is an xml file used by vscode. Eclipse uses a different format. We read the xml and write a new config file for eclipse.
-    ETC_DIR = os.path.abspath(os.path.join(TOP_DIR, "..", "etc"))
-    ECLIPSE_FORMATTER_CONFIG_FILE = os.path.join(ETC_DIR, "eclipse-java-style.xml")
+    ETC_DIR = TOP_DIR.parent / "etc"
+    ECLIPSE_FORMATTER_CONFIG_FILE = ETC_DIR / "eclipse-java-style.xml"
 
     profiles_root = xml.etree.ElementTree.parse(ECLIPSE_FORMATTER_CONFIG_FILE).getroot()
     if profiles_root.tag != "profiles":
@@ -58,7 +60,7 @@ def format_source_files(filenames):
     settings = [setting for setting in profiles[0] if setting.tag == "setting"]
     settings = [(setting.attrib["id"], setting.attrib["value"]) for setting in settings]
 
-    formatter_config_file = os.path.join(ETC_DIR, ".eclipse-java-style")
+    formatter_config_file = ETC_DIR / ".eclipse-java-style"
     try:
         with open(formatter_config_file, "w") as f:
             for id, val in settings:
@@ -86,12 +88,12 @@ def format_source_files(filenames):
                 shell=True,
             )
     finally:
-        if os.path.exists(formatter_config_file):
-            os.remove(formatter_config_file)
+        if formatter_config_file.exists():
+            formatter_config_file.unlink()
 
 
-def generate_sourcefile(input_filename, output_filename, constants, functions):
-    logging.info("Generating %s", os.path.relpath(output_filename, TOP_DIR))
+def generate_sourcefile(input_filename: Path, output_filename, constants, functions):
+    logging.info("Generating %s", output_filename / TOP_DIR)
 
     def apply_function(text, func_name, func):
         begin = 0
@@ -190,7 +192,7 @@ def generate_sourcefile(input_filename, output_filename, constants, functions):
     for func_name, func in sorted_functions:
         text = apply_function(text, func_name, func)
 
-    os.makedirs(os.path.dirname(os.path.realpath(output_filename)), exist_ok=True)
+    output_filename.parent.mkdir(parents=True, exist_ok=True)
     with open(output_filename, "w") as output_file:
         output_file.write(text)
 
@@ -363,7 +365,7 @@ def get_constants_and_functions_key0(key_type, generic_name):
     }[key_type]
 
     if key_type == "Obj":
-        cmpDefault = lambda a, b: "JGAlgoUtils.cmpDefault(" + a + ", " + b + ")"
+        cmpDefault = lambda a, b: f"JGAlgoUtils.cmpDefault({a}, {b})"
         functions["COMPARE_KEY_DEFAULT"] = lambda a, b: cmpDefault(a, b)
         functions["COMPARE_KEY_DEFAULT_EQ"] = lambda a, b: cmpDefault(a, b) + " == 0"
         functions["COMPARE_KEY_DEFAULT_NEQ"] = lambda a, b: cmpDefault(a, b) + " != 0"
@@ -484,7 +486,7 @@ def generate_template_sources(template_entry):
         filename = template_entry["file_name_func"](*types)
         try:
             generate_sourcefile(
-                os.path.join(TEMPLATE_DIR, template_entry["template"]),
+                TEMPLATE_DIR / template_entry["template"],
                 filename,
                 constants,
                 functions,
@@ -508,7 +510,7 @@ register_template(
     "Weights",
     TYPE_ALL,
     generate_weights,
-    lambda type: os.path.join(PACKAGE_DIR, "graph", "Weights" + type + ".java"),
+    lambda type: PACKAGE_DIR / "graph" / f"Weights{type}.java",
 )
 
 
@@ -521,7 +523,7 @@ register_template(
     "IWeights",
     TYPE_ALL,
     generate_iweights,
-    lambda type: os.path.join(PACKAGE_DIR, "graph", "IWeights" + type + ".java"),
+    lambda type: PACKAGE_DIR / "graph" / f"IWeights{type}.java",
 )
 
 
@@ -535,7 +537,7 @@ register_template(
     "WeightsImpl",
     TYPE_ALL,
     generate_weights_impl,
-    lambda type: os.path.join(PACKAGE_DIR, "graph", "WeightsImpl" + type + ".java"),
+    lambda type: PACKAGE_DIR / "graph" / f"WeightsImpl{type}.java",
 )
 
 
@@ -558,12 +560,10 @@ register_template(
         ("Obj", "Obj"),
     ],
     generate_referenceable_heap,
-    lambda key_type, value_type: os.path.join(
-        PACKAGE_DIR,
-        "internal",
-        "ds",
-        key_value_prefix(key_type, value_type) + "ReferenceableHeap.java",
-    ),
+    lambda key_type, value_type: PACKAGE_DIR
+    / "internal"
+    / "ds"
+    / (key_value_prefix(key_type, value_type) + "ReferenceableHeap.java"),
 )
 
 
@@ -603,12 +603,10 @@ register_template(
         ("Obj", "Obj"),
     ],
     generate_referenceable_heap_test_utils,
-    lambda key_type, value_type: os.path.join(
-        TEST_PACKAGE_DIR,
-        "internal",
-        "ds",
-        key_value_prefix(key_type, value_type) + "ReferenceableHeapTestUtils.java",
-    ),
+    lambda key_type, value_type: TEST_PACKAGE_DIR
+    / "internal"
+    / "ds"
+    / (key_value_prefix(key_type, value_type) + "ReferenceableHeapTestUtils.java"),
 )
 
 
@@ -631,12 +629,10 @@ register_template(
         ("Obj", "Obj"),
     ],
     generate_pairing_heap,
-    lambda key_type, value_type: os.path.join(
-        PACKAGE_DIR,
-        "internal",
-        "ds",
-        key_value_prefix(key_type, value_type) + "PairingHeap.java",
-    ),
+    lambda key_type, value_type: PACKAGE_DIR
+    / "internal"
+    / "ds"
+    / (key_value_prefix(key_type, value_type) + "PairingHeap.java"),
 )
 
 
@@ -672,12 +668,10 @@ register_template(
         ("Obj", "Obj"),
     ],
     generate_pairing_heap_test,
-    lambda key_type, value_type: os.path.join(
-        TEST_PACKAGE_DIR,
-        "internal",
-        "ds",
-        key_value_prefix(key_type, value_type) + "PairingHeapTest.java",
-    ),
+    lambda key_type, value_type: TEST_PACKAGE_DIR
+    / "internal"
+    / "ds"
+    / (key_value_prefix(key_type, value_type) + "PairingHeapTest.java"),
 )
 
 
@@ -692,12 +686,10 @@ register_template(
     "BinomialHeap",
     [("Int", "Int"), ("Obj", "Obj")],
     generate_binomial_heap,
-    lambda key_type, value_type: os.path.join(
-        PACKAGE_DIR,
-        "internal",
-        "ds",
-        key_value_prefix(key_type, value_type) + "BinomialHeap.java",
-    ),
+    lambda key_type, value_type: PACKAGE_DIR
+    / "internal"
+    / "ds"
+    / (key_value_prefix(key_type, value_type) + "BinomialHeap.java"),
 )
 
 
@@ -724,12 +716,10 @@ register_template(
     "BinomialHeapTest",
     [("Int", "Int"), ("Obj", "Obj")],
     generate_binomial_heap_test,
-    lambda key_type, value_type: os.path.join(
-        TEST_PACKAGE_DIR,
-        "internal",
-        "ds",
-        key_value_prefix(key_type, value_type) + "BinomialHeapTest.java",
-    ),
+    lambda key_type, value_type: TEST_PACKAGE_DIR
+    / "internal"
+    / "ds"
+    / (key_value_prefix(key_type, value_type) + "BinomialHeapTest.java"),
 )
 
 
@@ -744,12 +734,10 @@ register_template(
     "FibonacciHeap",
     [("Int", "Int"), ("Obj", "Obj")],
     generate_fibonacci_heap,
-    lambda key_type, value_type: os.path.join(
-        PACKAGE_DIR,
-        "internal",
-        "ds",
-        key_value_prefix(key_type, value_type) + "FibonacciHeap.java",
-    ),
+    lambda key_type, value_type: PACKAGE_DIR
+    / "internal"
+    / "ds"
+    / (key_value_prefix(key_type, value_type) + "FibonacciHeap.java"),
 )
 
 
@@ -776,12 +764,10 @@ register_template(
     "FibonacciHeapTest",
     [("Int", "Int"), ("Obj", "Obj")],
     generate_fibonacci_heap_test,
-    lambda key_type, value_type: os.path.join(
-        TEST_PACKAGE_DIR,
-        "internal",
-        "ds",
-        key_value_prefix(key_type, value_type) + "FibonacciHeapTest.java",
-    ),
+    lambda key_type, value_type: TEST_PACKAGE_DIR
+    / "internal"
+    / "ds"
+    / (key_value_prefix(key_type, value_type) + "FibonacciHeapTest.java"),
 )
 
 
@@ -797,12 +783,10 @@ register_template(
     "BinarySearchTree",
     [("Int", "Int"), ("Obj", "Obj"), ("Double", "Obj")],
     generate_binary_search_tree,
-    lambda key_type, value_type: os.path.join(
-        PACKAGE_DIR,
-        "internal",
-        "ds",
-        key_value_prefix(key_type, value_type) + "BinarySearchTree.java",
-    ),
+    lambda key_type, value_type: PACKAGE_DIR
+    / "internal"
+    / "ds"
+    / (key_value_prefix(key_type, value_type) + "BinarySearchTree.java"),
 )
 
 
@@ -836,12 +820,10 @@ register_template(
     "BinarySearchTreeTestUtils",
     [("Int", "Int"), ("Obj", "Obj"), ("Double", "Obj")],
     generate_binary_search_tree_test_utils,
-    lambda key_type, value_type: os.path.join(
-        TEST_PACKAGE_DIR,
-        "internal",
-        "ds",
-        key_value_prefix(key_type, value_type) + "BinarySearchTreeTestUtils.java",
-    ),
+    lambda key_type, value_type: TEST_PACKAGE_DIR
+    / "internal"
+    / "ds"
+    / (key_value_prefix(key_type, value_type) + "BinarySearchTreeTestUtils.java"),
 )
 
 
@@ -857,9 +839,10 @@ register_template(
     "BinarySearchTrees",
     ["Int", "Double", "Obj"],
     generate_binary_search_trees,
-    lambda key_type: os.path.join(
-        PACKAGE_DIR, "internal", "ds", key_type + "BinarySearchTrees.java"
-    ),
+    lambda key_type: PACKAGE_DIR
+    / "internal"
+    / "ds"
+    / (key_type + "BinarySearchTrees.java"),
     flavor="key",
 )
 
@@ -881,12 +864,10 @@ register_template(
     "RedBlackTree",
     [("Int", "Int"), ("Obj", "Obj"), ("Double", "Obj")],
     generate_red_black_tree,
-    lambda key_type, value_type: os.path.join(
-        PACKAGE_DIR,
-        "internal",
-        "ds",
-        key_value_prefix(key_type, value_type) + "RedBlackTree.java",
-    ),
+    lambda key_type, value_type: PACKAGE_DIR
+    / "internal"
+    / "ds"
+    / (key_value_prefix(key_type, value_type) + "RedBlackTree.java"),
 )
 
 
@@ -915,12 +896,10 @@ register_template(
     "RedBlackTreeTest",
     [("Int", "Int"), ("Obj", "Obj"), ("Double", "Obj")],
     generate_red_black_tree_test,
-    lambda key_type, value_type: os.path.join(
-        TEST_PACKAGE_DIR,
-        "internal",
-        "ds",
-        key_value_prefix(key_type, value_type) + "RedBlackTreeTest.java",
-    ),
+    lambda key_type, value_type: TEST_PACKAGE_DIR
+    / "internal"
+    / "ds"
+    / (key_value_prefix(key_type, value_type) + "RedBlackTreeTest.java"),
 )
 
 
@@ -941,12 +920,10 @@ register_template(
     "SplayTree",
     [("Int", "Int"), ("Obj", "Obj")],
     generate_splay_tree,
-    lambda key_type, value_type: os.path.join(
-        PACKAGE_DIR,
-        "internal",
-        "ds",
-        key_value_prefix(key_type, value_type) + "SplayTree.java",
-    ),
+    lambda key_type, value_type: PACKAGE_DIR
+    / "internal"
+    / "ds"
+    / (key_value_prefix(key_type, value_type) + "SplayTree.java"),
 )
 
 
@@ -974,19 +951,17 @@ register_template(
     "SplayTreeTest",
     [("Int", "Int"), ("Obj", "Obj")],
     generate_splay_tree_test,
-    lambda key_type, value_type: os.path.join(
-        TEST_PACKAGE_DIR,
-        "internal",
-        "ds",
-        key_value_prefix(key_type, value_type) + "SplayTreeTest.java",
-    ),
+    lambda key_type, value_type: TEST_PACKAGE_DIR
+    / "internal"
+    / "ds"
+    / (key_value_prefix(key_type, value_type) + "SplayTreeTest.java"),
 )
 
 
 def clean():
     logging.info("Cleaning generated sources...")
-    if os.path.exists(HASHES_FILENAME):
-        os.remove(HASHES_FILENAME)
+    if HASHES_FILENAME.exists():
+        HASHES_FILENAME.unlink()
     shutil.rmtree(GENERATED_SOURCES_DIR, ignore_errors=True)
 
 
@@ -1001,12 +976,12 @@ def compute_template_hash(template_filename):
 
 def read_last_generated_templates_hashes():
     hashes = {}
-    if os.path.exists(HASHES_FILENAME):
+    if HASHES_FILENAME.exists():
         with open(HASHES_FILENAME) as hashes_file:
             hashes = json.load(hashes_file)
 
     def is_template_changed(template_filename):
-        template_filename = os.path.join(TEMPLATE_DIR, template_filename)
+        template_filename = TEMPLATE_DIR / template_filename
         template_hash = compute_template_hash(template_filename)
         return (
             template_filename not in hashes
@@ -1022,12 +997,10 @@ def read_last_generated_templates_hashes():
 
 
 def write_generated_templates():
-    templates = [
-        os.path.join(TEMPLATE_DIR, generator["template"]) for generator in TEMPLATES
-    ]
+    templates = [TEMPLATE_DIR / generator["template"] for generator in TEMPLATES]
     hashes = json.dumps({temp: compute_template_hash(temp) for temp in templates})
 
-    os.makedirs(os.path.dirname(os.path.realpath(HASHES_FILENAME)), exist_ok=True)
+    HASHES_FILENAME.parent.mkdir(parents=True, exist_ok=True)
     with open(HASHES_FILENAME, "w") as hashes_file:
         hashes_file.write(hashes)
 

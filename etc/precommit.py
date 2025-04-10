@@ -1,9 +1,9 @@
 import argparse
-import os
 import subprocess
+from pathlib import Path
 
-SCRIPTS_DIR = os.path.dirname(os.path.realpath(__file__))
-TOP_DIR = os.path.abspath(os.path.join(SCRIPTS_DIR, ".."))
+SCRIPTS_DIR = Path(__file__).parent.resolve()
+TOP_DIR = SCRIPTS_DIR.parent.resolve()
 
 
 def main(args):
