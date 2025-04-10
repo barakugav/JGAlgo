@@ -116,7 +116,7 @@ def generate_sourcefile(
         if line.startswith("#if "):
             block = {
                 "type": "if",
-                "condition": line[len("#if ") :],
+                "condition": line.removeprefix("#if "),
                 "blocks": [],
             }
             stack[-1]["blocks"].append(block)
@@ -124,7 +124,11 @@ def generate_sourcefile(
 
         elif line.startswith("#elif "):
             stack.pop()
-            block = {"type": "elif", "condition": line[len("#elif ") :], "blocks": []}
+            block = {
+                "type": "elif",
+                "condition": line.removeprefix("#elif "),
+                "blocks": [],
+            }
             stack[-1]["blocks"].append(block)
             stack.append(block)
 
@@ -367,31 +371,40 @@ def get_constants_and_functions_key0(key_type, generic_name):
         },
     }[key_type]
 
-    if key_type == "Obj":
-        cmpDefault = lambda a, b: f"JGAlgoUtils.cmpDefault({a}, {b})"
-        functions["COMPARE_KEY_DEFAULT"] = lambda a, b: cmpDefault(a, b)
-        functions["COMPARE_KEY_DEFAULT_EQ"] = lambda a, b: f"{cmpDefault(a, b)} == 0"
-        functions["COMPARE_KEY_DEFAULT_NEQ"] = lambda a, b: f"{cmpDefault(a, b)} != 0"
-        functions["COMPARE_KEY_DEFAULT_LE"] = lambda a, b: f"{cmpDefault(a, b)} < 0"
-        functions["COMPARE_KEY_DEFAULT_LEQ"] = lambda a, b: f"{cmpDefault(a, b)} <= 0"
-        functions["COMPARE_KEY_DEFAULT_GE"] = lambda a, b: f"{cmpDefault(a, b)} > 0"
-        functions["COMPARE_KEY_DEFAULT_GEQ"] = lambda a, b: f"{cmpDefault(a, b)} >= 0"
-    elif key_type == "Bool":
-        functions["COMPARE_KEY_DEFAULT_EQ"] = lambda a, b: f"{a} == {b}"
-        functions["COMPARE_KEY_DEFAULT_NEQ"] = lambda a, b: f"{a} != {b}"
-        # functions["COMPARE_KEY_DEFAULT_LE"] = None
-        # functions["COMPARE_KEY_DEFAULT_LEQ"] = None
-        # functions["COMPARE_KEY_DEFAULT_GE"] = None
-        # functions["COMPARE_KEY_DEFAULT_GEQ"] = None
-    else:
-        cmp = constants["KEY_TYPE_GENERIC_CLASS"]
-        functions["COMPARE_KEY_DEFAULT"] = lambda a, b: f"{cmp}.compare({a}, {b})"
-        functions["COMPARE_KEY_DEFAULT_EQ"] = lambda a, b: f"{a} == {b}"
-        functions["COMPARE_KEY_DEFAULT_NEQ"] = lambda a, b: f"{a} != {b}"
-        functions["COMPARE_KEY_DEFAULT_LE"] = lambda a, b: f"{a} < {b}"
-        functions["COMPARE_KEY_DEFAULT_LEQ"] = lambda a, b: f"{a} <= {b}"
-        functions["COMPARE_KEY_DEFAULT_GE"] = lambda a, b: f"{a} > {b}"
-        functions["COMPARE_KEY_DEFAULT_GEQ"] = lambda a, b: f"{a} >= {b}"
+    match key_type:
+        case "Obj":
+            cmpDefault = lambda a, b: f"JGAlgoUtils.cmpDefault({a}, {b})"
+            functions["COMPARE_KEY_DEFAULT"] = lambda a, b: cmpDefault(a, b)
+            functions["COMPARE_KEY_DEFAULT_EQ"] = (
+                lambda a, b: f"{cmpDefault(a, b)} == 0"
+            )
+            functions["COMPARE_KEY_DEFAULT_NEQ"] = (
+                lambda a, b: f"{cmpDefault(a, b)} != 0"
+            )
+            functions["COMPARE_KEY_DEFAULT_LE"] = lambda a, b: f"{cmpDefault(a, b)} < 0"
+            functions["COMPARE_KEY_DEFAULT_LEQ"] = (
+                lambda a, b: f"{cmpDefault(a, b)} <= 0"
+            )
+            functions["COMPARE_KEY_DEFAULT_GE"] = lambda a, b: f"{cmpDefault(a, b)} > 0"
+            functions["COMPARE_KEY_DEFAULT_GEQ"] = (
+                lambda a, b: f"{cmpDefault(a, b)} >= 0"
+            )
+        case "Bool":
+            functions["COMPARE_KEY_DEFAULT_EQ"] = lambda a, b: f"{a} == {b}"
+            functions["COMPARE_KEY_DEFAULT_NEQ"] = lambda a, b: f"{a} != {b}"
+            # functions["COMPARE_KEY_DEFAULT_LE"] = None
+            # functions["COMPARE_KEY_DEFAULT_LEQ"] = None
+            # functions["COMPARE_KEY_DEFAULT_GE"] = None
+            # functions["COMPARE_KEY_DEFAULT_GEQ"] = None
+        case _:
+            cmp = constants["KEY_TYPE_GENERIC_CLASS"]
+            functions["COMPARE_KEY_DEFAULT"] = lambda a, b: f"{cmp}.compare({a}, {b})"
+            functions["COMPARE_KEY_DEFAULT_EQ"] = lambda a, b: f"{a} == {b}"
+            functions["COMPARE_KEY_DEFAULT_NEQ"] = lambda a, b: f"{a} != {b}"
+            functions["COMPARE_KEY_DEFAULT_LE"] = lambda a, b: f"{a} < {b}"
+            functions["COMPARE_KEY_DEFAULT_LEQ"] = lambda a, b: f"{a} <= {b}"
+            functions["COMPARE_KEY_DEFAULT_GE"] = lambda a, b: f"{a} > {b}"
+            functions["COMPARE_KEY_DEFAULT_GEQ"] = lambda a, b: f"{a} >= {b}"
 
     return constants, functions
 
@@ -414,14 +427,15 @@ def get_constants_and_functions_key_value(key_type, value_type):
     functions.update(functions_value)
     functions.update(functions_value)
 
-    if key_type == "Obj" and value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<K, V>"
-    elif key_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<K>"
-    elif value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<V>"
-    else:
-        constants["KEY_VALUE_GENERIC"] = ""
+    match (key_type, value_type):
+        case ("Obj", "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<K, V>"
+        case ("Obj", _):
+            constants["KEY_VALUE_GENERIC"] = "<K>"
+        case (_, "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<V>"
+        case (_, _):
+            constants["KEY_VALUE_GENERIC"] = ""
     constants["KEY_VALUE_GENERIC_EMPTY"] = (
         "" if constants["KEY_VALUE_GENERIC"] == "" else "<>"
     )
@@ -460,22 +474,22 @@ def register_template(template, types, config_func, file_name_func, flavor=None)
 def generate_template_sources(template_entry):
     generated_files = []
     for types in template_entry["types"]:
-        if template_entry["flavor"] is None:
-            if type(types) is tuple:
+        match template_entry["flavor"]:
+            case None if type(types) is tuple:
                 assert len(types) == 2
                 constants, functions = get_constants_and_functions_key_value(*types)
-            else:
+            case None:
                 constants, functions = get_constants_and_functions(types)
-        elif template_entry["flavor"] == "key":
-            constants, functions = get_constants_and_functions_key(types)
-        elif template_entry["flavor"] == "key_value":
-            constants, functions = get_constants_and_functions_key_value(*types)
-        elif template_entry["flavor"] == "value":
-            constants, functions = get_constants_and_functions_value(types)
-        elif template_entry["flavor"] == "element":
-            constants, functions = get_constants_and_functions(types)
-        else:
-            raise Exception(f"Unknown flavor: {template_entry['flavor']}")
+            case "key":
+                constants, functions = get_constants_and_functions_key(types)
+            case "key_value":
+                constants, functions = get_constants_and_functions_key_value(*types)
+            case "value":
+                constants, functions = get_constants_and_functions_value(types)
+            case "element":
+                constants, functions = get_constants_and_functions(types)
+            case unknown:
+                raise Exception(f"Unknown flavor: {unknown}")
 
         if type(types) is tuple:
             assert len(types) == 2
@@ -579,14 +593,15 @@ def generate_referenceable_heap_test_utils(
     if value_type == "Obj":
         constants["PRIMITIVE_VALUE_TYPE"] = "String"
 
-    if key_type == "Obj" and value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String, String>"
-    elif key_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String>"
-    elif value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String>"
-    else:
-        constants["KEY_VALUE_GENERIC"] = ""
+    match (key_type, value_type):
+        case ("Obj", "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<String, String>"
+        case ("Obj", _):
+            constants["KEY_VALUE_GENERIC"] = "<String>"
+        case (_, "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<String>"
+        case (_, _):
+            constants["KEY_VALUE_GENERIC"] = ""
 
     prefix = key_value_prefix(key_type, value_type)
     constants["REFERENCEABLE_HEAP_TEST_UTILS"] = f"{prefix}ReferenceableHeapTestUtils"
@@ -649,14 +664,15 @@ def generate_pairing_heap_test(key_type: str, value_type: str, constants, functi
     if key_type == "Obj":
         constants["PRIMITIVE_KEY_TYPE"] = "String"
         constants["KEY_TYPE_GENERIC"] = "<String>"
-    if key_type == "Obj" and value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String, String>"
-    elif key_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String>"
-    elif value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String>"
-    else:
-        constants["KEY_VALUE_GENERIC"] = ""
+    match (key_type, value_type):
+        case ("Obj", "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<String, String>"
+        case ("Obj", _):
+            constants["KEY_VALUE_GENERIC"] = "<String>"
+        case (_, "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<String>"
+        case (_, _):
+            constants["KEY_VALUE_GENERIC"] = ""
 
 
 register_template(
@@ -705,14 +721,15 @@ def generate_binomial_heap_test(key_type: str, value_type: str, constants, funct
     constants["PAIRING_HEAP"] = f"{prefix}PairingHeap"
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
-    if key_type == "Obj" and value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String, String>"
-    elif key_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String>"
-    elif value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String>"
-    else:
-        constants["KEY_VALUE_GENERIC"] = ""
+    match (key_type, value_type):
+        case ("Obj", "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<String, String>"
+        case ("Obj", _):
+            constants["KEY_VALUE_GENERIC"] = "<String>"
+        case (_, "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<String>"
+        case (_, _):
+            constants["KEY_VALUE_GENERIC"] = ""
 
 
 register_template(
@@ -753,14 +770,15 @@ def generate_fibonacci_heap_test(key_type: str, value_type: str, constants, func
     constants["PAIRING_HEAP"] = f"{prefix}PairingHeap"
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
-    if key_type == "Obj" and value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String, String>"
-    elif key_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String>"
-    elif value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String>"
-    else:
-        constants["KEY_VALUE_GENERIC"] = ""
+    match (key_type, value_type):
+        case ("Obj", "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<String, String>"
+        case ("Obj", _):
+            constants["KEY_VALUE_GENERIC"] = "<String>"
+        case (_, "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<String>"
+        case (_, _):
+            constants["KEY_VALUE_GENERIC"] = ""
 
 
 register_template(
@@ -806,14 +824,15 @@ def generate_binary_search_tree_test_utils(
     if value_type == "Obj":
         constants["PRIMITIVE_VALUE_TYPE"] = "String"
 
-    if key_type == "Obj" and value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String, String>"
-    elif key_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String>"
-    elif value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String>"
-    else:
-        constants["KEY_VALUE_GENERIC"] = ""
+    match (key_type, value_type):
+        case ("Obj", "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<String, String>"
+        case ("Obj", _):
+            constants["KEY_VALUE_GENERIC"] = "<String>"
+        case (_, "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<String>"
+        case (_, _):
+            constants["KEY_VALUE_GENERIC"] = ""
 
     prefix = key_value_prefix(key_type, value_type)
     constants["REFERENCEABLE_HEAP"] = f"{prefix}ReferenceableHeap"
@@ -893,14 +912,15 @@ def generate_red_black_tree_test(
     constants["PAIRING_HEAP"] = f"{prefix}PairingHeap"
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
-    if key_type == "Obj" and value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String, String>"
-    elif key_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String>"
-    elif value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String>"
-    else:
-        constants["KEY_VALUE_GENERIC"] = ""
+    match (key_type, value_type):
+        case ("Obj", "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<String, String>"
+        case ("Obj", _):
+            constants["KEY_VALUE_GENERIC"] = "<String>"
+        case (_, "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<String>"
+        case (_, _):
+            constants["KEY_VALUE_GENERIC"] = ""
 
 
 register_template(
@@ -952,14 +972,15 @@ def generate_splay_tree_test(
     constants["PAIRING_HEAP"] = f"{prefix}PairingHeap"
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
-    if key_type == "Obj" and value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String, String>"
-    elif key_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String>"
-    elif value_type == "Obj":
-        constants["KEY_VALUE_GENERIC"] = "<String>"
-    else:
-        constants["KEY_VALUE_GENERIC"] = ""
+    match (key_type, value_type):
+        case ("Obj", "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<String, String>"
+        case ("Obj", _):
+            constants["KEY_VALUE_GENERIC"] = "<String>"
+        case (_, "Obj"):
+            constants["KEY_VALUE_GENERIC"] = "<String>"
+        case (_, _):
+            constants["KEY_VALUE_GENERIC"] = ""
 
 
 register_template(
@@ -997,10 +1018,7 @@ def read_last_generated_templates_hashes() -> Callable[[str], bool]:
     def is_template_changed(template_filename: str):
         template_file = TEMPLATE_DIR / template_filename
         template_hash = compute_template_hash(template_file)
-        return (
-            str(template_file.resolve()) not in hashes
-            or hashes[template_file] != template_hash
-        )
+        return hashes.get(template_file) != template_hash
 
     return is_template_changed
 
