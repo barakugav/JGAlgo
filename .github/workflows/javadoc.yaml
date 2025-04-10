@@ -23,7 +23,7 @@ jobs:
       - name: Generate Javadoc with Maven
         run: |
           mvn javadoc:aggregate
-          mv target/site/apidocs ${{ runner.temp }}/docs-snapshot
+          mv target/reports/apidocs ${{ runner.temp }}/docs-snapshot
 
       - uses: actions/checkout@v4
         with:
