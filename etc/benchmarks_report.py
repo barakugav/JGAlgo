@@ -1,8 +1,8 @@
 import argparse
 import csv
 import datetime
-import os
 import tempfile
+from pathlib import Path
 
 import artifacts_utils
 import matplotlib
@@ -30,12 +30,12 @@ def read_results_file(path):
 
 def create_report(out_img):
     artifacts = artifacts_utils.get_artifacts_description("jmh-benchmarks-results")
-    with tempfile.TemporaryDirectory() as artifacts_dir:
+    with tempfile.TemporaryDirectory() as artifacts_dir_:
+        artifacts_dir = Path(artifacts_dir_)
         artifacts_utils.download_artifacts(artifacts, artifacts_dir)
         for id, artifact in artifacts.items():
-            res_path = os.path.join(
-                artifacts_dir, str(id), "bench_results", "bench_results.csv"
-            )
+            res_path = artifacts_dir / str(id) / "bench_results" / "bench_results.csv"
+
             artifact["benchmarks"] = read_results_file(res_path)
         benchmarks = dict()
         for id, artifact in artifacts.items():
@@ -49,7 +49,7 @@ def create_report(out_img):
                 benchmarks[bench_key].append(bench)
 
         imgs = []
-        temp_img_file = "temp.png"
+        temp_img_file = Path("temp.png")
         try:
             for bench_key, results in benchmarks.items():
                 print("analyzing benchmark", bench_key[0], bench_key[1])
@@ -72,8 +72,8 @@ def create_report(out_img):
                     image = plt.imread(image_file)
                 imgs.append(np.array(image))
         finally:
-            if os.path.exists(temp_img_file):
-                os.remove(temp_img_file)
+            if temp_img_file.exists():
+                temp_img_file.unlink()
         imgs = np.concatenate(imgs)
         print(f"Saving result image to {out_img}")
         matplotlib.pyplot.imsave(out_img, imgs)

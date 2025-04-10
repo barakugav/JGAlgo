@@ -68,7 +68,7 @@
     <com.google.guava.version>33.2.1-jre</com.google.guava.version>
     <org.jgrapht.version>1.5.2</org.jgrapht.version>
 
-    <checkstyle.config.location>ect/checkstyle.xml</checkstyle.config.location>
+    <checkstyle.config.location>etc/checkstyle.xml</checkstyle.config.location>
   </properties>
 
   <modules>

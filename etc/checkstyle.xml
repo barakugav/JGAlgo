@@ -16,7 +16,7 @@
 	</module>
 	<!-- https://checkstyle.org/filters/suppressionfilter.html -->
 	<module name="SuppressionFilter">
-		<property name="file" value="ect/checkstyle-suppressions.xml" />
+		<property name="file" value="etc/checkstyle-suppressions.xml" />
 	</module>
 
 	<!-- Checks whether files end with a new line.                        -->
