@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 public class WeightsTest extends TestBase {
 
 	@Test
-	public void testWeightsObjects() {
+	public void weightsObjects() {
 		final long seed = 0xe7d6f0afb01000baL;
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Object>> edgeWeightsAdder =
 				(g, key) -> g.addEdgesWeights(key, Object.class);
@@ -43,7 +43,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsObjectsWithDefaultWeight() {
+	public void weightsObjectsWithDefaultWeight() {
 		final long seed = 0x71b6e5749ca06738L;
 		Object defVal = new Object();
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Object>> edgeWeightsAdder =
@@ -52,7 +52,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsBytes() {
+	public void weightsBytes() {
 		final long seed = 0x484dd5b050fbb881L;
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Byte>> edgeWeightsAdder =
 				(g, key) -> g.addEdgesWeights(key, byte.class);
@@ -60,7 +60,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsBytesWithDefaultWeight() {
+	public void weightsBytesWithDefaultWeight() {
 		final long seed = 0xf14cb8abf6ed4f9fL;
 		byte defVal = (byte) 0xc8;
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Byte>> edgeWeightsAdder =
@@ -69,7 +69,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsShorts() {
+	public void weightsShorts() {
 		final long seed = 0x2ee8e70daf324abfL;
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Short>> edgeWeightsAdder =
 				(g, key) -> g.addEdgesWeights(key, short.class);
@@ -77,7 +77,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsShortsWithDefaultWeight() {
+	public void weightsShortsWithDefaultWeight() {
 		final long seed = 0x409d909a3947948fL;
 		short defVal = 0x309b;
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Short>> edgeWeightsAdder =
@@ -86,7 +86,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsInts() {
+	public void weightsInts() {
 		final long seed = 0xc81e5634eed692fdL;
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Integer>> edgeWeightsAdder =
 				(g, key) -> g.addEdgesWeights(key, int.class);
@@ -94,7 +94,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsIntsWithDefaultWeight() {
+	public void weightsIntsWithDefaultWeight() {
 		final long seed = 0x2024360951336d19L;
 		int defVal = 0x3006b813;
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Integer>> edgeWeightsAdder =
@@ -103,7 +103,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsLongs() {
+	public void weightsLongs() {
 		final long seed = 0xa3183b96d809f3f0L;
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Long>> edgeWeightsAdder =
 				(g, key) -> g.addEdgesWeights(key, long.class);
@@ -111,7 +111,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsLongsWithDefaultWeight() {
+	public void weightsLongsWithDefaultWeight() {
 		final long seed = 0x58fa7dd03fe7207eL;
 		long defVal = 0x46c9069fec84a482L;
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Long>> edgeWeightsAdder =
@@ -120,7 +120,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsFloats() {
+	public void weightsFloats() {
 		final long seed = 0x35801d78fc5ab86eL;
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Float>> edgeWeightsAdder =
 				(g, key) -> g.addEdgesWeights(key, float.class);
@@ -128,7 +128,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsFloatsWithDefaultWeight() {
+	public void weightsFloatsWithDefaultWeight() {
 		final long seed = 0xa9963dbfc0a4462bL;
 		float defVal = Float.intBitsToFloat(0xe7f2aa88);
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Float>> edgeWeightsAdder =
@@ -137,7 +137,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsDoubles() {
+	public void weightsDoubles() {
 		final long seed = 0x32de9146baf98f13L;
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Double>> edgeWeightsAdder =
 				(g, key) -> g.addEdgesWeights(key, double.class);
@@ -145,7 +145,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsDoublesWithDefaultWeight() {
+	public void weightsDoublesWithDefaultWeight() {
 		final long seed = 0x5698af4847f1349eL;
 		double defVal = Double.longBitsToDouble(0x0de33f798dd2ec5aL);
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Double>> edgeWeightsAdder =
@@ -154,7 +154,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsBools() {
+	public void weightsBools() {
 		final long seed = 0x89698a740f504d87L;
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Boolean>> edgeWeightsAdder =
 				(g, key) -> g.addEdgesWeights(key, boolean.class);
@@ -162,7 +162,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsBoolsWithDefaultWeight() {
+	public void weightsBoolsWithDefaultWeight() {
 		final long seed = 0x98da961379cae813L;
 		boolean defVal = true;
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Boolean>> edgeWeightsAdder =
@@ -171,7 +171,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsChars() {
+	public void weightsChars() {
 		final long seed = 0x8ede26a1638aef7dL;
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Character>> edgeWeightsAdder =
 				(g, key) -> g.addEdgesWeights(key, char.class);
@@ -179,7 +179,7 @@ public class WeightsTest extends TestBase {
 	}
 
 	@Test
-	public void testWeightsCharsWithDefaultWeight() {
+	public void weightsCharsWithDefaultWeight() {
 		final long seed = 0x25b63aa72ff77460L;
 		char defVal = (char) 0xa5fb;
 		BiFunction<Graph<Integer, Integer>, String, Weights<Integer, Character>> edgeWeightsAdder =
@@ -414,11 +414,11 @@ public class WeightsTest extends TestBase {
 		});
 	}
 
-	private static Supplier<Object> weightFactoryObject() {
+	static Supplier<Object> weightFactoryObject() {
 		return Object::new;
 	}
 
-	private static Supplier<Byte> weightFactoryByte(long seed) {
+	static Supplier<Byte> weightFactoryByte(long seed) {
 		return new Supplier<>() {
 			Random rand = new Random(seed);
 
@@ -429,7 +429,7 @@ public class WeightsTest extends TestBase {
 		};
 	}
 
-	private static Supplier<Short> weightFactoryShort(long seed) {
+	static Supplier<Short> weightFactoryShort(long seed) {
 		return new Supplier<>() {
 			Random rand = new Random(seed);
 
@@ -440,7 +440,7 @@ public class WeightsTest extends TestBase {
 		};
 	}
 
-	private static Supplier<Integer> weightFactoryInt(long seed) {
+	static Supplier<Integer> weightFactoryInt(long seed) {
 		return new Supplier<>() {
 			Random rand = new Random(seed);
 
@@ -451,7 +451,7 @@ public class WeightsTest extends TestBase {
 		};
 	}
 
-	private static Supplier<Long> weightFactoryLong(long seed) {
+	static Supplier<Long> weightFactoryLong(long seed) {
 		return new Supplier<>() {
 			Random rand = new Random(seed);
 
@@ -462,7 +462,7 @@ public class WeightsTest extends TestBase {
 		};
 	}
 
-	private static Supplier<Float> weightFactoryFloat(long seed) {
+	static Supplier<Float> weightFactoryFloat(long seed) {
 		return new Supplier<>() {
 			Random rand = new Random(seed);
 
@@ -473,7 +473,7 @@ public class WeightsTest extends TestBase {
 		};
 	}
 
-	private static Supplier<Double> weightFactoryDouble(long seed) {
+	static Supplier<Double> weightFactoryDouble(long seed) {
 		return new Supplier<>() {
 			Random rand = new Random(seed);
 
@@ -484,7 +484,7 @@ public class WeightsTest extends TestBase {
 		};
 	}
 
-	private static Supplier<Boolean> weightFactoryBool(long seed) {
+	static Supplier<Boolean> weightFactoryBool(long seed) {
 		return new Supplier<>() {
 			Random rand = new Random(seed);
 
@@ -495,7 +495,7 @@ public class WeightsTest extends TestBase {
 		};
 	}
 
-	private static Supplier<Character> weightFactoryChar(long seed) {
+	static Supplier<Character> weightFactoryChar(long seed) {
 		return new Supplier<>() {
 			Random rand = new Random(seed);
 

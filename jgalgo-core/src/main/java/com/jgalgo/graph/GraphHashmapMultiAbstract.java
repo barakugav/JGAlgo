@@ -88,7 +88,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 		}
 	}
 
-	private abstract class EdgeIterBase implements IEdgeIter {
+	private abstract class EdgeIterBase implements EdgeIters.IBase {
 
 		// either the source or target of the iterator
 		final int vertex;
@@ -260,7 +260,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 		@Override
 		public IEdgeIter iterator() {
-			return new IEdgeIter() {
+			return new EdgeIters.IBase() {
 
 				int nextEdge = edgesMap(source).get(target);
 				int prevEdge;

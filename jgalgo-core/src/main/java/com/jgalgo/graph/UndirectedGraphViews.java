@@ -143,7 +143,7 @@ class UndirectedGraphViews {
 			}
 		}
 
-		private abstract class EdgeIterOutOrInBase implements EdgeIter<V, E>, ObjectIterator<E> {
+		private abstract class EdgeIterOutOrInBase implements EdgeIters.Base<V, E>, ObjectIterator<E> {
 
 			private EdgeIter<V, E> outIt, inIt;
 			final V vertex;
@@ -286,7 +286,7 @@ class UndirectedGraphViews {
 			}
 		}
 
-		private static class EdgeIterSourceTarget<V, E> implements EdgeIter<V, E>, ObjectIterator<E> {
+		private static class EdgeIterSourceTarget<V, E> implements EdgeIters.Base<V, E>, ObjectIterator<E> {
 
 			private final V source, target;
 			private final EdgeIter<V, E> stIt;
@@ -465,7 +465,7 @@ class UndirectedGraphViews {
 			}
 		}
 
-		private abstract class EdgeIterOutOrInBase implements IEdgeIter {
+		private abstract class EdgeIterOutOrInBase implements EdgeIters.IBase {
 
 			private IEdgeIter outIt, inIt;
 			final int vertex;
@@ -530,7 +530,7 @@ class UndirectedGraphViews {
 					if (n == 0)
 						return skipped;
 				}
-				return skipped + IEdgeIter.super.skip(n);
+				return skipped + EdgeIters.IBase.super.skip(n);
 			}
 		}
 
@@ -609,7 +609,7 @@ class UndirectedGraphViews {
 			}
 		}
 
-		private static class EdgeIterSourceTarget implements IEdgeIter {
+		private static class EdgeIterSourceTarget implements EdgeIters.IBase {
 
 			private final int source, target;
 			private final IEdgeIter stIt;

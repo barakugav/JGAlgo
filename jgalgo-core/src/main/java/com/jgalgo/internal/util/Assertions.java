@@ -134,8 +134,8 @@ public class Assertions {
 		}
 	}
 
-	public static void checkGraphId(int elementIdx, int length, boolean isVertices) {
-		if (JGAlgoConfigImpl.AssertionsGraphIdCheck) {
+	public static void checkGraphIdx(int elementIdx, int length, boolean isVertices) {
+		if (JGAlgoConfigImpl.AssertionsGraphIdxCheck) {
 			if (elementIdx < 0 || elementIdx >= length) {
 				if (isVertices) {
 					throw NoSuchVertexException.ofIndex(elementIdx);
@@ -147,14 +147,14 @@ public class Assertions {
 	}
 
 	public static void checkVertex(int vertexIdx, int n) {
-		if (JGAlgoConfigImpl.AssertionsGraphIdCheck) {
+		if (JGAlgoConfigImpl.AssertionsGraphIdxCheck) {
 			if (vertexIdx < 0 || vertexIdx >= n)
 				throw NoSuchVertexException.ofIndex(vertexIdx);
 		}
 	}
 
 	public static void checkEdge(int edgeIdx, int m) {
-		if (JGAlgoConfigImpl.AssertionsGraphIdCheck) {
+		if (JGAlgoConfigImpl.AssertionsGraphIdxCheck) {
 			if (edgeIdx < 0 || edgeIdx >= m)
 				throw NoSuchEdgeException.ofIndex(edgeIdx);
 		}

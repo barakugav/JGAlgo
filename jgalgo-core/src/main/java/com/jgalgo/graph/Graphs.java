@@ -121,7 +121,7 @@ public class Graphs {
 
 		@Override
 		public IEdgeIter iterator() {
-			return new IEdgeIter() {
+			return new EdgeIters.IBase() {
 
 				boolean beforeNext = edge != EdgeNone;
 
@@ -399,7 +399,7 @@ public class Graphs {
 		if (vertices == null && edges == null)
 			throw new NullPointerException("Either vertices or edges can be null, not both.");
 		if (g instanceof IndexGraph)
-			return subGraph((IndexGraph) g, vertices, edges, copyVerticesWeights, copyEdgesWeights);
+			return subGraphCopy((IndexGraph) g, vertices, edges, copyVerticesWeights, copyEdgesWeights);
 
 		IntGraphBuilder gb = IntGraphBuilder.newInstance(g.isDirected());
 		IndexGraph ig = g.indexGraph();
@@ -479,7 +479,7 @@ public class Graphs {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes", "cast" })
-	private static IntGraph subGraph(IndexGraph g, IntCollection vertices, IntCollection edges,
+	private static IntGraph subGraphCopy(IndexGraph g, IntCollection vertices, IntCollection edges,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		IntGraphBuilder gb = IntGraphBuilder.newInstance(g.isDirected());
 

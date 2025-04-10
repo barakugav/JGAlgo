@@ -24,6 +24,8 @@ import FASTUTIL_PACKAGE.FASTUTIL_TYPEArrays;
 import it.unimi.dsi.fastutil.longs.LongArrays;
 #endif
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 class WEIGHTS_IMPL {
 
@@ -44,13 +46,11 @@ class WEIGHTS_IMPL {
 
 		IndexImpl(IntSet elements, boolean isVertices, PRIMITIVE_TYPE defVal) {
 			super(elements, isVertices);
-
 			defaultWeight = defVal;
-
 #if PRIMITIVE_TYPE_REAL != "boolean"
 			weights = FASTUTIL_TYPEArrays.EMPTY_ARRAY;
 			if (!elements.isEmpty()) {
-				weights = Arrays.copyOf(weights, elements.size());
+				weights = new PRIMITIVE_TYPE_REAL[elements.size()];
 				Arrays.fill(weights, defaultWeight);
 			}
 #else
@@ -63,39 +63,83 @@ class WEIGHTS_IMPL {
 #endif
 		}
 
-		IndexImpl(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, IntSet elements, boolean isVertices) {
-			this(elements, isVertices, orig.defaultWeight);
-			WeightsImpl.checkSameSize(elements, orig.elements);
+		IndexImpl(IWEIGHTS TYPE_GENERIC orig, IntSet elements, boolean isVertices) {
+			super(elements, isVertices);
+			defaultWeight = orig.defaultWeight();
+			final int n = elements.size();
+
+			if (orig instanceof WEIGHTS_IMPL.IndexImpl) {
+				WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig0 = (WEIGHTS_IMPL.IndexImpl TYPE_GENERIC) orig;
+				WeightsImpl.checkSameSize(elements, orig0.elements);
 #if PRIMITIVE_TYPE_REAL != "boolean"
-			weights = Arrays.copyOf(orig.weights, elements.size());
+				weights = Arrays.copyOf(orig0.weights, n);
+
 #else
-			weights = Arrays.copyOf(orig.weights, wordsNum(elements.size()));
+				weights = Arrays.copyOf(orig0.weights, wordsNum(n));
 #endif
+			} else {
+#if PRIMITIVE_TYPE_REAL != "boolean"
+				weights = FASTUTIL_TYPEArrays.EMPTY_ARRAY;
+#else
+				weights = LongArrays.EMPTY_ARRAY;
+#endif
+				if (n > 0) {
+#if PRIMITIVE_TYPE_REAL != "boolean"
+					weights = new PRIMITIVE_TYPE_REAL[n];
+					for (int i : range(n))
+						weights[i] = orig.get(i);
+#else
+					weights = new long[wordsNum(n)];
+					if (defaultWeight)
+						weights[weights.length - 1] = ~0L;
+					for (int i : range(n))
+						setImpl(i, orig.get(i));
+#endif
+				}
+			}
 		}
 
-		IndexImpl(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, IntSet elements, boolean isVertices, IndexGraphBuilder.ReIndexingMap reIndexMap) {
-			this(elements, isVertices, orig.defaultWeight);
-			WeightsImpl.checkSameSize(elements, orig.elements);
+		IndexImpl(IWEIGHTS TYPE_GENERIC orig, IntSet elements, boolean isVertices, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+			super(elements, isVertices);
+			defaultWeight = orig.defaultWeight();
+			final int n = elements.size();
 #if PRIMITIVE_TYPE_REAL != "boolean"
-			weights = Arrays.copyOf(weights, elements.size());
-			for (int i : range(elements.size()))
-				weights[reIndexMap.map(i)] = orig.weights[i];
+			weights = new PRIMITIVE_TYPE_REAL[n];
+
+			if (orig instanceof WEIGHTS_IMPL.IndexImpl) {
+				WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig0 = (WEIGHTS_IMPL.IndexImpl TYPE_GENERIC) orig;
+				WeightsImpl.checkSameSize(elements, orig0.elements);
+				for (int oldIdx : range(n))
+					weights[reIndexMap.map(oldIdx)] = orig0.weights[oldIdx];
+			} else {
+				for (int oldIdx : range(n))
+					weights[reIndexMap.map(oldIdx)] = orig.get(oldIdx);
+			}
 #else
-			if (defaultWeight) {
+			weights = new long[wordsNum(n)];
+			if (defaultWeight)
 				Arrays.fill(weights, ~0L);
-				for (int oldIdx : range(elements.size())) {
-					if ((orig.weights[word(oldIdx)] & bit(oldIdx)) == 0) {
-						int newIdx = reIndexMap.map(oldIdx);
-						weights[word(newIdx)] &= ~bit(newIdx);
-					}
+
+			if (orig instanceof WEIGHTS_IMPL.IndexImpl) {
+				WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig0 = (WEIGHTS_IMPL.IndexImpl TYPE_GENERIC) orig;
+				if (defaultWeight) {
+					for (int oldIdx : range(n))
+						if ((orig0.weights[word(oldIdx)] & bit(oldIdx)) == 0)
+							setImpl(reIndexMap.map(oldIdx), false);
+				} else {
+					for (int oldIdx : range(n))
+						if ((orig0.weights[word(oldIdx)] & bit(oldIdx)) != 0)
+							setImpl(reIndexMap.map(oldIdx), true);
 				}
 			} else {
-				Arrays.fill(weights, 0);
-				for (int oldIdx : range(elements.size())) {
-					if ((orig.weights[word(oldIdx)] & bit(oldIdx)) != 0) {
-						int newIdx = reIndexMap.map(oldIdx);
-						weights[word(newIdx)] |= bit(newIdx);
-					}
+				if (defaultWeight) {
+					for (int oldIdx : range(n))
+						if (!orig.get(oldIdx))
+							setImpl(reIndexMap.map(oldIdx), false);
+				} else {
+					for (int oldIdx : range(n))
+						if (orig.get(oldIdx))
+							setImpl(reIndexMap.map(oldIdx), true);
 				}
 			}
 #endif
@@ -129,16 +173,24 @@ class WEIGHTS_IMPL {
 		static int wordsNum(int size) {
 			return (size + WordSize - 1) / WordSize;
 		}
+
+		void setImpl(int idx, boolean weight) {
+			if (weight) {
+				weights[word(idx)] |= bit(idx);
+			} else {
+				weights[word(idx)] &= ~bit(idx);
+			}
+		}
 #endif
 	}
 
 	static class IndexImmutable TYPE_GENERIC extends WEIGHTS_IMPL.IndexImpl TYPE_GENERIC implements WeightsImpl.IndexImmutable<TYPE_GENERIC_CLASS> {
 
-		IndexImmutable(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, IntSet elements, boolean isVertices) {
+		IndexImmutable(IWEIGHTS TYPE_GENERIC orig, IntSet elements, boolean isVertices) {
 			super(orig, elements, isVertices);
 		}
 
-		IndexImmutable(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, IntSet elements, boolean isVertices, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+		IndexImmutable(IWEIGHTS TYPE_GENERIC orig, IntSet elements, boolean isVertices, IndexGraphBuilder.ReIndexingMap reIndexMap) {
 			super(orig, elements, isVertices, reIndexMap);
 		}
 
@@ -154,7 +206,7 @@ class WEIGHTS_IMPL {
 			super(elements, isVertices, defVal);
 		}
 
-		IndexMutable(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, IntSet elements, boolean isVertices) {
+		IndexMutable(IWEIGHTS TYPE_GENERIC orig, IntSet elements, boolean isVertices) {
 			super(orig, elements, isVertices);
 		}
 
@@ -167,16 +219,6 @@ class WEIGHTS_IMPL {
 			setImpl(idx, weight);
 #endif
 		}
-
-#if PRIMITIVE_TYPE_REAL == "boolean"
-		private void setImpl(int idx, boolean weight) {
-			if (weight) {
-				weights[word(idx)] |= bit(idx);
-			} else {
-				weights[word(idx)] &= ~bit(idx);
-			}
-		}
-#endif
 
 		@Override
 		public int capacity() {
@@ -236,13 +278,13 @@ class WEIGHTS_IMPL {
 	}
 
 	static class IntMapped TYPE_GENERIC extends WeightsImpl.IntMapped<TYPE_GENERIC_CLASS> implements IWEIGHTS TYPE_GENERIC {
-		IntMapped(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC weights, IndexIntIdMap indexMap) {
+		IntMapped(IWEIGHTS TYPE_GENERIC weights, IndexIntIdMap indexMap) {
 			super(weights, indexMap);
 		}
 
 		@Override
-		public WEIGHTS_IMPL.IndexImpl TYPE_GENERIC weights() {
-			return (WEIGHTS_IMPL.IndexImpl TYPE_GENERIC) super.weights();
+		public IWEIGHTS TYPE_GENERIC weights() {
+			return (IWEIGHTS TYPE_GENERIC) super.weights();
 		}
 
 		@Override
@@ -262,13 +304,13 @@ class WEIGHTS_IMPL {
 	}
 
 	static class ObjMapped<K TYPE_GENERIC_IN_TEMPLATE_LIST> extends WeightsImpl.ObjMapped<K, TYPE_GENERIC_CLASS> implements WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> {
-		ObjMapped(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC weights, IndexIdMap<K> indexMap) {
+		ObjMapped(IWEIGHTS TYPE_GENERIC weights, IndexIdMap<K> indexMap) {
 			super(weights, indexMap);
 		}
 
 		@Override
-		public WEIGHTS_IMPL.IndexImpl TYPE_GENERIC weights() {
-			return (WEIGHTS_IMPL.IndexImpl TYPE_GENERIC) super.weights();
+		public IWEIGHTS TYPE_GENERIC weights() {
+			return (IWEIGHTS TYPE_GENERIC) super.weights();
 		}
 
 		@Override
@@ -336,6 +378,119 @@ class WEIGHTS_IMPL {
 		@Override
 		public PRIMITIVE_TYPE defaultWeight() {
 			return weights().defaultWeight();
+		}
+	}
+
+	static class IndexMasked TYPE_GENERIC extends WeightsImpl.IndexAbstract<TYPE_GENERIC_CLASS> implements IWEIGHTS TYPE_GENERIC {
+
+		private final IWEIGHTS TYPE_GENERIC orig;
+		private final Int2IntMap api2orig;
+
+		IndexMasked(IWEIGHTS TYPE_GENERIC orig, IntSet elements, boolean isVertices, Int2IntMap api2orig) {
+			super(elements, isVertices);
+			this.orig = orig;
+			this.api2orig = api2orig;
+		}
+
+		private int api2orig(int idx) {
+			return api2orig.getOrDefault(idx, idx);
+		}
+
+		@Override
+		public PRIMITIVE_TYPE get(int idx) {
+			checkIdx(idx);
+			return orig.get(api2orig(idx));
+		}
+
+		@Override
+		public void set(int idx, PRIMITIVE_TYPE weight) {
+			checkIdx(idx);
+			orig.set(api2orig(idx), weight);
+		}
+
+		@Override
+		public PRIMITIVE_TYPE defaultWeight() {
+			return orig.defaultWeight();
+		}
+	}
+
+	static class IntMappedMasked TYPE_GENERIC implements IWEIGHTS TYPE_GENERIC {
+
+		private final IWEIGHTS TYPE_GENERIC orig;
+		private final IntSet mask;
+		private final boolean isVertices;
+
+		IntMappedMasked(IWEIGHTS TYPE_GENERIC orig, IntSet mask, boolean isVertices) {
+			this.orig = orig;
+			this.mask = mask;
+			this.isVertices = isVertices;
+		}
+
+		private void checkId(int id) {
+			if (mask.contains(id)) {
+				if (isVertices) {
+					throw NoSuchVertexException.ofVertex(id);
+				} else {
+					throw NoSuchEdgeException.ofEdge(id);
+				}
+			}
+		}
+
+		@Override
+		public PRIMITIVE_TYPE get(int id) {
+			checkId(id);
+			return orig.get(id);
+		}
+
+		@Override
+		public void set(int idx, PRIMITIVE_TYPE weight) {
+			checkId(idx);
+			orig.set(idx, weight);
+		}
+
+		@Override
+		public PRIMITIVE_TYPE defaultWeight() {
+			return orig.defaultWeight();
+		}
+	}
+
+	static class ObjMappedMasked<K TYPE_GENERIC_IN_TEMPLATE_LIST> implements WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> {
+
+		private final WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> orig;
+		private final ObjectSet<K> mask;
+		private final boolean isVertices;
+
+		ObjMappedMasked(WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> orig, ObjectSet<K> mask, boolean isVertices) {
+			this.orig = orig;
+			this.mask = mask;
+			this.isVertices = isVertices;
+		}
+
+		private void checkId(K id) {
+			if (mask.contains(id)) {
+				if (isVertices) {
+					throw NoSuchVertexException.ofVertex(id);
+				} else {
+					throw NoSuchEdgeException.ofEdge(id);
+				}
+			}
+		}
+
+		@Override
+		public PRIMITIVE_TYPE get(K id) {
+			checkId(id);
+			return orig.get(id);
+		}
+
+		@Override
+		public void set(K idx, PRIMITIVE_TYPE weight) {
+			checkId(idx);
+			orig.set(idx, weight);
+		}
+
+		@Override
+		public PRIMITIVE_TYPE defaultWeight() {
+			return orig.defaultWeight();
 		}
 	}
 

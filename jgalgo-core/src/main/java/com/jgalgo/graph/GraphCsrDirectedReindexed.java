@@ -241,7 +241,7 @@ final class GraphCsrDirectedReindexed extends GraphCsrBase {
 		}
 	}
 
-	private class EdgeIterOut implements IEdgeIter {
+	private class EdgeIterOut implements EdgeIters.IBase {
 		private final int source;
 		int nextEdge;
 		private final int endIdx;
@@ -376,7 +376,7 @@ final class GraphCsrDirectedReindexed extends GraphCsrBase {
 		}
 	}
 
-	private class SourceTargetEdgesIterFastLookup implements IEdgeIter {
+	private class SourceTargetEdgesIterFastLookup implements EdgeIters.IBase {
 
 		private final int source, target;
 		private final int sourceEnd;
@@ -439,7 +439,7 @@ final class GraphCsrDirectedReindexed extends GraphCsrBase {
 
 			/* we can't skip n, find what is the limit */
 			if (n < 16)
-				return IEdgeIter.super.skip(n);
+				return EdgeIters.IBase.super.skip(n);
 
 			/* perform a binary search */
 			int from = edge, to = edge + n;

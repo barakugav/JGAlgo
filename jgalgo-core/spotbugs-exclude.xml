@@ -121,7 +121,7 @@
       <Class name="com.jgalgo.alg.match.MatchingWeightedBlossomV$Tree$2$1" />
       <Class name="com.jgalgo.alg.match.MatchingWeightedBlossomV$Worker$2$1" />
       <Class name="com.jgalgo.alg.match.MatchingWeightedBlossomV$Worker$3$1" />
-      <Class name="com.jgalgo.internal.util.IterTools$IterPeekableImpl" />
+      <Class name="com.jgalgo.internal.util.IterTools$PeekImpl" />
       <Class name="com.jgalgo.internal.util.JGAlgoUtils$NullListIterator" />
       <Class name="com.jgalgo.internal.util.JGAlgoUtils$PermutationsIter" />
       <Class name="com.jgalgo.internal.util.JGAlgoUtils$PermutationsIterInt" />
@@ -339,6 +339,9 @@
       <Class name="com.jgalgo.graph.UndirectedGraphViews$UndirectedViewIntBase" />
       <Class name="com.jgalgo.internal.util.BitmapBase" />
       <Class name="com.jgalgo.internal.util.Range$Iter" />
+      <Class name="com.jgalgo.graph.MaskedGraphs$MaskedRenamedIndexGraph" />
+      <Class name="com.jgalgo.graph.MaskedGraphs$MaskedIntGraph" />
+      <Class name="com.jgalgo.graph.MaskedGraphs$MaskedObjGraph" />
     </Or>
     <Bug pattern="CT_CONSTRUCTOR_THROW" />
   </Match>

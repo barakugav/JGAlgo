@@ -75,6 +75,18 @@ public class JGAlgoUtils {
 		void accept(int a1, double a2);
 	}
 
+	public static void sort(int[] arr, boolean parallel) {
+		sort(arr, 0, arr.length, parallel);
+	}
+
+	public static void sort(int[] arr, int from, int to, boolean parallel) {
+		if (parallel) {
+			IntArrays.parallelQuickSort(arr, from, to);
+		} else {
+			IntArrays.quickSort(arr, from, to);
+		}
+	}
+
 	public static void sort(int[] arr, int from, int to, IntComparator cmp, boolean parallel) {
 		if (parallel) {
 			IntArrays.parallelQuickSort(arr, from, to, cmp);

@@ -1417,7 +1417,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 
 				private final LinkedListFixedSize.Doubly vertices;
 				private int listHead = LinkedListFixedSize.None;
-				private IterTools.IterPeekable.Int listIter;
+				private IterTools.Peek.Int listIter;
 
 				MoveToFront(MaximumFlowPushRelabel.Worker worker) {
 					super(worker);

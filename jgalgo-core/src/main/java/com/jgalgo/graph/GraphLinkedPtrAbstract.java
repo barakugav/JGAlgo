@@ -85,7 +85,7 @@ abstract class GraphLinkedPtrAbstract extends GraphBaseMutable {
 		super.clearEdges();
 	}
 
-	abstract class EdgeItr implements IEdgeIter {
+	abstract class EdgeItr implements EdgeIters.IBase {
 
 		private Edge next;
 		Edge last;

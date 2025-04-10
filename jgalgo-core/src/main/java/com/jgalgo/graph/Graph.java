@@ -1135,6 +1135,49 @@ public interface Graph<V, E> {
 	}
 
 	/**
+	 * Create a graph view of this graph with masked vertices and edges.
+	 *
+	 * <p>
+	 * This method returns a view of this graph that contains the same vertices minus the vertices in
+	 * {@code verticesMask}, the same edges minus the edges in {@code edgesMask}, and the same weights. Edges adjacent
+	 * to the masked vertices are also masked.
+	 *
+	 * <p>
+	 * For the lifetime of the view, adding, removing, or renaming vertices and edges is not allowed in both the
+	 * original and view graphs, as changing the IDs of the vertices/edges can invalidate the masks. This is enforced by
+	 * the view implementation, and will throw an exception, but not by the original graph implementation. Moving edges
+	 * using {@link #moveEdge(Object, Object, Object)} or {@link #reverseEdge(Object)} is allowed, as the IDs of the
+	 * vertices/edges are not changed. Adding, removing or editing weights is also allowed, for both vertices and edges,
+	 * using either the view or the original graph.
+	 *
+	 * <p>
+	 * The graph view shares the internals of the original graph, and only requires additional memory proportional
+	 * (linearly) to the number of masked vertices and edges (including the edges adjacent to the masked vertices). This
+	 * method can be suitable for use cases where the graph is large and only a small number of vertices and edges are
+	 * masked, especially in memory constrained environments.
+	 *
+	 * <p>
+	 * The return view will be less efficient that creating a {@link #subGraphCopy(Collection, Collection)}, as every
+	 * access to the graph will require to check if the vertex/edge is masked or not. Please use this method only after
+	 * comparing the performance of both methods, and use a sub graph copy as a default. Many of the algorithms require
+	 * at least linear space anyway, and avoiding the allocations for the graph may be neglected, while increasing the
+	 * graph access time overhead may be significant. That said, for algorithms that runs in sub-linear time, such as
+	 * {@link com.jgalgo.alg.shortestpath.ShortestPathSt}, it may be worth it to use this method instead of a sub graph
+	 * copy.
+	 *
+	 * @param  verticesMask             the vertices to mask
+	 * @param  edgesMask                the edges to mask. In addition, any edge adjacent * to a masked vertex will be
+	 *                                      masked as well.
+	 * @return                          a new graph view of this graph, without the masked vertices and edges
+	 * @throws IllegalArgumentException if there are duplicates in the vertices or edges mask
+	 * @throws NoSuchVertexException    if there are vertices in the mask that are not in the graph
+	 * @throws NoSuchEdgeException      if there are edges in the mask that are not in the graph
+	 */
+	default Graph<V, E> maskedGraphView(Collection<V> verticesMask, Collection<E> edgesMask) {
+		return new MaskedGraphs.MaskedObjGraph<>(this, verticesMask, edgesMask);
+	}
+
+	/**
 	 * Create a new undirected empty graph.
 	 *
 	 * <p>

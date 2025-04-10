@@ -61,7 +61,7 @@ abstract class GraphArrayAbstract extends GraphBaseMutable {
 		edgesNum[w] = num - 1;
 	}
 
-	private abstract class EdgeIterBase implements IEdgeIter {
+	private abstract class EdgeIterBase implements EdgeIters.IBase {
 
 		private final int[] edges;
 		private int count;

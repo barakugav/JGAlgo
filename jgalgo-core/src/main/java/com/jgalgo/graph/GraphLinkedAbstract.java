@@ -33,7 +33,7 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 		super(capabilities, builder);
 	}
 
-	abstract class EdgeItr implements IEdgeIter {
+	abstract class EdgeItr implements EdgeIters.IBase {
 
 		private int next;
 		int last;

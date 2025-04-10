@@ -37,17 +37,17 @@ abstract class GraphElementSet extends AbstractIntSet {
 	}
 
 	@Override
-	public int size() {
+	public final int size() {
 		return size;
 	}
 
 	@Override
-	public boolean contains(int key) {
+	public final boolean contains(int key) {
 		return 0 <= key && key < size;
 	}
 
 	@Override
-	public IntIterator iterator() {
+	public final IntIterator iterator() {
 		return range(size).iterator();
 	}
 
@@ -66,8 +66,8 @@ abstract class GraphElementSet extends AbstractIntSet {
 		return size * (size - 1) / 2;
 	}
 
-	void checkIdx(int idx) {
-		Assertions.checkGraphId(idx, size, isVertices);
+	final void checkIdx(int idx) {
+		Assertions.checkGraphIdx(idx, size, isVertices);
 	}
 
 	static final class Immutable extends GraphElementSet {

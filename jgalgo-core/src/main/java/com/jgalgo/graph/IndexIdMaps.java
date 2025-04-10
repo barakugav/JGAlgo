@@ -355,7 +355,7 @@ public class IndexIdMaps {
 		return new IndexToIntIdEdgeIter(g, indexIter);
 	}
 
-	private static class IndexToIdEdgeIter<V, E> extends IndexToIdIterator<E> implements EdgeIter<V, E> {
+	private static class IndexToIdEdgeIter<V, E> extends IndexToIdIterator<E> implements EdgeIters.Base<V, E> {
 		private final IndexIdMap<V> viMap;
 
 		IndexToIdEdgeIter(Graph<V, E> g, IEdgeIter indexIt) {
@@ -388,7 +388,7 @@ public class IndexIdMaps {
 		}
 	}
 
-	private static class IndexToIntIdEdgeIter extends IndexToIntIdIterator implements IEdgeIter {
+	private static class IndexToIntIdEdgeIter extends IndexToIntIdIterator implements EdgeIters.IBase {
 		private final IndexIntIdMap viMap;
 
 		IndexToIntIdEdgeIter(IntGraph g, IEdgeIter indexIt) {

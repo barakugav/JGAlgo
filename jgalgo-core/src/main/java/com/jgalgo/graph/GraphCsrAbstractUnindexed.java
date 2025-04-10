@@ -202,7 +202,7 @@ abstract class GraphCsrAbstractUnindexed extends GraphCsrBase {
 		}
 	}
 
-	private static class SourceTargetEdgesIterFastLookup implements IEdgeIter {
+	private static class SourceTargetEdgesIterFastLookup implements EdgeIters.IBase {
 
 		private final int source, target;
 		private int edge;
