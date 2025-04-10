@@ -1,13 +1,13 @@
 import argparse
+import hashlib
 import json
 import logging
 import shutil
 import subprocess
 import sys
 import xml.etree.ElementTree
-
-# import os
 from pathlib import Path
+from typing import Callable
 
 TOP_DIR = Path(__file__).parent.resolve()
 TEMPLATE_DIR = TOP_DIR / "template"
@@ -22,20 +22,21 @@ HASHES_FILENAME = GENERATED_SOURCES_DIR / ".gen" / "hashes.json"
 def find_eclipse() -> Path | None:
     path = shutil.which("eclipse")
     if path is not None:
-        return path
+        return Path(path)
     path = shutil.which("Eclipse")
     if path is not None:
-        return path
+        return Path(path)
 
-    if sys.platform == "linux" or sys.platform == "linux2":
-        path = Path("/usr/bin/eclipse")
-        if path.exists():
-            return path
+    match sys.platform:
+        case "linux" | "linux2" | "darwin":
+            path = Path("/usr/bin/eclipse")
+            if path.exists():
+                return path
 
-    elif sys.platform == "win32":
-        path = Path("C:") / "Program Files" / "Eclipse" / "eclipse.exe"
-        if path.exists():
-            return path
+        case "win32":
+            path = Path("C:") / "Program Files" / "Eclipse" / "eclipse.exe"
+            if path.exists():
+                return path
 
     return None
 
@@ -53,10 +54,10 @@ def format_source_files(filenames):
 
     profiles_root = xml.etree.ElementTree.parse(ECLIPSE_FORMATTER_CONFIG_FILE).getroot()
     if profiles_root.tag != "profiles":
-        raise Exception("unexpected root tag: " + profiles_root.tag)
+        raise Exception(f"unexpected root tag: {profiles_root.tag}")
     profiles = [child for child in profiles_root if child.tag == "profile"]
     if len(profiles) != 1:
-        raise Exception("unexpected number of profiles: " + len(profiles))
+        raise Exception(f"unexpected number of profiles: {len(profiles)}")
     settings = [setting for setting in profiles[0] if setting.tag == "setting"]
     settings = [(setting.attrib["id"], setting.attrib["value"]) for setting in settings]
 
@@ -64,7 +65,7 @@ def format_source_files(filenames):
     try:
         with open(formatter_config_file, "w") as f:
             for id, val in settings:
-                f.write(id + "=" + val + "\n")
+                f.write(f"{id}={val}\n")
 
         # eclipse has a command line limit
         def chunker(seq, size):
@@ -92,8 +93,10 @@ def format_source_files(filenames):
             formatter_config_file.unlink()
 
 
-def generate_sourcefile(input_filename: Path, output_filename, constants, functions):
-    logging.info("Generating %s", output_filename / TOP_DIR)
+def generate_sourcefile(
+    input_filename: Path, output_filename, constants: dict[str, str], functions
+):
+    logging.info("Generating %s", TOP_DIR / output_filename)
 
     def apply_function(text, func_name, func):
         begin = 0
@@ -152,7 +155,7 @@ def generate_sourcefile(input_filename: Path, output_filename, constants, functi
                 text.append(block)
                 block_idx += 1
                 continue
-            assert block["type"] == "if", "unexpected block type: " + block["type"]
+            assert block["type"] == "if", f"unexpected block type: {block['type']}"
             while True:
                 if block["type"] == "else" or eval_condition(block["condition"]):
                     append_lines(block)
@@ -309,9 +312,9 @@ def get_constants_and_functions_key0(key_type, generic_name):
     }[key_type]
 
     if key_type == "Obj":
-        constants["KEY_TYPE_GENERIC"] = "<" + generic_name + ">"
-        constants["KEY_TYPE_GENERIC_IN_TEMPLATE_LIST"] = ", " + generic_name
-        constants["KEY_CAST_TO_GENERIC"] = "(" + generic_name + ")"
+        constants["KEY_TYPE_GENERIC"] = f"<{generic_name}>"
+        constants["KEY_TYPE_GENERIC_IN_TEMPLATE_LIST"] = f", {generic_name}"
+        constants["KEY_CAST_TO_GENERIC"] = f"({generic_name})"
         constants["KEY_SUPPRESS_WARNINGS_UNCHECKED"] = '@SuppressWarnings("unchecked")'
         constants["KEY_COMPARATOR"] = "Comparator"
     else:
@@ -319,7 +322,7 @@ def get_constants_and_functions_key0(key_type, generic_name):
         constants["KEY_TYPE_GENERIC_IN_TEMPLATE_LIST"] = ""
         constants["KEY_CAST_TO_GENERIC"] = ""
         constants["KEY_SUPPRESS_WARNINGS_UNCHECKED"] = ""
-        constants["KEY_COMPARATOR"] = constants["FASTUTIL_KEY_TYPE"] + "Comparator"
+        constants["KEY_COMPARATOR"] = f"{constants['FASTUTIL_KEY_TYPE']}Comparator"
 
     functions = {
         "Void": {
@@ -331,66 +334,64 @@ def get_constants_and_functions_key0(key_type, generic_name):
             "KEY_BOXED_TO_PRIMITIVE": lambda x: x,
         },
         "Byte": {
-            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Byte.valueOf(" + x + ")",
-            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".byteValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: f"Byte.valueOf({x})",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: f"{x}.byteValue()",
         },
         "Short": {
-            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Short.valueOf(" + x + ")",
-            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".shortValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: f"Short.valueOf({x})",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: f"{x}.shortValue()",
         },
         "Int": {
-            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Integer.valueOf(" + x + ")",
-            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".intValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: f"Integer.valueOf({x})",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: f"{x}.intValue()",
         },
         "Long": {
-            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Long.valueOf(" + x + ")",
-            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".longValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: f"Long.valueOf({x})",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: f"{x}.longValue()",
         },
         "Float": {
-            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Float.valueOf(" + x + ")",
-            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".floatValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: f"Float.valueOf({x})",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: f"{x}.floatValue()",
         },
         "Double": {
-            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Double.valueOf(" + x + ")",
-            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".doubleValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: f"Double.valueOf({x})",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: f"{x}.doubleValue()",
         },
         "Bool": {
-            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Boolean.valueOf(" + x + ")",
-            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".booleanValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: f"Boolean.valueOf({x})",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: f"{x}.booleanValue()",
         },
         "Char": {
-            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Character.valueOf(" + x + ")",
-            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".charValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: f"Character.valueOf({x})",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: f"{x}.charValue()",
         },
     }[key_type]
 
     if key_type == "Obj":
         cmpDefault = lambda a, b: f"JGAlgoUtils.cmpDefault({a}, {b})"
         functions["COMPARE_KEY_DEFAULT"] = lambda a, b: cmpDefault(a, b)
-        functions["COMPARE_KEY_DEFAULT_EQ"] = lambda a, b: cmpDefault(a, b) + " == 0"
-        functions["COMPARE_KEY_DEFAULT_NEQ"] = lambda a, b: cmpDefault(a, b) + " != 0"
-        functions["COMPARE_KEY_DEFAULT_LE"] = lambda a, b: cmpDefault(a, b) + " < 0"
-        functions["COMPARE_KEY_DEFAULT_LEQ"] = lambda a, b: cmpDefault(a, b) + " <= 0"
-        functions["COMPARE_KEY_DEFAULT_GE"] = lambda a, b: cmpDefault(a, b) + " > 0"
-        functions["COMPARE_KEY_DEFAULT_GEQ"] = lambda a, b: cmpDefault(a, b) + " >= 0"
+        functions["COMPARE_KEY_DEFAULT_EQ"] = lambda a, b: f"{cmpDefault(a, b)} == 0"
+        functions["COMPARE_KEY_DEFAULT_NEQ"] = lambda a, b: f"{cmpDefault(a, b)} != 0"
+        functions["COMPARE_KEY_DEFAULT_LE"] = lambda a, b: f"{cmpDefault(a, b)} < 0"
+        functions["COMPARE_KEY_DEFAULT_LEQ"] = lambda a, b: f"{cmpDefault(a, b)} <= 0"
+        functions["COMPARE_KEY_DEFAULT_GE"] = lambda a, b: f"{cmpDefault(a, b)} > 0"
+        functions["COMPARE_KEY_DEFAULT_GEQ"] = lambda a, b: f"{cmpDefault(a, b)} >= 0"
     elif key_type == "Bool":
-        functions["COMPARE_KEY_DEFAULT_EQ"] = lambda a, b: a + " == " + b
-        functions["COMPARE_KEY_DEFAULT_NEQ"] = lambda a, b: a + " != " + b
+        functions["COMPARE_KEY_DEFAULT_EQ"] = lambda a, b: f"{a} == {b}"
+        functions["COMPARE_KEY_DEFAULT_NEQ"] = lambda a, b: f"{a} != {b}"
         # functions["COMPARE_KEY_DEFAULT_LE"] = None
         # functions["COMPARE_KEY_DEFAULT_LEQ"] = None
         # functions["COMPARE_KEY_DEFAULT_GE"] = None
         # functions["COMPARE_KEY_DEFAULT_GEQ"] = None
     else:
         cmp = constants["KEY_TYPE_GENERIC_CLASS"]
-        functions["COMPARE_KEY_DEFAULT"] = (
-            lambda a, b: cmp + ".compare(" + a + ", " + b + ")"
-        )
-        functions["COMPARE_KEY_DEFAULT_EQ"] = lambda a, b: a + " == " + b
-        functions["COMPARE_KEY_DEFAULT_NEQ"] = lambda a, b: a + " != " + b
-        functions["COMPARE_KEY_DEFAULT_LE"] = lambda a, b: a + " < " + b
-        functions["COMPARE_KEY_DEFAULT_LEQ"] = lambda a, b: a + " <= " + b
-        functions["COMPARE_KEY_DEFAULT_GE"] = lambda a, b: a + " > " + b
-        functions["COMPARE_KEY_DEFAULT_GEQ"] = lambda a, b: a + " >= " + b
+        functions["COMPARE_KEY_DEFAULT"] = lambda a, b: f"{cmp}.compare({a}, {b})"
+        functions["COMPARE_KEY_DEFAULT_EQ"] = lambda a, b: f"{a} == {b}"
+        functions["COMPARE_KEY_DEFAULT_NEQ"] = lambda a, b: f"{a} != {b}"
+        functions["COMPARE_KEY_DEFAULT_LE"] = lambda a, b: f"{a} < {b}"
+        functions["COMPARE_KEY_DEFAULT_LEQ"] = lambda a, b: f"{a} <= {b}"
+        functions["COMPARE_KEY_DEFAULT_GE"] = lambda a, b: f"{a} > {b}"
+        functions["COMPARE_KEY_DEFAULT_GEQ"] = lambda a, b: f"{a} >= {b}"
 
     return constants, functions
 
@@ -428,7 +429,7 @@ def get_constants_and_functions_key_value(key_type, value_type):
         constants["KEY_VALUE_PAIR"] = "Pair"
     else:
         constants["KEY_VALUE_PAIR"] = (
-            constants["FASTUTIL_KEY_TYPE"] + constants["FASTUTIL_VALUE_TYPE"] + "Pair"
+            f"{constants['FASTUTIL_KEY_TYPE']}{constants['FASTUTIL_VALUE_TYPE']}Pair"
         )
 
     return constants, functions
@@ -447,7 +448,7 @@ TEMPLATES = []
 def register_template(template, types, config_func, file_name_func, flavor=None):
     TEMPLATES.append(
         {
-            "template": template + ".java.template",
+            "template": f"{template}.java.template",
             "types": types,
             "config_func": config_func,
             "file_name_func": file_name_func,
@@ -474,7 +475,7 @@ def generate_template_sources(template_entry):
         elif template_entry["flavor"] == "element":
             constants, functions = get_constants_and_functions(types)
         else:
-            raise Exception("Unknown flavor: " + template_entry["flavor"])
+            raise Exception(f"Unknown flavor: {template_entry['flavor']}")
 
         if type(types) is tuple:
             assert len(types) == 2
@@ -492,18 +493,18 @@ def generate_template_sources(template_entry):
                 functions,
             )
         except Exception as e:
-            raise Exception("Failed to generate " + filename) from e
+            raise Exception(f"Failed to generate {filename}") from e
         generated_files.append(filename)
     return generated_files
 
 
-def key_value_prefix(key_type, value_type):
+def key_value_prefix(key_type: str, value_type: str) -> str:
     return key_type + value_type if value_type != "Void" else key_type
 
 
 def generate_weights(type, constants, functions):
-    constants["IWEIGHTS"] = "IWeights" + type
-    constants["WEIGHTS"] = "Weights" + type
+    constants["IWEIGHTS"] = f"IWeights{type}"
+    constants["WEIGHTS"] = f"Weights{type}"
 
 
 register_template(
@@ -515,8 +516,8 @@ register_template(
 
 
 def generate_iweights(type, constants, functions):
-    constants["IWEIGHTS"] = "IWeights" + type
-    constants["WEIGHTS"] = "Weights" + type
+    constants["IWEIGHTS"] = f"IWeights{type}"
+    constants["WEIGHTS"] = f"Weights{type}"
 
 
 register_template(
@@ -528,9 +529,9 @@ register_template(
 
 
 def generate_weights_impl(type, constants, functions):
-    constants["WEIGHTS_IMPL"] = "WeightsImpl" + type
-    constants["IWEIGHTS"] = "IWeights" + type
-    constants["WEIGHTS"] = "Weights" + type
+    constants["WEIGHTS_IMPL"] = f"WeightsImpl{type}"
+    constants["IWEIGHTS"] = f"IWeights{type}"
+    constants["WEIGHTS"] = f"Weights{type}"
 
 
 register_template(
@@ -541,11 +542,11 @@ register_template(
 )
 
 
-def generate_referenceable_heap(key_type, value_type, constants, functions):
+def generate_referenceable_heap(key_type: str, value_type: str, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
-    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
-    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
-    constants["PAIRING_HEAP"] = prefix + "PairingHeap"
+    constants["REFERENCEABLE_HEAP"] = f"{prefix}ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = f"{prefix}ReferenceableHeap.Ref"
+    constants["PAIRING_HEAP"] = f"{prefix}PairingHeap"
 
 
 register_template(
@@ -567,7 +568,9 @@ register_template(
 )
 
 
-def generate_referenceable_heap_test_utils(key_type, value_type, constants, functions):
+def generate_referenceable_heap_test_utils(
+    key_type: str, value_type: str, constants, functions
+):
     if key_type == "Obj":
         constants["PRIMITIVE_KEY_TYPE"] = "String"
         constants["KEY_TYPE_GENERIC"] = "<String>"
@@ -586,9 +589,9 @@ def generate_referenceable_heap_test_utils(key_type, value_type, constants, func
         constants["KEY_VALUE_GENERIC"] = ""
 
     prefix = key_value_prefix(key_type, value_type)
-    constants["REFERENCEABLE_HEAP_TEST_UTILS"] = prefix + "ReferenceableHeapTestUtils"
-    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
-    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
+    constants["REFERENCEABLE_HEAP_TEST_UTILS"] = f"{prefix}ReferenceableHeapTestUtils"
+    constants["REFERENCEABLE_HEAP"] = f"{prefix}ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = f"{prefix}ReferenceableHeap.Ref"
 
 
 register_template(
@@ -610,11 +613,11 @@ register_template(
 )
 
 
-def generate_pairing_heap(key_type, value_type, constants, functions):
+def generate_pairing_heap(key_type: str, value_type: str, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
-    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
-    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
-    constants["PAIRING_HEAP"] = prefix + "PairingHeap"
+    constants["REFERENCEABLE_HEAP"] = f"{prefix}ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = f"{prefix}ReferenceableHeap.Ref"
+    constants["PAIRING_HEAP"] = f"{prefix}PairingHeap"
 
 
 register_template(
@@ -636,13 +639,13 @@ register_template(
 )
 
 
-def generate_pairing_heap_test(key_type, value_type, constants, functions):
+def generate_pairing_heap_test(key_type: str, value_type: str, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
-    constants["PAIRING_HEAP"] = prefix + "PairingHeap"
-    constants["PAIRING_HEAP_TEST"] = prefix + "PairingHeapTest"
-    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
-    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
-    constants["REFERENCEABLE_HEAP_TEST_UTILS"] = prefix + "ReferenceableHeapTestUtils"
+    constants["PAIRING_HEAP"] = f"{prefix}PairingHeap"
+    constants["PAIRING_HEAP_TEST"] = f"{prefix}PairingHeapTest"
+    constants["REFERENCEABLE_HEAP"] = f"{prefix}ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = f"{prefix}ReferenceableHeap.Ref"
+    constants["REFERENCEABLE_HEAP_TEST_UTILS"] = f"{prefix}ReferenceableHeapTestUtils"
     if key_type == "Obj":
         constants["PRIMITIVE_KEY_TYPE"] = "String"
         constants["KEY_TYPE_GENERIC"] = "<String>"
@@ -675,11 +678,11 @@ register_template(
 )
 
 
-def generate_binomial_heap(key_type, value_type, constants, functions):
+def generate_binomial_heap(key_type: str, value_type: str, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
-    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
-    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
-    constants["BINOMIAL_HEAP"] = prefix + "BinomialHeap"
+    constants["REFERENCEABLE_HEAP"] = f"{prefix}ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = f"{prefix}ReferenceableHeap.Ref"
+    constants["BINOMIAL_HEAP"] = f"{prefix}BinomialHeap"
 
 
 register_template(
@@ -693,13 +696,13 @@ register_template(
 )
 
 
-def generate_binomial_heap_test(key_type, value_type, constants, functions):
+def generate_binomial_heap_test(key_type: str, value_type: str, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
-    constants["BINOMIAL_HEAP"] = prefix + "BinomialHeap"
-    constants["BINOMIAL_HEAP_TEST"] = prefix + "BinomialHeapTest"
-    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
-    constants["REFERENCEABLE_HEAP_TEST_UTILS"] = prefix + "ReferenceableHeapTestUtils"
-    constants["PAIRING_HEAP"] = prefix + "PairingHeap"
+    constants["BINOMIAL_HEAP"] = f"{prefix}BinomialHeap"
+    constants["BINOMIAL_HEAP_TEST"] = f"{prefix}BinomialHeapTest"
+    constants["REFERENCEABLE_HEAP"] = f"{prefix}ReferenceableHeap"
+    constants["REFERENCEABLE_HEAP_TEST_UTILS"] = f"{prefix}ReferenceableHeapTestUtils"
+    constants["PAIRING_HEAP"] = f"{prefix}PairingHeap"
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
     if key_type == "Obj" and value_type == "Obj":
@@ -723,11 +726,11 @@ register_template(
 )
 
 
-def generate_fibonacci_heap(key_type, value_type, constants, functions):
+def generate_fibonacci_heap(key_type: str, value_type: str, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
-    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
-    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
-    constants["FIBONACCI_HEAP"] = prefix + "FibonacciHeap"
+    constants["REFERENCEABLE_HEAP"] = f"{prefix}ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = f"{prefix}ReferenceableHeap.Ref"
+    constants["FIBONACCI_HEAP"] = f"{prefix}FibonacciHeap"
 
 
 register_template(
@@ -741,13 +744,13 @@ register_template(
 )
 
 
-def generate_fibonacci_heap_test(key_type, value_type, constants, functions):
+def generate_fibonacci_heap_test(key_type: str, value_type: str, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
-    constants["FIBONACCI_HEAP"] = prefix + "FibonacciHeap"
-    constants["FIBONACCI_HEAP_TEST"] = prefix + "FibonacciHeapTest"
-    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
-    constants["REFERENCEABLE_HEAP_TEST_UTILS"] = prefix + "ReferenceableHeapTestUtils"
-    constants["PAIRING_HEAP"] = prefix + "PairingHeap"
+    constants["FIBONACCI_HEAP"] = f"{prefix}FibonacciHeap"
+    constants["FIBONACCI_HEAP_TEST"] = f"{prefix}FibonacciHeapTest"
+    constants["REFERENCEABLE_HEAP"] = f"{prefix}ReferenceableHeap"
+    constants["REFERENCEABLE_HEAP_TEST_UTILS"] = f"{prefix}ReferenceableHeapTestUtils"
+    constants["PAIRING_HEAP"] = f"{prefix}PairingHeap"
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
     if key_type == "Obj" and value_type == "Obj":
@@ -771,12 +774,14 @@ register_template(
 )
 
 
-def generate_binary_search_tree(key_type, value_type, constants, functions):
+def generate_binary_search_tree(
+    key_type: str, value_type: str, constants: dict[str, str], functions
+):
     prefix = key_value_prefix(key_type, value_type)
-    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
-    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
-    constants["BINARY_SEARCH_TREE"] = prefix + "BinarySearchTree"
-    constants["RED_BLACK_TREE"] = prefix + "RedBlackTree"
+    constants["REFERENCEABLE_HEAP"] = f"{prefix}ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = f"{prefix}ReferenceableHeap.Ref"
+    constants["BINARY_SEARCH_TREE"] = f"{prefix}BinarySearchTree"
+    constants["RED_BLACK_TREE"] = f"{prefix}RedBlackTree"
 
 
 register_template(
@@ -790,7 +795,9 @@ register_template(
 )
 
 
-def generate_binary_search_tree_test_utils(key_type, value_type, constants, functions):
+def generate_binary_search_tree_test_utils(
+    key_type: str, value_type: str, constants: dict[str, str], functions
+):
     if key_type == "Obj":
         constants["PRIMITIVE_KEY_TYPE"] = "String"
         constants["KEY_TYPE_GENERIC"] = "<String>"
@@ -809,11 +816,11 @@ def generate_binary_search_tree_test_utils(key_type, value_type, constants, func
         constants["KEY_VALUE_GENERIC"] = ""
 
     prefix = key_value_prefix(key_type, value_type)
-    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
-    constants["REFERENCEABLE_HEAP_TEST_UTILS"] = prefix + "ReferenceableHeapTestUtils"
-    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
-    constants["BINARY_SEARCH_TREE"] = prefix + "BinarySearchTree"
-    constants["BINARY_SEARCH_TREE_TEST_UTILS"] = prefix + "BinarySearchTreeTestUtils"
+    constants["REFERENCEABLE_HEAP"] = f"{prefix}ReferenceableHeap"
+    constants["REFERENCEABLE_HEAP_TEST_UTILS"] = f"{prefix}ReferenceableHeapTestUtils"
+    constants["HEAP_REFERENCE"] = f"{prefix}ReferenceableHeap.Ref"
+    constants["BINARY_SEARCH_TREE"] = f"{prefix}BinarySearchTree"
+    constants["BINARY_SEARCH_TREE_TEST_UTILS"] = f"{prefix}BinarySearchTreeTestUtils"
 
 
 register_template(
@@ -827,8 +834,8 @@ register_template(
 )
 
 
-def generate_binary_search_trees(key_type, constants, functions):
-    constants["BINARY_SEARCH_TREES"] = key_type + "BinarySearchTrees"
+def generate_binary_search_trees(key_type: str, constants: dict[str, str], functions):
+    constants["BINARY_SEARCH_TREES"] = f"{key_type}BinarySearchTrees"
     if key_type == "Obj":
         constants["KEY_GENERIC_LIST_START"] = "K, "
     else:
@@ -847,13 +854,15 @@ register_template(
 )
 
 
-def generate_red_black_tree(key_type, value_type, constants, functions):
+def generate_red_black_tree(
+    key_type: str, value_type: str, constants: dict[str, str], functions
+):
     prefix = key_value_prefix(key_type, value_type)
-    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
-    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
-    constants["BINARY_SEARCH_TREE"] = prefix + "BinarySearchTree"
-    constants["BINARY_SEARCH_TREES"] = key_type + "BinarySearchTrees"
-    constants["RED_BLACK_TREE"] = prefix + "RedBlackTree"
+    constants["REFERENCEABLE_HEAP"] = f"{prefix}ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = f"{prefix}ReferenceableHeap.Ref"
+    constants["BINARY_SEARCH_TREE"] = f"{prefix}BinarySearchTree"
+    constants["BINARY_SEARCH_TREES"] = f"{key_type}BinarySearchTrees"
+    constants["RED_BLACK_TREE"] = f"{prefix}RedBlackTree"
     if key_type == "Obj":
         constants["KEY_GENERIC_LIST_START"] = "K, "
     else:
@@ -871,15 +880,17 @@ register_template(
 )
 
 
-def generate_red_black_tree_test(key_type, value_type, constants, functions):
+def generate_red_black_tree_test(
+    key_type: str, value_type: str, constants: dict[str, str], functions
+):
     prefix = key_value_prefix(key_type, value_type)
-    constants["RED_BLACK_TREE"] = prefix + "RedBlackTree"
-    constants["RED_BLACK_TREE_TEST"] = prefix + "RedBlackTreeTest"
-    constants["BINARY_SEARCH_TREE"] = prefix + "BinarySearchTree"
-    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
-    constants["REFERENCEABLE_HEAP_TEST_UTILS"] = prefix + "ReferenceableHeapTestUtils"
-    constants["BINARY_SEARCH_TREE_TEST_UTILS"] = prefix + "BinarySearchTreeTestUtils"
-    constants["PAIRING_HEAP"] = prefix + "PairingHeap"
+    constants["RED_BLACK_TREE"] = f"{prefix}RedBlackTree"
+    constants["RED_BLACK_TREE_TEST"] = f"{prefix}RedBlackTreeTest"
+    constants["BINARY_SEARCH_TREE"] = f"{prefix}BinarySearchTree"
+    constants["REFERENCEABLE_HEAP"] = f"{prefix}ReferenceableHeap"
+    constants["REFERENCEABLE_HEAP_TEST_UTILS"] = f"{prefix}ReferenceableHeapTestUtils"
+    constants["BINARY_SEARCH_TREE_TEST_UTILS"] = f"{prefix}BinarySearchTreeTestUtils"
+    constants["PAIRING_HEAP"] = f"{prefix}PairingHeap"
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
     if key_type == "Obj" and value_type == "Obj":
@@ -903,13 +914,15 @@ register_template(
 )
 
 
-def generate_splay_tree(key_type, value_type, constants, functions):
+def generate_splay_tree(
+    key_type: str, value_type: str, constants: dict[str, str], functions
+):
     prefix = key_value_prefix(key_type, value_type)
-    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
-    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
-    constants["BINARY_SEARCH_TREE"] = prefix + "BinarySearchTree"
-    constants["BINARY_SEARCH_TREES"] = key_type + "BinarySearchTrees"
-    constants["SPLAY_TREE"] = prefix + "SplayTree"
+    constants["REFERENCEABLE_HEAP"] = f"{prefix}ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = f"{prefix}ReferenceableHeap.Ref"
+    constants["BINARY_SEARCH_TREE"] = f"{prefix}BinarySearchTree"
+    constants["BINARY_SEARCH_TREES"] = f"{key_type}BinarySearchTrees"
+    constants["SPLAY_TREE"] = f"{prefix}SplayTree"
     if key_type == "Obj":
         constants["KEY_GENERIC_LIST_START"] = "K, "
     else:
@@ -927,14 +940,16 @@ register_template(
 )
 
 
-def generate_splay_tree_test(key_type, value_type, constants, functions):
+def generate_splay_tree_test(
+    key_type: str, value_type: str, constants: dict[str, str], functions
+):
     prefix = key_value_prefix(key_type, value_type)
-    constants["SPLAY_TREE"] = prefix + "SplayTree"
-    constants["SPLAY_TREE_TEST"] = prefix + "SplayTreeTest"
-    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
-    constants["REFERENCEABLE_HEAP_TEST_UTILS"] = prefix + "ReferenceableHeapTestUtils"
-    constants["BINARY_SEARCH_TREE_TEST_UTILS"] = prefix + "BinarySearchTreeTestUtils"
-    constants["PAIRING_HEAP"] = prefix + "PairingHeap"
+    constants["SPLAY_TREE"] = f"{prefix}SplayTree"
+    constants["SPLAY_TREE_TEST"] = f"{prefix}SplayTreeTest"
+    constants["REFERENCEABLE_HEAP"] = f"{prefix}ReferenceableHeap"
+    constants["REFERENCEABLE_HEAP_TEST_UTILS"] = f"{prefix}ReferenceableHeapTestUtils"
+    constants["BINARY_SEARCH_TREE_TEST_UTILS"] = f"{prefix}BinarySearchTreeTestUtils"
+    constants["PAIRING_HEAP"] = f"{prefix}PairingHeap"
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
     if key_type == "Obj" and value_type == "Obj":
@@ -965,40 +980,36 @@ def clean():
     shutil.rmtree(GENERATED_SOURCES_DIR, ignore_errors=True)
 
 
-def compute_template_hash(template_filename):
-    import hashlib
-
+def compute_template_hash(template_filename: Path):
     with open(template_filename, "rb") as template_file:
         template_content = template_file.read()
-    h = hashlib.md5(template_content)
     return hashlib.md5(template_content).hexdigest()
 
 
-def read_last_generated_templates_hashes():
+def read_last_generated_templates_hashes() -> Callable[[str], bool]:
     hashes = {}
     if HASHES_FILENAME.exists():
         with open(HASHES_FILENAME) as hashes_file:
-            hashes = json.load(hashes_file)
+            hashes = {
+                Path(tmp): hash for tmp, hash in json.loads(hashes_file.read()).items()
+            }
 
-    def is_template_changed(template_filename):
-        template_filename = TEMPLATE_DIR / template_filename
-        template_hash = compute_template_hash(template_filename)
+    def is_template_changed(template_filename: str):
+        template_file = TEMPLATE_DIR / template_filename
+        template_hash = compute_template_hash(template_file)
         return (
-            template_filename not in hashes
-            or hashes[template_filename] != template_hash
+            str(template_file.resolve()) not in hashes
+            or hashes[template_file] != template_hash
         )
 
-    class Object:
-        pass
-
-    ret = Object()
-    ret.is_template_changed = is_template_changed
-    return ret
+    return is_template_changed
 
 
 def write_generated_templates():
     templates = [TEMPLATE_DIR / generator["template"] for generator in TEMPLATES]
-    hashes = json.dumps({temp: compute_template_hash(temp) for temp in templates})
+    hashes = json.dumps(
+        {str(temp.resolve()): compute_template_hash(temp) for temp in templates}
+    )
 
     HASHES_FILENAME.parent.mkdir(parents=True, exist_ok=True)
     with open(HASHES_FILENAME, "w") as hashes_file:
@@ -1016,12 +1027,12 @@ def main():
         clean()
 
     else:
-        hashes = read_last_generated_templates_hashes()
+        is_template_changed_func = read_last_generated_templates_hashes()
         generated_files = []
 
         is_template_changed = False
         for generator in TEMPLATES:
-            if hashes.is_template_changed(generator["template"]):
+            if is_template_changed_func(generator["template"]):
                 is_template_changed = True
                 generated_files += generate_template_sources(generator)
 
