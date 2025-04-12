@@ -46,7 +46,7 @@
     <spotbugs-maven-plugin.version>4.9.3.0</spotbugs-maven-plugin.version>
     <jmh.version>1.37</jmh.version>
 
-    <maven-clean-plugin.version>3.4.0</maven-clean-plugin.version>
+    <maven-clean-plugin.version>3.4.1</maven-clean-plugin.version>
     <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
     <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
     <maven-install-plugin.version>3.1.2</maven-install-plugin.version>
