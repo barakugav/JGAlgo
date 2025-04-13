@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.jgalgo</groupId>
     <artifactId>jgalgo</artifactId>
-    <version>0.5.1-SNAPSHOT</version>
+    <version>0.5.1</version>
   </parent>
   <artifactId>jgalgo-adapt-jgrapht</artifactId>
   <name>JGAlgo - JGraphT Adapters</name>
