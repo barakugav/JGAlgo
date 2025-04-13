@@ -35,7 +35,7 @@ class PlanarityTester2 extends PlanarityTesterAbstract {
 
 	@Override
 	protected Optional<IPlanarEmbedding> findPlanarEmbedding(IndexGraph g, boolean addAsEdgesWeights) {
-		Assertions.onlyUndirected(g);
+		Assertions.onlyUndirected(g); // TODO: support directed graphs
 
 		assert BiConnectedComponentsAlgo.newInstance().findBiConnectedComponents(g).getNumberOfBiCcs() == 1;
 
