@@ -1483,17 +1483,6 @@ public class PlanarityTester3
                 return vIn != vOut;
             }
 
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public String toString() {
-                return String
-                        .format(
-                                "Parent dir = {%s -> %s}, child_dir = {%s -> %s}, inverted = %b, vIn = %d, vOut = %d",
-                                parent.toString(false), parentNext.toString(false), childPrev.toString(false),
-                                child.toString(false), isInverted(), vIn, vOut);
-            }
         }
 
         /**
@@ -1593,14 +1582,6 @@ public class PlanarityTester3
             private Node toExistingNode(Node node) {
                 return node.isRootVertex() ? node.getParent() : node;
             }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public String toString() {
-                return String.format("%s -> %s", prev.toString(false), current.toString(false));
-            }
         }
 
         /**
@@ -1697,18 +1678,6 @@ public class PlanarityTester3
             Node getOpposite(Node node) {
                 assert isIncidentTo(node); // debug purpose assertion
                 return source == node ? target : source;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public String toString() {
-                String formatString = "%s -> %s";
-                if (shortCircuit) {
-                    formatString = "%s ~ %s";
-                }
-                return String.format(formatString, source.toString(false), target.toString(false));
             }
         }
 
@@ -2147,60 +2116,6 @@ public class PlanarityTester3
                     embedded.append(edges);
                 } else {
                     embedded.prepend(edges);
-                }
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            @Override
-            public String toString() {
-                String neighbor1 =
-                        outerFaceNeighbors[0] == null ? "null" : outerFaceNeighbors[0].toString(false);
-                String neighbor2 =
-                        outerFaceNeighbors[1] == null ? "null" : outerFaceNeighbors[1].toString(false);
-                String childListString = "null";
-                if (separatedDfsChildList != null) {
-                    StringBuilder builder = new StringBuilder("{");
-                    separatedDfsChildList.forEach(n -> builder.append(n.toString(false)).append(", "));
-                    childListString = builder.append("}").toString();
-                }
-                if (rootVertex) {
-                    return String
-                            .format(
-                                    "R {%s}: neighbors = [%s, %s], embedded = %s, visited = %d, back_edge_flag = %d, dfs_index = %d",
-                                    toString(false), neighbor1, neighbor2, embedded.toString(), visited,
-                                    backEdgeFlag, dfsIndex);
-                } else {
-                    return String
-                            .format(
-                                    "{%s}:  neighbors = [%s, %s], embedded = %s, visited = %d, back_edge_flag = %d, dfs_index = %d, separated = %s, tree_edges = %s, down_edges = %s, back_edges = %s, parent = %s, lowpoint = %d, least_ancestor = %d",
-                                    toString(false), neighbor1, neighbor2, embedded.toString(), visited,
-                                    backEdgeFlag, dfsIndex, childListString, treeEdges.toString(),
-                                    downEdges.toString(), backEdges.toString(),
-                                    parentEdge == null ? "null" : parentEdge.source.toString(false), lowpoint,
-                                    leastAncestor);
-                }
-            }
-
-            /**
-             * Returns a full or a partial string representation of this node
-             *
-             * @param  full whether to return full or partial string representation of this node
-             * @return      either full or partial string representation of this node
-             */
-            public String toString(boolean full) {
-                if (!full) {
-                    if (rootVertex) {
-                        return String
-                                .format(
-                                        "%s^%s", parentEdge.source.graphVertex.toString(),
-                                        parentEdge.target.graphVertex.toString());
-                    } else {
-                        return graphVertex.toString();
-                    }
-                } else {
-                    return toString();
                 }
             }
         }
