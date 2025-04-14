@@ -31,4 +31,14 @@ public class IntPair {
 		return (int) ((pair >> 32) & 0xffffffffL);
 	}
 
+	// TODO: use eveywhere
+	public static long setFirst(long pair, int first) {
+		return of(first, second(pair));
+	}
+
+	// TODO: use eveywhere
+	public static long setSecond(long pair, int second) {
+		return of(first(pair), second);
+	}
+
 }
