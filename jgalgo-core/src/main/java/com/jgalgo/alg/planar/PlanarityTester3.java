@@ -37,6 +37,7 @@ import com.jgalgo.graph.WeightsLong;
 import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.Pair;
 
+@SuppressWarnings("boxing")
 public class PlanarityTester3<V, E>
         extends PlanarityTesterAbstract {
 
@@ -49,14 +50,6 @@ public class PlanarityTester3<V, E>
     }
 
     static class BoyerMyrvoldPlanarityInspector<V, E> {
-        /**
-         * Whether to print debug messages
-         */
-        private static final boolean DEBUG = false;
-        /**
-         * Whether to print Kuratowski case distinction messages
-         */
-        private static final boolean PRINT_CASES = false;
         /**
          * The graph we're testing planarity of
          */
@@ -276,15 +269,8 @@ public class PlanarityTester3<V, E>
                 tested = true;
 
                 orient();
-                if (DEBUG) {
-                    printState();
-                    System.out.println("Start testing planarity");
-                }
                 for (int currentNode = n - 1; currentNode >= 0; currentNode--) {
                     Node current = nodes.get(currentNode);
-                    if (DEBUG) {
-                        System.out.printf("Current vertex is %s\n", current.toString(false));
-                    }
                     for (Edge downEdge : current.downEdges) {
                         walkUp(downEdge.source, current, downEdge);
                     }
@@ -313,9 +299,6 @@ public class PlanarityTester3<V, E>
         private void mergeBiconnectedComponent() {
             MergeInfo info = stack.get(stack.size() - 1);
             stack.remove(stack.size() - 1);
-            if (DEBUG) {
-                System.out.printf("\nMerging biconnected component, info: %s\n", info.toString());
-            }
             Node virtualRoot = info.child;
             if (info.isInverted()) {
                 virtualRoot.swapNeighbors();
@@ -347,9 +330,6 @@ public class PlanarityTester3<V, E>
          * @return           a circulator starting from the edge's source
          */
         private OuterFaceCirculator embedBackEdge(Node root, int entryDir, Edge edge, Node childPrev) {
-            if (DEBUG) {
-                System.out.printf("Embedding back edge %s\n", edge.toString());
-            }
             assert !edge.embedded;
             if (entryDir == 0) {
                 root.embedded.addLast(edge);
@@ -388,10 +368,6 @@ public class PlanarityTester3<V, E>
             }
             current.embedBackEdge(shortCircuit, prev);
             current.substitute(prev, componentRoot);
-            if (DEBUG) {
-                System.out.printf("Embedding short circuit edge: %s\n", shortCircuit.toString());
-                printState();
-            }
         }
 
         /**
@@ -405,41 +381,22 @@ public class PlanarityTester3<V, E>
          * @param componentRoot the root of the component to start the walkdown from
          */
         private void walkDown(Node componentRoot) {
-            if (DEBUG) {
-                System.out.printf("\nStart walk down on node %s\n", componentRoot.toString(true));
-            }
             for (int componentEntryDir = 0; componentEntryDir < 2 && stack.isEmpty(); componentEntryDir++) {
-                if (DEBUG) {
-                    System.out.println("\nNew traversal direction = " + componentEntryDir);
-                }
                 int currentComponentEntryDir = componentEntryDir;
                 OuterFaceCirculator circulator = componentRoot.iterator(currentComponentEntryDir);
                 for (Node current = circulator.next(); current != componentRoot;) {
-                    if (DEBUG) {
-                        System.out.printf("Current = %s\n", current.toString());
-                    }
                     if (current.hasBackEdgeWrtTo(componentRoot)) {
                         Node childPrev = circulator.getPrev();
                         while (!stack.isEmpty()) {
                             mergeBiconnectedComponent();
-                            if (DEBUG) {
-                                printState();
-                            }
                         }
                         circulator = embedBackEdge(
                                 componentRoot, componentEntryDir, current.edgeToEmbed, childPrev);
-                        if (DEBUG) {
-                            printState();
-                            printBiconnectedComponent(current);
-                        }
                     }
                     if (!current.pertinentRoots.isEmpty()) {
                         int parentComponentEntryDir = currentComponentEntryDir;
                         Node root = current.pertinentRoots.getFirst();
 
-                        if (DEBUG) {
-                            System.out.printf("Descending to the root = %s\n", root.toString());
-                        }
                         OuterFaceCirculator ccwCirculator =
                                 getActiveSuccessorOnOuterFace(root, componentRoot, 0);
                         Node ccwActiveNode = ccwCirculator.getCurrent();
@@ -487,9 +444,6 @@ public class PlanarityTester3<V, E>
                         current = circulator.next();
                     } else {
                         // current vertex is externally active
-                        if (DEBUG) {
-                            System.out.println("Current vertex is externally active, stop\n");
-                        }
                         if (!current.hasRootNeighbor() && stack.isEmpty()) {
                             embedShortCircuit(componentRoot, componentEntryDir, circulator);
                         }
@@ -509,9 +463,6 @@ public class PlanarityTester3<V, E>
          * @param edge  a back edge to embed
          */
         private void walkUp(Node start, Node end, Edge edge) {
-            if (DEBUG) {
-                System.out.printf("\nStart walk up on edge = %s\n", edge.toString());
-            }
             int visited = end.dfsIndex;
 
             start.backEdgeFlag = visited;
@@ -521,9 +472,6 @@ public class PlanarityTester3<V, E>
                     yPrev = start;
             start.visited = visited;
             while (x != end && !x.isVisitedWrtTo(end) && !y.isVisitedWrtTo(end)) {
-                if (DEBUG) {
-                    System.out.printf("Current x = %s\nCurrent y = %s\n", x.toString(), y.toString());
-                }
                 x.visited = y.visited = visited;
 
                 Node root = null;
@@ -533,9 +481,6 @@ public class PlanarityTester3<V, E>
                     root = y;
                 }
                 if (root != null) {
-                    if (DEBUG) {
-                        System.out.printf("Found root = %s\n", root.toString());
-                    }
                     Node rootChild = root.parentEdge.target;
                     Node newStart = root.parentEdge.source;
                     if (newStart != end) {
@@ -616,48 +561,6 @@ public class PlanarityTester3<V, E>
                         (IWeightsLong) weights);
             }
             return embedding;
-        }
-
-        /**
-         * Method for debug purposes, prints the boundary the {@code node} belongs to
-         *
-         * @param node a node on the outer face
-         */
-        private void printBiconnectedComponent(Node node) {
-            StringBuilder builder = new StringBuilder(node.toString(false));
-            OuterFaceCirculator circulator = node.iterator(0);
-            Node current = circulator.next();
-            Node stop = current;
-            do {
-                builder.append(" -> ").append(current.toString(false));
-                current = circulator.next();
-            } while (current != stop);
-            System.out.println("Biconnected component after merge: " + builder.toString());
-        }
-
-        /**
-         * Method for debug purposes, prints the state of the algorithm
-         */
-        private void printState() {
-            System.out.println("\nPrinting state:");
-            System.out.println("Dfs roots: " + dfsTreeRoots);
-            System.out.println("Nodes:");
-            for (Node node : nodes) {
-                System.out.println(node.toString(true));
-            }
-            System.out.println("Virtual nodes:");
-            for (Node node : componentRoots) {
-                System.out.println(node.toString(true));
-            }
-            List<Edge> inverted = new ArrayList<>();
-            for (Node node : nodes) {
-                for (Edge edge : node.treeEdges) {
-                    if (edge.sign < 0) {
-                        inverted.add(edge);
-                    }
-                }
-            }
-            System.out.println("Inverted edges = " + inverted);
         }
 
         /**
@@ -1231,9 +1134,6 @@ public class PlanarityTester3<V, E>
             if (kuratowskiSubdivision == null) {
                 // remove short-circuit edges and orient all embedded lists clockwise
                 kuratowskiCleanUp();
-                if (DEBUG) {
-                    printState();
-                }
                 Set<Edge> subdivision = new HashSet<>();
                 // find the needed unembedded back edge which can be used to find Kuratowski subgraph
                 Edge failedEdge = findFailedEdge(failedV);
@@ -1261,16 +1161,6 @@ public class PlanarityTester3<V, E>
                 }
                 Edge xBackEdge = searchEdge(x, v.height);
                 Edge yBackEdge = searchEdge(y, v.height);
-                if (DEBUG) {
-                    System.out
-                            .printf(
-                                    "Failed v = %s, failed edge = %s\n", failedV.toString(false),
-                                    failedEdge.toString());
-                    System.out.printf("x = %s, y = %s\n", x.toString(false), y.toString(false));
-                    System.out
-                            .printf(
-                                    "xBackEdge = %s, yBackEdge = %s\n", xBackEdge.toString(), yBackEdge.toString());
-                }
                 Node backLower = lowest(xBackEdge.target, yBackEdge.target);
                 Node backHigher = highest(xBackEdge.target, yBackEdge.target);
                 addPathEdges(subdivision, xBackEdge, x);
@@ -1279,9 +1169,6 @@ public class PlanarityTester3<V, E>
 
                 if (componentRoot.getParent() != v) {
                     // case A, v isn't a parent of the component we've found
-                    if (PRINT_CASES) {
-                        System.out.println("Case A");
-                    }
                     addPathEdges(subdivision, componentRoot.getParent(), backLower);
                     addPathEdges(subdivision, failedEdge, w);
                     return finish(subdivision);
@@ -1294,9 +1181,6 @@ public class PlanarityTester3<V, E>
                 }
                 if (backEdge != null) {
                     // case B
-                    if (PRINT_CASES) {
-                        System.out.println("Case B");
-                    }
                     addPathEdges(subdivision, backEdge, w);
                     addPathEdges(subdivision, failedEdge, w);
                     Node highest =
@@ -1315,9 +1199,6 @@ public class PlanarityTester3<V, E>
                 assert x.boundaryHeight > 0;
                 List<Edge> path = findHighestObstructingPath(componentRoot, w);
                 assert !path.isEmpty();
-                if (DEBUG) {
-                    System.out.println("Path = " + path);
-                }
 
                 Edge firstEdge = path.get(0);
                 Edge lastEdge = path.get(path.size() - 1);
@@ -1328,9 +1209,6 @@ public class PlanarityTester3<V, E>
                         || lastNode.boundaryHeight > y.boundaryHeight) {
                     // case C, either the first node or the last node of the path is higher than x or y
                     // respectively
-                    if (PRINT_CASES) {
-                        System.out.println("Case C");
-                    }
                     Node removeStart;
                     if (lastNode.boundaryHeight > y.boundaryHeight) {
                         removeStart = firstNode.boundaryHeight < x.boundaryHeight ? firstNode : x;
@@ -1347,9 +1225,6 @@ public class PlanarityTester3<V, E>
                 List<Edge> pathToV = findPathToV(path, v);
                 if (!pathToV.isEmpty()) {
                     // case D, we have a path to the node v
-                    if (PRINT_CASES) {
-                        System.out.println("Case D");
-                    }
                     removeUp(x, componentRoot, 1, subdivision);
                     removeUp(y, componentRoot, 0, subdivision);
                     subdivision.addAll(path);
@@ -1360,22 +1235,13 @@ public class PlanarityTester3<V, E>
                 }
                 Edge externallyActive = searchEdge(w, v.height, failedEdge);
                 assert externallyActive != null;
-                if (DEBUG) {
-                    System.out.printf("Externally active edge = %s\n", externallyActive.toString());
-                }
                 addPathEdges(subdivision, externallyActive, w);
                 if (firstStrictlyHigher(externallyActive.target, xBackEdge.target, yBackEdge.target)) {
                     // case E_2, equivalent to A
-                    if (PRINT_CASES) {
-                        System.out.println("Case E_2");
-                    }
                     addPathEdges(subdivision, componentRoot.getParent(), backLower);
                 } else if (firstStrictlyHigher(
                         xBackEdge.target, yBackEdge.target, externallyActive.target)) {
                     // case E_2, u_x is higher
-                    if (PRINT_CASES) {
-                        System.out.println("Case E_2, u_x is higher");
-                    }
                     removeUp(componentRoot, x, 0, subdivision);
                     removeUp(w, lastNode, 0, subdivision);
                     subdivision.addAll(path);
@@ -1384,9 +1250,6 @@ public class PlanarityTester3<V, E>
                 } else if (firstStrictlyHigher(
                         yBackEdge.target, xBackEdge.target, externallyActive.target)) {
                     // case E_2, u_y is higher
-                    if (PRINT_CASES) {
-                        System.out.println("Case E_2, u_y is higher");
-                    }
                     removeUp(y, componentRoot, 0, subdivision);
                     removeUp(firstNode, w, 0, subdivision);
                     subdivision.addAll(path);
@@ -1394,9 +1257,6 @@ public class PlanarityTester3<V, E>
                     addPathEdges(subdivision, v, lowest(backLower, externallyActive.target));
                 } else if (firstNode.boundaryHeight > x.boundaryHeight) {
                     // case E_4, p_x is lower than x
-                    if (PRINT_CASES) {
-                        System.out.println("Case E_3, p_x is lower than x");
-                    }
                     removeUp(w, lastNode, 0, subdivision);
                     subdivision.addAll(path);
                     addPathEdges(subdivision, failedEdge, w);
@@ -1405,9 +1265,6 @@ public class PlanarityTester3<V, E>
                             lowest(backLower, externallyActive.target));
                 } else if (lastNode.boundaryHeight < y.boundaryHeight) {
                     // case E_4, p_y is lower than y
-                    if (PRINT_CASES) {
-                        System.out.println("Case E_3, p_y is lower than y");
-                    }
                     removeUp(firstNode, w, 0, subdivision);
                     subdivision.addAll(path);
                     addPathEdges(subdivision, failedEdge, w);
@@ -1416,9 +1273,6 @@ public class PlanarityTester3<V, E>
                             lowest(backLower, externallyActive.target));
                 } else {
                     // case E, extracting K_5
-                    if (PRINT_CASES) {
-                        System.out.println("Case E, extracting K_5");
-                    }
                     subdivision.addAll(path);
                     addPathEdges(subdivision, v, lowest(backLower, externallyActive.target));
                     addPathEdges(subdivision, failedEdge, w);
