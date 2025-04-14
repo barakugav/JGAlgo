@@ -17,7 +17,6 @@ package com.jgalgo.alg.planar;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
-import java.util.Optional;
 import com.jgalgo.alg.connect.BiConnectedComponentsAlgo;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -34,7 +33,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 class PlanarityTester2 extends PlanarityTesterAbstract {
 
 	@Override
-	protected Optional<IPlanarEmbedding> findPlanarEmbedding(IndexGraph g, boolean addAsEdgesWeights) {
+	protected PlanarityTester.Result<Integer, Integer> findPlanarEmbedding(IndexGraph g, boolean addAsEdgesWeights) {
 		Assertions.onlyUndirected(g); // TODO: support directed graphs
 
 		assert BiConnectedComponentsAlgo.newInstance().findBiConnectedComponents(g).getNumberOfBiCcs() == 1;

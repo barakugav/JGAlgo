@@ -25,13 +25,21 @@ import com.jgalgo.graph.Graph;
 public interface PlanarityTester {
 
 	default <V, E> boolean isPlanar(Graph<V, E> g) {
-		return findPlanarEmbedding(g).isPresent();
+		return findPlanarEmbedding(g).isPlanar();
 	}
 
-	default <V, E> Optional<PlanarEmbedding<V, E>> findPlanarEmbedding(Graph<V, E> g) {
+	default <V, E> PlanarityTester.Result<V, E> findPlanarEmbedding(Graph<V, E> g) {
 		return findPlanarEmbedding(g, false);
 	}
 
-	<V, E> Optional<PlanarEmbedding<V, E>> findPlanarEmbedding(Graph<V, E> g, boolean addAsEdgesWeights);
+	<V, E> PlanarityTester.Result<V, E> findPlanarEmbedding(Graph<V, E> g, boolean addAsEdgesWeights);
+
+	interface Result<V, E> {
+		boolean isPlanar();
+
+		PlanarEmbedding<V, E> getEmbedding();
+
+		Optional<Graph<V, E>> getKuratowskiSubdivision();
+	}
 
 }

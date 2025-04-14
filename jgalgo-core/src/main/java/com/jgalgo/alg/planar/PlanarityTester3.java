@@ -41,11 +41,11 @@ public class PlanarityTester3<V, E>
         extends PlanarityTesterAbstract {
 
     @Override
-    protected Optional<IPlanarEmbedding> findPlanarEmbedding(IndexGraph g, boolean addAsEdgesWeights) {
+    protected PlanarityTester.Result<Integer, Integer> findPlanarEmbedding(IndexGraph g, boolean addAsEdgesWeights) {
         var x = new BoyerMyrvoldPlanarityInspector<>(g);
         if (!x.isPlanar())
-            return Optional.empty();
-        return Optional.of((IPlanarEmbedding) x.getEmbedding());
+            return Result.nonPlanar(() -> Optional.of(x.getKuratowskiSubdivision()));
+        return Result.planar(() -> x.getEmbedding());
     }
 
     static class BoyerMyrvoldPlanarityInspector<V, E> {
