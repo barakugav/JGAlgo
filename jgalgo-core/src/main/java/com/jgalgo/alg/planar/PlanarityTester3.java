@@ -30,7 +30,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightsLong;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsLong;
+import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.Pair;
 
 public class PlanarityTester3<V, E>
@@ -38,8 +42,10 @@ public class PlanarityTester3<V, E>
 
     @Override
     protected Optional<IPlanarEmbedding> findPlanarEmbedding(IndexGraph g, boolean addAsEdgesWeights) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findPlanarEmbedding'");
+        var x = new BoyerMyrvoldPlanarityInspector<>(g);
+        if (!x.isPlanar())
+            return Optional.empty();
+        return Optional.of((IPlanarEmbedding) x.getEmbedding());
     }
 
     static class BoyerMyrvoldPlanarityInspector<V, E> {
@@ -588,7 +594,26 @@ public class PlanarityTester3<V, E>
                     }
                     embeddingMap.put(node.graphVertex, embeddedEdges);
                 }
-                embedding = new EmbeddingImpl<>(graph, embeddingMap);
+
+                WeightsLong<E> weights = Weights.createExternalEdgesWeights(graph, long.class);
+                for (Node node : nodes) {
+                    int i = 0;
+                    for (Edge edge : node.embedded) {
+                        long x = weights.get(edge.graphEdge);
+                        if (graph.edgeSource(edge.graphEdge).equals(node)) {
+                            x = IntPair.setFirst(x, i);
+                        }
+                        if (graph.edgeTarget(edge.graphEdge).equals(node)) {
+                            x = IntPair.setSecond(x, i);
+                        }
+                        weights.set(edge.graphEdge, x);
+                        i++;
+                    }
+                }
+
+                // embedding = new EmbeddingImpl<>(graph, embeddingMap);
+                embedding = (PlanarEmbedding<V, E>) new PlanarEmbeddings.IndexEmbedding((IndexGraph) graph,
+                        (IWeightsLong) weights);
             }
             return embedding;
         }
