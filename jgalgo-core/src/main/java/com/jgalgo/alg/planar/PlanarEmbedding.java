@@ -22,6 +22,7 @@ import com.jgalgo.graph.IWeightsLong;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightsLong;
 
+// TODO: rename, not only for planar
 /**
  * Planar embedding of a graph.
  *

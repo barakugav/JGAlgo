@@ -38,7 +38,7 @@ class PlanarEmbeddings {
 
 		private final IndexGraph g;
 		private final IWeightsLong allEdgeIdx;
-		private final boolean cwDirection;
+		private final boolean reversed;
 
 		private int[] allEdgesCw;
 		private int[] allEdgesOffsets;
@@ -49,12 +49,12 @@ class PlanarEmbeddings {
 		private int[] edgeToOutIdx;
 		private int[] edgeToInIdx;
 
-		private IndexEmbedding reversed;
+		private IndexEmbedding reversedEmbedding;
 
-		private IndexEmbedding(IndexGraph g, IWeightsLong allEdgeIdx, boolean cwDirection) {
+		private IndexEmbedding(IndexGraph g, IWeightsLong allEdgeIdx, boolean reversed) {
 			this.g = Objects.requireNonNull(g);
 			this.allEdgeIdx = Objects.requireNonNull(allEdgeIdx);
-			this.cwDirection = cwDirection;
+			this.reversed = reversed;
 		}
 
 		IndexEmbedding(IndexGraph g, IWeightsLong allEdgeIdx) {
@@ -64,14 +64,14 @@ class PlanarEmbeddings {
 		@Override
 		public IEdgeIter allEdges(int vertex) {
 			computeAllEdgesCwArr();
-			return new EdgeIterDefaultSourceTarget(vertex, -1, cwDirection, allEdgesCw, allEdgesOffsets);
+			return new EdgeIterDefaultSourceTarget(vertex, -1, reversed, allEdgesCw, allEdgesOffsets);
 		}
 
 		@Override
 		public IEdgeIter allEdges(int vertex, int precedingEdge) {
 			computeAllEdgesCwArr();
 			int precedingEdgeIndex = precedingEdgeToAllIdx(vertex, precedingEdge);
-			return new EdgeIterDefaultSourceTarget(vertex, precedingEdgeIndex, cwDirection, allEdgesCw,
+			return new EdgeIterDefaultSourceTarget(vertex, precedingEdgeIndex, reversed, allEdgesCw,
 					allEdgesOffsets);
 		}
 
@@ -79,9 +79,9 @@ class PlanarEmbeddings {
 		public IEdgeIter outEdges(int source) {
 			if (g.isDirected()) {
 				computeOutEdgesCwArr();
-				return new EdgeIterDefaultSourceTarget(source, -1, cwDirection, outEdgesCw, outEdgesOffsets);
+				return new EdgeIterDefaultSourceTarget(source, -1, reversed, outEdgesCw, outEdgesOffsets);
 			} else {
-				return new VertexUndirectedOutIter(source, -1, cwDirection);
+				return new VertexUndirectedOutIter(source, -1, reversed);
 			}
 		}
 
@@ -94,11 +94,11 @@ class PlanarEmbeddings {
 				computeOutEdgesCwArr();
 				computeEdgeToOutIdx();
 				int precedingEdgeIndex = edgeToOutIdx[precedingEdge];
-				return new EdgeIterDefaultSourceTarget(source, precedingEdgeIndex, cwDirection, outEdgesCw,
+				return new EdgeIterDefaultSourceTarget(source, precedingEdgeIndex, reversed, outEdgesCw,
 						outEdgesOffsets);
 			} else {
 				int precedingEdgeIndex = precedingEdgeToAllIdx(source, precedingEdge);
-				return new VertexUndirectedOutIter(source, precedingEdgeIndex, cwDirection);
+				return new VertexUndirectedOutIter(source, precedingEdgeIndex, reversed);
 			}
 		}
 
@@ -106,9 +106,9 @@ class PlanarEmbeddings {
 		public IEdgeIter inEdges(int target) {
 			if (g.isDirected()) {
 				computeInEdgesCwArr();
-				return new EdgeIterDefaultSourceTarget(target, -1, cwDirection, inEdgesCw, inEdgesOffsets);
+				return new EdgeIterDefaultSourceTarget(target, -1, reversed, inEdgesCw, inEdgesOffsets);
 			} else {
-				return new VertexUndirectedInIter(target, -1, cwDirection);
+				return new VertexUndirectedInIter(target, -1, reversed);
 			}
 		}
 
@@ -121,11 +121,11 @@ class PlanarEmbeddings {
 				computeInEdgesCwArr();
 				computeEdgeToInIdx();
 				int precedingEdgeIndex = edgeToInIdx[precedingEdge];
-				return new EdgeIterDefaultSourceTarget(target, precedingEdgeIndex, cwDirection, inEdgesCw,
+				return new EdgeIterDefaultSourceTarget(target, precedingEdgeIndex, reversed, inEdgesCw,
 						inEdgesOffsets);
 			} else {
 				int precedingEdgeIndex = precedingEdgeToAllIdx(target, precedingEdge);
-				return new VertexUndirectedInIter(target, precedingEdgeIndex, cwDirection);
+				return new VertexUndirectedInIter(target, precedingEdgeIndex, reversed);
 			}
 		}
 
@@ -280,17 +280,17 @@ class PlanarEmbeddings {
 			assert Arrays.stream(edgeToInIdx).filter(i -> i == 0).count() == 1;
 		}
 
-		private abstract class IterBase implements IEdgeIter {
+		private abstract static class IterBase implements IEdgeIter {
 
 			private int count;
 			private int cursor;
 			int lastEdge = -1;
-			private final boolean cw;
 			private final int vBegin, vEnd;
+			private final int advanceStep;
 			private final int[] edgesCw;
 
-			IterBase(int vertex, int precedingEdgeIndex, boolean cw, int[] edgesCw, int[] edgesOffsets) {
-				if (this.cw = cw) {
+			IterBase(int vertex, int precedingEdgeIndex, boolean reversed, int[] edgesCw, int[] edgesOffsets) {
+				if (reversed) {
 					vBegin = edgesOffsets[vertex];
 					vEnd = edgesOffsets[vertex + 1];
 				} else {
@@ -298,17 +298,18 @@ class PlanarEmbeddings {
 					vEnd = edgesOffsets[vertex] - 1;
 				}
 				this.edgesCw = edgesCw;
+				advanceStep = reversed ? 1 : -1;
 				count = edgesOffsets[vertex] - edgesOffsets[vertex + 1];
 				if (precedingEdgeIndex == -1) {
 					cursor = vBegin;
 				} else {
-					cursor = vBegin + (cw ? 1 : -1) * precedingEdgeIndex;
+					cursor = vBegin + advanceStep * precedingEdgeIndex;
 					advance();
 				}
 			}
 
 			private void advance() {
-				cursor += cw ? 1 : -1;
+				cursor += advanceStep;
 				if (cursor == vEnd)
 					cursor = vBegin;
 			}
@@ -334,11 +335,12 @@ class PlanarEmbeddings {
 			}
 		}
 
+		// TODO make class static
 		private class EdgeIterDefaultSourceTarget extends IterBase {
 
-			EdgeIterDefaultSourceTarget(int vertex, int precedingEdgeIndex, boolean cw, int[] edgesCw,
+			EdgeIterDefaultSourceTarget(int vertex, int precedingEdgeIndex, boolean reversed, int[] edgesCw,
 					int[] edgesOffsets) {
-				super(vertex, precedingEdgeIndex, cw, edgesCw, edgesOffsets);
+				super(vertex, precedingEdgeIndex, reversed, edgesCw, edgesOffsets);
 			}
 
 			@Override
@@ -352,12 +354,13 @@ class PlanarEmbeddings {
 			}
 		}
 
+		// TODO make class static
 		private class VertexUndirectedOutIter extends IterBase {
 
 			private final int source;
 
-			VertexUndirectedOutIter(int source, int precedingEdgeIndex, boolean cw) {
-				super(source, precedingEdgeIndex, cw, outEdgesCw, outEdgesOffsets);
+			VertexUndirectedOutIter(int source, int precedingEdgeIndex, boolean reversed) {
+				super(source, precedingEdgeIndex, reversed, outEdgesCw, outEdgesOffsets);
 				this.source = source;
 			}
 
@@ -372,12 +375,13 @@ class PlanarEmbeddings {
 			}
 		}
 
+		// TODO make class static
 		private class VertexUndirectedInIter extends IterBase {
 
 			private final int target;
 
-			VertexUndirectedInIter(int target, int precedingEdgeIndex, boolean cw) {
-				super(target, precedingEdgeIndex, cw, inEdgesCw, inEdgesOffsets);
+			VertexUndirectedInIter(int target, int precedingEdgeIndex, boolean reversed) {
+				super(target, precedingEdgeIndex, reversed, inEdgesCw, inEdgesOffsets);
 				this.target = target;
 			}
 
@@ -394,11 +398,11 @@ class PlanarEmbeddings {
 
 		@Override
 		public IPlanarEmbedding reversed() {
-			if (reversed == null) {
-				reversed = new IndexEmbedding(g, allEdgeIdx, !cwDirection);
-				reversed.reversed = this;
+			if (reversedEmbedding == null) {
+				reversedEmbedding = new IndexEmbedding(g, allEdgeIdx, !reversed);
+				reversedEmbedding.reversedEmbedding = this;
 			}
-			return reversed;
+			return reversedEmbedding;
 		}
 	}
 
