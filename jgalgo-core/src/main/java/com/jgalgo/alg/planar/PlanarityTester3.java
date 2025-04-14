@@ -135,13 +135,13 @@ public class PlanarityTester3
                 Map<Integer, Node> vertexMap, Integer graphVertex, Integer edge, Node parent, int dfsIndex) {
             Node child;
             if (parent == null) {
-                child = new Node(graphVertex, dfsIndex, 0, null, null);
+                child = new Node(graphVertex, dfsIndex, 0, null, null, n);
                 child.outerFaceNeighbors[0] = child.outerFaceNeighbors[1] = child;
                 dfsTreeRoots.add(child);
             } else {
                 Edge treeEdge = new Edge(edge, parent);
-                Node componentRoot = new Node(parent.dfsIndex, treeEdge);
-                child = new Node(graphVertex, dfsIndex, parent.height + 1, componentRoot, treeEdge);
+                Node componentRoot = new Node(parent.dfsIndex, treeEdge, n);
+                child = new Node(graphVertex, dfsIndex, parent.height + 1, componentRoot, treeEdge, n);
                 treeEdge.target = child;
 
                 componentRoots.add(componentRoot);
@@ -357,7 +357,7 @@ public class PlanarityTester3
          * @param entryDir      the direction used to enter the component
          * @param circulator    a circulator to the source of the new edge
          */
-        private void embedShortCircuit(Node componentRoot, int entryDir, OuterFaceCirculator circulator) {
+        private static void embedShortCircuit(Node componentRoot, int entryDir, OuterFaceCirculator circulator) {
             Node current = circulator.getCurrent(), prev = circulator.getPrev();
             Edge shortCircuit = new Edge(current, componentRoot.getParent());
             if (entryDir == 0) {
@@ -795,7 +795,7 @@ public class PlanarityTester3
          * @param  edges     the list containing the resulting path
          * @return           true if the search was successful, false otherwise
          */
-        private boolean findPathDfs(
+        private static boolean findPathDfs(
                 Node start, Edge startPrev, Predicate<Node> canGo, Predicate<Node> isFinish,
                 List<Edge> edges) {
             List<SearchInfo> stack = new ArrayList<>();
@@ -1348,7 +1348,7 @@ public class PlanarityTester3
         /**
          * Represents information needed to search a path within a biconnected component
          */
-        private class SearchInfo {
+        private static class SearchInfo {
             /**
              * The current node of the dfs traversal
              */
@@ -1380,7 +1380,7 @@ public class PlanarityTester3
          * Represents information needed to store in the stack during the input {@code graph}
          * orientation.
          */
-        private class OrientDfsStackInfo {
+        private static class OrientDfsStackInfo {
             /**
              * The current vertex of the dfs traversal
              */
@@ -1419,7 +1419,7 @@ public class PlanarityTester3
         /**
          * The information needed to merge two consecutive biconnected components
          */
-        private class MergeInfo {
+        private static class MergeInfo {
             /**
              * The node current traversal descended from. This node belongs to the parent biconnected
              * component
@@ -1489,7 +1489,7 @@ public class PlanarityTester3
          * A circulator over the nodes on the boundary of the biconnected component. Traverses the nodes
          * in the cyclic manner, i.e. it doesn't stop when all the nodes are traversed
          */
-        private class OuterFaceCirculator
+        private static class OuterFaceCirculator
                 implements Iterator<Node> {
             /**
              * The node this circulator will return next
@@ -1579,7 +1579,7 @@ public class PlanarityTester3
              * @param  node the input argument
              * @return      the real counterpath of the {@code node}
              */
-            private Node toExistingNode(Node node) {
+            private static Node toExistingNode(Node node) {
                 return node.isRootVertex() ? node.getParent() : node;
             }
         }
@@ -1587,7 +1587,7 @@ public class PlanarityTester3
         /**
          * Internal representation of the edges of the input {@code graph}.
          */
-        private class Edge {
+        private static class Edge {
             /**
              * The counterpart of this edge in the {@code graph}. This value can be null if the edge was
              * created as a short-circuit edge.
@@ -1685,7 +1685,7 @@ public class PlanarityTester3
          * The internal representation of the vertices of the graph. Contains necessary information to
          * perform dfs traversals, biconnected component boundary traversals, to embed edges, etc.
          */
-        private class Node {
+        private static class Node {
             /**
              * The counterpart of this node in the {@code graph}. For the component roots this value is
              * {@code null}.
@@ -1810,8 +1810,8 @@ public class PlanarityTester3
              * @param initialComponentRoot the component root of this node.
              * @param parentEdge           the parent edge of this node
              */
-            Node(Integer graphVertex, int dfsIndex, int height, Node initialComponentRoot, Edge parentEdge) {
-                this(graphVertex, dfsIndex, parentEdge, false);
+            Node(Integer graphVertex, int dfsIndex, int height, Node initialComponentRoot, Edge parentEdge, int n) {
+                this(graphVertex, dfsIndex, parentEdge, false, n);
                 this.height = height;
                 this.initialComponentRoot = initialComponentRoot;
             }
@@ -1823,8 +1823,8 @@ public class PlanarityTester3
              * @param dfsIndex   the dfs index of this node
              * @param parentEdge the parent edge of this component root
              */
-            Node(int dfsIndex, Edge parentEdge) {
-                this(null, dfsIndex, parentEdge, true);
+            Node(int dfsIndex, Edge parentEdge, int n) {
+                this(null, dfsIndex, parentEdge, true, n);
             }
 
             /**
@@ -1835,7 +1835,7 @@ public class PlanarityTester3
              * @param parentEdge  the parent edge of this node
              * @param rootVertex  whether this is real or virtual node
              */
-            Node(Integer graphVertex, int dfsIndex, Edge parentEdge, boolean rootVertex) {
+            Node(Integer graphVertex, int dfsIndex, Edge parentEdge, boolean rootVertex, int n) {
                 this.graphVertex = graphVertex;
                 this.dfsIndex = dfsIndex;
                 this.parentEdge = parentEdge;
