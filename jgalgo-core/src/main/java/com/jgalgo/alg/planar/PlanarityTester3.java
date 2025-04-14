@@ -596,17 +596,17 @@ public class PlanarityTester3<V, E>
                 }
 
                 WeightsLong<E> weights = Weights.createExternalEdgesWeights(graph, long.class);
-                for (Node node : nodes) {
+                for (var node : embeddingMap.entrySet()) {
                     int i = 0;
-                    for (Edge edge : node.embedded) {
-                        long x = weights.get(edge.graphEdge);
-                        if (graph.edgeSource(edge.graphEdge).equals(node)) {
+                    for (E edge : node.getValue()) {
+                        long x = weights.get(edge);
+                        if (graph.edgeSource(edge).equals(node.getKey())) {
                             x = IntPair.setFirst(x, i);
                         }
-                        if (graph.edgeTarget(edge.graphEdge).equals(node)) {
+                        if (graph.edgeTarget(edge).equals(node.getKey())) {
                             x = IntPair.setSecond(x, i);
                         }
-                        weights.set(edge.graphEdge, x);
+                        weights.set(edge, x);
                         i++;
                     }
                 }

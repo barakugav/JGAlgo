@@ -227,6 +227,8 @@ public interface PlanarEmbedding<V, E> {
 	 */
 	PlanarEmbedding<V, E> reversed();
 
+	Graph<V, E> graph();
+
 	// TODO
 	@SuppressWarnings("unchecked")
 	public static <V, E> Optional<PlanarEmbedding<V, E>> getExistingEmbedding(Graph<V, E> g) {

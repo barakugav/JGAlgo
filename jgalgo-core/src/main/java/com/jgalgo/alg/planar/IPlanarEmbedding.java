@@ -149,4 +149,7 @@ public interface IPlanarEmbedding extends PlanarEmbedding<Integer, Integer> {
 	@Override
 	IPlanarEmbedding reversed();
 
+	@Override
+	IntGraph graph();
+
 }

@@ -69,18 +69,18 @@ public abstract class PlanarityTesterAbstract implements PlanarityTester {
 		private Result(boolean isPlanar, Supplier<PlanarEmbedding<V, E>> embeddingSupplier,
 				Supplier<Optional<Graph<V, E>>> kuratowskiSubdivisionSupplier) {
 			this.isPlanar = isPlanar;
-			this.embeddingSupplier = Objects.requireNonNull(embeddingSupplier);
-			this.kuratowskiSubdivisionSupplier = Objects.requireNonNull(kuratowskiSubdivisionSupplier);
+			this.embeddingSupplier = embeddingSupplier;
+			this.kuratowskiSubdivisionSupplier = kuratowskiSubdivisionSupplier;
 			this.embedding = Optional.empty();
 			this.kuratowskiSubdivision = Optional.empty();
 		}
 
 		static <V, E> Result<V, E> planar(Supplier<PlanarEmbedding<V, E>> embedding) {
-			return new Result<>(true, embedding, null);
+			return new Result<>(true, Objects.requireNonNull(embedding), null);
 		}
 
 		static <V, E> Result<V, E> nonPlanar(Supplier<Optional<Graph<V, E>>> kuratowskiSubdivision) {
-			return new Result<>(false, null, kuratowskiSubdivision);
+			return new Result<>(false, null, Objects.requireNonNull(kuratowskiSubdivision));
 		}
 
 		@Override
