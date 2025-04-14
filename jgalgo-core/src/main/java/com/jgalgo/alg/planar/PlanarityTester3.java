@@ -33,8 +33,6 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.util.IntPair;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -135,7 +133,7 @@ public class PlanarityTester3
          * @return             the newly created node
          */
         private Node createNewNode(
-                Int2ObjectMap<Node> vertexMap, int graphVertex, int edge, Node parent, int dfsIndex) {
+                Node[] v2node, int graphVertex, int edge, Node parent, int dfsIndex) {
             Node child;
             if (parent == null) {
                 child = new Node(Integer.valueOf(graphVertex), dfsIndex, 0, null, null, n);
@@ -156,7 +154,7 @@ public class PlanarityTester3
                 componentRoot.outerFaceNeighbors[0] = componentRoot.outerFaceNeighbors[1] = child;
             }
             nodes.add(child);
-            vertexMap.put(graphVertex, child);
+            v2node[graphVertex] = child;
             return child;
         }
 
@@ -209,27 +207,27 @@ public class PlanarityTester3
          * @param  currentDfsIndex  the dfs index of the {@code startGraphVertex}
          * @return                  the {@code currentDfsIndex} + number of nodes in the traversed subtree
          */
-        private int orientDfs(Int2ObjectMap<Node> vertexMap, int startGraphVertex, int currentDfsIndex) {
+        private int orientDfs(Node[] v2node, int startGraphVertex, int currentDfsIndex) {
             List<OrientDfsStackInfo> stack = new ArrayList<>();
             stack.add(new OrientDfsStackInfo(startGraphVertex, -1, -1, false));
             while (!stack.isEmpty()) {
                 OrientDfsStackInfo info = stack.remove(stack.size() - 1);
 
                 if (!info.backtrack) {
-                    if (vertexMap.containsKey(info.current)) {
+                    if (v2node[info.current] != null) {
                         // other dfs branch has reached this vertex earlier
                         continue;
                     }
                     stack.add(new OrientDfsStackInfo(info.current, info.parent, info.parentEdge, true));
                     Node current = createNewNode(
-                            vertexMap, info.current, info.parentEdge, vertexMap.get(info.parent),
+                            v2node, info.current, info.parentEdge, info.parent >= 0 ? v2node[info.parent] : null,
                             currentDfsIndex);
                     ++currentDfsIndex;
                     for (int e : graph.outEdges(info.current)) {
                         int opposite = graph.edgeEndpoint(e, info.current);
-                        if (vertexMap.containsKey(opposite)) {
+                        if (v2node[opposite] != null) {
                             // back edge or parent edge
-                            Node oppositeNode = vertexMap.get(opposite);
+                            Node oppositeNode = v2node[opposite];
                             if (opposite == info.parent)
                                 continue;
                             Edge backEdge = new Edge(e, current, oppositeNode);
@@ -241,7 +239,7 @@ public class PlanarityTester3
                         }
                     }
                 } else {
-                    Node current = vertexMap.get(info.current);
+                    Node current = v2node[info.current];
                     current.leastAncestor = current.lowpoint = current.dfsIndex;
                     for (Edge backEdge : current.backEdges) {
                         current.leastAncestor =
@@ -263,11 +261,11 @@ public class PlanarityTester3
          * {@code separatedDfsChildList}
          */
         private void orient() {
-            Int2ObjectMap<Node> visited = new Int2ObjectOpenHashMap<>();
+            Node[] v2node = new Node[n];
             int currentDfsIndex = 0;
             for (int vertex : graph.vertices())
-                if (!visited.containsKey(vertex))
-                    currentDfsIndex = orientDfs(visited, vertex, currentDfsIndex);
+                if (v2node[vertex] == null)
+                    currentDfsIndex = orientDfs(v2node, vertex, currentDfsIndex);
             sortVertices();
         }
 
@@ -559,7 +557,7 @@ public class PlanarityTester3
             if (embedding == null) {
                 for (Node dfsTreeRoot : dfsTreeRoots)
                     cleanUpDfs(dfsTreeRoot);
-                Int2ObjectMap<IntList> embeddingMap = new Int2ObjectOpenHashMap<>();
+                IWeightsLong weights = Weights.createExternalEdgesWeights(graph, long.class);
                 for (Node node : nodes) {
                     for (Node child : node.separatedDfsChildList) {
                         Node virtualRoot = child.initialComponentRoot;
@@ -568,24 +566,20 @@ public class PlanarityTester3
                     IntList embeddedEdges = new IntArrayList(node.embedded.size());
                     for (Edge edge : node.embedded)
                         embeddedEdges.add(edge.graphEdge());
-                    embeddingMap.put(node.graphVertex.intValue(), embeddedEdges);
-                }
 
-                IWeightsLong weights = Weights.createExternalEdgesWeights(graph, long.class);
-                for (var node : embeddingMap.int2ObjectEntrySet()) {
+                    int v = node.graphVertex.intValue();
                     int i = 0;
-                    for (int edge : node.getValue()) {
+                    for (int edge : embeddedEdges) {
                         long x = weights.get(edge);
-                        if (graph.edgeSource(edge) == node.getIntKey())
+                        if (graph.edgeSource(edge) == v)
                             x = IntPair.setFirst(x, i);
-                        if (graph.edgeTarget(edge) == node.getIntKey())
+                        if (graph.edgeTarget(edge) == v)
                             x = IntPair.setSecond(x, i);
                         weights.set(edge, x);
                         i++;
                     }
                 }
 
-                // embedding = new EmbeddingImpl<>(graph, embeddingMap);
                 embedding = new PlanarEmbeddings.IndexEmbedding(graph, weights);
             }
             return embedding;
