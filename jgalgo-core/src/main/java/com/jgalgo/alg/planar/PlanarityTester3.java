@@ -32,28 +32,29 @@ import java.util.function.Predicate;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightsLong;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsLong;
 import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.Pair;
 
 @SuppressWarnings("boxing")
-public class PlanarityTester3<V, E>
+public class PlanarityTester3
         extends PlanarityTesterAbstract {
 
     @Override
     protected PlanarityTester.Result<Integer, Integer> findPlanarEmbedding(IndexGraph g, boolean addAsEdgesWeights) {
-        var x = new BoyerMyrvoldPlanarityInspector<>(g);
+        var x = new BoyerMyrvoldPlanarityInspector(g);
         if (!x.isPlanar())
             return Result.nonPlanar(() -> Optional.of(x.getKuratowskiSubdivision()));
         return Result.planar(() -> x.getEmbedding());
     }
 
-    static class BoyerMyrvoldPlanarityInspector<V, E> {
+    static class BoyerMyrvoldPlanarityInspector {
         /**
          * The graph we're testing planarity of
          */
-        private Graph<V, E> graph;
+        private IndexGraph graph;
         /**
          * The number of vertices in the {@code graph}
          */
@@ -62,12 +63,12 @@ public class PlanarityTester3<V, E>
          * The resulting combinatorial embedding. This value is computed only after the first call to
          * the {@link BoyerMyrvoldPlanarityInspector#getEmbedding()}
          */
-        private PlanarEmbedding<V, E> embedding;
+        private IPlanarEmbedding embedding;
         /**
          * The subgraph of the {@code graph}, which is a Kuratowski subdivision. This subgraph certifies
          * the nonplanarity of the graph.
          */
-        private Graph<V, E> kuratowskiSubdivision;
+        private IntGraph kuratowskiSubdivision;
         /**
          * List of the vertices of the {@code graph} in their internal representation. After the
          * orientation of the {@code graph} and edge sorting, nodes in this list are sorted according to
@@ -111,7 +112,7 @@ public class PlanarityTester3<V, E>
          *
          * @param graph the graph to test the planarity of
          */
-        public BoyerMyrvoldPlanarityInspector(Graph<V, E> graph) {
+        public BoyerMyrvoldPlanarityInspector(IndexGraph graph) {
             this.graph = Objects.requireNonNull(graph, "Graph can't be null");
             this.n = graph.vertices().size();
             this.nodes = new ArrayList<>(n);
@@ -131,7 +132,7 @@ public class PlanarityTester3<V, E>
          * @return             the newly created node
          */
         private Node createNewNode(
-                Map<V, Node> vertexMap, V graphVertex, E edge, Node parent, int dfsIndex) {
+                Map<Integer, Node> vertexMap, Integer graphVertex, Integer edge, Node parent, int dfsIndex) {
             Node child;
             if (parent == null) {
                 child = new Node(graphVertex, dfsIndex, 0, null, null);
@@ -164,7 +165,7 @@ public class PlanarityTester3<V, E>
          * @param  currentDfsIndex  the dfs index of the {@code startGraphVertex}
          * @return                  the {@code currentDfsIndex} + number of nodes in the traversed subtree
          */
-        private int orientDfs(Map<V, Node> vertexMap, V startGraphVertex, int currentDfsIndex) {
+        private int orientDfs(Map<Integer, Node> vertexMap, Integer startGraphVertex, int currentDfsIndex) {
             List<OrientDfsStackInfo> stack = new ArrayList<>();
             stack.add(new OrientDfsStackInfo(startGraphVertex, null, null, false));
             while (!stack.isEmpty()) {
@@ -191,8 +192,8 @@ public class PlanarityTester3<V, E>
                             vertexMap, info.current, info.parentEdge, vertexMap.get(info.parent),
                             currentDfsIndex);
                     ++currentDfsIndex;
-                    for (E e : graph.outEdges(info.current)) {
-                        V opposite = graph.edgeEndpoint(e, info.current);
+                    for (Integer e : graph.outEdges(info.current)) {
+                        Integer opposite = graph.edgeEndpoint(e, info.current);
                         if (vertexMap.containsKey(opposite)) {
                             // back edge or parent edge
                             Node oppositeNode = vertexMap.get(opposite);
@@ -218,9 +219,9 @@ public class PlanarityTester3<V, E>
          * {@code separatedDfsChildList}
          */
         private void orient() {
-            Map<V, Node> visited = new HashMap<>();
+            Map<Integer, Node> visited = new HashMap<>();
             int currentDfsIndex = 0;
-            for (V vertex : graph.vertices()) {
+            for (Integer vertex : graph.vertices()) {
                 if (!visited.containsKey(vertex)) {
                     currentDfsIndex = orientDfs(visited, vertex, currentDfsIndex);
                 }
@@ -517,7 +518,7 @@ public class PlanarityTester3<V, E>
          *
          * @return a combinatorial embedding of the {@code graph}
          */
-        private PlanarEmbedding<V, E> lazyComputeEmbedding() {
+        private PlanarEmbedding<Integer, Integer> lazyComputeEmbedding() {
             lazyTestPlanarity();
             if (!planar) {
                 throw new IllegalArgumentException(
@@ -527,23 +528,23 @@ public class PlanarityTester3<V, E>
                 for (Node dfsTreeRoot : dfsTreeRoots) {
                     cleanUpDfs(dfsTreeRoot);
                 }
-                Map<V, List<E>> embeddingMap = new HashMap<>();
+                Map<Integer, List<Integer>> embeddingMap = new HashMap<>();
                 for (Node node : nodes) {
                     for (Node child : node.separatedDfsChildList) {
                         Node virtualRoot = child.initialComponentRoot;
                         node.embedded.append(virtualRoot.embedded);
                     }
-                    List<E> embeddedEdges = new ArrayList<>(node.embedded.size());
+                    List<Integer> embeddedEdges = new ArrayList<>(node.embedded.size());
                     for (Edge edge : node.embedded) {
                         embeddedEdges.add(edge.graphEdge);
                     }
                     embeddingMap.put(node.graphVertex, embeddedEdges);
                 }
 
-                WeightsLong<E> weights = Weights.createExternalEdgesWeights(graph, long.class);
+                WeightsLong<Integer> weights = Weights.createExternalEdgesWeights(graph, long.class);
                 for (var node : embeddingMap.entrySet()) {
                     int i = 0;
-                    for (E edge : node.getValue()) {
+                    for (Integer edge : node.getValue()) {
                         long x = weights.get(edge);
                         if (graph.edgeSource(edge).equals(node.getKey())) {
                             x = IntPair.setFirst(x, i);
@@ -557,8 +558,7 @@ public class PlanarityTester3<V, E>
                 }
 
                 // embedding = new EmbeddingImpl<>(graph, embeddingMap);
-                embedding = (PlanarEmbedding<V, E>) new PlanarEmbeddings.IndexEmbedding((IndexGraph) graph,
-                        (IWeightsLong) weights);
+                embedding = new PlanarEmbeddings.IndexEmbedding(graph, (IWeightsLong) weights);
             }
             return embedding;
         }
@@ -868,9 +868,9 @@ public class PlanarityTester3<V, E>
          * @param  subdivision the edges in the Kuratowski subdivision
          * @return             the Kuratowski subgraph of the {@code graph}
          */
-        private Graph<V, E> finish(Set<Edge> subdivision) {
-            Set<E> edgeSubset = new HashSet<>();
-            Set<V> vertexSubset = new HashSet<>();
+        private Graph<Integer, Integer> finish(Set<Edge> subdivision) {
+            Set<Integer> edgeSubset = new HashSet<>();
+            Set<Integer> vertexSubset = new HashSet<>();
             subdivision.forEach(e -> {
                 edgeSubset.add(e.graphEdge);
                 vertexSubset.add(e.target.graphVertex);
@@ -1130,7 +1130,7 @@ public class PlanarityTester3<V, E>
          *
          * @return a Kuratowski subgraph of the {@code graph}
          */
-        private Graph<V, E> lazyExtractKuratowskiSubdivision() {
+        private Graph<Integer, Integer> lazyExtractKuratowskiSubdivision() {
             if (kuratowskiSubdivision == null) {
                 // remove short-circuit edges and orient all embedded lists clockwise
                 kuratowskiCleanUp();
@@ -1298,7 +1298,7 @@ public class PlanarityTester3<V, E>
          * Only the first call to this method does the actual computation, all subsequent calls only
          * return the previously computed value.
          */
-        public PlanarEmbedding<V, E> getEmbedding() {
+        public PlanarEmbedding<Integer, Integer> getEmbedding() {
             if (isPlanar()) {
                 return lazyComputeEmbedding();
             } else {
@@ -1312,7 +1312,7 @@ public class PlanarityTester3<V, E>
          * Only the first call to this method does the actual computation, all subsequent calls only
          * return the previously computed value.
          */
-        public Graph<V, E> getKuratowskiSubdivision() {
+        public Graph<Integer, Integer> getKuratowskiSubdivision() {
             if (isPlanar()) {
                 throw new IllegalArgumentException("Graph is planar");
             } else {
@@ -1359,15 +1359,15 @@ public class PlanarityTester3<V, E>
             /**
              * The current vertex of the dfs traversal
              */
-            V current;
+            Integer current;
             /**
              * The parent vertex of the {@code current} vertex, which is null for dfs tree roots
              */
-            V parent;
+            Integer parent;
             /**
              * The edge connecting {@code parent} and {@code current} vertices
              */
-            E parentEdge;
+            Integer parentEdge;
             /**
              * Whether dfs is moving forward or backtracking on the {@code current} node
              */
@@ -1383,7 +1383,7 @@ public class PlanarityTester3<V, E>
              * @param backtrack  whether dfs is moving forward or backtracking on the {@code current}
              *                       vertex
              */
-            OrientDfsStackInfo(V current, V parent, E parentEdge, boolean backtrack) {
+            OrientDfsStackInfo(Integer current, Integer parent, Integer parentEdge, boolean backtrack) {
                 this.current = current;
                 this.parent = parent;
                 this.parentEdge = parentEdge;
@@ -1586,7 +1586,7 @@ public class PlanarityTester3<V, E>
              * The counterpart of this edge in the {@code graph}. This value can be null if the edge was
              * created as a short-circuit edge.
              */
-            E graphEdge;
+            Integer graphEdge;
             /**
              * The source node of this edge. For tree edges the {@code source} is lower than the
              * {@code target}, for back edges the {@code target} is lower (having smaller height)
@@ -1635,7 +1635,7 @@ public class PlanarityTester3<V, E>
              * @param graphEdge the counterpart of this edge in the {@code graph}
              * @param source    the source node of this edge
              */
-            Edge(E graphEdge, Node source) {
+            Edge(Integer graphEdge, Node source) {
                 this(graphEdge, source, null);
             }
 
@@ -1646,7 +1646,7 @@ public class PlanarityTester3<V, E>
              * @param source    the source node of this edge
              * @param target    the target node of this edge
              */
-            Edge(E graphEdge, Node source, Node target) {
+            Edge(Integer graphEdge, Node source, Node target) {
                 this.graphEdge = graphEdge;
                 this.source = source;
                 this.target = target;
@@ -1696,7 +1696,7 @@ public class PlanarityTester3<V, E>
              * The counterpart of this node in the {@code graph}. For the component roots this value is
              * {@code null}.
              */
-            V graphVertex;
+            Integer graphVertex;
             /**
              * Whether this node is a root of the biconnected component or not.
              */
@@ -1816,7 +1816,7 @@ public class PlanarityTester3<V, E>
              * @param initialComponentRoot the component root of this node.
              * @param parentEdge           the parent edge of this node
              */
-            Node(V graphVertex, int dfsIndex, int height, Node initialComponentRoot, Edge parentEdge) {
+            Node(Integer graphVertex, int dfsIndex, int height, Node initialComponentRoot, Edge parentEdge) {
                 this(graphVertex, dfsIndex, parentEdge, false);
                 this.height = height;
                 this.initialComponentRoot = initialComponentRoot;
@@ -1841,7 +1841,7 @@ public class PlanarityTester3<V, E>
              * @param parentEdge  the parent edge of this node
              * @param rootVertex  whether this is real or virtual node
              */
-            Node(V graphVertex, int dfsIndex, Edge parentEdge, boolean rootVertex) {
+            Node(Integer graphVertex, int dfsIndex, Edge parentEdge, boolean rootVertex) {
                 this.graphVertex = graphVertex;
                 this.dfsIndex = dfsIndex;
                 this.parentEdge = parentEdge;

@@ -60,7 +60,7 @@ public class PlanarityTester3Test extends TestBase {
 		IntGraph graph = createUndirected(edges);
 		// PlanarityTestingAlgorithm<Integer, Integer> inspector =
 		// new BoyerMyrvoldPlanarityInspector<>(graph);
-		PlanarityTester3<Integer, Integer> inspector = new PlanarityTester3<>();
+		PlanarityTester3 inspector = new PlanarityTester3();
 		// boolean planar = inspector.isPlanar(graph);
 		var result = inspector.findPlanarEmbedding(graph);
 		if (result.isPlanar()) {
@@ -116,7 +116,7 @@ public class PlanarityTester3Test extends TestBase {
 			int[][] k_5 = { { 0, 1 }, { 0, 2 }, { 0, 3 }, { 0, 4 }, { 1, 2 }, { 1, 3 }, { 1, 4 },
 					{ 2, 3 }, { 2, 4 }, { 3, 4 }, };
 			Graph<Integer, Integer> graph = createUndirected(k_5);
-			PlanarityTester3<Integer, Integer> inspector = new PlanarityTester3<>();
+			PlanarityTester3 inspector = new PlanarityTester3();
 			inspector.findPlanarEmbedding(graph).getEmbedding();
 		});
 	}
@@ -126,7 +126,7 @@ public class PlanarityTester3Test extends TestBase {
 		assertThrows(RuntimeException.class, () -> {
 			int[][] k_4 = { { 0, 1 }, { 0, 2 }, { 0, 3 }, { 1, 2 }, { 1, 3 }, { 2, 3 }, };
 			Graph<Integer, Integer> graph = createUndirected(k_4);
-			PlanarityTester3<Integer, Integer> inspector = new PlanarityTester3<>();
+			PlanarityTester3 inspector = new PlanarityTester3();
 			inspector.findPlanarEmbedding(graph).getKuratowskiSubdivision().get();
 		});
 	}
