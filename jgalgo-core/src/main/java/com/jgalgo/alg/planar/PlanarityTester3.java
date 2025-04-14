@@ -20,11 +20,9 @@ package com.jgalgo.alg.planar;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -34,11 +32,16 @@ import com.jgalgo.graph.IWeightsLong;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Weights;
-import com.jgalgo.graph.WeightsLong;
 import com.jgalgo.internal.util.IntPair;
-import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
-@SuppressWarnings("boxing")
+// @SuppressWarnings("boxing")
 public class PlanarityTester3
         extends PlanarityTesterAbstract {
 
@@ -132,16 +135,17 @@ public class PlanarityTester3
          * @return             the newly created node
          */
         private Node createNewNode(
-                Map<Integer, Node> vertexMap, Integer graphVertex, Integer edge, Node parent, int dfsIndex) {
+                Int2ObjectMap<Node> vertexMap, int graphVertex, int edge, Node parent, int dfsIndex) {
             Node child;
             if (parent == null) {
-                child = new Node(graphVertex, dfsIndex, 0, null, null, n);
+                child = new Node(Integer.valueOf(graphVertex), dfsIndex, 0, null, null, n);
                 child.outerFaceNeighbors[0] = child.outerFaceNeighbors[1] = child;
                 dfsTreeRoots.add(child);
             } else {
+                assert edge >= 0;
                 Edge treeEdge = new Edge(edge, parent);
                 Node componentRoot = new Node(parent.dfsIndex, treeEdge, n);
-                child = new Node(graphVertex, dfsIndex, parent.height + 1, componentRoot, treeEdge, n);
+                child = new Node(Integer.valueOf(graphVertex), dfsIndex, parent.height + 1, componentRoot, treeEdge, n);
                 treeEdge.target = child;
 
                 componentRoots.add(componentRoot);
@@ -157,6 +161,46 @@ public class PlanarityTester3
         }
 
         /**
+         * Represents information needed to store in the stack during the input {@code graph}
+         * orientation.
+         */
+        private static class OrientDfsStackInfo {
+            /**
+             * The current vertex of the dfs traversal
+             */
+            final int current;
+            /**
+             * The parent vertex of the {@code current} vertex, which is null for dfs tree roots
+             */
+            final int parent;
+            /**
+             * The edge connecting {@code parent} and {@code current} vertices
+             */
+            final int parentEdge;
+            /**
+             * Whether dfs is moving forward or backtracking on the {@code current} node
+             */
+            final boolean backtrack;
+
+            /**
+             * Creates new instance of the information stored on the stack during the orientation of the
+             * {@code graph}
+             *
+             * @param current    the vertex dfs is currently processing
+             * @param parent     the parent of the {@code current} vertex
+             * @param parentEdge the edge between {@code current} and {@code parent} vertices
+             * @param backtrack  whether dfs is moving forward or backtracking on the {@code current}
+             *                       vertex
+             */
+            OrientDfsStackInfo(int current, int parent, int parentEdge, boolean backtrack) {
+                this.current = current;
+                this.parent = parent;
+                this.parentEdge = parentEdge;
+                this.backtrack = backtrack;
+            }
+        }
+
+        /**
          * Orients the input graph according to its dfs traversal by creating a dfs tree. Computes the
          * least ancestors and lowpoints of the nodes
          *
@@ -165,13 +209,38 @@ public class PlanarityTester3
          * @param  currentDfsIndex  the dfs index of the {@code startGraphVertex}
          * @return                  the {@code currentDfsIndex} + number of nodes in the traversed subtree
          */
-        private int orientDfs(Map<Integer, Node> vertexMap, Integer startGraphVertex, int currentDfsIndex) {
+        private int orientDfs(Int2ObjectMap<Node> vertexMap, int startGraphVertex, int currentDfsIndex) {
             List<OrientDfsStackInfo> stack = new ArrayList<>();
-            stack.add(new OrientDfsStackInfo(startGraphVertex, null, null, false));
+            stack.add(new OrientDfsStackInfo(startGraphVertex, -1, -1, false));
             while (!stack.isEmpty()) {
                 OrientDfsStackInfo info = stack.remove(stack.size() - 1);
 
-                if (info.backtrack) {
+                if (!info.backtrack) {
+                    if (vertexMap.containsKey(info.current)) {
+                        // other dfs branch has reached this vertex earlier
+                        continue;
+                    }
+                    stack.add(new OrientDfsStackInfo(info.current, info.parent, info.parentEdge, true));
+                    Node current = createNewNode(
+                            vertexMap, info.current, info.parentEdge, vertexMap.get(info.parent),
+                            currentDfsIndex);
+                    ++currentDfsIndex;
+                    for (int e : graph.outEdges(info.current)) {
+                        int opposite = graph.edgeEndpoint(e, info.current);
+                        if (vertexMap.containsKey(opposite)) {
+                            // back edge or parent edge
+                            Node oppositeNode = vertexMap.get(opposite);
+                            if (opposite == info.parent)
+                                continue;
+                            Edge backEdge = new Edge(e, current, oppositeNode);
+                            oppositeNode.downEdges.add(backEdge);
+                            current.backEdges.add(backEdge);
+                        } else {
+                            // possible tree edge
+                            stack.add(new OrientDfsStackInfo(opposite, current.graphVertex.intValue(), e, false));
+                        }
+                    }
+                } else {
                     Node current = vertexMap.get(info.current);
                     current.leastAncestor = current.lowpoint = current.dfsIndex;
                     for (Edge backEdge : current.backEdges) {
@@ -182,32 +251,7 @@ public class PlanarityTester3
                         current.lowpoint = Math.min(current.lowpoint, treeEdge.target.lowpoint);
                     }
                     current.lowpoint = Math.min(current.lowpoint, current.leastAncestor);
-                } else {
-                    if (vertexMap.containsKey(info.current)) {
-                        // other dfs branch has reached this vertex earlier
-                        continue;
-                    }
-                    stack.add(new OrientDfsStackInfo(info.current, info.parent, info.parentEdge, true));
-                    Node current = createNewNode(
-                            vertexMap, info.current, info.parentEdge, vertexMap.get(info.parent),
-                            currentDfsIndex);
-                    ++currentDfsIndex;
-                    for (Integer e : graph.outEdges(info.current)) {
-                        Integer opposite = graph.edgeEndpoint(e, info.current);
-                        if (vertexMap.containsKey(opposite)) {
-                            // back edge or parent edge
-                            Node oppositeNode = vertexMap.get(opposite);
-                            if (opposite.equals(info.parent)) {
-                                continue;
-                            }
-                            Edge backEdge = new Edge(e, current, oppositeNode);
-                            oppositeNode.downEdges.add(backEdge);
-                            current.backEdges.add(backEdge);
-                        } else {
-                            // possible tree edge
-                            stack.add(new OrientDfsStackInfo(opposite, current.graphVertex, e, false));
-                        }
-                    }
+
                 }
             }
             return currentDfsIndex;
@@ -219,13 +263,11 @@ public class PlanarityTester3
          * {@code separatedDfsChildList}
          */
         private void orient() {
-            Map<Integer, Node> visited = new HashMap<>();
+            Int2ObjectMap<Node> visited = new Int2ObjectOpenHashMap<>();
             int currentDfsIndex = 0;
-            for (Integer vertex : graph.vertices()) {
-                if (!visited.containsKey(vertex)) {
+            for (int vertex : graph.vertices())
+                if (!visited.containsKey(vertex))
                     currentDfsIndex = orientDfs(visited, vertex, currentDfsIndex);
-                }
-            }
             sortVertices();
         }
 
@@ -272,12 +314,10 @@ public class PlanarityTester3
                 orient();
                 for (int currentNode = n - 1; currentNode >= 0; currentNode--) {
                     Node current = nodes.get(currentNode);
-                    for (Edge downEdge : current.downEdges) {
-                        BoyerMyrvoldPlanarityInspector.walkUp(downEdge.source, current, downEdge);
-                    }
-                    for (Edge treeEdge : current.treeEdges) {
+                    for (Edge downEdge : current.downEdges)
+                        walkUp(downEdge.source, current, downEdge);
+                    for (Edge treeEdge : current.treeEdges)
                         walkDown(treeEdge.target.initialComponentRoot);
-                    }
 
                     for (Edge downEdge : current.downEdges) {
                         if (!downEdge.embedded) {
@@ -388,21 +428,17 @@ public class PlanarityTester3
                 for (Node current = circulator.next(); current != componentRoot;) {
                     if (current.hasBackEdgeWrtTo(componentRoot)) {
                         Node childPrev = circulator.getPrev();
-                        while (!stack.isEmpty()) {
+                        while (!stack.isEmpty())
                             mergeBiconnectedComponent();
-                        }
-                        circulator = embedBackEdge(
-                                componentRoot, componentEntryDir, current.edgeToEmbed, childPrev);
+                        circulator = embedBackEdge(componentRoot, componentEntryDir, current.edgeToEmbed, childPrev);
                     }
                     if (!current.pertinentRoots.isEmpty()) {
                         int parentComponentEntryDir = currentComponentEntryDir;
                         Node root = current.pertinentRoots.getFirst();
 
-                        OuterFaceCirculator ccwCirculator =
-                                BoyerMyrvoldPlanarityInspector.getActiveSuccessorOnOuterFace(root, componentRoot, 0);
+                        OuterFaceCirculator ccwCirculator = getActiveSuccessorOnOuterFace(root, componentRoot, 0);
                         Node ccwActiveNode = ccwCirculator.getCurrent();
-                        OuterFaceCirculator cwCirculator =
-                                BoyerMyrvoldPlanarityInspector.getActiveSuccessorOnOuterFace(root, componentRoot, 1);
+                        OuterFaceCirculator cwCirculator = getActiveSuccessorOnOuterFace(root, componentRoot, 1);
                         Node cwActiveNode = cwCirculator.getCurrent();
 
                         if (ccwActiveNode.isInternallyActiveWrtTo(componentRoot)) {
@@ -480,26 +516,6 @@ public class PlanarityTester3
                     root = x;
                 } else if (y.isRootVertex()) {
                     root = y;
-                }
-                if (root != null) {
-                    Node rootChild = root.parentEdge.target;
-                    Node newStart = root.parentEdge.source;
-                    if (newStart != end) {
-                        if (rootChild.lowpoint < end.dfsIndex) {
-                            // the component in externally active
-                            root.listNode = newStart.pertinentRoots.addElementLast(root);
-                        } else {
-                            // the component is internally active
-                            root.listNode = newStart.pertinentRoots.addElementFirst(root);
-                        }
-                    } else {
-                        break;
-                    }
-                    newStart.visited = visited;
-                    xPrev = yPrev = newStart;
-                    x = newStart.outerFaceNeighbors[0];
-                    y = newStart.outerFaceNeighbors[1];
-
                 } else {
                     Node t = x;
                     x = x.nextOnOuterFace(xPrev);
@@ -508,7 +524,23 @@ public class PlanarityTester3
                     t = y;
                     y = y.nextOnOuterFace(yPrev);
                     yPrev = t;
+                    continue;
                 }
+                Node rootChild = root.parentEdge.target;
+                Node newStart = root.parentEdge.source;
+                if (newStart == end)
+                    break;
+                if (rootChild.lowpoint < end.dfsIndex) {
+                    // the component in externally active
+                    root.listNode = newStart.pertinentRoots.addElementLast(root);
+                } else {
+                    // the component is internally active
+                    root.listNode = newStart.pertinentRoots.addElementFirst(root);
+                }
+                newStart.visited = visited;
+                xPrev = yPrev = newStart;
+                x = newStart.outerFaceNeighbors[0];
+                y = newStart.outerFaceNeighbors[1];
             }
         }
 
@@ -525,40 +557,36 @@ public class PlanarityTester3
                         "Input graph is not planar, can't compute graph embedding");
             }
             if (embedding == null) {
-                for (Node dfsTreeRoot : dfsTreeRoots) {
-                    BoyerMyrvoldPlanarityInspector.cleanUpDfs(dfsTreeRoot);
-                }
-                Map<Integer, List<Integer>> embeddingMap = new HashMap<>();
+                for (Node dfsTreeRoot : dfsTreeRoots)
+                    cleanUpDfs(dfsTreeRoot);
+                Int2ObjectMap<IntList> embeddingMap = new Int2ObjectOpenHashMap<>();
                 for (Node node : nodes) {
                     for (Node child : node.separatedDfsChildList) {
                         Node virtualRoot = child.initialComponentRoot;
                         node.embedded.append(virtualRoot.embedded);
                     }
-                    List<Integer> embeddedEdges = new ArrayList<>(node.embedded.size());
-                    for (Edge edge : node.embedded) {
-                        embeddedEdges.add(edge.graphEdge);
-                    }
-                    embeddingMap.put(node.graphVertex, embeddedEdges);
+                    IntList embeddedEdges = new IntArrayList(node.embedded.size());
+                    for (Edge edge : node.embedded)
+                        embeddedEdges.add(edge.graphEdge());
+                    embeddingMap.put(node.graphVertex.intValue(), embeddedEdges);
                 }
 
-                WeightsLong<Integer> weights = Weights.createExternalEdgesWeights(graph, long.class);
-                for (var node : embeddingMap.entrySet()) {
+                IWeightsLong weights = Weights.createExternalEdgesWeights(graph, long.class);
+                for (var node : embeddingMap.int2ObjectEntrySet()) {
                     int i = 0;
-                    for (Integer edge : node.getValue()) {
+                    for (int edge : node.getValue()) {
                         long x = weights.get(edge);
-                        if (graph.edgeSource(edge).equals(node.getKey())) {
+                        if (graph.edgeSource(edge) == node.getIntKey())
                             x = IntPair.setFirst(x, i);
-                        }
-                        if (graph.edgeTarget(edge).equals(node.getKey())) {
+                        if (graph.edgeTarget(edge) == node.getIntKey())
                             x = IntPair.setSecond(x, i);
-                        }
                         weights.set(edge, x);
                         i++;
                     }
                 }
 
                 // embedding = new EmbeddingImpl<>(graph, embeddingMap);
-                embedding = new PlanarEmbeddings.IndexEmbedding(graph, (IWeightsLong) weights);
+                embedding = new PlanarEmbeddings.IndexEmbedding(graph, weights);
             }
             return embedding;
         }
@@ -593,7 +621,7 @@ public class PlanarityTester3
          * @return       a circulator to the found node
          */
         private static OuterFaceCirculator getActiveSuccessorOnOuterFace(Node start, Node v, int dir) {
-            return BoyerMyrvoldPlanarityInspector.selectOnOuterFace(n -> n.isActiveWrtTo(v), start, start, dir);
+            return selectOnOuterFace(n -> n.isActiveWrtTo(v), start, start, dir);
         }
 
         /**
@@ -608,8 +636,7 @@ public class PlanarityTester3
          */
         private static OuterFaceCirculator getExternallyActiveSuccessorOnOuterFace(
                 Node start, Node stop, Node v, int dir) {
-            return BoyerMyrvoldPlanarityInspector
-                    .selectOnOuterFace(n -> n.isExternallyActiveWrtTo(v), start, stop, dir);
+            return selectOnOuterFace(n -> n.isExternallyActiveWrtTo(v), start, stop, dir);
         }
 
         /**
@@ -619,7 +646,7 @@ public class PlanarityTester3
          * @return      a component root of the component the {@code node} belongs to
          */
         private static Node getComponentRoot(Node node) {
-            return BoyerMyrvoldPlanarityInspector.selectOnOuterFace(Node::isRootVertex, node, node, 0).getCurrent();
+            return selectOnOuterFace(Node::isRootVertex, node, node, 0).getCurrent();
         }
 
         /**
@@ -647,9 +674,8 @@ public class PlanarityTester3
          * @param stop  the node to end with
          */
         private static void addPathEdges(Set<Edge> edges, Node start, Node stop) {
-            if (start != stop) {
-                BoyerMyrvoldPlanarityInspector.addPathEdges(edges, start.parentEdge, stop);
-            }
+            if (start != stop)
+                addPathEdges(edges, start.parentEdge, stop);
         }
 
         /**
@@ -660,7 +686,7 @@ public class PlanarityTester3
          * @return           the desired back edge or null, if no such edge exist
          */
         private static Edge searchEdge(Node current, int heightMax) {
-            return BoyerMyrvoldPlanarityInspector.searchEdge(current, heightMax, null);
+            return searchEdge(current, heightMax, null);
         }
 
         /**
@@ -678,7 +704,7 @@ public class PlanarityTester3
                 }
                 return e.target.height < heightMax;
             };
-            return BoyerMyrvoldPlanarityInspector.searchEdge(current, isNeeded);
+            return searchEdge(current, isNeeded);
         }
 
         /**
@@ -692,7 +718,7 @@ public class PlanarityTester3
          */
         private static Edge searchEdge(Node current, Predicate<Edge> isNeeded) {
             for (Node node : current.separatedDfsChildList) {
-                Edge result = BoyerMyrvoldPlanarityInspector.searchSubtreeDfs(node, isNeeded);
+                Edge result = searchSubtreeDfs(node, isNeeded);
                 if (result != null) {
                     return result;
                 }
@@ -870,10 +896,10 @@ public class PlanarityTester3
          * @return             the Kuratowski subgraph of the {@code graph}
          */
         private Graph<Integer, Integer> finish(Set<Edge> subdivision) {
-            Set<Integer> edgeSubset = new HashSet<>();
-            Set<Integer> vertexSubset = new HashSet<>();
+            IntSet edgeSubset = new IntOpenHashSet();
+            IntSet vertexSubset = new IntOpenHashSet();
             subdivision.forEach(e -> {
-                edgeSubset.add(e.graphEdge);
+                edgeSubset.add(e.graphEdge());
                 vertexSubset.add(e.target.graphVertex);
                 vertexSubset.add(e.source.graphVertex);
             });
@@ -904,12 +930,12 @@ public class PlanarityTester3
          */
         private void kuratowskiCleanUp() {
             for (Node dfsTreeRoot : dfsTreeRoots) {
-                BoyerMyrvoldPlanarityInspector.cleanUpDfs(dfsTreeRoot);
+                cleanUpDfs(dfsTreeRoot);
             }
             for (Node node : componentRoots) {
                 if (node.outerFaceNeighbors[0] != null) {
                     node.removeShortCircuitEdges();
-                    BoyerMyrvoldPlanarityInspector.fixBoundaryOrder(node);
+                    fixBoundaryOrder(node);
                 }
             }
         }
@@ -921,24 +947,22 @@ public class PlanarityTester3
          * @param dfsTreeRoot the root of the dfs tree to clean up
          */
         private static void cleanUpDfs(Node dfsTreeRoot) {
-            List<Pair<Node, Integer>> stack = new ArrayList<>();
-            stack.add(Pair.of(dfsTreeRoot, 1));
+            List<ObjectIntPair<Node>> stack = new ArrayList<>();
+            stack.add(ObjectIntPair.of(dfsTreeRoot, 1));
             while (!stack.isEmpty()) {
-                Pair<Node, Integer> entry = stack.remove(stack.size() - 1);
+                ObjectIntPair<Node> entry = stack.remove(stack.size() - 1);
                 Node current = entry.first();
-                int sign = entry.second();
-                if (sign < 0) {
+                int sign = entry.secondInt();
+                if (sign < 0)
                     current.embedded.invert();
-                }
                 current.removeShortCircuitEdges();
                 for (Node node : current.separatedDfsChildList) {
                     // all the components, that aren't merged, aren't inverted
                     node.parentEdge.sign = sign;
                 }
 
-                for (Edge treeEdge : current.treeEdges) {
-                    stack.add(Pair.of(treeEdge.target, sign * treeEdge.sign));
-                }
+                for (Edge treeEdge : current.treeEdges)
+                    stack.add(ObjectIntPair.of(treeEdge.target, sign * treeEdge.sign));
             }
 
         }
@@ -1074,21 +1098,18 @@ public class PlanarityTester3
          *                       Kuratowski subdivision, or {@code null} is no such edge exist for this biconnected
          *                       component
          */
-        private Edge checkComponentForFailedEdge(Node componentRoot, Node v) {
+        private static Edge checkComponentForFailedEdge(Node componentRoot, Node v) {
             OuterFaceCirculator firstDir =
-                    BoyerMyrvoldPlanarityInspector
-                            .getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, 0);
+                    getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, 0);
             Node firstDirNode = firstDir.getCurrent();
             OuterFaceCirculator secondDir =
-                    BoyerMyrvoldPlanarityInspector
-                            .getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, 1);
+                    getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, 1);
             Node secondDirNode = secondDir.getCurrent();
             if (firstDirNode != componentRoot && firstDirNode != secondDirNode) {
                 Node current = firstDir.next();
                 while (current != secondDirNode) {
-                    if (current.isPertinentWrtTo(v)) {
-                        return BoyerMyrvoldPlanarityInspector.searchEdge(current, e -> e.target == v && !e.embedded);
-                    }
+                    if (current.isPertinentWrtTo(v))
+                        return searchEdge(current, e -> e.target == v && !e.embedded);
                     current = firstDir.next();
                 }
             }
@@ -1150,63 +1171,52 @@ public class PlanarityTester3
                  */
                 Node x, y, v = failedEdge.target, w = failedEdge.source, componentRoot;
                 while (true) {
-                    componentRoot = BoyerMyrvoldPlanarityInspector.getComponentRoot(w);
-                    x = BoyerMyrvoldPlanarityInspector
-                            .getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, 1)
-                            .getCurrent();
-                    y = BoyerMyrvoldPlanarityInspector
-                            .getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, 0)
-                            .getCurrent();
+                    componentRoot = getComponentRoot(w);
+                    x = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, 1).getCurrent();
+                    y = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, 0).getCurrent();
                     if (x.isRootVertex()) {
                         w = x.getParent();
                     } else if (y.isRootVertex()) {
                         w = y.getParent();
                     } else {
-                        componentRoot = BoyerMyrvoldPlanarityInspector.getComponentRoot(w);
+                        componentRoot = getComponentRoot(w);
                         break;
                     }
                 }
-                Edge xBackEdge = BoyerMyrvoldPlanarityInspector.searchEdge(x, v.height);
-                Edge yBackEdge = BoyerMyrvoldPlanarityInspector.searchEdge(y, v.height);
-                Node backLower = BoyerMyrvoldPlanarityInspector.lowest(xBackEdge.target, yBackEdge.target);
-                Node backHigher = BoyerMyrvoldPlanarityInspector.highest(xBackEdge.target, yBackEdge.target);
-                BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, xBackEdge, x);
-                BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, yBackEdge, y);
-                BoyerMyrvoldPlanarityInspector.addBoundaryEdges(subdivision, componentRoot);
+                Edge xBackEdge = searchEdge(x, v.height);
+                Edge yBackEdge = searchEdge(y, v.height);
+                Node backLower = lowest(xBackEdge.target, yBackEdge.target);
+                Node backHigher = highest(xBackEdge.target, yBackEdge.target);
+                addPathEdges(subdivision, xBackEdge, x);
+                addPathEdges(subdivision, yBackEdge, y);
+                addBoundaryEdges(subdivision, componentRoot);
 
                 if (componentRoot.getParent() != v) {
                     // case A, v isn't a parent of the component we've found
-                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, componentRoot.getParent(), backLower);
-                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
+                    addPathEdges(subdivision, componentRoot.getParent(), backLower);
+                    addPathEdges(subdivision, failedEdge, w);
                     return finish(subdivision);
                 }
                 // node z will be null only if the tree path from w to failedEdge is failedEdge itself
-                Node z = BoyerMyrvoldPlanarityInspector.getNextOnPath(w, failedEdge);
+                Node z = getNextOnPath(w, failedEdge);
                 Edge backEdge = null;
-                if (z != null) {
-                    backEdge = BoyerMyrvoldPlanarityInspector
-                            .searchSubtreeDfs(z, e -> e.target.height < v.height && e != failedEdge);
-                }
+                if (z != null)
+                    backEdge = searchSubtreeDfs(z, e -> e.target.height < v.height && e != failedEdge);
                 if (backEdge != null) {
                     // case B
-                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, backEdge, w);
-                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
-                    Node highest =
-                            BoyerMyrvoldPlanarityInspector
-                                    .highest(xBackEdge.target,
-                                            BoyerMyrvoldPlanarityInspector.highest(yBackEdge.target, backEdge.target));
-                    Node lowest = BoyerMyrvoldPlanarityInspector
-                            .lowest(xBackEdge.target,
-                                    BoyerMyrvoldPlanarityInspector.lowest(yBackEdge.target, backEdge.target));
-                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, highest, lowest);
+                    addPathEdges(subdivision, backEdge, w);
+                    addPathEdges(subdivision, failedEdge, w);
+                    Node highest = highest(xBackEdge.target, highest(yBackEdge.target, backEdge.target));
+                    Node lowest = lowest(xBackEdge.target, lowest(yBackEdge.target, backEdge.target));
+                    addPathEdges(subdivision, highest, lowest);
                     return finish(subdivision);
                 }
                 /*
                  * If we failed to either case A or B, we have to find a highest obstructing path and
                  * then deal with cases C - E
                  */
-                BoyerMyrvoldPlanarityInspector.setBoundaryDepth(componentRoot, w, 0, 1);
-                BoyerMyrvoldPlanarityInspector.setBoundaryDepth(componentRoot, w, 1, -1);
+                setBoundaryDepth(componentRoot, w, 0, 1);
+                setBoundaryDepth(componentRoot, w, 1, -1);
 
                 assert x.boundaryHeight > 0;
                 List<Edge> path = findHighestObstructingPath(componentRoot, w);
@@ -1214,93 +1224,83 @@ public class PlanarityTester3
 
                 Edge firstEdge = path.get(0);
                 Edge lastEdge = path.get(path.size() - 1);
-                Node firstNode =
-                        firstEdge.source.boundaryHeight > 0 ? firstEdge.source : firstEdge.target;
+                Node firstNode = firstEdge.source.boundaryHeight > 0 ? firstEdge.source : firstEdge.target;
                 Node lastNode = lastEdge.source.boundaryHeight < 0 ? lastEdge.source : lastEdge.target;
-                if (firstNode.boundaryHeight < x.boundaryHeight
-                        || lastNode.boundaryHeight > y.boundaryHeight) {
+                if (firstNode.boundaryHeight < x.boundaryHeight || lastNode.boundaryHeight > y.boundaryHeight) {
                     // case C, either the first node or the last node of the path is higher than x or y
                     // respectively
                     Node removeStart;
                     if (lastNode.boundaryHeight > y.boundaryHeight) {
                         removeStart = firstNode.boundaryHeight < x.boundaryHeight ? firstNode : x;
-                        BoyerMyrvoldPlanarityInspector.removeUp(removeStart, componentRoot, 1, subdivision);
+                        removeUp(removeStart, componentRoot, 1, subdivision);
                     } else {
-                        BoyerMyrvoldPlanarityInspector.removeUp(y, componentRoot, 0, subdivision);
+                        removeUp(y, componentRoot, 0, subdivision);
                     }
-                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
+                    addPathEdges(subdivision, failedEdge, w);
                     subdivision.addAll(path);
-                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, v, backLower);
+                    addPathEdges(subdivision, v, backLower);
                     return finish(subdivision);
                 }
                 path.forEach(e -> e.source.marked = e.target.marked = true);
                 List<Edge> pathToV = findPathToV(path, v);
                 if (!pathToV.isEmpty()) {
                     // case D, we have a path to the node v
-                    BoyerMyrvoldPlanarityInspector.removeUp(x, componentRoot, 1, subdivision);
-                    BoyerMyrvoldPlanarityInspector.removeUp(y, componentRoot, 0, subdivision);
+                    removeUp(x, componentRoot, 1, subdivision);
+                    removeUp(y, componentRoot, 0, subdivision);
                     subdivision.addAll(path);
                     subdivision.addAll(pathToV);
-                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, v, backLower);
-                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
+                    addPathEdges(subdivision, v, backLower);
+                    addPathEdges(subdivision, failedEdge, w);
                     return finish(subdivision);
                 }
-                Edge externallyActive = BoyerMyrvoldPlanarityInspector.searchEdge(w, v.height, failedEdge);
+                Edge externallyActive = searchEdge(w, v.height, failedEdge);
                 assert externallyActive != null;
-                BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, externallyActive, w);
-                if (BoyerMyrvoldPlanarityInspector
-                        .firstStrictlyHigher(externallyActive.target, xBackEdge.target, yBackEdge.target)) {
+                addPathEdges(subdivision, externallyActive, w);
+                if (firstStrictlyHigher(externallyActive.target, xBackEdge.target, yBackEdge.target)) {
                     // case E_2, equivalent to A
-                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, componentRoot.getParent(), backLower);
-                } else if (BoyerMyrvoldPlanarityInspector
-                        .firstStrictlyHigher(
-                                xBackEdge.target, yBackEdge.target, externallyActive.target)) {
+                    addPathEdges(subdivision, componentRoot.getParent(), backLower);
+                } else if (firstStrictlyHigher(
+                        xBackEdge.target, yBackEdge.target, externallyActive.target)) {
                     // case E_2, u_x is higher
-                    BoyerMyrvoldPlanarityInspector.removeUp(componentRoot, x, 0, subdivision);
-                    BoyerMyrvoldPlanarityInspector.removeUp(w, lastNode, 0, subdivision);
+                    removeUp(componentRoot, x, 0, subdivision);
+                    removeUp(w, lastNode, 0, subdivision);
                     subdivision.addAll(path);
-                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
-                    BoyerMyrvoldPlanarityInspector
-                            .addPathEdges(subdivision, v,
-                                    BoyerMyrvoldPlanarityInspector.lowest(backLower, externallyActive.target));
-                } else if (BoyerMyrvoldPlanarityInspector
-                        .firstStrictlyHigher(
-                                yBackEdge.target, xBackEdge.target, externallyActive.target)) {
+                    addPathEdges(subdivision, failedEdge, w);
+                    addPathEdges(subdivision, v,
+                            lowest(backLower, externallyActive.target));
+                } else if (firstStrictlyHigher(
+                        yBackEdge.target, xBackEdge.target, externallyActive.target)) {
                     // case E_2, u_y is higher
-                    BoyerMyrvoldPlanarityInspector.removeUp(y, componentRoot, 0, subdivision);
-                    BoyerMyrvoldPlanarityInspector.removeUp(firstNode, w, 0, subdivision);
+                    removeUp(y, componentRoot, 0, subdivision);
+                    removeUp(firstNode, w, 0, subdivision);
                     subdivision.addAll(path);
-                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
-                    BoyerMyrvoldPlanarityInspector
-                            .addPathEdges(subdivision, v,
-                                    BoyerMyrvoldPlanarityInspector.lowest(backLower, externallyActive.target));
+                    addPathEdges(subdivision, failedEdge, w);
+                    addPathEdges(subdivision, v,
+                            lowest(backLower, externallyActive.target));
                 } else if (firstNode.boundaryHeight > x.boundaryHeight) {
                     // case E_4, p_x is lower than x
-                    BoyerMyrvoldPlanarityInspector.removeUp(w, lastNode, 0, subdivision);
+                    removeUp(w, lastNode, 0, subdivision);
                     subdivision.addAll(path);
-                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
-                    BoyerMyrvoldPlanarityInspector
-                            .addPathEdges(
-                                    subdivision,
-                                    BoyerMyrvoldPlanarityInspector.highest(backHigher, externallyActive.target),
-                                    BoyerMyrvoldPlanarityInspector.lowest(backLower, externallyActive.target));
+                    addPathEdges(subdivision, failedEdge, w);
+                    addPathEdges(
+                            subdivision,
+                            highest(backHigher, externallyActive.target),
+                            lowest(backLower, externallyActive.target));
                 } else if (lastNode.boundaryHeight < y.boundaryHeight) {
                     // case E_4, p_y is lower than y
-                    BoyerMyrvoldPlanarityInspector.removeUp(firstNode, w, 0, subdivision);
+                    removeUp(firstNode, w, 0, subdivision);
                     subdivision.addAll(path);
-                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
-                    BoyerMyrvoldPlanarityInspector
-                            .addPathEdges(
-                                    subdivision,
-                                    BoyerMyrvoldPlanarityInspector.highest(backHigher, externallyActive.target),
-                                    BoyerMyrvoldPlanarityInspector.lowest(backLower, externallyActive.target));
+                    addPathEdges(subdivision, failedEdge, w);
+                    addPathEdges(
+                            subdivision,
+                            highest(backHigher, externallyActive.target),
+                            lowest(backLower, externallyActive.target));
                 } else {
                     // case E, extracting K_5
                     subdivision.addAll(path);
-                    BoyerMyrvoldPlanarityInspector
-                            .addPathEdges(subdivision, v,
-                                    BoyerMyrvoldPlanarityInspector.lowest(backLower, externallyActive.target));
-                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
+                    addPathEdges(subdivision, v,
+                            lowest(backLower, externallyActive.target));
+                    addPathEdges(subdivision, failedEdge, w);
                 }
                 return finish(subdivision);
             }
@@ -1372,46 +1372,6 @@ public class PlanarityTester3
             SearchInfo(Node current, Edge prevEdge, boolean backtrack) {
                 this.current = current;
                 this.prevEdge = prevEdge;
-                this.backtrack = backtrack;
-            }
-        }
-
-        /**
-         * Represents information needed to store in the stack during the input {@code graph}
-         * orientation.
-         */
-        private static class OrientDfsStackInfo {
-            /**
-             * The current vertex of the dfs traversal
-             */
-            Integer current;
-            /**
-             * The parent vertex of the {@code current} vertex, which is null for dfs tree roots
-             */
-            Integer parent;
-            /**
-             * The edge connecting {@code parent} and {@code current} vertices
-             */
-            Integer parentEdge;
-            /**
-             * Whether dfs is moving forward or backtracking on the {@code current} node
-             */
-            boolean backtrack;
-
-            /**
-             * Creates new instance of the information stored on the stack during the orientation of the
-             * {@code graph}
-             *
-             * @param current    the vertex dfs is currently processing
-             * @param parent     the parent of the {@code current} vertex
-             * @param parentEdge the edge between {@code current} and {@code parent} vertices
-             * @param backtrack  whether dfs is moving forward or backtracking on the {@code current}
-             *                       vertex
-             */
-            OrientDfsStackInfo(Integer current, Integer parent, Integer parentEdge, boolean backtrack) {
-                this.current = current;
-                this.parent = parent;
-                this.parentEdge = parentEdge;
                 this.backtrack = backtrack;
             }
         }
@@ -1592,12 +1552,12 @@ public class PlanarityTester3
              * The counterpart of this edge in the {@code graph}. This value can be null if the edge was
              * created as a short-circuit edge.
              */
-            Integer graphEdge;
+            private final int graphEdge;
             /**
              * The source node of this edge. For tree edges the {@code source} is lower than the
              * {@code target}, for back edges the {@code target} is lower (having smaller height)
              */
-            Node source;
+            final Node source;
             /**
              * The target of this edge
              */
@@ -1630,7 +1590,7 @@ public class PlanarityTester3
              * @param target the target of the short-circuit edge
              */
             Edge(Node source, Node target) {
-                this(null, source, target);
+                this(-1, source, target);
                 this.shortCircuit = true;
                 this.embedded = true;
             }
@@ -1641,7 +1601,7 @@ public class PlanarityTester3
              * @param graphEdge the counterpart of this edge in the {@code graph}
              * @param source    the source node of this edge
              */
-            Edge(Integer graphEdge, Node source) {
+            Edge(int graphEdge, Node source) {
                 this(graphEdge, source, null);
             }
 
@@ -1652,11 +1612,17 @@ public class PlanarityTester3
              * @param source    the source node of this edge
              * @param target    the target node of this edge
              */
-            Edge(Integer graphEdge, Node source, Node target) {
+            Edge(int graphEdge, Node source, Node target) {
                 this.graphEdge = graphEdge;
                 this.source = source;
                 this.target = target;
                 this.sign = 1;
+            }
+
+            int graphEdge() {
+                if (graphEdge < 0)
+                    throw new IllegalStateException("This edge is a short-circuit edge");
+                return graphEdge;
             }
 
             /**
@@ -1690,17 +1656,17 @@ public class PlanarityTester3
              * The counterpart of this node in the {@code graph}. For the component roots this value is
              * {@code null}.
              */
-            Integer graphVertex;
+            final Integer graphVertex;
             /**
              * Whether this node is a root of the biconnected component or not.
              */
-            boolean rootVertex;
+            final boolean rootVertex;
             /**
              * The dfs index of this node in the graph. Every node has a unique dfs index in the range
              * $[0,|V| - 1]$. This value is used to order the nodes for the embedding of the edges
              * incident to them. The index of the first dfs root is $1$
              */
-            int dfsIndex;
+            final int dfsIndex;
             /**
              * The height of the node in the created dfs tree. The root of the tree has height $0$. The
              * smaller this value is, the lower the node is considered to be.
@@ -1747,7 +1713,7 @@ public class PlanarityTester3
              * Edge to the parent node of this node in the dfs tree. For tree roots this value is
              * {@code null}
              */
-            Edge parentEdge;
+            final Edge parentEdge;
             /**
              * If this node has a back edge incident to the currently processed node $v$, then this
              * variable stores this edge
@@ -1761,32 +1727,32 @@ public class PlanarityTester3
              * Two neighbors on the outer face of the biconnected component. Their order is completely
              * irrelevant for the algorithm to traverse the outer face.
              */
-            Node[] outerFaceNeighbors;
+            final Node[] outerFaceNeighbors;
             /**
              * The list containing the dfs children of this node, which are in the different child
              * biconnected component, i.e. their weren't merged in the parent component.
              */
-            DoublyLinkedList<Node> separatedDfsChildList;
+            final DoublyLinkedList<Node> separatedDfsChildList;
             /**
              * The roots of the pertinent components during the processing of the node $v$. These are
              * the components that have pertinent descendant nodes, i.e. nodes incident to the node $v$
              * via a back edge
              */
-            DoublyLinkedList<Node> pertinentRoots;
+            final DoublyLinkedList<Node> pertinentRoots;
             /**
              * The list of tree edges incident to this node in the dfs tree. This list doesn't contain a
              * parent edge of this node
              */
-            List<Edge> treeEdges;
+            final List<Edge> treeEdges;
             /**
              * The list containing the edges from descendants of this node in the dfs tree. For each
              * such descendant the corresponding edge is a back edge.
              */
-            List<Edge> downEdges;
+            final List<Edge> downEdges;
             /**
              * The list of back edges incident to this node.
              */
-            List<Edge> backEdges;
+            final List<Edge> backEdges;
             /**
              * Stores the list node from the {@code separatedDfsChildList} of the parent node this node
              * is stored in. This enable deleting of this node from the {@code separatedDfsChildList}
@@ -1799,7 +1765,7 @@ public class PlanarityTester3
              * along the path from the root of the component this node is contained in to this node is
              * equal to $-1$. Otherwise, the order is clockwise.
              */
-            DoublyLinkedList<Edge> embedded;
+            final DoublyLinkedList<Edge> embedded;
 
             /**
              * Creates a new real node with the specified parameters.
@@ -1835,16 +1801,15 @@ public class PlanarityTester3
              * @param parentEdge  the parent edge of this node
              * @param rootVertex  whether this is real or virtual node
              */
-            Node(Integer graphVertex, int dfsIndex, Edge parentEdge, boolean rootVertex, int n) {
+            private Node(Integer graphVertex, int dfsIndex, Edge parentEdge, boolean rootVertex, int n) {
                 this.graphVertex = graphVertex;
                 this.dfsIndex = dfsIndex;
                 this.parentEdge = parentEdge;
                 this.rootVertex = rootVertex;
                 this.outerFaceNeighbors = (Node[]) Array.newInstance(Node.class, 2);
                 this.embedded = new DoublyLinkedList<>();
-                if (parentEdge != null) {
+                if (parentEdge != null)
                     embedded.add(parentEdge);
-                }
                 this.visited = this.backEdgeFlag = n;
                 if (!rootVertex) {
                     separatedDfsChildList = new DoublyLinkedList<>();
@@ -1852,6 +1817,12 @@ public class PlanarityTester3
                     treeEdges = new ArrayList<>();
                     downEdges = new ArrayList<>();
                     backEdges = new ArrayList<>();
+                } else {
+                    separatedDfsChildList = null;
+                    pertinentRoots = null;
+                    treeEdges = null;
+                    downEdges = null;
+                    backEdges = null;
                 }
             }
 
