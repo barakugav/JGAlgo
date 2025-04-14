@@ -273,7 +273,7 @@ public class PlanarityTester3
                 for (int currentNode = n - 1; currentNode >= 0; currentNode--) {
                     Node current = nodes.get(currentNode);
                     for (Edge downEdge : current.downEdges) {
-                        walkUp(downEdge.source, current, downEdge);
+                        BoyerMyrvoldPlanarityInspector.walkUp(downEdge.source, current, downEdge);
                     }
                     for (Edge treeEdge : current.treeEdges) {
                         walkDown(treeEdge.target.initialComponentRoot);
@@ -399,10 +399,10 @@ public class PlanarityTester3
                         Node root = current.pertinentRoots.getFirst();
 
                         OuterFaceCirculator ccwCirculator =
-                                getActiveSuccessorOnOuterFace(root, componentRoot, 0);
+                                BoyerMyrvoldPlanarityInspector.getActiveSuccessorOnOuterFace(root, componentRoot, 0);
                         Node ccwActiveNode = ccwCirculator.getCurrent();
                         OuterFaceCirculator cwCirculator =
-                                getActiveSuccessorOnOuterFace(root, componentRoot, 1);
+                                BoyerMyrvoldPlanarityInspector.getActiveSuccessorOnOuterFace(root, componentRoot, 1);
                         Node cwActiveNode = cwCirculator.getCurrent();
 
                         if (ccwActiveNode.isInternallyActiveWrtTo(componentRoot)) {
@@ -463,7 +463,7 @@ public class PlanarityTester3
          * @param end   the node currently processed by the main loop of the algorithm
          * @param edge  a back edge to embed
          */
-        private void walkUp(Node start, Node end, Edge edge) {
+        private static void walkUp(Node start, Node end, Edge edge) {
             int visited = end.dfsIndex;
 
             start.backEdgeFlag = visited;
@@ -526,7 +526,7 @@ public class PlanarityTester3
             }
             if (embedding == null) {
                 for (Node dfsTreeRoot : dfsTreeRoots) {
-                    cleanUpDfs(dfsTreeRoot);
+                    BoyerMyrvoldPlanarityInspector.cleanUpDfs(dfsTreeRoot);
                 }
                 Map<Integer, List<Integer>> embeddingMap = new HashMap<>();
                 for (Node node : nodes) {
@@ -573,7 +573,7 @@ public class PlanarityTester3
          * @param  dir       the direction to start the traversal in
          * @return           a circulator to the node satisfying the {@code predicate} or to the {@code stop} node
          */
-        private OuterFaceCirculator selectOnOuterFace(
+        private static OuterFaceCirculator selectOnOuterFace(
                 Predicate<Node> predicate, Node start, Node stop, int dir) {
             OuterFaceCirculator circulator = start.iterator(dir);
             Node current = circulator.next();
@@ -592,8 +592,8 @@ public class PlanarityTester3
          * @param  dir   the direction of the search
          * @return       a circulator to the found node
          */
-        private OuterFaceCirculator getActiveSuccessorOnOuterFace(Node start, Node v, int dir) {
-            return selectOnOuterFace(n -> n.isActiveWrtTo(v), start, start, dir);
+        private static OuterFaceCirculator getActiveSuccessorOnOuterFace(Node start, Node v, int dir) {
+            return BoyerMyrvoldPlanarityInspector.selectOnOuterFace(n -> n.isActiveWrtTo(v), start, start, dir);
         }
 
         /**
@@ -606,9 +606,10 @@ public class PlanarityTester3
          * @param  dir   the direction of the search
          * @return       a circulator to the found node
          */
-        private OuterFaceCirculator getExternallyActiveSuccessorOnOuterFace(
+        private static OuterFaceCirculator getExternallyActiveSuccessorOnOuterFace(
                 Node start, Node stop, Node v, int dir) {
-            return selectOnOuterFace(n -> n.isExternallyActiveWrtTo(v), start, stop, dir);
+            return BoyerMyrvoldPlanarityInspector
+                    .selectOnOuterFace(n -> n.isExternallyActiveWrtTo(v), start, stop, dir);
         }
 
         /**
@@ -617,8 +618,8 @@ public class PlanarityTester3
          * @param  node a node in the partially embedded graph
          * @return      a component root of the component the {@code node} belongs to
          */
-        private Node getComponentRoot(Node node) {
-            return selectOnOuterFace(Node::isRootVertex, node, node, 0).getCurrent();
+        private static Node getComponentRoot(Node node) {
+            return BoyerMyrvoldPlanarityInspector.selectOnOuterFace(Node::isRootVertex, node, node, 0).getCurrent();
         }
 
         /**
@@ -629,7 +630,7 @@ public class PlanarityTester3
          * @param startEdge the edge to start from
          * @param stop      the last node on the path
          */
-        private void addPathEdges(Set<Edge> edges, Edge startEdge, Node stop) {
+        private static void addPathEdges(Set<Edge> edges, Edge startEdge, Node stop) {
             edges.add(startEdge);
             Node current = startEdge.source;
             while (current != stop) {
@@ -645,9 +646,9 @@ public class PlanarityTester3
          * @param start the node to start from
          * @param stop  the node to end with
          */
-        private void addPathEdges(Set<Edge> edges, Node start, Node stop) {
+        private static void addPathEdges(Set<Edge> edges, Node start, Node stop) {
             if (start != stop) {
-                addPathEdges(edges, start.parentEdge, stop);
+                BoyerMyrvoldPlanarityInspector.addPathEdges(edges, start.parentEdge, stop);
             }
         }
 
@@ -658,8 +659,8 @@ public class PlanarityTester3
          * @param  heightMax an upper bound on the height of the desired back edge
          * @return           the desired back edge or null, if no such edge exist
          */
-        private Edge searchEdge(Node current, int heightMax) {
-            return searchEdge(current, heightMax, null);
+        private static Edge searchEdge(Node current, int heightMax) {
+            return BoyerMyrvoldPlanarityInspector.searchEdge(current, heightMax, null);
         }
 
         /**
@@ -670,14 +671,14 @@ public class PlanarityTester3
          * @param  forbiddenEdge an edge the desired edge should not be equal to
          * @return               the desired back edge or null, if no such edge exist
          */
-        private Edge searchEdge(Node current, int heightMax, Edge forbiddenEdge) {
+        private static Edge searchEdge(Node current, int heightMax, Edge forbiddenEdge) {
             Predicate<Edge> isNeeded = e -> {
                 if (forbiddenEdge == e) {
                     return false;
                 }
                 return e.target.height < heightMax;
             };
-            return searchEdge(current, isNeeded);
+            return BoyerMyrvoldPlanarityInspector.searchEdge(current, isNeeded);
         }
 
         /**
@@ -689,9 +690,9 @@ public class PlanarityTester3
          * @param  isNeeded the predicate which the desired edge should satisfy
          * @return          an edge which satisfies the {@code predicate}, or null if such an edge doesn't exist
          */
-        private Edge searchEdge(Node current, Predicate<Edge> isNeeded) {
+        private static Edge searchEdge(Node current, Predicate<Edge> isNeeded) {
             for (Node node : current.separatedDfsChildList) {
-                Edge result = searchSubtreeDfs(node, isNeeded);
+                Edge result = BoyerMyrvoldPlanarityInspector.searchSubtreeDfs(node, isNeeded);
                 if (result != null) {
                     return result;
                 }
@@ -712,7 +713,7 @@ public class PlanarityTester3
          * @param  isNeeded a predicate, which the desired edge should satisfy
          * @return          a desired edge, or null if no such edge exist.
          */
-        private Edge searchSubtreeDfs(Node start, Predicate<Edge> isNeeded) {
+        private static Edge searchSubtreeDfs(Node start, Predicate<Edge> isNeeded) {
             List<Node> stack = new ArrayList<>();
             stack.add(start);
             while (!stack.isEmpty()) {
@@ -737,7 +738,7 @@ public class PlanarityTester3
          * @param  b a node in the dfs tree
          * @return   the highest of the two nodes
          */
-        private Node highest(Node a, Node b) {
+        private static Node highest(Node a, Node b) {
             return a.height > b.height ? a : b;
         }
 
@@ -748,7 +749,7 @@ public class PlanarityTester3
          * @param  b a node in the dfs tree
          * @return   the lowest of the two nodes
          */
-        private Node lowest(Node a, Node b) {
+        private static Node lowest(Node a, Node b) {
             return a.height < b.height ? a : b;
         }
 
@@ -761,7 +762,7 @@ public class PlanarityTester3
          * @param dir           the direction to start the traversal in
          * @param delta         a value in $\{+1, -1\}$ to set either positive or negative boundary height
          */
-        private void setBoundaryDepth(Node componentRoot, Node w, int dir, int delta) {
+        private static void setBoundaryDepth(Node componentRoot, Node w, int dir, int delta) {
             OuterFaceCirculator circulator = componentRoot.iterator(dir);
             Node current = circulator.next();
             int currentHeight = delta;
@@ -887,7 +888,7 @@ public class PlanarityTester3
          * @param edges         the set to add the edges to
          * @param componentRoot the root of the biconnected component
          */
-        private void addBoundaryEdges(Set<Edge> edges, Node componentRoot) {
+        private static void addBoundaryEdges(Set<Edge> edges, Node componentRoot) {
             OuterFaceCirculator circulator = componentRoot.iterator(0);
             Node current;
             do {
@@ -903,12 +904,12 @@ public class PlanarityTester3
          */
         private void kuratowskiCleanUp() {
             for (Node dfsTreeRoot : dfsTreeRoots) {
-                cleanUpDfs(dfsTreeRoot);
+                BoyerMyrvoldPlanarityInspector.cleanUpDfs(dfsTreeRoot);
             }
             for (Node node : componentRoots) {
                 if (node.outerFaceNeighbors[0] != null) {
                     node.removeShortCircuitEdges();
-                    fixBoundaryOrder(node);
+                    BoyerMyrvoldPlanarityInspector.fixBoundaryOrder(node);
                 }
             }
         }
@@ -919,7 +920,7 @@ public class PlanarityTester3
          *
          * @param dfsTreeRoot the root of the dfs tree to clean up
          */
-        private void cleanUpDfs(Node dfsTreeRoot) {
+        private static void cleanUpDfs(Node dfsTreeRoot) {
             List<Pair<Node, Integer>> stack = new ArrayList<>();
             stack.add(Pair.of(dfsTreeRoot, 1));
             while (!stack.isEmpty()) {
@@ -948,7 +949,7 @@ public class PlanarityTester3
          *
          * @param componentRoot the root of the component to process
          */
-        private void fixBoundaryOrder(Node componentRoot) {
+        private static void fixBoundaryOrder(Node componentRoot) {
             if (componentRoot.embedded.size() < 2) {
                 return;
             }
@@ -987,7 +988,7 @@ public class PlanarityTester3
          * @param dir   the direction to take from the {@code start} node
          * @param edges the set of edges to modify
          */
-        private void removeUp(Node start, Node end, int dir, Set<Edge> edges) {
+        private static void removeUp(Node start, Node end, int dir, Set<Edge> edges) {
             if (start == end) {
                 return;
             }
@@ -1010,7 +1011,7 @@ public class PlanarityTester3
          * @return          the desired node {@code z} or null if the source of the {@code backEdge} is equal to
          *                  {@code w}
          */
-        private Node getNextOnPath(Node w, Edge backEdge) {
+        private static Node getNextOnPath(Node w, Edge backEdge) {
             if (backEdge.source == w) {
                 return null;
             }
@@ -1057,7 +1058,7 @@ public class PlanarityTester3
          * @param  c a node in the dfs tree
          * @return   true if the first node in strictly higher that other node, false otherwise
          */
-        private boolean firstStrictlyHigher(Node a, Node b, Node c) {
+        private static boolean firstStrictlyHigher(Node a, Node b, Node c) {
             return a.height > b.height && a.height > c.height;
         }
 
@@ -1075,16 +1076,18 @@ public class PlanarityTester3
          */
         private Edge checkComponentForFailedEdge(Node componentRoot, Node v) {
             OuterFaceCirculator firstDir =
-                    getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, 0);
+                    BoyerMyrvoldPlanarityInspector
+                            .getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, 0);
             Node firstDirNode = firstDir.getCurrent();
             OuterFaceCirculator secondDir =
-                    getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, 1);
+                    BoyerMyrvoldPlanarityInspector
+                            .getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, 1);
             Node secondDirNode = secondDir.getCurrent();
             if (firstDirNode != componentRoot && firstDirNode != secondDirNode) {
                 Node current = firstDir.next();
                 while (current != secondDirNode) {
                     if (current.isPertinentWrtTo(v)) {
-                        return searchEdge(current, e -> e.target == v && !e.embedded);
+                        return BoyerMyrvoldPlanarityInspector.searchEdge(current, e -> e.target == v && !e.embedded);
                     }
                     current = firstDir.next();
                 }
@@ -1147,54 +1150,63 @@ public class PlanarityTester3
                  */
                 Node x, y, v = failedEdge.target, w = failedEdge.source, componentRoot;
                 while (true) {
-                    componentRoot = getComponentRoot(w);
-                    x = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, 1).getCurrent();
-                    y = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, 0).getCurrent();
+                    componentRoot = BoyerMyrvoldPlanarityInspector.getComponentRoot(w);
+                    x = BoyerMyrvoldPlanarityInspector
+                            .getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, 1)
+                            .getCurrent();
+                    y = BoyerMyrvoldPlanarityInspector
+                            .getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, 0)
+                            .getCurrent();
                     if (x.isRootVertex()) {
                         w = x.getParent();
                     } else if (y.isRootVertex()) {
                         w = y.getParent();
                     } else {
-                        componentRoot = getComponentRoot(w);
+                        componentRoot = BoyerMyrvoldPlanarityInspector.getComponentRoot(w);
                         break;
                     }
                 }
-                Edge xBackEdge = searchEdge(x, v.height);
-                Edge yBackEdge = searchEdge(y, v.height);
-                Node backLower = lowest(xBackEdge.target, yBackEdge.target);
-                Node backHigher = highest(xBackEdge.target, yBackEdge.target);
-                addPathEdges(subdivision, xBackEdge, x);
-                addPathEdges(subdivision, yBackEdge, y);
-                addBoundaryEdges(subdivision, componentRoot);
+                Edge xBackEdge = BoyerMyrvoldPlanarityInspector.searchEdge(x, v.height);
+                Edge yBackEdge = BoyerMyrvoldPlanarityInspector.searchEdge(y, v.height);
+                Node backLower = BoyerMyrvoldPlanarityInspector.lowest(xBackEdge.target, yBackEdge.target);
+                Node backHigher = BoyerMyrvoldPlanarityInspector.highest(xBackEdge.target, yBackEdge.target);
+                BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, xBackEdge, x);
+                BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, yBackEdge, y);
+                BoyerMyrvoldPlanarityInspector.addBoundaryEdges(subdivision, componentRoot);
 
                 if (componentRoot.getParent() != v) {
                     // case A, v isn't a parent of the component we've found
-                    addPathEdges(subdivision, componentRoot.getParent(), backLower);
-                    addPathEdges(subdivision, failedEdge, w);
+                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, componentRoot.getParent(), backLower);
+                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
                     return finish(subdivision);
                 }
                 // node z will be null only if the tree path from w to failedEdge is failedEdge itself
-                Node z = getNextOnPath(w, failedEdge);
+                Node z = BoyerMyrvoldPlanarityInspector.getNextOnPath(w, failedEdge);
                 Edge backEdge = null;
                 if (z != null) {
-                    backEdge = searchSubtreeDfs(z, e -> e.target.height < v.height && e != failedEdge);
+                    backEdge = BoyerMyrvoldPlanarityInspector
+                            .searchSubtreeDfs(z, e -> e.target.height < v.height && e != failedEdge);
                 }
                 if (backEdge != null) {
                     // case B
-                    addPathEdges(subdivision, backEdge, w);
-                    addPathEdges(subdivision, failedEdge, w);
+                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, backEdge, w);
+                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
                     Node highest =
-                            highest(xBackEdge.target, highest(yBackEdge.target, backEdge.target));
-                    Node lowest = lowest(xBackEdge.target, lowest(yBackEdge.target, backEdge.target));
-                    addPathEdges(subdivision, highest, lowest);
+                            BoyerMyrvoldPlanarityInspector
+                                    .highest(xBackEdge.target,
+                                            BoyerMyrvoldPlanarityInspector.highest(yBackEdge.target, backEdge.target));
+                    Node lowest = BoyerMyrvoldPlanarityInspector
+                            .lowest(xBackEdge.target,
+                                    BoyerMyrvoldPlanarityInspector.lowest(yBackEdge.target, backEdge.target));
+                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, highest, lowest);
                     return finish(subdivision);
                 }
                 /*
                  * If we failed to either case A or B, we have to find a highest obstructing path and
                  * then deal with cases C - E
                  */
-                setBoundaryDepth(componentRoot, w, 0, 1);
-                setBoundaryDepth(componentRoot, w, 1, -1);
+                BoyerMyrvoldPlanarityInspector.setBoundaryDepth(componentRoot, w, 0, 1);
+                BoyerMyrvoldPlanarityInspector.setBoundaryDepth(componentRoot, w, 1, -1);
 
                 assert x.boundaryHeight > 0;
                 List<Edge> path = findHighestObstructingPath(componentRoot, w);
@@ -1212,70 +1224,83 @@ public class PlanarityTester3
                     Node removeStart;
                     if (lastNode.boundaryHeight > y.boundaryHeight) {
                         removeStart = firstNode.boundaryHeight < x.boundaryHeight ? firstNode : x;
-                        removeUp(removeStart, componentRoot, 1, subdivision);
+                        BoyerMyrvoldPlanarityInspector.removeUp(removeStart, componentRoot, 1, subdivision);
                     } else {
-                        removeUp(y, componentRoot, 0, subdivision);
+                        BoyerMyrvoldPlanarityInspector.removeUp(y, componentRoot, 0, subdivision);
                     }
-                    addPathEdges(subdivision, failedEdge, w);
+                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
                     subdivision.addAll(path);
-                    addPathEdges(subdivision, v, backLower);
+                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, v, backLower);
                     return finish(subdivision);
                 }
                 path.forEach(e -> e.source.marked = e.target.marked = true);
                 List<Edge> pathToV = findPathToV(path, v);
                 if (!pathToV.isEmpty()) {
                     // case D, we have a path to the node v
-                    removeUp(x, componentRoot, 1, subdivision);
-                    removeUp(y, componentRoot, 0, subdivision);
+                    BoyerMyrvoldPlanarityInspector.removeUp(x, componentRoot, 1, subdivision);
+                    BoyerMyrvoldPlanarityInspector.removeUp(y, componentRoot, 0, subdivision);
                     subdivision.addAll(path);
                     subdivision.addAll(pathToV);
-                    addPathEdges(subdivision, v, backLower);
-                    addPathEdges(subdivision, failedEdge, w);
+                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, v, backLower);
+                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
                     return finish(subdivision);
                 }
-                Edge externallyActive = searchEdge(w, v.height, failedEdge);
+                Edge externallyActive = BoyerMyrvoldPlanarityInspector.searchEdge(w, v.height, failedEdge);
                 assert externallyActive != null;
-                addPathEdges(subdivision, externallyActive, w);
-                if (firstStrictlyHigher(externallyActive.target, xBackEdge.target, yBackEdge.target)) {
+                BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, externallyActive, w);
+                if (BoyerMyrvoldPlanarityInspector
+                        .firstStrictlyHigher(externallyActive.target, xBackEdge.target, yBackEdge.target)) {
                     // case E_2, equivalent to A
-                    addPathEdges(subdivision, componentRoot.getParent(), backLower);
-                } else if (firstStrictlyHigher(
-                        xBackEdge.target, yBackEdge.target, externallyActive.target)) {
+                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, componentRoot.getParent(), backLower);
+                } else if (BoyerMyrvoldPlanarityInspector
+                        .firstStrictlyHigher(
+                                xBackEdge.target, yBackEdge.target, externallyActive.target)) {
                     // case E_2, u_x is higher
-                    removeUp(componentRoot, x, 0, subdivision);
-                    removeUp(w, lastNode, 0, subdivision);
+                    BoyerMyrvoldPlanarityInspector.removeUp(componentRoot, x, 0, subdivision);
+                    BoyerMyrvoldPlanarityInspector.removeUp(w, lastNode, 0, subdivision);
                     subdivision.addAll(path);
-                    addPathEdges(subdivision, failedEdge, w);
-                    addPathEdges(subdivision, v, lowest(backLower, externallyActive.target));
-                } else if (firstStrictlyHigher(
-                        yBackEdge.target, xBackEdge.target, externallyActive.target)) {
+                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
+                    BoyerMyrvoldPlanarityInspector
+                            .addPathEdges(subdivision, v,
+                                    BoyerMyrvoldPlanarityInspector.lowest(backLower, externallyActive.target));
+                } else if (BoyerMyrvoldPlanarityInspector
+                        .firstStrictlyHigher(
+                                yBackEdge.target, xBackEdge.target, externallyActive.target)) {
                     // case E_2, u_y is higher
-                    removeUp(y, componentRoot, 0, subdivision);
-                    removeUp(firstNode, w, 0, subdivision);
+                    BoyerMyrvoldPlanarityInspector.removeUp(y, componentRoot, 0, subdivision);
+                    BoyerMyrvoldPlanarityInspector.removeUp(firstNode, w, 0, subdivision);
                     subdivision.addAll(path);
-                    addPathEdges(subdivision, failedEdge, w);
-                    addPathEdges(subdivision, v, lowest(backLower, externallyActive.target));
+                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
+                    BoyerMyrvoldPlanarityInspector
+                            .addPathEdges(subdivision, v,
+                                    BoyerMyrvoldPlanarityInspector.lowest(backLower, externallyActive.target));
                 } else if (firstNode.boundaryHeight > x.boundaryHeight) {
                     // case E_4, p_x is lower than x
-                    removeUp(w, lastNode, 0, subdivision);
+                    BoyerMyrvoldPlanarityInspector.removeUp(w, lastNode, 0, subdivision);
                     subdivision.addAll(path);
-                    addPathEdges(subdivision, failedEdge, w);
-                    addPathEdges(
-                            subdivision, highest(backHigher, externallyActive.target),
-                            lowest(backLower, externallyActive.target));
+                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
+                    BoyerMyrvoldPlanarityInspector
+                            .addPathEdges(
+                                    subdivision,
+                                    BoyerMyrvoldPlanarityInspector.highest(backHigher, externallyActive.target),
+                                    BoyerMyrvoldPlanarityInspector.lowest(backLower, externallyActive.target));
                 } else if (lastNode.boundaryHeight < y.boundaryHeight) {
                     // case E_4, p_y is lower than y
-                    removeUp(firstNode, w, 0, subdivision);
+                    BoyerMyrvoldPlanarityInspector.removeUp(firstNode, w, 0, subdivision);
                     subdivision.addAll(path);
-                    addPathEdges(subdivision, failedEdge, w);
-                    addPathEdges(
-                            subdivision, highest(backHigher, externallyActive.target),
-                            lowest(backLower, externallyActive.target));
+                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
+                    BoyerMyrvoldPlanarityInspector
+                            .addPathEdges(
+                                    subdivision,
+                                    BoyerMyrvoldPlanarityInspector.highest(backHigher, externallyActive.target),
+                                    BoyerMyrvoldPlanarityInspector.lowest(backLower, externallyActive.target));
                 } else {
                     // case E, extracting K_5
                     subdivision.addAll(path);
-                    addPathEdges(subdivision, v, lowest(backLower, externallyActive.target));
-                    addPathEdges(subdivision, failedEdge, w);
+                    BoyerMyrvoldPlanarityInspector
+                            .addPathEdges(subdivision, v,
+                                    BoyerMyrvoldPlanarityInspector.lowest(backLower, externallyActive.target));
+                    BoyerMyrvoldPlanarityInspector.addPathEdges(subdivision, failedEdge, w);
                 }
                 return finish(subdivision);
             }
