@@ -37,6 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
 // @SuppressWarnings("boxing")
@@ -55,11 +56,11 @@ public class PlanarityTester3
         /**
          * The graph we're testing planarity of
          */
-        private IndexGraph graph;
+        private final IndexGraph graph;
         /**
          * The number of vertices in the {@code graph}
          */
-        private int n;
+        private final int n;
         /**
          * The resulting combinatorial embedding. This value is computed only after the first call to
          * the {@link BoyerMyrvoldPlanarityInspector#getEmbedding()}
@@ -75,25 +76,25 @@ public class PlanarityTester3
          * orientation of the {@code graph} and edge sorting, nodes in this list are sorted according to
          * their dfs indexes
          */
-        private List<Node> nodes;
+        private final List<Node> nodes;
         /**
          * List of the dfs tree roots of the {@code graph}. This list has length more than 1 if the
          * input {@code graph} isn't connected
          */
-        private List<Node> dfsTreeRoots;
+        private final List<Node> dfsTreeRoots;
         /**
          * List of the virtual biconnected component roots. Initially, a virtual biconnected component
          * root is created for every node in the {@code graph}, except for the dfs roots. These
          * component roots don't belong to the {@code graph}. At each step of the algorithm, every
          * biconnected component has its own unique component root.
          */
-        private List<Node> componentRoots;
+        private final List<Node> componentRoots;
         /**
          * The stack containing merge information for every consecutive pair of biconnected components
          * on the path to the back edge source. After all the biconnected components are merged, this
          * stack is cleared
          */
-        private List<MergeInfo> stack;
+        private final List<MergeInfo> stack;
         /**
          * The node $v$, which has an unembedded back edge incident to it.
          */
@@ -336,12 +337,10 @@ public class PlanarityTester3
          * node.
          */
         private void mergeBiconnectedComponent() {
-            MergeInfo info = stack.get(stack.size() - 1);
-            stack.remove(stack.size() - 1);
+            MergeInfo info = stack.remove(stack.size() - 1);
             Node virtualRoot = info.child;
-            if (info.isInverted()) {
+            if (info.isInverted())
                 virtualRoot.swapNeighbors();
-            }
             Node root = info.parent;
             Node virtualRootChild = virtualRoot.parentEdge.target;
 
@@ -349,8 +348,8 @@ public class PlanarityTester3
             root.separatedDfsChildList.removeNode(virtualRootChild.listNode);
 
             root
-                    .mergeChildEdges(
-                            virtualRoot.embedded, info.vIn, info.vOut, info.parentNext, virtualRoot.parentEdge);
+                    .mergeChildEdges(virtualRoot.embedded, info.vIn, info.vOut, info.parentNext,
+                            virtualRoot.parentEdge);
 
             root.substituteAnother(info.parentNext, info.childPrev);
             info.childPrev.substitute(virtualRoot, root);
@@ -451,37 +450,32 @@ public class PlanarityTester3
 
                         if (currentComponentEntryDir == 0) {
                             stack
-                                    .add(
-                                            new MergeInfo(
-                                                    current, circulator.next(), root, root.outerFaceNeighbors[1],
-                                                    parentComponentEntryDir, currentComponentEntryDir));
+                                    .add(new MergeInfo(
+                                            current, circulator.next(), root, root.outerFaceNeighbors[1],
+                                            parentComponentEntryDir, currentComponentEntryDir));
                             current = ccwActiveNode;
                             circulator = ccwCirculator;
 
-                            if (!cwActiveNode.hasRootNeighbor()) {
+                            if (!cwActiveNode.hasRootNeighbor())
                                 embedShortCircuit(root, 1, cwCirculator);
-                            }
                         } else {
                             stack
-                                    .add(
-                                            new MergeInfo(
-                                                    current, circulator.next(), root, root.outerFaceNeighbors[0],
-                                                    parentComponentEntryDir, currentComponentEntryDir));
+                                    .add(new MergeInfo(
+                                            current, circulator.next(), root, root.outerFaceNeighbors[0],
+                                            parentComponentEntryDir, currentComponentEntryDir));
                             current = cwActiveNode;
                             circulator = cwCirculator;
 
-                            if (!ccwActiveNode.hasRootNeighbor()) {
+                            if (!ccwActiveNode.hasRootNeighbor())
                                 embedShortCircuit(root, 0, ccwCirculator);
-                            }
                         }
 
                     } else if (current.isInactiveWrtTo(componentRoot)) {
                         current = circulator.next();
                     } else {
                         // current vertex is externally active
-                        if (!current.hasRootNeighbor() && stack.isEmpty()) {
+                        if (!current.hasRootNeighbor() && stack.isEmpty())
                             embedShortCircuit(componentRoot, componentEntryDir, circulator);
-                        }
                         break;
                     }
                 }
@@ -923,9 +917,8 @@ public class PlanarityTester3
          * Cleans up the dfs trees before the Kuratowski subdivision extraction phase
          */
         private void kuratowskiCleanUp() {
-            for (Node dfsTreeRoot : dfsTreeRoots) {
+            for (Node dfsTreeRoot : dfsTreeRoots)
                 cleanUpDfs(dfsTreeRoot);
-            }
             for (Node node : componentRoots) {
                 if (node.outerFaceNeighbors[0] != null) {
                     node.removeShortCircuitEdges();
@@ -1378,19 +1371,19 @@ public class PlanarityTester3
              * The node current traversal descended from. This node belongs to the parent biconnected
              * component
              */
-            Node parent;
+            final Node parent;
             /**
              * The next node along the traversal of the parent biconnected component
              */
-            Node parentNext;
+            final Node parentNext;
             /**
              * The virtual root of the child biconnected component
              */
-            Node child;
+            final Node child;
             /**
              * The previous node along the traversal of the child biconnected component
              */
-            Node childPrev;
+            final Node childPrev;
             /**
              * The direction used to enter the parent biconnected component.
              * <p>
@@ -1399,13 +1392,13 @@ public class PlanarityTester3
              * the {@code parentNext}. Instead, this value specifies the direction used to start the
              * traversal from the parent's biconnected component virtual root.
              */
-            int vIn;
+            final int vIn;
             /**
              * The direction used to start the traversal of the child biconnected component. Since the
              * {@code child} is the component root, {@code child.outerFaceNeighbors[|1-vOut|]} is equal
              * to the {@code childPrev}
              */
-            int vOut;
+            final int vOut;
 
             /**
              * Creates new instance of the infromation needed to merge to biconnected components
@@ -1947,9 +1940,7 @@ public class PlanarityTester3
              * Swaps the outer face neighbors of this node
              */
             void swapNeighbors() {
-                Node t = outerFaceNeighbors[0];
-                outerFaceNeighbors[0] = outerFaceNeighbors[1];
-                outerFaceNeighbors[1] = t;
+                ObjectArrays.swap(outerFaceNeighbors, 0, 1);
             }
 
             /**
