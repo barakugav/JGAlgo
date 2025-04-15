@@ -329,7 +329,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * @param  childPrev the neighbor of the source of the edge that should belong to the inner face
          * @return           a circulator starting from the edge's source
          */
-        private OuterFaceCirculator embedBackEdge(Node root, boolean entryDir, Edge edge, Node childPrev) {
+        private OuterFaceIter embedBackEdge(Node root, boolean entryDir, Edge edge, Node childPrev) {
             assert !edge.embedded;
             if (entryDir == Side1) {
                 root.embedded.addLast(edge);
@@ -349,7 +349,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                 root.outerFaceNeighbor2 = child;
             }
             Node next = child.nextOnOuterFace(root);
-            return new OuterFaceCirculator(next, child);
+            return new OuterFaceIter(next, child);
         }
 
         /**
@@ -360,7 +360,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * @param entryDir      the direction used to enter the component
          * @param circulator    a circulator to the source of the new edge
          */
-        private static void embedShortCircuit(Node componentRoot, boolean entryDir, OuterFaceCirculator circulator) {
+        private static void embedShortCircuit(Node componentRoot, boolean entryDir, OuterFaceIter circulator) {
             Node current = circulator.getCurrent(), prev = circulator.getPrev();
             Edge shortCircuit = Edge.ofShortCircuit(current, componentRoot.getParent());
             if (entryDir == Side1) {
@@ -389,7 +389,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                 if (!mergeStack.isEmpty())
                     break;
                 boolean currentComponentEntryDir = componentEntryDir;
-                OuterFaceCirculator circulator = componentRoot.iterator(currentComponentEntryDir);
+                OuterFaceIter circulator = componentRoot.iterator(currentComponentEntryDir);
                 for (Node current = circulator.next(); current != componentRoot;) {
                     if (current.hasBackEdgeWrtTo(componentRoot)) {
                         Node childPrev = circulator.getPrev();
@@ -401,9 +401,9 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                         boolean parentComponentEntryDir = currentComponentEntryDir;
                         final Node root = current.pertinentRoots.getFirst();
 
-                        OuterFaceCirculator ccwCirculator = getActiveSuccessorOnOuterFace(root, componentRoot, Side1);
+                        OuterFaceIter ccwCirculator = getActiveSuccessorOnOuterFace(root, componentRoot, Side1);
                         Node ccwActiveNode = ccwCirculator.getCurrent();
-                        OuterFaceCirculator cwCirculator = getActiveSuccessorOnOuterFace(root, componentRoot, Side2);
+                        OuterFaceIter cwCirculator = getActiveSuccessorOnOuterFace(root, componentRoot, Side2);
                         Node cwActiveNode = cwCirculator.getCurrent();
 
                         if (ccwActiveNode.isInternallyActiveWrtTo(componentRoot)) {
@@ -460,27 +460,19 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * @param edge  a back edge to embed
          */
         private static void walkUp(Node start, Node end, Edge edge) {
-            int visited = end.dfsIndex;
+            final int visited = end.dfsIndex;
 
             start.backEdgeFlag = visited;
             start.edgeToEmbed = edge;
-
-            Node xPrev, yPrev;
-            Node x = (xPrev = start).outerFaceNeighbor1, y = (yPrev = start).outerFaceNeighbor2;
             start.visited = visited;
-            while (!x.isVisitedWrtTo(end) && !y.isVisitedWrtTo(end)) {
+
+            for (OuterFaceIter xIter = start.iterator(Side1), yIter = start.iterator(Side2);;) {
+                Node x = xIter.next(), y = yIter.next();
+                if (x.isVisitedWrtTo(end) || y.isVisitedWrtTo(end))
+                    break;
                 x.visited = y.visited = visited;
 
-                if (!x.isRootVertex && !y.isRootVertex) {
-                    Node xNext = x.nextOnOuterFace(xPrev);
-                    xPrev = x;
-                    x = xNext;
-
-                    Node yNext = y.nextOnOuterFace(yPrev);
-                    yPrev = y;
-                    y = yNext;
-
-                } else {
+                if (x.isRootVertex || y.isRootVertex) {
                     Node root = x.isRootVertex ? x : y;
                     assert root.isRootVertex;
 
@@ -496,8 +488,9 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                         root.listNode = newStart.pertinentRoots.addElementFirst(root);
                     }
                     newStart.visited = visited;
-                    x = (xPrev = newStart).outerFaceNeighbor1;
-                    y = (yPrev = newStart).outerFaceNeighbor2;
+
+                    xIter = newStart.iterator(Side1);
+                    yIter = newStart.iterator(Side2);
                 }
             }
         }
@@ -554,9 +547,9 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * @param  dir       the direction to start the traversal in
          * @return           a circulator to the node satisfying the {@code predicate} or to the {@code stop} node
          */
-        private static OuterFaceCirculator selectOnOuterFace(Predicate<Node> predicate, Node start, Node stop,
+        private static OuterFaceIter selectOnOuterFace(Predicate<Node> predicate, Node start, Node stop,
                 boolean dir) {
-            OuterFaceCirculator circulator = start.iterator(dir);
+            OuterFaceIter circulator = start.iterator(dir);
             for (Node current = circulator.next(); current != stop && !predicate.test(current);)
                 current = circulator.next();
             return circulator;
@@ -571,7 +564,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * @param  dir   the direction of the search
          * @return       a circulator to the found node
          */
-        private static OuterFaceCirculator getActiveSuccessorOnOuterFace(Node start, Node v, boolean dir) {
+        private static OuterFaceIter getActiveSuccessorOnOuterFace(Node start, Node v, boolean dir) {
             return selectOnOuterFace(n -> n.isActiveWrtTo(v), start, start, dir);
         }
 
@@ -585,7 +578,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * @param  dir   the direction of the search
          * @return       a circulator to the found node
          */
-        private static OuterFaceCirculator getExternallyActiveSuccessorOnOuterFace(
+        private static OuterFaceIter getExternallyActiveSuccessorOnOuterFace(
                 Node start, Node stop, Node v, boolean dir) {
             return selectOnOuterFace(n -> n.isExternallyActiveWrtTo(v), start, stop, dir);
         }
@@ -733,7 +726,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * @param delta         a value in $\{+1, -1\}$ to set either positive or negative boundary height
          */
         private static void setBoundaryDepth(Node componentRoot, Node w, boolean dir, int delta) {
-            OuterFaceCirculator circulator = componentRoot.iterator(dir);
+            OuterFaceIter circulator = componentRoot.iterator(dir);
             int currentHeight = delta;
             for (Node current = circulator.next(); current != w; current = circulator.next()) {
                 current.boundaryHeight = currentHeight;
@@ -818,7 +811,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
         private List<Edge> findHighestObstructingPath(Node componentRoot, Node w) {
             clearVisited();
             List<Edge> result = new ObjectArrayList<>();
-            OuterFaceCirculator circulator = componentRoot.iterator(Side1);
+            OuterFaceIter circulator = componentRoot.iterator(Side1);
 
             for (Node current = circulator.next(); current != w; current = circulator.next()) {
                 if (findPathDfs(
@@ -855,7 +848,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * @param componentRoot the root of the biconnected component
          */
         private static void addBoundaryEdges(Set<Edge> edges, Node componentRoot) {
-            OuterFaceCirculator circulator = componentRoot.iterator(Side1);
+            OuterFaceIter circulator = componentRoot.iterator(Side1);
             Node current;
             do {
                 Edge edge = circulator.edgeToNext();
@@ -952,7 +945,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
         private static void removeUp(Node start, Node end, boolean dir, Set<Edge> edges) {
             if (start == end)
                 return;
-            OuterFaceCirculator circulator = start.iterator(dir);
+            OuterFaceIter circulator = start.iterator(dir);
             Node next;
             do {
                 Edge edge = circulator.edgeToNext();
@@ -1035,12 +1028,12 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          *                       component
          */
         private static Edge checkComponentForFailedEdge(Node componentRoot, Node v) {
-            OuterFaceCirculator firstDir =
+            OuterFaceIter firstDir =
                     getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, Side1);
             Node firstDirNode = firstDir.getCurrent();
             if (firstDirNode == componentRoot)
                 return null;
-            OuterFaceCirculator secondDir =
+            OuterFaceIter secondDir =
                     getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, Side2);
             Node secondDirNode = secondDir.getCurrent();
             if (firstDirNode == secondDirNode)
@@ -1104,7 +1097,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                  * to the node w externally active nodes x and y.
                  */
                 Node x, y, v = failedEdge.target, w = failedEdge.source, componentRoot;
-                while (true) {
+                for (;;) {
                     componentRoot = getComponentRoot(w);
                     x = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side2).getCurrent();
                     y = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side1).getCurrent();
@@ -1383,7 +1376,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * A circulator over the nodes on the boundary of the biconnected component. Traverses the nodes
          * in the cyclic manner, i.e. it doesn't stop when all the nodes are traversed
          */
-        private static class OuterFaceCirculator
+        private static class OuterFaceIter
                 implements Iterator<Node> {
             /**
              * The node this circulator will return next
@@ -1402,7 +1395,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
              * @param current the node this circulator will return next
              * @param prev    the previous node along the traversal
              */
-            OuterFaceCirculator(Node current, Node prev) {
+            OuterFaceIter(Node current, Node prev) {
                 this.current = current;
                 this.prev = prev;
             }
@@ -1855,9 +1848,9 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
              * @param  direction the direction to move in
              * @return           an iterator over the boundary nodes in the direction {@code direction}
              */
-            OuterFaceCirculator iterator(boolean direction) {
+            OuterFaceIter iterator(boolean direction) {
                 Node neighbor = direction == Side1 ? outerFaceNeighbor1 : outerFaceNeighbor2;
-                return new OuterFaceCirculator(neighbor, this);
+                return new OuterFaceIter(neighbor, this);
             }
 
             void removeShortCircuitEdges() {
@@ -1937,7 +1930,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
              * Returns a neighbor of this node which is not equal to the {@code prev}
              *
              * @param  prev a neighbor of this node
-             * @return      a neightbor, which is not equal to the {@code prev}
+             * @return      a neighbor, which is not equal to the {@code prev}
              */
             Node nextOnOuterFace(Node prev) {
                 checkIsAdjacent(prev);
