@@ -604,11 +604,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          */
         private static void addPathEdges(Set<Edge> edges, Edge startEdge, Node stop) {
             edges.add(startEdge);
-            Node current = startEdge.source;
-            while (current != stop) {
+            for (Node current = startEdge.source; current != stop; current = current.getParent())
                 edges.add(current.parentEdge);
-                current = current.getParent();
-            }
         }
 
         /**
@@ -630,8 +627,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param  heightMax an upper bound on the height of the desired back edge
          * @return           the desired back edge or null, if no such edge exist
          */
-        private static Edge searchEdge(Node current, int heightMax) {
-            return searchEdge(current, heightMax, null);
+        private static Edge findBackEdge(Node current, int heightMax) {
+            return findBackEdge(current, heightMax, null);
         }
 
         /**
@@ -642,13 +639,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param  forbiddenEdge an edge the desired edge should not be equal to
          * @return               the desired back edge or null, if no such edge exist
          */
-        private static Edge searchEdge(Node current, int heightMax, Edge forbiddenEdge) {
-            Predicate<Edge> isNeeded = e -> {
-                if (forbiddenEdge == e)
-                    return false;
-                return e.target.height < heightMax;
-            };
-            return searchEdge(current, isNeeded);
+        private static Edge findBackEdge(Node current, int heightMax, Edge forbiddenEdge) {
+            return findBackEdge(current, e -> forbiddenEdge != e && e.target.height < heightMax);
         }
 
         /**
@@ -656,16 +648,16 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * include the children of the {@code current} that have been merged to the parent biconnected
          * component.
          *
-         * @param  current  the node to start the searh from
-         * @param  isNeeded the predicate which the desired edge should satisfy
-         * @return          an edge which satisfies the {@code predicate}, or null if such an edge doesn't exist
+         * @param  current   the node to start the searh from
+         * @param  predicate the predicate which the desired edge should satisfy
+         * @return           an edge which satisfies the {@code predicate}, or null if such an edge doesn't exist
          */
-        private static Edge searchEdge(Node current, Predicate<Edge> isNeeded) {
+        private static Edge findBackEdge(Node current, Predicate<Edge> predicate) {
             for (Edge edge : current.backEdges)
-                if (isNeeded.test(edge))
+                if (predicate.test(edge))
                     return edge;
             for (Node node : current.separatedDfsChildList) {
-                Edge result = searchSubtreeDfs(node, isNeeded);
+                Edge result = findBackEdgeSubtreeDfs(node, predicate);
                 if (result != null)
                     return result;
             }
@@ -676,18 +668,18 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * Recursively searches all the subtree root at the node {@code start} to find an edge
          * satisfying the {@code predicate}.
          *
-         * @param  start    the node to start the search from.
-         * @param  isNeeded a predicate, which the desired edge should satisfy
-         * @return          a desired edge, or null if no such edge exist.
+         * @param  start     the node to start the search from.
+         * @param  predicate a predicate, which the desired edge should satisfy
+         * @return           a desired edge, or null if no such edge exist.
          */
-        private static Edge searchSubtreeDfs(Node start, Predicate<Edge> isNeeded) {
+        private static Edge findBackEdgeSubtreeDfs(Node start, Predicate<Edge> predicate) {
             Stack<Node> stack = new ObjectArrayList<>();
             stack.push(start);
             while (!stack.isEmpty()) {
                 Node current = stack.pop();
 
                 for (Edge edge : current.backEdges)
-                    if (isNeeded.test(edge))
+                    if (predicate.test(edge))
                         return edge;
                 for (Edge edge : current.treeEdges)
                     stack.push(edge.target);
@@ -744,6 +736,37 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         }
 
         /**
+         * Represents information needed to search a path within a biconnected component
+         */
+        private static class SearchInfo {
+            /**
+             * The current node of the dfs traversal
+             */
+            Node current;
+            /**
+             * The edge used to go to the {@code current} vertex
+             */
+            Edge prevEdge;
+            /**
+             * Whether dfs is in a forward or a backtracking phase
+             */
+            boolean backtrack;
+
+            /**
+             * Creates a new search info
+             *
+             * @param current   the current node of the traversal
+             * @param prevEdge  the edge used to go to the {@code current} vertex
+             * @param backtrack whether dfs is in a forward or a backtracking phase
+             */
+            SearchInfo(Node current, Edge prevEdge, boolean backtrack) {
+                this.current = current;
+                this.prevEdge = prevEdge;
+                this.backtrack = backtrack;
+            }
+        }
+
+        /**
          * Generically searches a path from the {@code current} node to the first node satisfying the
          * {@code isFinish} predicate consisting of all the nodes satisfying the {@code canGo}
          * predicate. The key property of this method is that it searches the next edge on the path in
@@ -769,12 +792,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     edges.remove(0);
                     return true;
                 }
-                if (info.backtrack) {
-                    edges.remove(edges.size() - 1);
-                } else {
-                    if (info.current.visited != 0) {
+                if (!info.backtrack) {
+                    if (info.current.visited != 0)
                         continue;
-                    }
                     info.current.visited = 1;
                     stack.push(new SearchInfo(info.current, info.prevEdge, true));
                     edges.add(info.prevEdge);
@@ -793,6 +813,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         }
                         stack.push(new SearchInfo(opposite, currentEdge, false));
                     }
+                } else {
+                    edges.remove(edges.size() - 1);
                 }
             }
             return false;
@@ -1041,7 +1063,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 return null;
             for (Node current = firstDir.next(); current != secondDirNode; current = firstDir.next())
                 if (current.isPertinentWrtTo(v))
-                    return searchEdge(current, e -> e.target == v && !e.embedded);;
+                    return findBackEdge(current, e -> e.target == v && !e.embedded);;
             return null;
         }
 
@@ -1113,8 +1135,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         break;
                     }
                 }
-                Edge xBackEdge = searchEdge(x, v.height);
-                Edge yBackEdge = searchEdge(y, v.height);
+                Edge xBackEdge = findBackEdge(x, v.height);
+                Edge yBackEdge = findBackEdge(y, v.height);
                 Node backLower = lowest(xBackEdge.target, yBackEdge.target);
                 Node backHigher = highest(xBackEdge.target, yBackEdge.target);
                 addPathEdges(subdivision, xBackEdge, x);
@@ -1131,7 +1153,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 Node z = getNextOnPath(w, failedEdge);
                 Edge backEdge = null;
                 if (z != null)
-                    backEdge = searchSubtreeDfs(z, e -> e.target.height < v.height && e != failedEdge);
+                    backEdge = findBackEdgeSubtreeDfs(z, e -> e.target.height < v.height && e != failedEdge);
                 if (backEdge != null) {
                     // case B
                     addPathEdges(subdivision, backEdge, w);
@@ -1183,7 +1205,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     addPathEdges(subdivision, failedEdge, w);
                     return finish(subdivision);
                 }
-                Edge externallyActive = searchEdge(w, v.height, failedEdge);
+                Edge externallyActive = findBackEdge(w, v.height, failedEdge);
                 assert externallyActive != null;
                 addPathEdges(subdivision, externallyActive, w);
                 if (firstStrictlyHigher(externallyActive.target, xBackEdge.target, yBackEdge.target)) {
@@ -1235,37 +1257,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 return finish(subdivision);
             }
             return kuratowskiSubdivision;
-        }
-
-        /**
-         * Represents information needed to search a path within a biconnected component
-         */
-        private static class SearchInfo {
-            /**
-             * The current node of the dfs traversal
-             */
-            Node current;
-            /**
-             * The edge used to go to the {@code current} vertex
-             */
-            Edge prevEdge;
-            /**
-             * Whether dfs is in a forward or a backtracking phase
-             */
-            boolean backtrack;
-
-            /**
-             * Creates a new search info
-             *
-             * @param current   the current node of the traversal
-             * @param prevEdge  the edge used to go to the {@code current} vertex
-             * @param backtrack whether dfs is in a forward or a backtracking phase
-             */
-            SearchInfo(Node current, Edge prevEdge, boolean backtrack) {
-                this.current = current;
-                this.prevEdge = prevEdge;
-                this.backtrack = backtrack;
-            }
         }
 
         /**
