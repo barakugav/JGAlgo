@@ -18,7 +18,6 @@
 package com.jgalgo.alg.planar;
 
 import static com.jgalgo.internal.util.Range.range;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -100,7 +99,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * on the path to the back edge source. After all the biconnected components are merged, this
          * stack is cleared
          */
-        private final List<MergeInfo> stack;
+        private final Stack<MergeInfo> mergeStack;
         /**
          * The node $v$, which has an unembedded back edge incident to it.
          */
@@ -124,9 +123,9 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
             this.graph = Objects.requireNonNull(graph, "Graph can't be null");
             this.n = graph.vertices().size();
             this.nodes = new Node[n];
-            this.dfsTreeRoots = new ArrayList<>();
-            this.componentRoots = new ArrayList<>(n);
-            this.stack = new ArrayList<>();
+            this.dfsTreeRoots = new ObjectArrayList<>();
+            this.componentRoots = new ObjectArrayList<>(n);
+            this.mergeStack = new ObjectArrayList<>();
         }
 
         /**
@@ -295,7 +294,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * node.
          */
         private void mergeBiconnectedComponent() {
-            MergeInfo info = stack.remove(stack.size() - 1);
+            MergeInfo info = mergeStack.pop();
             Node virtualRoot = info.child;
             if (info.isInverted())
                 virtualRoot.swapNeighbors();
@@ -382,14 +381,14 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          */
         private void walkDown(Node componentRoot) {
             for (boolean componentEntryDir : sides()) {
-                if (!stack.isEmpty())
+                if (!mergeStack.isEmpty())
                     break;
                 boolean currentComponentEntryDir = componentEntryDir;
                 OuterFaceCirculator circulator = componentRoot.iterator(currentComponentEntryDir);
                 for (Node current = circulator.next(); current != componentRoot;) {
                     if (current.hasBackEdgeWrtTo(componentRoot)) {
                         Node childPrev = circulator.getPrev();
-                        while (!stack.isEmpty())
+                        while (!mergeStack.isEmpty())
                             mergeBiconnectedComponent();
                         circulator = embedBackEdge(componentRoot, componentEntryDir, current.edgeToEmbed, childPrev);
                     }
@@ -413,8 +412,8 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                         }
 
                         if (currentComponentEntryDir == Side1) {
-                            stack
-                                    .add(new MergeInfo(
+                            mergeStack
+                                    .push(new MergeInfo(
                                             current, circulator.next(), root, root.outerFaceNeighbor2,
                                             parentComponentEntryDir, currentComponentEntryDir));
                             current = ccwActiveNode;
@@ -423,8 +422,8 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                             if (!cwActiveNode.hasRootNeighbor())
                                 embedShortCircuit(root, Side2, cwCirculator);
                         } else {
-                            stack
-                                    .add(new MergeInfo(
+                            mergeStack
+                                    .push(new MergeInfo(
                                             current, circulator.next(), root, root.outerFaceNeighbor1,
                                             parentComponentEntryDir, currentComponentEntryDir));
                             current = cwActiveNode;
@@ -438,7 +437,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                         current = circulator.next();
                     } else {
                         // current vertex is externally active
-                        if (!current.hasRootNeighbor() && stack.isEmpty())
+                        if (!current.hasRootNeighbor() && mergeStack.isEmpty())
                             embedShortCircuit(componentRoot, componentEntryDir, circulator);
                         break;
                     }
@@ -650,9 +649,8 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          */
         private static Edge searchEdge(Node current, int heightMax, Edge forbiddenEdge) {
             Predicate<Edge> isNeeded = e -> {
-                if (forbiddenEdge == e) {
+                if (forbiddenEdge == e)
                     return false;
-                }
                 return e.target.height < heightMax;
             };
             return searchEdge(current, isNeeded);
@@ -660,7 +658,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
 
         /**
          * Generically searches an edge in the subtree rooted at the {@code current}, which doesn't
-         * include the children of the {@code current} that have beem merged to the parent biconnected
+         * include the children of the {@code current} that have been merged to the parent biconnected
          * component.
          *
          * @param  current  the node to start the searh from
@@ -668,16 +666,13 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * @return          an edge which satisfies the {@code predicate}, or null if such an edge doesn't exist
          */
         private static Edge searchEdge(Node current, Predicate<Edge> isNeeded) {
+            for (Edge edge : current.backEdges)
+                if (isNeeded.test(edge))
+                    return edge;
             for (Node node : current.separatedDfsChildList) {
                 Edge result = searchSubtreeDfs(node, isNeeded);
-                if (result != null) {
+                if (result != null)
                     return result;
-                }
-            }
-            for (Edge edge : current.backEdges) {
-                if (isNeeded.test(edge)) {
-                    return edge;
-                }
             }
             return null;
         }
@@ -691,19 +686,16 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * @return          a desired edge, or null if no such edge exist.
          */
         private static Edge searchSubtreeDfs(Node start, Predicate<Edge> isNeeded) {
-            List<Node> stack = new ArrayList<>();
-            stack.add(start);
+            Stack<Node> stack = new ObjectArrayList<>();
+            stack.push(start);
             while (!stack.isEmpty()) {
-                Node current = stack.remove(stack.size() - 1);
+                Node current = stack.pop();
 
-                for (Edge edge : current.backEdges) {
-                    if (isNeeded.test(edge)) {
+                for (Edge edge : current.backEdges)
+                    if (isNeeded.test(edge))
                         return edge;
-                    }
-                }
-                for (Edge edge : current.treeEdges) {
-                    stack.add(edge.target);
-                }
+                for (Edge edge : current.treeEdges)
+                    stack.push(edge.target);
             }
             return null;
         }
@@ -775,10 +767,10 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
         private static boolean findPathDfs(
                 Node start, Edge startPrev, Predicate<Node> canGo, Predicate<Node> isFinish,
                 List<Edge> edges) {
-            List<SearchInfo> stack = new ArrayList<>();
-            stack.add(new SearchInfo(start, startPrev, false));
+            Stack<SearchInfo> stack = new ObjectArrayList<>();
+            stack.push(new SearchInfo(start, startPrev, false));
             while (!stack.isEmpty()) {
-                SearchInfo info = stack.remove(stack.size() - 1);
+                SearchInfo info = stack.pop();
                 if (isFinish.test(info.current)) {
                     edges.add(info.prevEdge);
                     edges.remove(0);
@@ -791,7 +783,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                         continue;
                     }
                     info.current.visited = 1;
-                    stack.add(new SearchInfo(info.current, info.prevEdge, true));
+                    stack.push(new SearchInfo(info.current, info.prevEdge, true));
                     edges.add(info.prevEdge);
                     /*
                      * The iteration is performed in the reverse order since the infos are pushed on the
@@ -806,7 +798,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                                 && !isFinish.test(opposite)) {
                             continue;
                         }
-                        stack.add(new SearchInfo(opposite, currentEdge, false));
+                        stack.push(new SearchInfo(opposite, currentEdge, false));
                     }
                 }
             }
@@ -826,7 +818,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          */
         private List<Edge> findHighestObstructingPath(Node componentRoot, Node w) {
             clearVisited();
-            List<Edge> result = new ArrayList<>();
+            List<Edge> result = new ObjectArrayList<>();
             OuterFaceCirculator circulator = componentRoot.iterator(Side1);
             Node current = circulator.next();
             while (current != w) {
@@ -896,10 +888,10 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * @param dfsTreeRoot the root of the dfs tree to clean up
          */
         private static void cleanUpDfs(Node dfsTreeRoot) {
-            List<Pair<Node, Boolean>> stack = new ArrayList<>();
-            stack.add(Pair.of(dfsTreeRoot, Boolean.FALSE));
+            Stack<Pair<Node, Boolean>> stack = new ObjectArrayList<>();
+            stack.push(Pair.of(dfsTreeRoot, Boolean.FALSE));
             while (!stack.isEmpty()) {
-                Pair<Node, Boolean> entry = stack.remove(stack.size() - 1);
+                Pair<Node, Boolean> entry = stack.pop();
                 Node current = entry.first();
                 boolean isInverted = entry.second().booleanValue();
                 if (isInverted)
@@ -911,7 +903,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                 }
 
                 for (Edge treeEdge : current.treeEdges)
-                    stack.add(Pair.of(treeEdge.target, Boolean.valueOf(isInverted ^ treeEdge.isInverted)));
+                    stack.push(Pair.of(treeEdge.target, Boolean.valueOf(isInverted ^ treeEdge.isInverted)));
             }
 
         }
@@ -1008,7 +1000,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
             Edge currentEdge = path.get(i);
             Node current =
                     currentEdge.source.boundaryHeight != 0 ? currentEdge.target : currentEdge.source;
-            List<Edge> result = new ArrayList<>();
+            List<Edge> result = new ObjectArrayList<>();
             while (i < path.size() - 1) {
                 if (findPathDfs(current, currentEdge, n -> !n.marked, n -> n == v, result)) {
                     return result;
@@ -1078,7 +1070,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * @return   the found unembedded back edge which can be used to extract a Kuratowski subdivision
          */
         private Edge findFailedEdge(Node v) {
-            if (stack.isEmpty()) {
+            if (mergeStack.isEmpty()) {
                 for (Node child : v.separatedDfsChildList) {
                     Node componentRoot = child.initialComponentRoot;
                     Edge result = checkComponentForFailedEdge(componentRoot, v);
@@ -1087,7 +1079,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                 }
                 return null; // should not happen in case node v has an incident unembedded back edge
             } else {
-                MergeInfo info = stack.get(stack.size() - 1);
+                MergeInfo info = mergeStack.top();
                 return checkComponentForFailedEdge(info.child, v);
             }
         }
@@ -1763,9 +1755,9 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                 if (!rootVertex) {
                     separatedDfsChildList = new DoublyLinkedList<>();
                     pertinentRoots = new DoublyLinkedList<>();
-                    treeEdges = new ArrayList<>();
-                    downEdges = new ArrayList<>();
-                    backEdges = new ArrayList<>();
+                    treeEdges = new ObjectArrayList<>();
+                    downEdges = new ObjectArrayList<>();
+                    backEdges = new ObjectArrayList<>();
                 } else {
                     separatedDfsChildList = null;
                     pertinentRoots = null;
