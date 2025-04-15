@@ -35,8 +35,6 @@ import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.Stack;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -51,7 +49,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
         Worker worker = new Worker(g);
         if (worker.isPlanar()) {
-            return Result.planar(() -> worker.getEmbedding());
+            return Result.planar(() -> worker.getEmbedding(addAsEdgesWeights));
         } else {
             return Result.nonPlanar(() -> Optional.of(worker.getKuratowskiSubdivision()));
         }
@@ -503,33 +501,36 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          *
          * @return a combinatorial embedding of the {@code graph}
          */
-        private IPlanarEmbedding getEmbedding() {
-            if (!isPlanar()) {
+        private IPlanarEmbedding getEmbedding(boolean addAsEdgesWeights) {
+            if (!isPlanar())
                 throw new IllegalArgumentException(
                         "Input graph is not planar, can't compute graph embedding");
-            }
             if (embedding == null) {
                 for (Node dfsTreeRoot : dfsTreeRoots)
                     cleanUpDfs(dfsTreeRoot);
-                IWeightsLong weights = Weights.createExternalEdgesWeights(graph, long.class);
+                IWeightsLong weights;
+                if (addAsEdgesWeights) {
+                    weights = graph
+                            .addEdgesWeights(PlanarEmbedding.EdgeOrderWeightKey, long.class,
+                                    Long.valueOf(IntPair.of(-1, -1)));
+                } else {
+                    weights = Weights.createExternalEdgesWeights(graph, long.class);
+                }
                 for (Node node : nodes) {
                     for (Node child : node.separatedDfsChildList) {
                         Node virtualRoot = child.initialComponentRoot;
                         node.embedded.append(virtualRoot.embedded);
                     }
-                    IntList embeddedEdges = new IntArrayList(node.embedded.size());
-                    for (Edge edge : node.embedded)
-                        embeddedEdges.add(edge.graphEdge());
 
-                    int i = 0;
-                    for (int edge : embeddedEdges) {
+                    for (var it = node.embedded.listIterator(); it.hasNext();) {
+                        int i = it.nextIndex();
+                        int edge = it.next().graphEdge();
                         long x = weights.get(edge);
                         if (graph.edgeSource(edge) == node.graphVertex)
                             x = IntPair.setFirst(x, i);
                         if (graph.edgeTarget(edge) == node.graphVertex)
                             x = IntPair.setSecond(x, i);
                         weights.set(edge, x);
-                        i++;
                     }
                 }
 
@@ -843,7 +844,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     return result;
                 }
             }
-            return result;
+            throw new IllegalStateException("The method should have found a path, but it didn't");
         }
 
         /**
@@ -1012,13 +1013,11 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             clearVisited();
             int i = 0;
             Edge currentEdge = path.get(i);
-            Node current =
-                    currentEdge.source.boundaryHeight != 0 ? currentEdge.target : currentEdge.source;
+            Node current = currentEdge.source.boundaryHeight != 0 ? currentEdge.target : currentEdge.source;
             List<Edge> result = new ObjectArrayList<>();
             while (i < path.size() - 1) {
-                if (findPathDfs(current, currentEdge, n -> !n.marked, n -> n == v, result)) {
+                if (findPathDfs(current, currentEdge, n -> !n.marked, n -> n == v, result))
                     return result;
-                }
                 ++i;
                 currentEdge = path.get(i);
                 current = currentEdge.getOpposite(current);
