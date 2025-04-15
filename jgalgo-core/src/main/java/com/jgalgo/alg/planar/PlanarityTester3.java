@@ -31,6 +31,7 @@ import com.jgalgo.graph.IWeightsLong;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.Stack;
@@ -44,6 +45,10 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
 
     @Override
     protected PlanarityTester.Result<Integer, Integer> findPlanarEmbedding(IndexGraph g, boolean addAsEdgesWeights) {
+        Assertions.onlyUndirected(g);
+        Assertions.noParallelEdges(g, "graphs with parallel edges are not supported");
+        Assertions.noSelfEdges(g, "graphs with self edges are not supported");
+
         var x = new BoyerMyrvoldPlanarityInspector(g);
         if (!x.isPlanar())
             return Result.nonPlanar(() -> Optional.of(x.getKuratowskiSubdivision()));
@@ -203,7 +208,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                                 continue;
                             Node oppositeNode = v2node[v];
                             if (current.dfsIndex < oppositeNode.dfsIndex)
-                                continue;
+                                continue; // the reverse edge was already added as a back edge, down edge of current
                             Edge backEdge = Edge.ofBackEdge(e, current, oppositeNode);
                             oppositeNode.downEdges.add(backEdge);
                             current.backEdges.add(backEdge);
@@ -379,7 +384,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          *
          * @param componentRoot the root of the component to start the walkdown from
          */
-        private void walkDown(Node componentRoot) {
+        private void walkDown(final Node componentRoot) {
             for (boolean componentEntryDir : sides()) {
                 if (!mergeStack.isEmpty())
                     break;
@@ -414,7 +419,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                         if (currentComponentEntryDir == Side1) {
                             mergeStack
                                     .push(new MergeInfo(
-                                            current, circulator.next(), root, root.outerFaceNeighbor2,
+                                            current, circulator.peekNext(), root, root.outerFaceNeighbor2,
                                             parentComponentEntryDir, currentComponentEntryDir));
                             current = ccwActiveNode;
                             circulator = ccwCirculator;
@@ -424,7 +429,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                         } else {
                             mergeStack
                                     .push(new MergeInfo(
-                                            current, circulator.next(), root, root.outerFaceNeighbor1,
+                                            current, circulator.peekNext(), root, root.outerFaceNeighbor1,
                                             parentComponentEntryDir, currentComponentEntryDir));
                             current = cwActiveNode;
                             circulator = cwCirculator;
@@ -460,42 +465,40 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
             start.backEdgeFlag = visited;
             start.edgeToEmbed = edge;
 
-            Node x = start.outerFaceNeighbor1, y = start.outerFaceNeighbor2, xPrev = start,
-                    yPrev = start;
+            Node xPrev, yPrev;
+            Node x = (xPrev = start).outerFaceNeighbor1, y = (yPrev = start).outerFaceNeighbor2;
             start.visited = visited;
-            while (x != end && !x.isVisitedWrtTo(end) && !y.isVisitedWrtTo(end)) {
+            while (!x.isVisitedWrtTo(end) && !y.isVisitedWrtTo(end)) {
                 x.visited = y.visited = visited;
 
-                Node root = null;
-                if (x.isRootVertex()) {
-                    root = x;
-                } else if (y.isRootVertex()) {
-                    root = y;
-                } else {
-                    Node t = x;
-                    x = x.nextOnOuterFace(xPrev);
-                    xPrev = t;
+                if (!x.isRootVertex && !y.isRootVertex) {
+                    Node xNext = x.nextOnOuterFace(xPrev);
+                    xPrev = x;
+                    x = xNext;
 
-                    t = y;
-                    y = y.nextOnOuterFace(yPrev);
-                    yPrev = t;
-                    continue;
-                }
-                Node rootChild = root.parentEdge.target;
-                Node newStart = root.parentEdge.source;
-                if (newStart == end)
-                    break;
-                if (rootChild.lowpoint < end.dfsIndex) {
-                    // the component in externally active
-                    root.listNode = newStart.pertinentRoots.addElementLast(root);
+                    Node yNext = y.nextOnOuterFace(yPrev);
+                    yPrev = y;
+                    y = yNext;
+
                 } else {
-                    // the component is internally active
-                    root.listNode = newStart.pertinentRoots.addElementFirst(root);
+                    Node root = x.isRootVertex ? x : y;
+                    assert root.isRootVertex;
+
+                    Node rootChild = root.parentEdge.target;
+                    Node newStart = root.parentEdge.source;
+                    if (newStart == end)
+                        break;
+                    if (rootChild.lowpoint < end.dfsIndex) {
+                        // the component in externally active
+                        root.listNode = newStart.pertinentRoots.addElementLast(root);
+                    } else {
+                        // the component is internally active
+                        root.listNode = newStart.pertinentRoots.addElementFirst(root);
+                    }
+                    newStart.visited = visited;
+                    x = (xPrev = newStart).outerFaceNeighbor1;
+                    y = (yPrev = newStart).outerFaceNeighbor2;
                 }
-                newStart.visited = visited;
-                xPrev = yPrev = newStart;
-                x = newStart.outerFaceNeighbor1;
-                y = newStart.outerFaceNeighbor2;
             }
         }
 
@@ -554,10 +557,8 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
         private static OuterFaceCirculator selectOnOuterFace(Predicate<Node> predicate, Node start, Node stop,
                 boolean dir) {
             OuterFaceCirculator circulator = start.iterator(dir);
-            Node current = circulator.next();
-            while (current != stop && !predicate.test(current)) {
+            for (Node current = circulator.next(); current != stop && !predicate.test(current);)
                 current = circulator.next();
-            }
             return circulator;
         }
 
@@ -596,7 +597,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * @return      a component root of the component the {@code node} belongs to
          */
         private static Node getComponentRoot(Node node) {
-            return selectOnOuterFace(Node::isRootVertex, node, node, Side1).getCurrent();
+            return selectOnOuterFace(n -> n.isRootVertex, node, node, Side1).getCurrent();
         }
 
         /**
@@ -733,12 +734,10 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          */
         private static void setBoundaryDepth(Node componentRoot, Node w, boolean dir, int delta) {
             OuterFaceCirculator circulator = componentRoot.iterator(dir);
-            Node current = circulator.next();
             int currentHeight = delta;
-            while (current != w) {
+            for (Node current = circulator.next(); current != w; current = circulator.next()) {
                 current.boundaryHeight = currentHeight;
                 currentHeight += delta;
-                current = circulator.next();
             }
         }
 
@@ -820,14 +819,13 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
             clearVisited();
             List<Edge> result = new ObjectArrayList<>();
             OuterFaceCirculator circulator = componentRoot.iterator(Side1);
-            Node current = circulator.next();
-            while (current != w) {
+
+            for (Node current = circulator.next(); current != w; current = circulator.next()) {
                 if (findPathDfs(
                         current, current.embedded.getFirst(), n -> !n.marked, n -> n.boundaryHeight < 0,
                         result)) {
                     return result;
                 }
-                current = circulator.next();
             }
             return result;
         }
@@ -1110,9 +1108,9 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                     componentRoot = getComponentRoot(w);
                     x = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side2).getCurrent();
                     y = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side1).getCurrent();
-                    if (x.isRootVertex()) {
+                    if (x.isRootVertex) {
                         w = x.getParent();
-                    } else if (y.isRootVertex()) {
+                    } else if (y.isRootVertex) {
                         w = y.getParent();
                     } else {
                         componentRoot = getComponentRoot(w);
@@ -1429,6 +1427,10 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                 return prev = t;
             }
 
+            Node peekNext() {
+                return current;
+            }
+
             /**
              * Returns an edge connecting previously returned node with node, which will be returned
              * next. If either of the mentioned nodes is virtual, the edge will be incident to its real
@@ -1475,7 +1477,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
              * @return      the real counterpath of the {@code node}
              */
             private static Node toExistingNode(Node node) {
-                return node.isRootVertex() ? node.getParent() : node;
+                return node.isRootVertex ? node.getParent() : node;
             }
         }
 
@@ -1601,7 +1603,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
             /**
              * Whether this node is a root of the biconnected component or not.
              */
-            final boolean rootVertex;
+            final boolean isRootVertex;
             /**
              * The dfs index of this node in the graph. Every node has a unique dfs index in the range
              * $[0,|V| - 1]$. This value is used to order the nodes for the embedding of the edges
@@ -1747,7 +1749,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                 this.graphVertex = graphVertex;
                 this.dfsIndex = dfsIndex;
                 this.parentEdge = parentEdge;
-                this.rootVertex = rootVertex;
+                this.isRootVertex = rootVertex;
                 this.embedded = new DoublyLinkedList<>();
                 if (parentEdge != null)
                     embedded.add(parentEdge);
@@ -1811,15 +1813,6 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
             boolean isExternallyActiveWrtTo(Node node) {
                 return leastAncestor < node.dfsIndex || (!separatedDfsChildList.isEmpty()
                         && separatedDfsChildList.getFirst().lowpoint < node.dfsIndex);
-            }
-
-            /**
-             * Returns true if the node is a component root, false otherwise
-             *
-             * @return true if the node is a component root, false otherwise
-             */
-            boolean isRootVertex() {
-                return rootVertex;
             }
 
             /**
@@ -1937,7 +1930,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
              * @return true, if this node has a root node neighbor, false otherwise
              */
             boolean hasRootNeighbor() {
-                return outerFaceNeighbor1.isRootVertex() || outerFaceNeighbor2.isRootVertex();
+                return outerFaceNeighbor1.isRootVertex || outerFaceNeighbor2.isRootVertex;
             }
 
             /**
@@ -1964,7 +1957,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
              */
             void embedBackEdge(Edge edge, Node prev) {
                 assert !embedded.isEmpty();
-                if (prev.isRootVertex())
+                if (prev.isRootVertex)
                     prev = prev.getParent();
                 Edge firstEdge = embedded.getFirst();
                 if (firstEdge.getOpposite(this) == prev) {
