@@ -18,7 +18,6 @@
 package com.jgalgo.alg.planar;
 
 import static com.jgalgo.internal.util.Range.range;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -40,7 +39,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
 public class PlanarityTester3 extends PlanarityTesterAbstract {
@@ -137,7 +135,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
             Node node;
             if (parent == null) {
                 node = new Node(graphVertex, dfsIndex, 0, null, null, n);
-                node.outerFaceNeighbors[0] = node.outerFaceNeighbors[1] = node;
+                node.outerFaceNeighbor1 = node.outerFaceNeighbor2 = node;
                 dfsTreeRoots.add(node);
             } else {
                 assert edge >= 0;
@@ -150,8 +148,8 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
 
                 parent.treeEdges.add(treeEdge);
 
-                node.outerFaceNeighbors[0] = node.outerFaceNeighbors[1] = componentRoot;
-                componentRoot.outerFaceNeighbors[0] = componentRoot.outerFaceNeighbors[1] = node;
+                node.outerFaceNeighbor1 = node.outerFaceNeighbor2 = componentRoot;
+                componentRoot.outerFaceNeighbor1 = componentRoot.outerFaceNeighbor2 = node;
             }
             return node;
         }
@@ -306,7 +304,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
 
             root.substituteAnother(info.parentNext, info.childPrev);
             info.childPrev.substitute(virtualRoot, root);
-            virtualRoot.outerFaceNeighbors[0] = virtualRoot.outerFaceNeighbors[1] = null;
+            virtualRoot.outerFaceNeighbor1 = virtualRoot.outerFaceNeighbor2 = null;
         }
 
         /**
@@ -334,7 +332,11 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
             edge.embedded = true;
 
             child.substitute(childPrev, root);
-            root.outerFaceNeighbors[entryDir] = child;
+            if (entryDir == 0) {
+                root.outerFaceNeighbor1 = child;
+            } else {
+                root.outerFaceNeighbor2 = child;
+            }
             Node next = child.nextOnOuterFace(root);
             return new OuterFaceCirculator(next, child);
         }
@@ -352,10 +354,10 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
             Edge shortCircuit = Edge.ofShortCircuit(current, componentRoot.getParent());
             if (entryDir == 0) {
                 componentRoot.embedded.addLast(shortCircuit);
-                componentRoot.outerFaceNeighbors[0] = current;
+                componentRoot.outerFaceNeighbor1 = current;
             } else {
                 componentRoot.embedded.addFirst(shortCircuit);
-                componentRoot.outerFaceNeighbors[1] = current;
+                componentRoot.outerFaceNeighbor2 = current;
             }
             current.embedBackEdge(shortCircuit, prev);
             current.substitute(prev, componentRoot);
@@ -404,7 +406,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                         if (currentComponentEntryDir == 0) {
                             stack
                                     .add(new MergeInfo(
-                                            current, circulator.next(), root, root.outerFaceNeighbors[1],
+                                            current, circulator.next(), root, root.outerFaceNeighbor2,
                                             parentComponentEntryDir, currentComponentEntryDir));
                             current = ccwActiveNode;
                             circulator = ccwCirculator;
@@ -414,7 +416,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                         } else {
                             stack
                                     .add(new MergeInfo(
-                                            current, circulator.next(), root, root.outerFaceNeighbors[0],
+                                            current, circulator.next(), root, root.outerFaceNeighbor1,
                                             parentComponentEntryDir, currentComponentEntryDir));
                             current = cwActiveNode;
                             circulator = cwCirculator;
@@ -450,7 +452,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
             start.backEdgeFlag = visited;
             start.edgeToEmbed = edge;
 
-            Node x = start.outerFaceNeighbors[0], y = start.outerFaceNeighbors[1], xPrev = start,
+            Node x = start.outerFaceNeighbor1, y = start.outerFaceNeighbor2, xPrev = start,
                     yPrev = start;
             start.visited = visited;
             while (x != end && !x.isVisitedWrtTo(end) && !y.isVisitedWrtTo(end)) {
@@ -484,8 +486,8 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                 }
                 newStart.visited = visited;
                 xPrev = yPrev = newStart;
-                x = newStart.outerFaceNeighbors[0];
-                y = newStart.outerFaceNeighbors[1];
+                x = newStart.outerFaceNeighbor1;
+                y = newStart.outerFaceNeighbor2;
             }
         }
 
@@ -871,7 +873,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
             for (Node dfsTreeRoot : dfsTreeRoots)
                 cleanUpDfs(dfsTreeRoot);
             for (Node node : componentRoots) {
-                if (node.outerFaceNeighbors[0] != null) {
+                if (node.outerFaceNeighbor1 != null) {
                     node.removeShortCircuitEdges();
                     fixBoundaryOrder(node);
                 }
@@ -921,22 +923,20 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
             Node next = edgeToNext.getOpposite(componentParent),
                     prev = edgeToPrev.getOpposite(componentParent);
 
-            componentRoot.outerFaceNeighbors[0] = next;
-            componentRoot.outerFaceNeighbors[1] = prev;
-            next.outerFaceNeighbors[1] = componentRoot;
-            prev.outerFaceNeighbors[0] = componentRoot;
-            Node current = componentRoot.outerFaceNeighbors[0];
+            componentRoot.outerFaceNeighbor1 = next;
+            componentRoot.outerFaceNeighbor2 = prev;
+            next.outerFaceNeighbor2 = componentRoot;
+            prev.outerFaceNeighbor1 = componentRoot;
+            Node current = componentRoot.outerFaceNeighbor1;
             do {
                 edgeToNext = current.embedded.getLast();
                 edgeToPrev = current.embedded.getFirst();
                 next = edgeToNext.getOpposite(current);
                 prev = edgeToPrev.getOpposite(current);
-                if (prev != componentParent) {
-                    current.outerFaceNeighbors[1] = prev;
-                }
-                if (next != componentParent) {
-                    current.outerFaceNeighbors[0] = next;
-                }
+                if (prev != componentParent)
+                    current.outerFaceNeighbor2 = prev;
+                if (next != componentParent)
+                    current.outerFaceNeighbor1 = next;
                 current = next;
             } while (current != componentParent);
         }
@@ -1666,7 +1666,8 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
              * Two neighbors on the outer face of the biconnected component. Their order is completely
              * irrelevant for the algorithm to traverse the outer face.
              */
-            final Node[] outerFaceNeighbors;
+            Node outerFaceNeighbor1;
+            Node outerFaceNeighbor2;
             /**
              * The list containing the dfs children of this node, which are in the different child
              * biconnected component, i.e. their weren't merged in the parent component.
@@ -1745,7 +1746,6 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                 this.dfsIndex = dfsIndex;
                 this.parentEdge = parentEdge;
                 this.rootVertex = rootVertex;
-                this.outerFaceNeighbors = (Node[]) Array.newInstance(Node.class, 2);
                 this.embedded = new DoublyLinkedList<>();
                 if (parentEdge != null)
                     embedded.add(parentEdge);
@@ -1861,7 +1861,8 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
              * @return           an iterator over the boundary nodes in the direction {@code direction}
              */
             OuterFaceCirculator iterator(int direction) {
-                return new OuterFaceCirculator(outerFaceNeighbors[direction], this);
+                Node neighbor = direction == 0 ? outerFaceNeighbor1 : outerFaceNeighbor2;
+                return new OuterFaceCirculator(neighbor, this);
             }
 
             void removeShortCircuitEdges() {
@@ -1885,14 +1886,16 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
              * @param node a possible neighbor of this node
              */
             void checkIsAdjacent(Node node) {
-                assert node == outerFaceNeighbors[0] || node == outerFaceNeighbors[1];
+                assert node == outerFaceNeighbor1 || node == outerFaceNeighbor2;
             }
 
             /**
              * Swaps the outer face neighbors of this node
              */
             void swapNeighbors() {
-                ObjectArrays.swap(outerFaceNeighbors, 0, 1);
+                Node t = outerFaceNeighbor1;
+                outerFaceNeighbor1 = outerFaceNeighbor2;
+                outerFaceNeighbor2 = t;
             }
 
             /**
@@ -1903,10 +1906,10 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
              */
             void substitute(Node node, Node newNeighbor) {
                 checkIsAdjacent(node);
-                if (outerFaceNeighbors[0] == node) {
-                    outerFaceNeighbors[0] = newNeighbor;
+                if (outerFaceNeighbor1 == node) {
+                    outerFaceNeighbor1 = newNeighbor;
                 } else {
-                    outerFaceNeighbors[1] = newNeighbor;
+                    outerFaceNeighbor2 = newNeighbor;
                 }
             }
 
@@ -1919,10 +1922,10 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
              */
             void substituteAnother(Node node, Node newNeighbor) {
                 checkIsAdjacent(node);
-                if (outerFaceNeighbors[0] == node) {
-                    outerFaceNeighbors[1] = newNeighbor;
+                if (outerFaceNeighbor1 == node) {
+                    outerFaceNeighbor2 = newNeighbor;
                 } else {
-                    outerFaceNeighbors[0] = newNeighbor;
+                    outerFaceNeighbor1 = newNeighbor;
                 }
             }
 
@@ -1932,7 +1935,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
              * @return true, if this node has a root node neighbor, false otherwise
              */
             boolean hasRootNeighbor() {
-                return outerFaceNeighbors[0].isRootVertex() || outerFaceNeighbors[1].isRootVertex();
+                return outerFaceNeighbor1.isRootVertex() || outerFaceNeighbor2.isRootVertex();
             }
 
             /**
@@ -1943,10 +1946,10 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
              */
             Node nextOnOuterFace(Node prev) {
                 checkIsAdjacent(prev);
-                if (outerFaceNeighbors[0] == prev) {
-                    return outerFaceNeighbors[1];
+                if (outerFaceNeighbor1 == prev) {
+                    return outerFaceNeighbor2;
                 } else {
-                    return outerFaceNeighbors[0];
+                    return outerFaceNeighbor1;
                 }
             }
 
