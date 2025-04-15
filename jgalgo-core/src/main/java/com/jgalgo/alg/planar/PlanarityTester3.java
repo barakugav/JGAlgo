@@ -33,13 +33,13 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.util.IntPair;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
 public class PlanarityTester3 extends PlanarityTesterAbstract {
 
@@ -896,22 +896,22 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * @param dfsTreeRoot the root of the dfs tree to clean up
          */
         private static void cleanUpDfs(Node dfsTreeRoot) {
-            List<ObjectIntPair<Node>> stack = new ArrayList<>();
-            stack.add(ObjectIntPair.of(dfsTreeRoot, 1));
+            List<Pair<Node, Boolean>> stack = new ArrayList<>();
+            stack.add(Pair.of(dfsTreeRoot, Boolean.FALSE));
             while (!stack.isEmpty()) {
-                ObjectIntPair<Node> entry = stack.remove(stack.size() - 1);
+                Pair<Node, Boolean> entry = stack.remove(stack.size() - 1);
                 Node current = entry.first();
-                int sign = entry.secondInt();
-                if (sign < 0)
+                boolean isInverted = entry.second().booleanValue();
+                if (isInverted)
                     current.embedded.invert();
                 current.removeShortCircuitEdges();
                 for (Node node : current.separatedDfsChildList) {
                     // all the components, that aren't merged, aren't inverted
-                    node.parentEdge.sign = sign;
+                    node.parentEdge.isInverted = isInverted;
                 }
 
                 for (Edge treeEdge : current.treeEdges)
-                    stack.add(ObjectIntPair.of(treeEdge.target, sign * treeEdge.sign));
+                    stack.add(Pair.of(treeEdge.target, Boolean.valueOf(isInverted ^ treeEdge.isInverted)));
             }
 
         }
@@ -1511,7 +1511,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
              * operation doesn't flip any of the child biconnected components of this biconnected
              * component
              */
-            int sign;
+            boolean isInverted;
             /**
              * Whether the edge is embedded or not. This value is important for
              */
@@ -1563,7 +1563,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                 this.graphEdge = graphEdge;
                 this.source = source;
                 this.target = target;
-                this.sign = 1;
+                this.isInverted = false;
                 this.embedded = embedded;
                 this.shortCircuit = shortCircuit;
             }
@@ -2029,7 +2029,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                     }
                 }
                 if (invert) {
-                    parentEdge.sign = -1;
+                    parentEdge.isInverted = true;
                     edges.invert();
                 }
                 if (actionAppend) {
