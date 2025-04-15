@@ -17,8 +17,10 @@
  */
 package com.jgalgo.alg.planar;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -28,15 +30,18 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightsLong;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.util.IntPair;
+import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
@@ -126,15 +131,13 @@ public class PlanarityTester3
         /**
          * Creates a new node by converting the {@code graphVertex} to the internal node representation.
          *
-         * @param  vertexMap   the map from vertices of the {@code graph} to their internal representation
          * @param  graphVertex the vertex of the {@code graph} we're processing
          * @param  edge        the parent edge of the {@code graphVertex}, is {@code null} for dfs tree roots
          * @param  parent      the parent node of the {@code graphVertex}
          * @param  dfsIndex    the dfs index of the {@code graphVertex}
          * @return             the newly created node
          */
-        private Node createNewNode(
-                Node[] v2node, int graphVertex, int edge, Node parent, int dfsIndex) {
+        private Node createNewNode(int graphVertex, int edge, Node parent, int dfsIndex) {
             Node child;
             if (parent == null) {
                 child = new Node(Integer.valueOf(graphVertex), dfsIndex, 0, null, null, n);
@@ -155,105 +158,7 @@ public class PlanarityTester3
                 componentRoot.outerFaceNeighbors[0] = componentRoot.outerFaceNeighbors[1] = child;
             }
             nodes.add(child);
-            v2node[graphVertex] = child;
             return child;
-        }
-
-        /**
-         * Represents information needed to store in the stack during the input {@code graph}
-         * orientation.
-         */
-        private static class OrientDfsStackInfo {
-            /**
-             * The current vertex of the dfs traversal
-             */
-            final int current;
-            /**
-             * The parent vertex of the {@code current} vertex, which is null for dfs tree roots
-             */
-            final int parent;
-            /**
-             * The edge connecting {@code parent} and {@code current} vertices
-             */
-            final int parentEdge;
-            /**
-             * Whether dfs is moving forward or backtracking on the {@code current} node
-             */
-            final boolean backtrack;
-
-            /**
-             * Creates new instance of the information stored on the stack during the orientation of the
-             * {@code graph}
-             *
-             * @param current    the vertex dfs is currently processing
-             * @param parent     the parent of the {@code current} vertex
-             * @param parentEdge the edge between {@code current} and {@code parent} vertices
-             * @param backtrack  whether dfs is moving forward or backtracking on the {@code current}
-             *                       vertex
-             */
-            OrientDfsStackInfo(int current, int parent, int parentEdge, boolean backtrack) {
-                this.current = current;
-                this.parent = parent;
-                this.parentEdge = parentEdge;
-                this.backtrack = backtrack;
-            }
-        }
-
-        /**
-         * Orients the input graph according to its dfs traversal by creating a dfs tree. Computes the
-         * least ancestors and lowpoints of the nodes
-         *
-         * @param  vertexMap        the map from {@code graph} vertices to their internal representatives
-         * @param  startGraphVertex the node to start the traversal from (this is a dfs tree root).
-         * @param  currentDfsIndex  the dfs index of the {@code startGraphVertex}
-         * @return                  the {@code currentDfsIndex} + number of nodes in the traversed subtree
-         */
-        private int orientDfs(Node[] v2node, int startGraphVertex, int currentDfsIndex) {
-            List<OrientDfsStackInfo> stack = new ArrayList<>();
-            stack.add(new OrientDfsStackInfo(startGraphVertex, -1, -1, false));
-            while (!stack.isEmpty()) {
-                OrientDfsStackInfo info = stack.remove(stack.size() - 1);
-
-                if (!info.backtrack) {
-                    if (v2node[info.current] != null) {
-                        // other dfs branch has reached this vertex earlier
-                        continue;
-                    }
-                    stack.add(new OrientDfsStackInfo(info.current, info.parent, info.parentEdge, true));
-                    Node current = createNewNode(
-                            v2node, info.current, info.parentEdge, info.parent >= 0 ? v2node[info.parent] : null,
-                            currentDfsIndex);
-                    ++currentDfsIndex;
-                    for (int e : graph.outEdges(info.current)) {
-                        int opposite = graph.edgeEndpoint(e, info.current);
-                        if (v2node[opposite] != null) {
-                            // back edge or parent edge
-                            Node oppositeNode = v2node[opposite];
-                            if (opposite == info.parent)
-                                continue;
-                            Edge backEdge = new Edge(e, current, oppositeNode);
-                            oppositeNode.downEdges.add(backEdge);
-                            current.backEdges.add(backEdge);
-                        } else {
-                            // possible tree edge
-                            stack.add(new OrientDfsStackInfo(opposite, current.graphVertex.intValue(), e, false));
-                        }
-                    }
-                } else {
-                    Node current = v2node[info.current];
-                    current.leastAncestor = current.lowpoint = current.dfsIndex;
-                    for (Edge backEdge : current.backEdges) {
-                        current.leastAncestor =
-                                Math.min(current.leastAncestor, backEdge.target.dfsIndex);
-                    }
-                    for (Edge treeEdge : current.treeEdges) {
-                        current.lowpoint = Math.min(current.lowpoint, treeEdge.target.lowpoint);
-                    }
-                    current.lowpoint = Math.min(current.lowpoint, current.leastAncestor);
-
-                }
-            }
-            return currentDfsIndex;
         }
 
         /**
@@ -263,10 +168,66 @@ public class PlanarityTester3
          */
         private void orient() {
             Node[] v2node = new Node[n];
-            int currentDfsIndex = 0;
-            for (int vertex : graph.vertices())
-                if (v2node[vertex] == null)
-                    currentDfsIndex = orientDfs(v2node, vertex, currentDfsIndex);
+
+            int[] parent = new int[n];
+            Arrays.fill(parent, -1);
+
+            Stack<IEdgeIter> stack = new ObjectArrayList<>();
+            int nextDfsIndex = 0;
+            for (final int root : range(n)) {
+                if (v2node[root] != null)
+                    continue;
+
+                v2node[root] = createNewNode(root, -1, null, nextDfsIndex);
+                nextDfsIndex++;
+                stack.push(graph.outEdges(root).iterator());
+
+                dfs: for (int u = root;;) {
+                    final Node current = v2node[u];
+                    for (IEdgeIter eit = stack.top(); eit.hasNext();) {
+                        int e = eit.nextInt();
+                        int v = eit.targetInt();
+                        // if (dfsIndex[v] < 0) {
+                        if (v2node[v] == null) {
+                            // Unvisited vertex, e is a tree edge
+                            parent[v] = u;
+
+                            v2node[v] = createNewNode(v, e, current, nextDfsIndex);
+                            nextDfsIndex++;
+                            stack.push(graph.outEdges(v).iterator());
+
+                            u = v;
+                            continue dfs;
+                        } else {
+                            // Visited vertex, e is a back edge
+                            if (v == parent[u])
+                                continue;
+                            Node oppositeNode = v2node[v];
+                            if (current.dfsIndex < oppositeNode.dfsIndex)
+                                continue;
+                            Edge backEdge = new Edge(e, current, oppositeNode);
+                            oppositeNode.downEdges.add(backEdge);
+                            current.backEdges.add(backEdge);
+                        }
+                    }
+
+                    current.leastAncestor = current.lowpoint = current.dfsIndex;
+                    for (Edge backEdge : current.backEdges)
+                        current.leastAncestor =
+                                Math.min(current.leastAncestor, backEdge.target.dfsIndex);
+                    for (Edge treeEdge : current.treeEdges)
+                        current.lowpoint = Math.min(current.lowpoint, treeEdge.target.lowpoint);
+                    current.lowpoint = Math.min(current.lowpoint, current.leastAncestor);
+
+                    // backtrack DFS one vertex up
+                    stack.pop();
+                    if (stack.isEmpty())
+                        break;
+                    int v = u;
+                    u = parent[v];
+                }
+            }
+
             sortVertices();
         }
 
@@ -2007,9 +1968,8 @@ public class PlanarityTester3
              */
             void embedBackEdge(Edge edge, Node prev) {
                 assert !embedded.isEmpty();
-                if (prev.isRootVertex()) {
+                if (prev.isRootVertex())
                     prev = prev.getParent();
-                }
                 Edge firstEdge = embedded.getFirst();
                 if (firstEdge.getOpposite(this) == prev) {
                     // edge on the new inner face is at the beginning of the list
