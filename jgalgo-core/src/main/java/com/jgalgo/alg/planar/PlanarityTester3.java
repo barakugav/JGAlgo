@@ -43,9 +43,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
-// @SuppressWarnings("boxing")
-public class PlanarityTester3
-        extends PlanarityTesterAbstract {
+public class PlanarityTester3 extends PlanarityTesterAbstract {
 
     @Override
     protected PlanarityTester.Result<Integer, Integer> findPlanarEmbedding(IndexGraph g, boolean addAsEdgesWeights) {
@@ -130,32 +128,32 @@ public class PlanarityTester3
          * Creates a new node by converting the {@code graphVertex} to the internal node representation.
          *
          * @param  graphVertex the vertex of the {@code graph} we're processing
-         * @param  edge        the parent edge of the {@code graphVertex}, is {@code null} for dfs tree roots
+         * @param  edge        the parent edge of the {@code graphVertex}, is {@code -1} for dfs tree roots
          * @param  parent      the parent node of the {@code graphVertex}
          * @param  dfsIndex    the dfs index of the {@code graphVertex}
          * @return             the newly created node
          */
         private Node createNewNode(int graphVertex, int edge, Node parent, int dfsIndex) {
-            Node child;
+            Node node;
             if (parent == null) {
-                child = new Node(graphVertex, dfsIndex, 0, null, null, n);
-                child.outerFaceNeighbors[0] = child.outerFaceNeighbors[1] = child;
-                dfsTreeRoots.add(child);
+                node = new Node(graphVertex, dfsIndex, 0, null, null, n);
+                node.outerFaceNeighbors[0] = node.outerFaceNeighbors[1] = node;
+                dfsTreeRoots.add(node);
             } else {
                 assert edge >= 0;
-                Edge treeEdge = new Edge(edge, parent);
+                Edge treeEdge = Edge.ofTreeEdge(edge, parent);
                 Node componentRoot = new Node(parent.dfsIndex, treeEdge, n);
-                child = new Node(graphVertex, dfsIndex, parent.height + 1, componentRoot, treeEdge, n);
-                treeEdge.target = child;
+                node = new Node(graphVertex, dfsIndex, parent.height + 1, componentRoot, treeEdge, n);
+                treeEdge.target = node;
 
                 componentRoots.add(componentRoot);
 
                 parent.treeEdges.add(treeEdge);
 
-                child.outerFaceNeighbors[0] = child.outerFaceNeighbors[1] = componentRoot;
-                componentRoot.outerFaceNeighbors[0] = componentRoot.outerFaceNeighbors[1] = child;
+                node.outerFaceNeighbors[0] = node.outerFaceNeighbors[1] = componentRoot;
+                componentRoot.outerFaceNeighbors[0] = componentRoot.outerFaceNeighbors[1] = node;
             }
-            return child;
+            return node;
         }
 
         /**
@@ -202,7 +200,7 @@ public class PlanarityTester3
                             Node oppositeNode = v2node[v];
                             if (current.dfsIndex < oppositeNode.dfsIndex)
                                 continue;
-                            Edge backEdge = new Edge(e, current, oppositeNode);
+                            Edge backEdge = Edge.ofBackEdge(e, current, oppositeNode);
                             oppositeNode.downEdges.add(backEdge);
                             current.backEdges.add(backEdge);
                         }
@@ -351,7 +349,7 @@ public class PlanarityTester3
          */
         private static void embedShortCircuit(Node componentRoot, int entryDir, OuterFaceCirculator circulator) {
             Node current = circulator.getCurrent(), prev = circulator.getPrev();
-            Edge shortCircuit = new Edge(current, componentRoot.getParent());
+            Edge shortCircuit = Edge.ofShortCircuit(current, componentRoot.getParent());
             if (entryDir == 0) {
                 componentRoot.embedded.addLast(shortCircuit);
                 componentRoot.outerFaceNeighbors[0] = current;
@@ -386,7 +384,7 @@ public class PlanarityTester3
                     }
                     if (!current.pertinentRoots.isEmpty()) {
                         int parentComponentEntryDir = currentComponentEntryDir;
-                        Node root = current.pertinentRoots.getFirst();
+                        final Node root = current.pertinentRoots.getFirst();
 
                         OuterFaceCirculator ccwCirculator = getActiveSuccessorOnOuterFace(root, componentRoot, 0);
                         Node ccwActiveNode = ccwCirculator.getCurrent();
@@ -1039,20 +1037,17 @@ public class PlanarityTester3
          *                       component
          */
         private static Edge checkComponentForFailedEdge(Node componentRoot, Node v) {
-            OuterFaceCirculator firstDir =
-                    getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, 0);
+            OuterFaceCirculator firstDir = getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, 0);
             Node firstDirNode = firstDir.getCurrent();
-            OuterFaceCirculator secondDir =
-                    getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, 1);
+            if (firstDirNode == componentRoot)
+                return null;
+            OuterFaceCirculator secondDir = getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, 1);
             Node secondDirNode = secondDir.getCurrent();
-            if (firstDirNode != componentRoot && firstDirNode != secondDirNode) {
-                Node current = firstDir.next();
-                while (current != secondDirNode) {
-                    if (current.isPertinentWrtTo(v))
-                        return searchEdge(current, e -> e.target == v && !e.embedded);
-                    current = firstDir.next();
-                }
-            }
+            if (firstDirNode == secondDirNode)
+                return null;
+            for (Node current = firstDir.next(); current != secondDirNode; current = firstDir.next())
+                if (current.isPertinentWrtTo(v))
+                    return searchEdge(current, e -> e.target == v && !e.embedded);;
             return null;
         }
 
@@ -1077,9 +1072,8 @@ public class PlanarityTester3
                 for (Node child : v.separatedDfsChildList) {
                     Node componentRoot = child.initialComponentRoot;
                     Edge result = checkComponentForFailedEdge(componentRoot, v);
-                    if (result != null) {
+                    if (result != null)
                         return result;
-                    }
                 }
                 return null; // should not happen in case node v has an incident unembedded back edge
             } else {
@@ -1430,8 +1424,7 @@ public class PlanarityTester3
             public Node next() {
                 Node t = current;
                 current = current.nextOnOuterFace(prev);
-                prev = t;
-                return prev;
+                return prev = t;
             }
 
             /**
@@ -1517,7 +1510,30 @@ public class PlanarityTester3
              * Whether the edge is real or short-circuit. See the original paper for the definition of
              * the short-circuit edges.
              */
-            boolean shortCircuit;
+            final boolean shortCircuit;
+
+            /**
+             * Creates a new tree edge.
+             *
+             * @param graphEdge the counterpart of this edge in the {@code graph}
+             * @param source    the source node of this edge
+             */
+            static Edge ofTreeEdge(int graphEdge, Node source) {
+                assert graphEdge >= 0;
+                return new Edge(graphEdge, source, null, false, false);
+            }
+
+            /**
+             * Creates a new edge. This constructor is used directly for the creation of the back edges
+             *
+             * @param graphEdge the counterpart of this edge in the {@code graph}
+             * @param source    the source node of this edge
+             * @param target    the target node of this edge
+             */
+            static Edge ofBackEdge(int graphEdge, Node source, Node target) {
+                assert graphEdge >= 0;
+                return new Edge(graphEdge, source, target, false, false);
+            }
 
             /**
              * Creates a new short-circuit edge with no counterpart in {@code graph}. The {@code source}
@@ -1529,34 +1545,17 @@ public class PlanarityTester3
              * @param source the source of the short-circuit edge
              * @param target the target of the short-circuit edge
              */
-            Edge(Node source, Node target) {
-                this(-1, source, target);
-                this.shortCircuit = true;
-                this.embedded = true;
+            static Edge ofShortCircuit(Node source, Node target) {
+                return new Edge(-1, source, target, true, true);
             }
 
-            /**
-             * Creates a new tree edge.
-             *
-             * @param graphEdge the counterpart of this edge in the {@code graph}
-             * @param source    the source node of this edge
-             */
-            Edge(int graphEdge, Node source) {
-                this(graphEdge, source, null);
-            }
-
-            /**
-             * Creates a new edge. This constructor is used directly for the creation of the back edges
-             *
-             * @param graphEdge the counterpart of this edge in the {@code graph}
-             * @param source    the source node of this edge
-             * @param target    the target node of this edge
-             */
-            Edge(int graphEdge, Node source, Node target) {
+            private Edge(int graphEdge, Node source, Node target, boolean embedded, boolean shortCircuit) {
                 this.graphEdge = graphEdge;
                 this.source = source;
                 this.target = target;
                 this.sign = 1;
+                this.embedded = embedded;
+                this.shortCircuit = shortCircuit;
             }
 
             int graphEdge() {
@@ -1662,7 +1661,7 @@ public class PlanarityTester3
             /**
              * The component root the node is created in. For dfs tree roots this value is {@code null}
              */
-            Node initialComponentRoot;
+            /* final */ Node initialComponentRoot;
             /**
              * Two neighbors on the outer face of the biconnected component. Their order is completely
              * irrelevant for the algorithm to traverse the outer face.
