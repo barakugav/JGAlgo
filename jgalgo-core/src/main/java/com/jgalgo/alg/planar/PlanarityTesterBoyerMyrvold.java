@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-public class PlanarityTester3 extends PlanarityTesterAbstract {
+public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
     @Override
     protected PlanarityTester.Result<Integer, Integer> findPlanarEmbedding(IndexGraph g, boolean addAsEdgesWeights) {
@@ -49,10 +49,12 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
         Assertions.noParallelEdges(g, "graphs with parallel edges are not supported");
         Assertions.noSelfEdges(g, "graphs with self edges are not supported");
 
-        var x = new BoyerMyrvoldPlanarityInspector(g);
-        if (!x.isPlanar())
-            return Result.nonPlanar(() -> Optional.of(x.getKuratowskiSubdivision()));
-        return Result.planar(() -> x.getEmbedding());
+        Worker worker = new Worker(g);
+        if (worker.isPlanar()) {
+            return Result.planar(() -> worker.getEmbedding());
+        } else {
+            return Result.nonPlanar(() -> Optional.of(worker.getKuratowskiSubdivision()));
+        }
     }
 
     private static final boolean Side1 = true;
@@ -62,7 +64,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
         return new boolean[] { Side1, Side2 };
     }
 
-    static class BoyerMyrvoldPlanarityInspector {
+    private static class Worker {
         /**
          * The graph we're testing planarity of
          */
@@ -73,7 +75,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
         private final int n;
         /**
          * The resulting combinatorial embedding. This value is computed only after the first call to
-         * the {@link BoyerMyrvoldPlanarityInspector#getEmbedding()}
+         * the {@link Worker#getEmbedding()}
          */
         private IPlanarEmbedding embedding;
         /**
@@ -124,7 +126,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          *
          * @param graph the graph to test the planarity of
          */
-        public BoyerMyrvoldPlanarityInspector(IndexGraph graph) {
+        public Worker(IndexGraph graph) {
             this.graph = Objects.requireNonNull(graph, "Graph can't be null");
             this.n = graph.vertices().size();
             this.nodes = new Node[n];
@@ -268,7 +270,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          *
          * @return true if the graph is planar, false otherwise
          */
-        private boolean lazyTestPlanarity() {
+        private boolean isPlanar() {
             if (!tested) {
                 tested = true;
 
@@ -501,9 +503,8 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          *
          * @return a combinatorial embedding of the {@code graph}
          */
-        private IPlanarEmbedding lazyComputeEmbedding() {
-            lazyTestPlanarity();
-            if (!planar) {
+        private IPlanarEmbedding getEmbedding() {
+            if (!isPlanar()) {
                 throw new IllegalArgumentException(
                         "Input graph is not planar, can't compute graph embedding");
             }
@@ -801,7 +802,7 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          * Finds the highest obstructing path in the component rooted at {@code componentRoot}. See the
          * original paper for the definition of the obstructing path. This method heavily relies on the
          * fact that the method
-         * {@link BoyerMyrvoldPlanarityInspector#findPathDfs(Node, Edge, Predicate, Predicate, List)}
+         * {@link Worker#findPathDfs(Node, Edge, Predicate, Predicate, List)}
          * chooses the edges in the clockwise order.
          *
          * @param  componentRoot the root of the component
@@ -1081,7 +1082,9 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
          *
          * @return a Kuratowski subgraph of the {@code graph}
          */
-        private IntGraph lazyExtractKuratowskiSubdivision() {
+        private IntGraph getKuratowskiSubdivision() {
+            if (isPlanar())
+                throw new IllegalArgumentException("Graph is planar");
             if (kuratowskiSubdivision == null) {
                 // remove short-circuit edges and orient all embedded lists clockwise
                 kuratowskiCleanUp();
@@ -1232,44 +1235,6 @@ public class PlanarityTester3 extends PlanarityTesterAbstract {
                 return finish(subdivision);
             }
             return kuratowskiSubdivision;
-        }
-
-        /**
-         * {@inheritDoc}
-         * <p>
-         * Only the first call to this method does the actual computation, all subsequent calls only
-         * return the previously computed value.
-         */
-        public boolean isPlanar() {
-            return lazyTestPlanarity();
-        }
-
-        /**
-         * {@inheritDoc}
-         * <p>
-         * Only the first call to this method does the actual computation, all subsequent calls only
-         * return the previously computed value.
-         */
-        public IPlanarEmbedding getEmbedding() {
-            if (isPlanar()) {
-                return lazyComputeEmbedding();
-            } else {
-                throw new IllegalArgumentException("Graph is not planar");
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         * <p>
-         * Only the first call to this method does the actual computation, all subsequent calls only
-         * return the previously computed value.
-         */
-        public IntGraph getKuratowskiSubdivision() {
-            if (isPlanar()) {
-                throw new IllegalArgumentException("Graph is planar");
-            } else {
-                return lazyExtractKuratowskiSubdivision();
-            }
         }
 
         /**
