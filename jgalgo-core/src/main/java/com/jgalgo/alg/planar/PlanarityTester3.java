@@ -28,7 +28,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
-import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightsLong;
 import com.jgalgo.graph.IndexGraph;
@@ -139,14 +138,14 @@ public class PlanarityTester3
         private Node createNewNode(int graphVertex, int edge, Node parent, int dfsIndex) {
             Node child;
             if (parent == null) {
-                child = new Node(Integer.valueOf(graphVertex), dfsIndex, 0, null, null, n);
+                child = new Node(graphVertex, dfsIndex, 0, null, null, n);
                 child.outerFaceNeighbors[0] = child.outerFaceNeighbors[1] = child;
                 dfsTreeRoots.add(child);
             } else {
                 assert edge >= 0;
                 Edge treeEdge = new Edge(edge, parent);
                 Node componentRoot = new Node(parent.dfsIndex, treeEdge, n);
-                child = new Node(Integer.valueOf(graphVertex), dfsIndex, parent.height + 1, componentRoot, treeEdge, n);
+                child = new Node(graphVertex, dfsIndex, parent.height + 1, componentRoot, treeEdge, n);
                 treeEdge.target = child;
 
                 componentRoots.add(componentRoot);
@@ -498,7 +497,7 @@ public class PlanarityTester3
          *
          * @return a combinatorial embedding of the {@code graph}
          */
-        private PlanarEmbedding<Integer, Integer> lazyComputeEmbedding() {
+        private IPlanarEmbedding lazyComputeEmbedding() {
             lazyTestPlanarity();
             if (!planar) {
                 throw new IllegalArgumentException(
@@ -517,13 +516,12 @@ public class PlanarityTester3
                     for (Edge edge : node.embedded)
                         embeddedEdges.add(edge.graphEdge());
 
-                    int v = node.graphVertex.intValue();
                     int i = 0;
                     for (int edge : embeddedEdges) {
                         long x = weights.get(edge);
-                        if (graph.edgeSource(edge) == v)
+                        if (graph.edgeSource(edge) == node.graphVertex)
                             x = IntPair.setFirst(x, i);
-                        if (graph.edgeTarget(edge) == v)
+                        if (graph.edgeTarget(edge) == node.graphVertex)
                             x = IntPair.setSecond(x, i);
                         weights.set(edge, x);
                         i++;
@@ -839,7 +837,7 @@ public class PlanarityTester3
          * @param  subdivision the edges in the Kuratowski subdivision
          * @return             the Kuratowski subgraph of the {@code graph}
          */
-        private Graph<Integer, Integer> finish(Set<Edge> subdivision) {
+        private IntGraph finish(Set<Edge> subdivision) {
             IntSet edgeSubset = new IntOpenHashSet();
             IntSet vertexSubset = new IntOpenHashSet();
             subdivision.forEach(e -> {
@@ -847,8 +845,7 @@ public class PlanarityTester3
                 vertexSubset.add(e.target.graphVertex);
                 vertexSubset.add(e.source.graphVertex);
             });
-            kuratowskiSubdivision = graph.subGraphCopy(vertexSubset, edgeSubset);
-            return kuratowskiSubdivision;
+            return kuratowskiSubdivision = graph.subGraphCopy(vertexSubset, edgeSubset);
         }
 
         /**
@@ -1097,7 +1094,7 @@ public class PlanarityTester3
          *
          * @return a Kuratowski subgraph of the {@code graph}
          */
-        private Graph<Integer, Integer> lazyExtractKuratowskiSubdivision() {
+        private IntGraph lazyExtractKuratowskiSubdivision() {
             if (kuratowskiSubdivision == null) {
                 // remove short-circuit edges and orient all embedded lists clockwise
                 kuratowskiCleanUp();
@@ -1266,7 +1263,7 @@ public class PlanarityTester3
          * Only the first call to this method does the actual computation, all subsequent calls only
          * return the previously computed value.
          */
-        public PlanarEmbedding<Integer, Integer> getEmbedding() {
+        public IPlanarEmbedding getEmbedding() {
             if (isPlanar()) {
                 return lazyComputeEmbedding();
             } else {
@@ -1280,7 +1277,7 @@ public class PlanarityTester3
          * Only the first call to this method does the actual computation, all subsequent calls only
          * return the previously computed value.
          */
-        public Graph<Integer, Integer> getKuratowskiSubdivision() {
+        public IntGraph getKuratowskiSubdivision() {
             if (isPlanar()) {
                 throw new IllegalArgumentException("Graph is planar");
             } else {
@@ -1597,9 +1594,9 @@ public class PlanarityTester3
         private static class Node {
             /**
              * The counterpart of this node in the {@code graph}. For the component roots this value is
-             * {@code null}.
+             * {@code -1}.
              */
-            final Integer graphVertex;
+            final int graphVertex;
             /**
              * Whether this node is a root of the biconnected component or not.
              */
@@ -1719,7 +1716,7 @@ public class PlanarityTester3
              * @param initialComponentRoot the component root of this node.
              * @param parentEdge           the parent edge of this node
              */
-            Node(Integer graphVertex, int dfsIndex, int height, Node initialComponentRoot, Edge parentEdge, int n) {
+            Node(int graphVertex, int dfsIndex, int height, Node initialComponentRoot, Edge parentEdge, int n) {
                 this(graphVertex, dfsIndex, parentEdge, false, n);
                 this.height = height;
                 this.initialComponentRoot = initialComponentRoot;
@@ -1733,7 +1730,7 @@ public class PlanarityTester3
              * @param parentEdge the parent edge of this component root
              */
             Node(int dfsIndex, Edge parentEdge, int n) {
-                this(null, dfsIndex, parentEdge, true, n);
+                this(-1, dfsIndex, parentEdge, true, n);
             }
 
             /**
@@ -1744,7 +1741,7 @@ public class PlanarityTester3
              * @param parentEdge  the parent edge of this node
              * @param rootVertex  whether this is real or virtual node
              */
-            private Node(Integer graphVertex, int dfsIndex, Edge parentEdge, boolean rootVertex, int n) {
+            private Node(int graphVertex, int dfsIndex, Edge parentEdge, boolean rootVertex, int n) {
                 this.graphVertex = graphVertex;
                 this.dfsIndex = dfsIndex;
                 this.parentEdge = parentEdge;
