@@ -21,7 +21,6 @@ import static com.jgalgo.internal.util.Range.range;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -81,7 +80,7 @@ public class PlanarityTester3
          * orientation of the {@code graph} and edge sorting, nodes in this list are sorted according to
          * their dfs indexes
          */
-        private final List<Node> nodes;
+        private final Node[] nodes;
         /**
          * List of the dfs tree roots of the {@code graph}. This list has length more than 1 if the
          * input {@code graph} isn't connected
@@ -122,7 +121,7 @@ public class PlanarityTester3
         public BoyerMyrvoldPlanarityInspector(IndexGraph graph) {
             this.graph = Objects.requireNonNull(graph, "Graph can't be null");
             this.n = graph.vertices().size();
-            this.nodes = new ArrayList<>(n);
+            this.nodes = new Node[n];
             this.dfsTreeRoots = new ArrayList<>();
             this.componentRoots = new ArrayList<>(n);
             this.stack = new ArrayList<>();
@@ -157,7 +156,6 @@ public class PlanarityTester3
                 child.outerFaceNeighbors[0] = child.outerFaceNeighbors[1] = componentRoot;
                 componentRoot.outerFaceNeighbors[0] = componentRoot.outerFaceNeighbors[1] = child;
             }
-            nodes.add(child);
             return child;
         }
 
@@ -211,12 +209,16 @@ public class PlanarityTester3
                         }
                     }
 
-                    current.leastAncestor = current.lowpoint = current.dfsIndex;
-                    for (Edge backEdge : current.backEdges)
-                        current.leastAncestor =
-                                Math.min(current.leastAncestor, backEdge.target.dfsIndex);
-                    for (Edge treeEdge : current.treeEdges)
-                        current.lowpoint = Math.min(current.lowpoint, treeEdge.target.lowpoint);
+                    current.leastAncestor = current.backEdges
+                            .stream()
+                            .mapToInt(backEdge -> backEdge.target.dfsIndex)
+                            .min()
+                            .orElse(current.dfsIndex);
+                    current.lowpoint = current.treeEdges
+                            .stream()
+                            .mapToInt(treeEdge -> treeEdge.target.lowpoint)
+                            .min()
+                            .orElse(current.dfsIndex);
                     current.lowpoint = Math.min(current.lowpoint, current.leastAncestor);
 
                     // backtrack DFS one vertex up
@@ -227,36 +229,29 @@ public class PlanarityTester3
                     u = parent[v];
                 }
             }
+            assert Arrays.stream(v2node).allMatch(Objects::nonNull);
 
-            sortVertices();
-        }
+            // Sort by DFS index
+            for (Node node : v2node)
+                nodes[node.dfsIndex] = node;
 
-        /**
-         * Performs sorting of the vertices by their lowpoints and adding them to the
-         * {@code separatedDfsChildList}
-         */
-        private void sortVertices() {
-            List<List<Node>> sorted = new ArrayList<>(Collections.nCopies(n, null));
-            for (Node node : nodes) {
-                int lowpoint = node.lowpoint;
-                if (sorted.get(lowpoint) == null) {
-                    sorted.set(lowpoint, new ArrayList<>());
-                }
-                sorted.get(lowpoint).add(node);
+            // Sort with (stable) bucket sort by lowpoint
+            int[] lowpointOffsets = new int[n];
+            for (Node node : nodes)
+                lowpointOffsets[node.lowpoint]++;
+            for (int s = 0, i = 0; i < lowpointOffsets.length; i++) {
+                int count = lowpointOffsets[i];
+                lowpointOffsets[i] = s;
+                s += count;
             }
-            int i = 0;
-            for (List<Node> list : sorted) {
-                if (i >= n) {
-                    break;
-                }
-                if (list != null) {
-                    for (Node node : list) {
-                        nodes.set(i++, node);
-                        if (node.parentEdge != null) {
-                            node.listNode =
-                                    node.parentEdge.source.separatedDfsChildList.addElementLast(node);
-                        }
-                    }
+            Node[] sorted = v2node; // reuse array
+            for (Node node : nodes)
+                sorted[lowpointOffsets[node.lowpoint]++] = node;
+            for (int i : range(n)) {
+                Node node = nodes[i] = sorted[i];
+                if (node.parentEdge != null) {
+                    Node parentNode = node.parentEdge.source;
+                    node.listNode = parentNode.separatedDfsChildList.addElementLast(node);
                 }
             }
         }
@@ -273,7 +268,7 @@ public class PlanarityTester3
 
                 orient();
                 for (int currentNode = n - 1; currentNode >= 0; currentNode--) {
-                    Node current = nodes.get(currentNode);
+                    Node current = nodes[currentNode];
                     for (Edge downEdge : current.downEdges)
                         walkUp(downEdge.source, current, downEdge);
                     for (Edge treeEdge : current.treeEdges)
@@ -752,7 +747,7 @@ public class PlanarityTester3
          * Clears the visited variable of all the nodes and component roots
          */
         private void clearVisited() {
-            nodes.forEach(n -> n.visited = 0);
+            Arrays.stream(nodes).forEach(n -> n.visited = 0);
             componentRoots.forEach(n -> n.visited = 0);
         }
 
