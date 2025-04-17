@@ -47,7 +47,38 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
         Worker2 worker = new Worker2(g);
         if (worker.isPlanar()) {
-            return Result.planar(() -> worker.getEmbedding(addAsEdgesWeights));
+            return Result.planar(() -> {
+                for (Worker.Node dfsTreeRoot : worker.dfsTreeRoots)
+                    Worker.cleanUpDfs(dfsTreeRoot);
+
+                IWeightsLong weights;
+                Long defaultWeight = Long.valueOf(IntPair.of(-1, -1));
+                if (addAsEdgesWeights) {
+                    weights = g.addEdgesWeights(PlanarEmbedding.EdgeOrderWeightKey, long.class, defaultWeight);
+                } else {
+                    weights = Weights.createExternalEdgesWeights(g, long.class, defaultWeight);
+                }
+
+                for (Worker.Node node : worker.nodes) {
+                    for (Worker.Node child : node.separatedDfsChildList) {
+                        Worker.Node virtualRoot = child.initialComponentRoot;
+                        node.embedded.append(virtualRoot.embedded);
+                    }
+
+                    for (var it = node.embedded.listIterator(); it.hasNext();) {
+                        int i = it.nextIndex();
+                        int edge = it.next().graphEdge();
+                        long x = weights.get(edge);
+                        if (g.edgeSource(edge) == node.graphVertex)
+                            x = IntPair.setFirst(x, i);
+                        if (g.edgeTarget(edge) == node.graphVertex)
+                            x = IntPair.setSecond(x, i);
+                        weights.set(edge, x);
+                    }
+                }
+
+                return new PlanarEmbeddings.IndexEmbedding(g, weights);
+            });
         } else {
             return Result.nonPlanar(() -> Optional.of(worker.getKuratowskiSubdivision()));
         }
@@ -69,11 +100,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * The number of vertices in the {@code graph}
          */
         private final int n;
-        /**
-         * The resulting combinatorial embedding. This value is computed only after the first call to
-         * the {@link Worker#getEmbedding()}
-         */
-        private IPlanarEmbedding embedding;
         /**
          * List of the vertices of the {@code graph} in their internal representation. After the
          * orientation of the {@code graph} and edge sorting, nodes in this list are sorted according to
@@ -102,14 +128,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * The node $v$, which has an un-embedded back edge incident to it.
          */
         Node failedV;
-        /**
-         * Whether the planarity of the {@code graph} has been tested already
-         */
-        private boolean tested;
-        /**
-         * Whether the graph is planar or not. Is valid, if {@code tested} is {@code true}
-         */
-        private boolean planar;
 
         /**
          * Creates new instance of the planarity testing algorithm for the {@code graph}. The input
@@ -262,27 +280,22 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @return true if the graph is planar, false otherwise
          */
         boolean isPlanar() {
-            if (!tested) {
-                tested = true;
+            orient();
+            for (int currentNode = n - 1; currentNode >= 0; currentNode--) {
+                Node current = nodes[currentNode];
+                for (Edge downEdge : current.downEdges)
+                    walkUp(downEdge.source, current, downEdge);
+                for (Edge treeEdge : current.treeEdges)
+                    walkDown(treeEdge.target.initialComponentRoot);
 
-                orient();
-                for (int currentNode = n - 1; currentNode >= 0; currentNode--) {
-                    Node current = nodes[currentNode];
-                    for (Edge downEdge : current.downEdges)
-                        walkUp(downEdge.source, current, downEdge);
-                    for (Edge treeEdge : current.treeEdges)
-                        walkDown(treeEdge.target.initialComponentRoot);
-
-                    for (Edge downEdge : current.downEdges) {
-                        if (!downEdge.embedded) {
-                            failedV = current;
-                            return planar = false;
-                        }
+                for (Edge downEdge : current.downEdges) {
+                    if (!downEdge.embedded) {
+                        failedV = current;
+                        return false;
                     }
                 }
-                planar = true;
             }
-            return planar;
+            return true;
         }
 
         /**
@@ -489,50 +502,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         }
 
         /**
-         * Lazily computes a combinatorial embedding of the {@code graph} by removing all the
-         * short-circuit edges and properly orienting the edges around the nodes.
-         *
-         * @return a combinatorial embedding of the {@code graph}
-         */
-        IPlanarEmbedding getEmbedding(boolean addAsEdgesWeights) {
-            if (!isPlanar())
-                throw new IllegalArgumentException(
-                        "Input graph is not planar, can't compute graph embedding");
-            if (embedding == null) {
-                for (Node dfsTreeRoot : dfsTreeRoots)
-                    cleanUpDfs(dfsTreeRoot);
-                IWeightsLong weights;
-                if (addAsEdgesWeights) {
-                    weights = graph
-                            .addEdgesWeights(PlanarEmbedding.EdgeOrderWeightKey, long.class,
-                                    Long.valueOf(IntPair.of(-1, -1)));
-                } else {
-                    weights = Weights.createExternalEdgesWeights(graph, long.class);
-                }
-                for (Node node : nodes) {
-                    for (Node child : node.separatedDfsChildList) {
-                        Node virtualRoot = child.initialComponentRoot;
-                        node.embedded.append(virtualRoot.embedded);
-                    }
-
-                    for (var it = node.embedded.listIterator(); it.hasNext();) {
-                        int i = it.nextIndex();
-                        int edge = it.next().graphEdge();
-                        long x = weights.get(edge);
-                        if (graph.edgeSource(edge) == node.graphVertex)
-                            x = IntPair.setFirst(x, i);
-                        if (graph.edgeTarget(edge) == node.graphVertex)
-                            x = IntPair.setSecond(x, i);
-                        weights.set(edge, x);
-                    }
-                }
-
-                embedding = new PlanarEmbeddings.IndexEmbedding(graph, weights);
-            }
-            return embedding;
-        }
-
-        /**
          * Either finds and returns a circulator to the node on the boundary of the component, which
          * satisfies the {@code predicate} or returns a circulator to the {@code stop} node.
          *
@@ -663,8 +632,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * A circulator over the nodes on the boundary of the biconnected component. Traverses the nodes
          * in the cyclic manner, i.e. it doesn't stop when all the nodes are traversed
          */
-        static class OuterFaceIter
-                implements Iterator<Node> {
+        static class OuterFaceIter implements Iterator<Node> {
             /**
              * The node this circulator will return next
              */
@@ -1824,8 +1792,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @return a Kuratowski subgraph of the {@code graph}
          */
         private IntGraph getKuratowskiSubdivision() {
-            if (isPlanar())
-                throw new IllegalArgumentException("Graph is planar");
             if (kuratowskiSubdivision == null) {
                 // remove short-circuit edges and orient all embedded lists clockwise
                 kuratowskiCleanUp();
