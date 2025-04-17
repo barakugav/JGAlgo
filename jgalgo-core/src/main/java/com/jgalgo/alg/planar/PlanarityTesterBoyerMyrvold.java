@@ -82,12 +82,13 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 return new PlanarEmbeddings.IndexEmbedding(g, weights);
             });
         } else {
+
             return Result.nonPlanar(() -> Optional.of(worker.getKuratowskiSubdivision(planarityResult.unwrapError())));
         }
     }
 
-    private static final boolean Side1 = true;
-    private static final boolean Side2 = false;
+    private static final boolean Side1 = false;
+    private static final boolean Side2 = true;
 
     private static boolean[] sides() {
         return new boolean[] { Side1, Side2 };
@@ -97,7 +98,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         /**
          * The graph we're testing planarity of
          */
-        final IndexGraph graph;
+        final IndexGraph g;
         /**
          * The number of vertices in the {@code graph}
          */
@@ -134,7 +135,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param graph the graph to test the planarity of
          */
         public Worker(IndexGraph graph) {
-            this.graph = Objects.requireNonNull(graph, "Graph can't be null");
+            this.g = Objects.requireNonNull(graph, "Graph can't be null");
             this.n = graph.vertices().size();
             this.nodes = new Node[n];
             this.dfsTreeRoots = new ObjectArrayList<>();
@@ -193,7 +194,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
                 v2node[root] = createNewNode(root, -1, null, nextDfsIndex);
                 nextDfsIndex++;
-                stack.push(graph.outEdges(root).iterator());
+                stack.push(g.outEdges(root).iterator());
 
                 dfs: for (int u = root;;) {
                     final Node current = v2node[u];
@@ -207,7 +208,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
                             v2node[v] = createNewNode(v, e, current, nextDfsIndex);
                             nextDfsIndex++;
-                            stack.push(graph.outEdges(v).iterator());
+                            stack.push(g.outEdges(v).iterator());
 
                             u = v;
                             continue dfs;
@@ -1571,7 +1572,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 vertexSubset.add(e.target.graphVertex);
                 vertexSubset.add(e.source.graphVertex);
             });
-            return kuratowskiSubdivision = graph.subGraphCopy(vertexSubset, edgeSubset);
+            return kuratowskiSubdivision = g.subGraphCopy(vertexSubset, edgeSubset);
         }
 
         /**
