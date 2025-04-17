@@ -1,19 +1,17 @@
-/*
- * (C) Copyright 2018-2023, by Timofey Chudakov and Contributors.
+/*-
+ * Copyright 2023 Barak Ugav
  *
- * JGraphT : a free Java graph-theory library
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * See the CONTRIBUTORS.md file distributed with this work for additional
- * information regarding copyright ownership.
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0, or the
- * GNU Lesser General Public License v2.1 or later
- * which is available at
- * http://www.gnu.org/licenses/old-licenses/lgpl-2.1-standalone.html.
- *
- * SPDX-License-Identifier: EPL-2.0 OR LGPL-2.1-or-later
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.jgalgo.alg.planar;
 
@@ -47,7 +45,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         Assertions.noParallelEdges(g, "graphs with parallel edges are not supported");
         Assertions.noSelfEdges(g, "graphs with self edges are not supported");
 
-        Worker worker = new Worker(g);
+        Worker2 worker = new Worker2(g);
         if (worker.isPlanar()) {
             return Result.planar(() -> worker.getEmbedding(addAsEdgesWeights));
         } else {
@@ -66,7 +64,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         /**
          * The graph we're testing planarity of
          */
-        private final IndexGraph graph;
+        final IndexGraph graph;
         /**
          * The number of vertices in the {@code graph}
          */
@@ -77,38 +75,33 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          */
         private IPlanarEmbedding embedding;
         /**
-         * The subgraph of the {@code graph}, which is a Kuratowski subdivision. This subgraph certifies
-         * the nonplanarity of the graph.
-         */
-        private IntGraph kuratowskiSubdivision;
-        /**
          * List of the vertices of the {@code graph} in their internal representation. After the
          * orientation of the {@code graph} and edge sorting, nodes in this list are sorted according to
          * their dfs indexes
          */
-        private final Node[] nodes;
+        final Node[] nodes;
         /**
          * List of the dfs tree roots of the {@code graph}. This list has length more than 1 if the
          * input {@code graph} isn't connected
          */
-        private final List<Node> dfsTreeRoots;
+        final List<Node> dfsTreeRoots;
         /**
          * List of the virtual biconnected component roots. Initially, a virtual biconnected component
          * root is created for every node in the {@code graph}, except for the dfs roots. These
          * component roots don't belong to the {@code graph}. At each step of the algorithm, every
          * biconnected component has its own unique component root.
          */
-        private final List<Node> componentRoots;
+        final List<Node> componentRoots;
         /**
          * The stack containing merge information for every consecutive pair of biconnected components
          * on the path to the back edge source. After all the biconnected components are merged, this
          * stack is cleared
          */
-        private final Stack<MergeInfo> mergeStack;
+        final Stack<MergeInfo> mergeStack;
         /**
-         * The node $v$, which has an unembedded back edge incident to it.
+         * The node $v$, which has an un-embedded back edge incident to it.
          */
-        private Node failedV;
+        Node failedV;
         /**
          * Whether the planarity of the {@code graph} has been tested already
          */
@@ -268,7 +261,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          *
          * @return true if the graph is planar, false otherwise
          */
-        private boolean isPlanar() {
+        boolean isPlanar() {
             if (!tested) {
                 tested = true;
 
@@ -501,7 +494,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          *
          * @return a combinatorial embedding of the {@code graph}
          */
-        private IPlanarEmbedding getEmbedding(boolean addAsEdgesWeights) {
+        IPlanarEmbedding getEmbedding(boolean addAsEdgesWeights) {
             if (!isPlanar())
                 throw new IllegalArgumentException(
                         "Input graph is not planar, can't compute graph embedding");
@@ -549,7 +542,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param  dir       the direction to start the traversal in
          * @return           a circulator to the node satisfying the {@code predicate} or to the {@code stop} node
          */
-        private static OuterFaceIter selectOnOuterFace(Predicate<Node> predicate, Node start, Node stop,
+        static OuterFaceIter selectOnOuterFace(Predicate<Node> predicate, Node start, Node stop,
                 boolean dir) {
             OuterFaceIter circulator = start.iterator(dir);
             for (Node current = circulator.next(); current != stop && !predicate.test(current);)
@@ -566,334 +559,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param  dir   the direction of the search
          * @return       a circulator to the found node
          */
-        private static OuterFaceIter getActiveSuccessorOnOuterFace(Node start, Node v, boolean dir) {
+        static OuterFaceIter getActiveSuccessorOnOuterFace(Node start, Node v, boolean dir) {
             return selectOnOuterFace(n -> n.isActiveWrtTo(v), start, start, dir);
-        }
-
-        /**
-         * Returns acirculator to the externally active node on the outer face between the {@code start}
-         * and {@code end} nodes in the direction {@code dir}.
-         *
-         * @param  start the node to start the search from
-         * @param  stop  the node to end the search with
-         * @param  v     an ancestor of the {@code start} and the {@code end}
-         * @param  dir   the direction of the search
-         * @return       a circulator to the found node
-         */
-        private static OuterFaceIter getExternallyActiveSuccessorOnOuterFace(
-                Node start, Node stop, Node v, boolean dir) {
-            return selectOnOuterFace(n -> n.isExternallyActiveWrtTo(v), start, stop, dir);
-        }
-
-        /**
-         * Returns a component root of component the {@code node} is contained in.
-         *
-         * @param  node a node in the partially embedded graph
-         * @return      a component root of the component the {@code node} belongs to
-         */
-        private static Node getComponentRoot(Node node) {
-            return selectOnOuterFace(n -> n.isRootVertex, node, node, Side1).getCurrent();
-        }
-
-        /**
-         * Adds the edges on the path from the {@code startEdge} up to the node {@code stop} to the set
-         * {@code edges}
-         *
-         * @param edges     the set to add the path edges to
-         * @param startEdge the edge to start from
-         * @param stop      the last node on the path
-         */
-        private static void addPathEdges(Set<Edge> edges, Edge startEdge, Node stop) {
-            edges.add(startEdge);
-            for (Node current = startEdge.source; current != stop; current = current.getParent())
-                edges.add(current.parentEdge);
-        }
-
-        /**
-         * Adds the edges between the {@code start} and the {@code end} to the set {@code edges}
-         *
-         * @param edges the set to add the path edges to to
-         * @param start the node to start from
-         * @param stop  the node to end with
-         */
-        private static void addPathEdges(Set<Edge> edges, Node start, Node stop) {
-            if (start != stop)
-                addPathEdges(edges, start.parentEdge, stop);
-        }
-
-        /**
-         * Searches a back edge which target has a height smaller than {@code heightMax}
-         *
-         * @param  current   the node to start from
-         * @param  heightMax an upper bound on the height of the desired back edge
-         * @return           the desired back edge or null, if no such edge exist
-         */
-        private static Edge findBackEdge(Node current, int heightMax) {
-            return findBackEdge(current, heightMax, null);
-        }
-
-        /**
-         * Searches a back edge which target has a height smaller than {@code heightMax}
-         *
-         * @param  current       the node to start from
-         * @param  heightMax     an upper bound on the height of the desired back edge
-         * @param  forbiddenEdge an edge the desired edge should not be equal to
-         * @return               the desired back edge or null, if no such edge exist
-         */
-        private static Edge findBackEdge(Node current, int heightMax, Edge forbiddenEdge) {
-            return findBackEdge(current, e -> forbiddenEdge != e && e.target.height < heightMax);
-        }
-
-        /**
-         * Generically searches an edge in the subtree rooted at the {@code current}, which doesn't
-         * include the children of the {@code current} that have been merged to the parent biconnected
-         * component.
-         *
-         * @param  current   the node to start the searh from
-         * @param  predicate the predicate which the desired edge should satisfy
-         * @return           an edge which satisfies the {@code predicate}, or null if such an edge doesn't exist
-         */
-        private static Edge findBackEdge(Node current, Predicate<Edge> predicate) {
-            for (Edge edge : current.backEdges)
-                if (predicate.test(edge))
-                    return edge;
-            for (Node node : current.separatedDfsChildList) {
-                Edge result = findBackEdgeSubtreeDfs(node, predicate);
-                if (result != null)
-                    return result;
-            }
-            return null;
-        }
-
-        /**
-         * Recursively searches all the subtree root at the node {@code start} to find an edge
-         * satisfying the {@code predicate}.
-         *
-         * @param  start     the node to start the search from.
-         * @param  predicate a predicate, which the desired edge should satisfy
-         * @return           a desired edge, or null if no such edge exist.
-         */
-        private static Edge findBackEdgeSubtreeDfs(Node start, Predicate<Edge> predicate) {
-            Stack<Node> stack = new ObjectArrayList<>();
-            stack.push(start);
-            while (!stack.isEmpty()) {
-                Node current = stack.pop();
-
-                for (Edge edge : current.backEdges)
-                    if (predicate.test(edge))
-                        return edge;
-                for (Edge edge : current.treeEdges)
-                    stack.push(edge.target);
-            }
-            return null;
-        }
-
-        /**
-         * Returns the highest of the two input node, i.e. the node with the greater height
-         *
-         * @param  a a node in the dfs tree
-         * @param  b a node in the dfs tree
-         * @return   the highest of the two nodes
-         */
-        private static Node highest(Node a, Node b) {
-            return a.height > b.height ? a : b;
-        }
-
-        /**
-         * Returns the lowest of the two input node, i.e. the node with the least height.
-         *
-         * @param  a a node in the dfs tree
-         * @param  b a node in the dfs tree
-         * @return   the lowest of the two nodes
-         */
-        private static Node lowest(Node a, Node b) {
-            return a.height < b.height ? a : b;
-        }
-
-        /**
-         * Iteratively sets a boundary height for the nodes on the outer face branch ending at the node
-         * {@code w}.
-         *
-         * @param componentRoot the root of the component
-         * @param w             the end of the outer face branch
-         * @param dir           the direction to start the traversal in
-         * @param delta         a value in $\{+1, -1\}$ to set either positive or negative boundary height
-         */
-        private static void setBoundaryDepth(Node componentRoot, Node w, boolean dir, int delta) {
-            OuterFaceIter circulator = componentRoot.iterator(dir);
-            int currentHeight = delta;
-            for (Node current = circulator.next(); current != w; current = circulator.next()) {
-                current.boundaryHeight = currentHeight;
-                currentHeight += delta;
-            }
-        }
-
-        /**
-         * Clears the visited variable of all the nodes and component roots
-         */
-        private void clearVisited() {
-            Arrays.stream(nodes).forEach(n -> n.visited = 0);
-            componentRoots.forEach(n -> n.visited = 0);
-        }
-
-        /**
-         * Represents information needed to search a path within a biconnected component
-         */
-        private static class SearchInfo {
-            /**
-             * The current node of the dfs traversal
-             */
-            Node current;
-            /**
-             * The edge used to go to the {@code current} vertex
-             */
-            Edge prevEdge;
-            /**
-             * Whether dfs is in a forward or a backtracking phase
-             */
-            boolean backtrack;
-
-            /**
-             * Creates a new search info
-             *
-             * @param current   the current node of the traversal
-             * @param prevEdge  the edge used to go to the {@code current} vertex
-             * @param backtrack whether dfs is in a forward or a backtracking phase
-             */
-            SearchInfo(Node current, Edge prevEdge, boolean backtrack) {
-                this.current = current;
-                this.prevEdge = prevEdge;
-                this.backtrack = backtrack;
-            }
-        }
-
-        /**
-         * Generically searches a path from the {@code current} node to the first node satisfying the
-         * {@code isFinish} predicate consisting of all the nodes satisfying the {@code canGo}
-         * predicate. The key property of this method is that it searches the next edge on the path in
-         * the clockwise order starting from the previous edge. The edges of the resulting path are
-         * added to the {@code edges}.
-         *
-         * @param  start     the start node of the traversal
-         * @param  startPrev the previous edge of the start node
-         * @param  canGo     specifies where the search can go
-         * @param  isFinish  specifies what nodes are finish nodes
-         * @param  edges     the list containing the resulting path
-         * @return           true if the search was successful, false otherwise
-         */
-        private static boolean findPathDfs(
-                Node start, Edge startPrev, Predicate<Node> canGo, Predicate<Node> isFinish,
-                List<Edge> edges) {
-            Stack<SearchInfo> stack = new ObjectArrayList<>();
-            stack.push(new SearchInfo(start, startPrev, false));
-            while (!stack.isEmpty()) {
-                SearchInfo info = stack.pop();
-                if (isFinish.test(info.current)) {
-                    edges.add(info.prevEdge);
-                    edges.remove(0);
-                    return true;
-                }
-                if (!info.backtrack) {
-                    if (info.current.visited != 0)
-                        continue;
-                    info.current.visited = 1;
-                    stack.push(new SearchInfo(info.current, info.prevEdge, true));
-                    edges.add(info.prevEdge);
-                    /*
-                     * The iteration is performed in the reverse order since the infos are pushed on the
-                     * stack and therefore will be processed in the again reverse order
-                     */
-                    Iterator<Edge> iterator =
-                            info.current.embedded.reverseCircularIterator(info.prevEdge);
-                    while (iterator.hasNext()) {
-                        Edge currentEdge = iterator.next();
-                        Node opposite = currentEdge.getOpposite(info.current);
-                        if ((!canGo.test(opposite) || opposite.visited != 0)
-                                && !isFinish.test(opposite)) {
-                            continue;
-                        }
-                        stack.push(new SearchInfo(opposite, currentEdge, false));
-                    }
-                } else {
-                    edges.remove(edges.size() - 1);
-                }
-            }
-            return false;
-        }
-
-        /**
-         * Finds the highest obstructing path in the component rooted at {@code componentRoot}. See the
-         * original paper for the definition of the obstructing path. This method heavily relies on the
-         * fact that the method
-         * {@link Worker#findPathDfs(Node, Edge, Predicate, Predicate, List)}
-         * chooses the edges in the clockwise order.
-         *
-         * @param  componentRoot the root of the component
-         * @param  w             the node called {@code w} in the Kuratowski subdivision extraction phase.
-         * @return               the edges of the desired path as a list
-         */
-        private List<Edge> findHighestObstructingPath(Node componentRoot, Node w) {
-            clearVisited();
-            List<Edge> result = new ObjectArrayList<>();
-            OuterFaceIter circulator = componentRoot.iterator(Side1);
-
-            for (Node current = circulator.next(); current != w; current = circulator.next()) {
-                if (findPathDfs(
-                        current, current.embedded.getFirst(), n -> !n.marked, n -> n.boundaryHeight < 0,
-                        result)) {
-                    return result;
-                }
-            }
-            throw new IllegalStateException("The method should have found a path, but it didn't");
-        }
-
-        /**
-         * Finishes the Kuratowski subdivision extraction by constructing the desired subgraph
-         *
-         * @param  subdivision the edges in the Kuratowski subdivision
-         * @return             the Kuratowski subgraph of the {@code graph}
-         */
-        private IntGraph finish(Set<Edge> subdivision) {
-            IntSet edgeSubset = new IntOpenHashSet();
-            IntSet vertexSubset = new IntOpenHashSet();
-            subdivision.forEach(e -> {
-                edgeSubset.add(e.graphEdge());
-                vertexSubset.add(e.target.graphVertex);
-                vertexSubset.add(e.source.graphVertex);
-            });
-            return kuratowskiSubdivision = graph.subGraphCopy(vertexSubset, edgeSubset);
-        }
-
-        /**
-         * Adds the edges on the outer face of the component rooted at {@code componentRoot} to the set
-         * {@code edges}
-         *
-         * @param edges         the set to add the edges to
-         * @param componentRoot the root of the biconnected component
-         */
-        private static void addBoundaryEdges(Set<Edge> edges, Node componentRoot) {
-            OuterFaceIter circulator = componentRoot.iterator(Side1);
-            Node current;
-            do {
-                Edge edge = circulator.edgeToNext();
-                edge.source.marked = edge.target.marked = true;
-                edges.add(edge);
-                current = circulator.next();
-            } while (current != componentRoot);
-        }
-
-        /**
-         * Cleans up the dfs trees before the Kuratowski subdivision extraction phase
-         */
-        private void kuratowskiCleanUp() {
-            for (Node dfsTreeRoot : dfsTreeRoots)
-                cleanUpDfs(dfsTreeRoot);
-            for (Node node : componentRoots) {
-                if (node.outerFaceNeighbor1 != null) {
-                    node.removeShortCircuitEdges();
-                    fixBoundaryOrder(node);
-                }
-            }
         }
 
         /**
@@ -902,7 +569,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          *
          * @param dfsTreeRoot the root of the dfs tree to clean up
          */
-        private static void cleanUpDfs(Node dfsTreeRoot) {
+        static void cleanUpDfs(Node dfsTreeRoot) {
             Stack<Pair<Node, Boolean>> stack = new ObjectArrayList<>();
             stack.push(Pair.of(dfsTreeRoot, Boolean.FALSE));
             while (!stack.isEmpty()) {
@@ -924,344 +591,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         }
 
         /**
-         * Orient the connections on the outer face of the component rooted at {@code componentRoot}
-         * such that they are ordered
-         *
-         * @param componentRoot the root of the component to process
-         */
-        private static void fixBoundaryOrder(Node componentRoot) {
-            if (componentRoot.embedded.size() < 2) {
-                return;
-            }
-            Node componentParent = componentRoot.getParent();
-            Edge edgeToNext = componentRoot.embedded.getLast(),
-                    edgeToPrev = componentRoot.embedded.getFirst();
-            Node next = edgeToNext.getOpposite(componentParent),
-                    prev = edgeToPrev.getOpposite(componentParent);
-
-            componentRoot.outerFaceNeighbor1 = next;
-            componentRoot.outerFaceNeighbor2 = prev;
-            next.outerFaceNeighbor2 = componentRoot;
-            prev.outerFaceNeighbor1 = componentRoot;
-            Node current = componentRoot.outerFaceNeighbor1;
-            do {
-                edgeToNext = current.embedded.getLast();
-                edgeToPrev = current.embedded.getFirst();
-                next = edgeToNext.getOpposite(current);
-                prev = edgeToPrev.getOpposite(current);
-                if (prev != componentParent)
-                    current.outerFaceNeighbor2 = prev;
-                if (next != componentParent)
-                    current.outerFaceNeighbor1 = next;
-                current = next;
-            } while (current != componentParent);
-        }
-
-        /**
-         * Removes the edges from the outer face from the {@code start} node to the {@code end} node in
-         * the direction {@code dir} from the set {@code edges}
-         *
-         * @param start the start of the boundary path
-         * @param end   the end of the boundary path
-         * @param dir   the direction to take from the {@code start} node
-         * @param edges the set of edges to modify
-         */
-        private static void removeUp(Node start, Node end, boolean dir, Set<Edge> edges) {
-            if (start == end)
-                return;
-            OuterFaceIter circulator = start.iterator(dir);
-            Node next;
-            do {
-                Edge edge = circulator.edgeToNext();
-                edges.remove(edge);
-                next = circulator.next();
-            } while (next != end);
-        }
-
-        /**
-         * Effectively is a method for finding node {@code z} in the notations of the original paper.
-         * The search proceeds in the reverse order of the path from the {@code backEdge} to the node
-         * {@code w}
-         *
-         * @param  w        the start of the path down
-         * @param  backEdge the last edge on the path
-         * @return          the desired node {@code z} or null if the source of the {@code backEdge} is equal to
-         *                  {@code w}
-         */
-        private static Node getNextOnPath(Node w, Edge backEdge) {
-            if (backEdge.source == w) {
-                return null;
-            }
-            Node prev = backEdge.source, current = backEdge.source.getParent();
-            while (current != w) {
-                prev = current;
-                current = current.getParent();
-            }
-            return prev;
-        }
-
-        /**
-         * Finds a path from some intermediate nodes on the path represented by the list {@code path} to
-         * the node {@code v}. The path to {@code v} certainly doesn't exist if the list {@code path}
-         * has size 1, because we're looking for a path from some intermediate node
-         *
-         * @param  path the path between left and right outer face branches
-         * @param  v    the parent of the biconnected component
-         * @return      the path edges in a list, which can be empty
-         */
-        private List<Edge> findPathToV(List<Edge> path, Node v) {
-            clearVisited();
-            int i = 0;
-            Edge currentEdge = path.get(i);
-            Node current = currentEdge.source.boundaryHeight != 0 ? currentEdge.target : currentEdge.source;
-            List<Edge> result = new ObjectArrayList<>();
-            while (i < path.size() - 1) {
-                if (findPathDfs(current, currentEdge, n -> !n.marked, n -> n == v, result))
-                    return result;
-                ++i;
-                currentEdge = path.get(i);
-                current = currentEdge.getOpposite(current);
-            }
-            return result;
-        }
-
-        /**
-         * Checks whether the first node {@code a} is strictly higher than nodes {@code b} and {@code c}
-         *
-         * @param  a a node in the dfs tree
-         * @param  b a node in the dfs tree
-         * @param  c a node in the dfs tree
-         * @return   true if the first node in strictly higher that other node, false otherwise
-         */
-        private static boolean firstStrictlyHigher(Node a, Node b, Node c) {
-            return a.height > b.height && a.height > c.height;
-        }
-
-        /**
-         * Checks whether the biconnected component rooted at {@code componentRoot} can be used to
-         * extract a Kuratowski subdivision. It can be used in the case there is one externally active
-         * node on each branch of the outer face and there is a pertinent node on the lower part of the
-         * outer face between these two externally active nodes.
-         *
-         * @param  componentRoot the root of the biconnected component
-         * @param  v             an ancestor of the nodes in the biconnected component
-         * @return               an unembedded back edge, which target is {@code v} and which can be used to extract a
-         *                       Kuratowski subdivision, or {@code null} is no such edge exist for this biconnected
-         *                       component
-         */
-        private static Edge checkComponentForFailedEdge(Node componentRoot, Node v) {
-            OuterFaceIter firstDir =
-                    getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, Side1);
-            Node firstDirNode = firstDir.getCurrent();
-            if (firstDirNode == componentRoot)
-                return null;
-            OuterFaceIter secondDir =
-                    getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, Side2);
-            Node secondDirNode = secondDir.getCurrent();
-            if (firstDirNode == secondDirNode)
-                return null;
-            for (Node current = firstDir.next(); current != secondDirNode; current = firstDir.next())
-                if (current.isPertinentWrtTo(v))
-                    return findBackEdge(current, e -> e.target == v && !e.embedded);;
-            return null;
-        }
-
-        /**
-         * Finds an unembedded back edge to {@code v}, which can be used to extract the Kuratowski
-         * subdivision. If the merge stack isn't empty, the last biconnected component processed by the
-         * walkdown can be used to find such an edge, because walkdown descended to that component
-         * (which means that component is pertinent) and couldn't reach a pertinent node. This can only
-         * happen by encountering externally active nodes on both branches of the traversal. Otherwise,
-         * be have look in all the child biconnected components to find an unembedded back edge. We're
-         * guided by the fact that an edge can not be embedded only in the case both traversals of the
-         * walkdown could reach all off the pertinent nodes. This in turn can happen only if both
-         * traversals get stuck on externally active nodes.
-         * <p>
-         * <b>Note:</b> not every unembedded back edge can be used to extract a Kuratowski subdivision
-         *
-         * @param  v the vertex which has an unembedded back edge incident to it
-         * @return   the found unembedded back edge which can be used to extract a Kuratowski subdivision
-         */
-        private Edge findFailedEdge(Node v) {
-            if (mergeStack.isEmpty()) {
-                for (Node child : v.separatedDfsChildList) {
-                    Node componentRoot = child.initialComponentRoot;
-                    Edge result = checkComponentForFailedEdge(componentRoot, v);
-                    if (result != null)
-                        return result;
-                }
-                return null; // should not happen in case node v has an incident unembedded back edge
-            } else {
-                MergeInfo info = mergeStack.top();
-                return checkComponentForFailedEdge(info.child, v);
-            }
-        }
-
-        /**
-         * Lazily extracts a Kuratowski subdivision from the {@code graph}. The process of adding the
-         * edges of the subdivision to the resulting set of edges had been made explicit for every case.
-         *
-         * @return a Kuratowski subgraph of the {@code graph}
-         */
-        private IntGraph getKuratowskiSubdivision() {
-            if (isPlanar())
-                throw new IllegalArgumentException("Graph is planar");
-            if (kuratowskiSubdivision == null) {
-                // remove short-circuit edges and orient all embedded lists clockwise
-                kuratowskiCleanUp();
-                Set<Edge> subdivision = new HashSet<>();
-                // find the needed unembedded back edge which can be used to find Kuratowski subgraph
-                Edge failedEdge = findFailedEdge(failedV);
-                assert failedEdge != null;
-                /*
-                 * We're iteratively moving up traversing the outer faces of the biconnected components
-                 * to find externally active nodes x and y, which are on different branches of the outer
-                 * face. The way we're finding the nodes x and y helps us eliminate the case E_1
-                 * described in the original paper. This can be done because we always find the closest
-                 * to the node w externally active nodes x and y.
-                 */
-                Node x, y, v = failedEdge.target, w = failedEdge.source, componentRoot;
-                for (;;) {
-                    componentRoot = getComponentRoot(w);
-                    x = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side2).getCurrent();
-                    y = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side1).getCurrent();
-                    if (x.isRootVertex) {
-                        w = x.getParent();
-                    } else if (y.isRootVertex) {
-                        w = y.getParent();
-                    } else {
-                        componentRoot = getComponentRoot(w);
-                        break;
-                    }
-                }
-                Edge xBackEdge = findBackEdge(x, v.height);
-                Edge yBackEdge = findBackEdge(y, v.height);
-                Node backLower = lowest(xBackEdge.target, yBackEdge.target);
-                Node backHigher = highest(xBackEdge.target, yBackEdge.target);
-                addPathEdges(subdivision, xBackEdge, x);
-                addPathEdges(subdivision, yBackEdge, y);
-                addBoundaryEdges(subdivision, componentRoot);
-
-                if (componentRoot.getParent() != v) {
-                    // case A, v isn't a parent of the component we've found
-                    addPathEdges(subdivision, componentRoot.getParent(), backLower);
-                    addPathEdges(subdivision, failedEdge, w);
-                    return finish(subdivision);
-                }
-                // node z will be null only if the tree path from w to failedEdge is failedEdge itself
-                Node z = getNextOnPath(w, failedEdge);
-                Edge backEdge = null;
-                if (z != null)
-                    backEdge = findBackEdgeSubtreeDfs(z, e -> e.target.height < v.height && e != failedEdge);
-                if (backEdge != null) {
-                    // case B
-                    addPathEdges(subdivision, backEdge, w);
-                    addPathEdges(subdivision, failedEdge, w);
-                    Node highest = highest(xBackEdge.target, highest(yBackEdge.target, backEdge.target));
-                    Node lowest = lowest(xBackEdge.target, lowest(yBackEdge.target, backEdge.target));
-                    addPathEdges(subdivision, highest, lowest);
-                    return finish(subdivision);
-                }
-                /*
-                 * If we failed to either case A or B, we have to find a highest obstructing path and
-                 * then deal with cases C - E
-                 */
-                setBoundaryDepth(componentRoot, w, Side1, 1);
-                setBoundaryDepth(componentRoot, w, Side2, -1);
-
-                assert x.boundaryHeight > 0;
-                List<Edge> path = findHighestObstructingPath(componentRoot, w);
-                assert !path.isEmpty();
-
-                Edge firstEdge = path.get(0);
-                Edge lastEdge = path.get(path.size() - 1);
-                Node firstNode = firstEdge.source.boundaryHeight > 0 ? firstEdge.source : firstEdge.target;
-                Node lastNode = lastEdge.source.boundaryHeight < 0 ? lastEdge.source : lastEdge.target;
-                if (firstNode.boundaryHeight < x.boundaryHeight || lastNode.boundaryHeight > y.boundaryHeight) {
-                    // case C, either the first node or the last node of the path is higher than x or y
-                    // respectively
-                    Node removeStart;
-                    if (lastNode.boundaryHeight > y.boundaryHeight) {
-                        removeStart = firstNode.boundaryHeight < x.boundaryHeight ? firstNode : x;
-                        removeUp(removeStart, componentRoot, Side2, subdivision);
-                    } else {
-                        removeUp(y, componentRoot, Side1, subdivision);
-                    }
-                    addPathEdges(subdivision, failedEdge, w);
-                    subdivision.addAll(path);
-                    addPathEdges(subdivision, v, backLower);
-                    return finish(subdivision);
-                }
-                path.forEach(e -> e.source.marked = e.target.marked = true);
-                List<Edge> pathToV = findPathToV(path, v);
-                if (!pathToV.isEmpty()) {
-                    // case D, we have a path to the node v
-                    removeUp(x, componentRoot, Side2, subdivision);
-                    removeUp(y, componentRoot, Side1, subdivision);
-                    subdivision.addAll(path);
-                    subdivision.addAll(pathToV);
-                    addPathEdges(subdivision, v, backLower);
-                    addPathEdges(subdivision, failedEdge, w);
-                    return finish(subdivision);
-                }
-                Edge externallyActive = findBackEdge(w, v.height, failedEdge);
-                assert externallyActive != null;
-                addPathEdges(subdivision, externallyActive, w);
-                if (firstStrictlyHigher(externallyActive.target, xBackEdge.target, yBackEdge.target)) {
-                    // case E_2, equivalent to A
-                    addPathEdges(subdivision, componentRoot.getParent(), backLower);
-                } else if (firstStrictlyHigher(
-                        xBackEdge.target, yBackEdge.target, externallyActive.target)) {
-                    // case E_2, u_x is higher
-                    removeUp(componentRoot, x, Side1, subdivision);
-                    removeUp(w, lastNode, Side1, subdivision);
-                    subdivision.addAll(path);
-                    addPathEdges(subdivision, failedEdge, w);
-                    addPathEdges(subdivision, v,
-                            lowest(backLower, externallyActive.target));
-                } else if (firstStrictlyHigher(
-                        yBackEdge.target, xBackEdge.target, externallyActive.target)) {
-                    // case E_2, u_y is higher
-                    removeUp(y, componentRoot, Side1, subdivision);
-                    removeUp(firstNode, w, Side1, subdivision);
-                    subdivision.addAll(path);
-                    addPathEdges(subdivision, failedEdge, w);
-                    addPathEdges(subdivision, v,
-                            lowest(backLower, externallyActive.target));
-                } else if (firstNode.boundaryHeight > x.boundaryHeight) {
-                    // case E_4, p_x is lower than x
-                    removeUp(w, lastNode, Side1, subdivision);
-                    subdivision.addAll(path);
-                    addPathEdges(subdivision, failedEdge, w);
-                    addPathEdges(
-                            subdivision,
-                            highest(backHigher, externallyActive.target),
-                            lowest(backLower, externallyActive.target));
-                } else if (lastNode.boundaryHeight < y.boundaryHeight) {
-                    // case E_4, p_y is lower than y
-                    removeUp(firstNode, w, Side1, subdivision);
-                    subdivision.addAll(path);
-                    addPathEdges(subdivision, failedEdge, w);
-                    addPathEdges(
-                            subdivision,
-                            highest(backHigher, externallyActive.target),
-                            lowest(backLower, externallyActive.target));
-                } else {
-                    // case E, extracting K_5
-                    subdivision.addAll(path);
-                    addPathEdges(subdivision, v,
-                            lowest(backLower, externallyActive.target));
-                    addPathEdges(subdivision, failedEdge, w);
-                }
-                return finish(subdivision);
-            }
-            return kuratowskiSubdivision;
-        }
-
-        /**
          * The information needed to merge two consecutive biconnected components
          */
-        private static class MergeInfo {
+        static class MergeInfo {
             /**
              * The node current traversal descended from. This node belongs to the parent biconnected
              * component
@@ -1296,7 +628,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             final boolean vOut;
 
             /**
-             * Creates new instance of the infromation needed to merge to biconnected components
+             * Creates new instance of the information needed to merge to biconnected components
              *
              * @param parent     the node current traversal descended from
              * @param parentNext the next node along the traversal of the parent component
@@ -1331,7 +663,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * A circulator over the nodes on the boundary of the biconnected component. Traverses the nodes
          * in the cyclic manner, i.e. it doesn't stop when all the nodes are traversed
          */
-        private static class OuterFaceIter
+        static class OuterFaceIter
                 implements Iterator<Node> {
             /**
              * The node this circulator will return next
@@ -1422,7 +754,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * component root.
              *
              * @param  node the input argument
-             * @return      the real counterpath of the {@code node}
+             * @return      the real counter path of the {@code node}
              */
             private static Node toExistingNode(Node node) {
                 return node.isRootVertex ? node.getParent() : node;
@@ -1432,9 +764,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         /**
          * Internal representation of the edges of the input {@code graph}.
          */
-        private static class Edge {
+        static class Edge {
             /**
-             * The counterpart of this edge in the {@code graph}. This value can be null if the edge was
+             * The counterpart of this edge in the {@code graph}. This value can be -1 if the edge was
              * created as a short-circuit edge.
              */
             private final int graphEdge;
@@ -1449,7 +781,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             Node target;
             /**
              * Either $+1$ or $-1$ for regular and inverted edges respectively. This value is set to
-             * $-1$ to flip a biconnected component in $\mathcal{O}(1)$ time. <b>Note:</b> this
+             * $-1$ to flip a biconnected component in $O(1)$ time. <b>Note:</b> this
              * operation doesn't flip any of the child biconnected components of this biconnected
              * component
              */
@@ -1542,7 +874,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * The internal representation of the vertices of the graph. Contains necessary information to
          * perform dfs traversals, biconnected component boundary traversals, to embed edges, etc.
          */
-        private static class Node {
+        static class Node {
             /**
              * The counterpart of this node in the {@code graph}. For the component roots this value is
              * {@code -1}.
@@ -1648,7 +980,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             /**
              * Stores the list node from the {@code separatedDfsChildList} of the parent node this node
              * is stored in. This enable deleting of this node from the {@code separatedDfsChildList}
-             * list in $\mathcal{O}(1)$ time
+             * list in $O(1)$ time
              */
             DoublyLinkedList.ListNode<Node> listNode;
             /**
@@ -1972,6 +1304,680 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 }
             }
         }
+    }
+
+    private static class Worker2 extends Worker {
+
+        /**
+         * The subgraph of the {@code graph}, which is a Kuratowski subdivision. This subgraph certifies
+         * the non planarity of the graph.
+         */
+        private IntGraph kuratowskiSubdivision;
+
+        public Worker2(IndexGraph graph) {
+            super(graph);
+        }
+
+        /**
+         * Returns a circulator to the externally active node on the outer face between the {@code start}
+         * and {@code end} nodes in the direction {@code dir}.
+         *
+         * @param  start the node to start the search from
+         * @param  stop  the node to end the search with
+         * @param  v     an ancestor of the {@code start} and the {@code end}
+         * @param  dir   the direction of the search
+         * @return       a circulator to the found node
+         */
+        private static OuterFaceIter getExternallyActiveSuccessorOnOuterFace(
+                Node start, Node stop, Node v, boolean dir) {
+            return selectOnOuterFace(n -> n.isExternallyActiveWrtTo(v), start, stop, dir);
+        }
+
+        /**
+         * Returns a component root of component the {@code node} is contained in.
+         *
+         * @param  node a node in the partially embedded graph
+         * @return      a component root of the component the {@code node} belongs to
+         */
+        private static Node getComponentRoot(Node node) {
+            return selectOnOuterFace(n -> n.isRootVertex, node, node, Side1).getCurrent();
+        }
+
+        /**
+         * Adds the edges on the path from the {@code startEdge} up to the node {@code stop} to the set
+         * {@code edges}
+         *
+         * @param edges     the set to add the path edges to
+         * @param startEdge the edge to start from
+         * @param stop      the last node on the path
+         */
+        private static void addPathEdges(Set<Edge> edges, Edge startEdge, Node stop) {
+            edges.add(startEdge);
+            for (Node current = startEdge.source; current != stop; current = current.getParent())
+                edges.add(current.parentEdge);
+        }
+
+        /**
+         * Adds the edges between the {@code start} and the {@code end} to the set {@code edges}
+         *
+         * @param edges the set to add the path edges to to
+         * @param start the node to start from
+         * @param stop  the node to end with
+         */
+        private static void addPathEdges(Set<Edge> edges, Node start, Node stop) {
+            if (start != stop)
+                addPathEdges(edges, start.parentEdge, stop);
+        }
+
+        /**
+         * Searches a back edge which target has a height smaller than {@code heightMax}
+         *
+         * @param  current   the node to start from
+         * @param  heightMax an upper bound on the height of the desired back edge
+         * @return           the desired back edge or null, if no such edge exist
+         */
+        private static Edge findBackEdge(Node current, int heightMax) {
+            return findBackEdge(current, heightMax, null);
+        }
+
+        /**
+         * Searches a back edge which target has a height smaller than {@code heightMax}
+         *
+         * @param  current       the node to start from
+         * @param  heightMax     an upper bound on the height of the desired back edge
+         * @param  forbiddenEdge an edge the desired edge should not be equal to
+         * @return               the desired back edge or null, if no such edge exist
+         */
+        private static Edge findBackEdge(Node current, int heightMax, Edge forbiddenEdge) {
+            return findBackEdge(current, e -> forbiddenEdge != e && e.target.height < heightMax);
+        }
+
+        /**
+         * Generically searches an edge in the subtree rooted at the {@code current}, which doesn't
+         * include the children of the {@code current} that have been merged to the parent biconnected
+         * component.
+         *
+         * @param  current   the node to start the search from
+         * @param  predicate the predicate which the desired edge should satisfy
+         * @return           an edge which satisfies the {@code predicate}, or null if such an edge doesn't exist
+         */
+        private static Edge findBackEdge(Node current, Predicate<Edge> predicate) {
+            for (Edge edge : current.backEdges)
+                if (predicate.test(edge))
+                    return edge;
+            for (Node node : current.separatedDfsChildList) {
+                Edge result = findBackEdgeSubtreeDfs(node, predicate);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+
+        /**
+         * Recursively searches all the subtree root at the node {@code start} to find an edge
+         * satisfying the {@code predicate}.
+         *
+         * @param  start     the node to start the search from.
+         * @param  predicate a predicate, which the desired edge should satisfy
+         * @return           a desired edge, or null if no such edge exist.
+         */
+        private static Edge findBackEdgeSubtreeDfs(Node start, Predicate<Edge> predicate) {
+            Stack<Node> stack = new ObjectArrayList<>();
+            stack.push(start);
+            while (!stack.isEmpty()) {
+                Node current = stack.pop();
+
+                for (Edge edge : current.backEdges)
+                    if (predicate.test(edge))
+                        return edge;
+                for (Edge edge : current.treeEdges)
+                    stack.push(edge.target);
+            }
+            return null;
+        }
+
+        /**
+         * Returns the highest of the two input node, i.e. the node with the greater height
+         *
+         * @param  a a node in the dfs tree
+         * @param  b a node in the dfs tree
+         * @return   the highest of the two nodes
+         */
+        private static Node highest(Node a, Node b) {
+            return a.height > b.height ? a : b;
+        }
+
+        /**
+         * Returns the lowest of the two input node, i.e. the node with the least height.
+         *
+         * @param  a a node in the dfs tree
+         * @param  b a node in the dfs tree
+         * @return   the lowest of the two nodes
+         */
+        private static Node lowest(Node a, Node b) {
+            return a.height < b.height ? a : b;
+        }
+
+        /**
+         * Iteratively sets a boundary height for the nodes on the outer face branch ending at the node
+         * {@code w}.
+         *
+         * @param componentRoot the root of the component
+         * @param w             the end of the outer face branch
+         * @param dir           the direction to start the traversal in
+         * @param delta         a value in $\{+1, -1\}$ to set either positive or negative boundary height
+         */
+        private static void setBoundaryDepth(Node componentRoot, Node w, boolean dir, int delta) {
+            OuterFaceIter circulator = componentRoot.iterator(dir);
+            int currentHeight = delta;
+            for (Node current = circulator.next(); current != w; current = circulator.next()) {
+                current.boundaryHeight = currentHeight;
+                currentHeight += delta;
+            }
+        }
+
+        /**
+         * Clears the visited variable of all the nodes and component roots
+         */
+        private void clearVisited() {
+            Arrays.stream(nodes).forEach(n -> n.visited = 0);
+            componentRoots.forEach(n -> n.visited = 0);
+        }
+
+        /**
+         * Represents information needed to search a path within a biconnected component
+         */
+        private static class SearchInfo {
+            /**
+             * The current node of the dfs traversal
+             */
+            Node current;
+            /**
+             * The edge used to go to the {@code current} vertex
+             */
+            Edge prevEdge;
+            /**
+             * Whether dfs is in a forward or a backtracking phase
+             */
+            boolean backtrack;
+
+            /**
+             * Creates a new search info
+             *
+             * @param current   the current node of the traversal
+             * @param prevEdge  the edge used to go to the {@code current} vertex
+             * @param backtrack whether dfs is in a forward or a backtracking phase
+             */
+            SearchInfo(Node current, Edge prevEdge, boolean backtrack) {
+                this.current = current;
+                this.prevEdge = prevEdge;
+                this.backtrack = backtrack;
+            }
+        }
+
+        /**
+         * Generically searches a path from the {@code current} node to the first node satisfying the
+         * {@code isFinish} predicate consisting of all the nodes satisfying the {@code canGo}
+         * predicate. The key property of this method is that it searches the next edge on the path in
+         * the clockwise order starting from the previous edge. The edges of the resulting path are
+         * added to the {@code edges}.
+         *
+         * @param  start     the start node of the traversal
+         * @param  startPrev the previous edge of the start node
+         * @param  canGo     specifies where the search can go
+         * @param  isFinish  specifies what nodes are finish nodes
+         * @param  edges     the list containing the resulting path
+         * @return           true if the search was successful, false otherwise
+         */
+        private static boolean findPathDfs(
+                Node start, Edge startPrev, Predicate<Node> canGo, Predicate<Node> isFinish,
+                List<Edge> edges) {
+            Stack<SearchInfo> stack = new ObjectArrayList<>();
+            stack.push(new SearchInfo(start, startPrev, false));
+            while (!stack.isEmpty()) {
+                SearchInfo info = stack.pop();
+                if (isFinish.test(info.current)) {
+                    edges.add(info.prevEdge);
+                    edges.remove(0);
+                    return true;
+                }
+                if (!info.backtrack) {
+                    if (info.current.visited != 0)
+                        continue;
+                    info.current.visited = 1;
+                    stack.push(new SearchInfo(info.current, info.prevEdge, true));
+                    edges.add(info.prevEdge);
+                    /*
+                     * The iteration is performed in the reverse order since the infos are pushed on the
+                     * stack and therefore will be processed in the again reverse order
+                     */
+                    Iterator<Edge> iterator =
+                            info.current.embedded.reverseCircularIterator(info.prevEdge);
+                    while (iterator.hasNext()) {
+                        Edge currentEdge = iterator.next();
+                        Node opposite = currentEdge.getOpposite(info.current);
+                        if ((!canGo.test(opposite) || opposite.visited != 0)
+                                && !isFinish.test(opposite)) {
+                            continue;
+                        }
+                        stack.push(new SearchInfo(opposite, currentEdge, false));
+                    }
+                } else {
+                    edges.remove(edges.size() - 1);
+                }
+            }
+            return false;
+        }
+
+        /**
+         * Finds the highest obstructing path in the component rooted at {@code componentRoot}. See the
+         * original paper for the definition of the obstructing path. This method heavily relies on the
+         * fact that the method findPathDfs
+         * chooses the edges in the clockwise order.
+         *
+         * @param  componentRoot the root of the component
+         * @param  w             the node called {@code w} in the Kuratowski subdivision extraction phase.
+         * @return               the edges of the desired path as a list
+         */
+        private List<Edge> findHighestObstructingPath(Node componentRoot, Node w) {
+            clearVisited();
+            List<Edge> result = new ObjectArrayList<>();
+            OuterFaceIter circulator = componentRoot.iterator(Side1);
+
+            for (Node current = circulator.next(); current != w; current = circulator.next()) {
+                if (findPathDfs(
+                        current, current.embedded.getFirst(), n -> !n.marked, n -> n.boundaryHeight < 0,
+                        result)) {
+                    return result;
+                }
+            }
+            throw new IllegalStateException("The method should have found a path, but it didn't");
+        }
+
+        /**
+         * Finishes the Kuratowski subdivision extraction by constructing the desired subgraph
+         *
+         * @param  subdivision the edges in the Kuratowski subdivision
+         * @return             the Kuratowski subgraph of the {@code graph}
+         */
+        private IntGraph finish(Set<Edge> subdivision) {
+            IntSet edgeSubset = new IntOpenHashSet();
+            IntSet vertexSubset = new IntOpenHashSet();
+            subdivision.forEach(e -> {
+                edgeSubset.add(e.graphEdge());
+                vertexSubset.add(e.target.graphVertex);
+                vertexSubset.add(e.source.graphVertex);
+            });
+            return kuratowskiSubdivision = graph.subGraphCopy(vertexSubset, edgeSubset);
+        }
+
+        /**
+         * Adds the edges on the outer face of the component rooted at {@code componentRoot} to the set
+         * {@code edges}
+         *
+         * @param edges         the set to add the edges to
+         * @param componentRoot the root of the biconnected component
+         */
+        private static void addBoundaryEdges(Set<Edge> edges, Node componentRoot) {
+            OuterFaceIter circulator = componentRoot.iterator(Side1);
+            Node current;
+            do {
+                Edge edge = circulator.edgeToNext();
+                edge.source.marked = edge.target.marked = true;
+                edges.add(edge);
+                current = circulator.next();
+            } while (current != componentRoot);
+        }
+
+        /**
+         * Cleans up the dfs trees before the Kuratowski subdivision extraction phase
+         */
+        private void kuratowskiCleanUp() {
+            for (Node dfsTreeRoot : dfsTreeRoots)
+                cleanUpDfs(dfsTreeRoot);
+            for (Node node : componentRoots) {
+                if (node.outerFaceNeighbor1 != null) {
+                    node.removeShortCircuitEdges();
+                    fixBoundaryOrder(node);
+                }
+            }
+        }
+
+        /**
+         * Orient the connections on the outer face of the component rooted at {@code componentRoot}
+         * such that they are ordered
+         *
+         * @param componentRoot the root of the component to process
+         */
+        private static void fixBoundaryOrder(Node componentRoot) {
+            if (componentRoot.embedded.size() < 2) {
+                return;
+            }
+            Node componentParent = componentRoot.getParent();
+            Edge edgeToNext = componentRoot.embedded.getLast(),
+                    edgeToPrev = componentRoot.embedded.getFirst();
+            Node next = edgeToNext.getOpposite(componentParent),
+                    prev = edgeToPrev.getOpposite(componentParent);
+
+            componentRoot.outerFaceNeighbor1 = next;
+            componentRoot.outerFaceNeighbor2 = prev;
+            next.outerFaceNeighbor2 = componentRoot;
+            prev.outerFaceNeighbor1 = componentRoot;
+            Node current = componentRoot.outerFaceNeighbor1;
+            do {
+                edgeToNext = current.embedded.getLast();
+                edgeToPrev = current.embedded.getFirst();
+                next = edgeToNext.getOpposite(current);
+                prev = edgeToPrev.getOpposite(current);
+                if (prev != componentParent)
+                    current.outerFaceNeighbor2 = prev;
+                if (next != componentParent)
+                    current.outerFaceNeighbor1 = next;
+                current = next;
+            } while (current != componentParent);
+        }
+
+        /**
+         * Removes the edges from the outer face from the {@code start} node to the {@code end} node in
+         * the direction {@code dir} from the set {@code edges}
+         *
+         * @param start the start of the boundary path
+         * @param end   the end of the boundary path
+         * @param dir   the direction to take from the {@code start} node
+         * @param edges the set of edges to modify
+         */
+        private static void removeUp(Node start, Node end, boolean dir, Set<Edge> edges) {
+            if (start == end)
+                return;
+            OuterFaceIter circulator = start.iterator(dir);
+            Node next;
+            do {
+                Edge edge = circulator.edgeToNext();
+                edges.remove(edge);
+                next = circulator.next();
+            } while (next != end);
+        }
+
+        /**
+         * Effectively is a method for finding node {@code z} in the notations of the original paper.
+         * The search proceeds in the reverse order of the path from the {@code backEdge} to the node
+         * {@code w}
+         *
+         * @param  w        the start of the path down
+         * @param  backEdge the last edge on the path
+         * @return          the desired node {@code z} or null if the source of the {@code backEdge} is equal to
+         *                  {@code w}
+         */
+        private static Node getNextOnPath(Node w, Edge backEdge) {
+            if (backEdge.source == w) {
+                return null;
+            }
+            Node prev = backEdge.source, current = backEdge.source.getParent();
+            while (current != w) {
+                prev = current;
+                current = current.getParent();
+            }
+            return prev;
+        }
+
+        /**
+         * Finds a path from some intermediate nodes on the path represented by the list {@code path} to
+         * the node {@code v}. The path to {@code v} certainly doesn't exist if the list {@code path}
+         * has size 1, because we're looking for a path from some intermediate node
+         *
+         * @param  path the path between left and right outer face branches
+         * @param  v    the parent of the biconnected component
+         * @return      the path edges in a list, which can be empty
+         */
+        private List<Edge> findPathToV(List<Edge> path, Node v) {
+            clearVisited();
+            int i = 0;
+            Edge currentEdge = path.get(i);
+            Node current = currentEdge.source.boundaryHeight != 0 ? currentEdge.target : currentEdge.source;
+            List<Edge> result = new ObjectArrayList<>();
+            while (i < path.size() - 1) {
+                if (findPathDfs(current, currentEdge, n -> !n.marked, n -> n == v, result))
+                    return result;
+                ++i;
+                currentEdge = path.get(i);
+                current = currentEdge.getOpposite(current);
+            }
+            return result;
+        }
+
+        /**
+         * Checks whether the first node {@code a} is strictly higher than nodes {@code b} and {@code c}
+         *
+         * @param  a a node in the dfs tree
+         * @param  b a node in the dfs tree
+         * @param  c a node in the dfs tree
+         * @return   true if the first node in strictly higher that other node, false otherwise
+         */
+        private static boolean firstStrictlyHigher(Node a, Node b, Node c) {
+            return a.height > b.height && a.height > c.height;
+        }
+
+        /**
+         * Checks whether the biconnected component rooted at {@code componentRoot} can be used to
+         * extract a Kuratowski subdivision. It can be used in the case there is one externally active
+         * node on each branch of the outer face and there is a pertinent node on the lower part of the
+         * outer face between these two externally active nodes.
+         *
+         * @param  componentRoot the root of the biconnected component
+         * @param  v             an ancestor of the nodes in the biconnected component
+         * @return               an un-embedded back edge, which target is {@code v} and which can be used to extract a
+         *                       Kuratowski subdivision, or {@code null} is no such edge exist for this biconnected
+         *                       component
+         */
+        private static Edge checkComponentForFailedEdge(Node componentRoot, Node v) {
+            OuterFaceIter firstDir =
+                    getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, Side1);
+            Node firstDirNode = firstDir.getCurrent();
+            if (firstDirNode == componentRoot)
+                return null;
+            OuterFaceIter secondDir =
+                    getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, Side2);
+            Node secondDirNode = secondDir.getCurrent();
+            if (firstDirNode == secondDirNode)
+                return null;
+            for (Node current = firstDir.next(); current != secondDirNode; current = firstDir.next())
+                if (current.isPertinentWrtTo(v))
+                    return findBackEdge(current, e -> e.target == v && !e.embedded);;
+            return null;
+        }
+
+        /**
+         * Finds an un-embedded back edge to {@code v}, which can be used to extract the Kuratowski
+         * subdivision. If the merge stack isn't empty, the last biconnected component processed by the
+         * walkdown can be used to find such an edge, because walkdown descended to that component
+         * (which means that component is pertinent) and couldn't reach a pertinent node. This can only
+         * happen by encountering externally active nodes on both branches of the traversal. Otherwise,
+         * be have look in all the child biconnected components to find an un-embedded back edge. We're
+         * guided by the fact that an edge can not be embedded only in the case both traversals of the
+         * walkdown could reach all off the pertinent nodes. This in turn can happen only if both
+         * traversals get stuck on externally active nodes.
+         * <p>
+         * <b>Note:</b> not every un-embedded back edge can be used to extract a Kuratowski subdivision
+         *
+         * @param  v the vertex which has an un-embedded back edge incident to it
+         * @return   the found un-embedded back edge which can be used to extract a Kuratowski subdivision
+         */
+        private Edge findFailedEdge(Node v) {
+            if (mergeStack.isEmpty()) {
+                for (Node child : v.separatedDfsChildList) {
+                    Node componentRoot = child.initialComponentRoot;
+                    Edge result = checkComponentForFailedEdge(componentRoot, v);
+                    if (result != null)
+                        return result;
+                }
+                return null; // should not happen in case node v has an incident un-embedded back edge
+            } else {
+                MergeInfo info = mergeStack.top();
+                return checkComponentForFailedEdge(info.child, v);
+            }
+        }
+
+        /**
+         * Lazily extracts a Kuratowski subdivision from the {@code graph}. The process of adding the
+         * edges of the subdivision to the resulting set of edges had been made explicit for every case.
+         *
+         * @return a Kuratowski subgraph of the {@code graph}
+         */
+        private IntGraph getKuratowskiSubdivision() {
+            if (isPlanar())
+                throw new IllegalArgumentException("Graph is planar");
+            if (kuratowskiSubdivision == null) {
+                // remove short-circuit edges and orient all embedded lists clockwise
+                kuratowskiCleanUp();
+                Set<Edge> subdivision = new HashSet<>();
+                // find the needed un-embedded back edge which can be used to find Kuratowski subgraph
+                Edge failedEdge = findFailedEdge(failedV);
+                assert failedEdge != null;
+                /*
+                 * We're iteratively moving up traversing the outer faces of the biconnected components
+                 * to find externally active nodes x and y, which are on different branches of the outer
+                 * face. The way we're finding the nodes x and y helps us eliminate the case E_1
+                 * described in the original paper. This can be done because we always find the closest
+                 * to the node w externally active nodes x and y.
+                 */
+                Node x, y, v = failedEdge.target, w = failedEdge.source, componentRoot;
+                for (;;) {
+                    componentRoot = getComponentRoot(w);
+                    x = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side2).getCurrent();
+                    y = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side1).getCurrent();
+                    if (x.isRootVertex) {
+                        w = x.getParent();
+                    } else if (y.isRootVertex) {
+                        w = y.getParent();
+                    } else {
+                        componentRoot = getComponentRoot(w);
+                        break;
+                    }
+                }
+                Edge xBackEdge = findBackEdge(x, v.height);
+                Edge yBackEdge = findBackEdge(y, v.height);
+                Node backLower = lowest(xBackEdge.target, yBackEdge.target);
+                Node backHigher = highest(xBackEdge.target, yBackEdge.target);
+                addPathEdges(subdivision, xBackEdge, x);
+                addPathEdges(subdivision, yBackEdge, y);
+                addBoundaryEdges(subdivision, componentRoot);
+
+                if (componentRoot.getParent() != v) {
+                    // case A, v isn't a parent of the component we've found
+                    addPathEdges(subdivision, componentRoot.getParent(), backLower);
+                    addPathEdges(subdivision, failedEdge, w);
+                    return finish(subdivision);
+                }
+                // node z will be null only if the tree path from w to failedEdge is failedEdge itself
+                Node z = getNextOnPath(w, failedEdge);
+                Edge backEdge = null;
+                if (z != null)
+                    backEdge = findBackEdgeSubtreeDfs(z, e -> e.target.height < v.height && e != failedEdge);
+                if (backEdge != null) {
+                    // case B
+                    addPathEdges(subdivision, backEdge, w);
+                    addPathEdges(subdivision, failedEdge, w);
+                    Node highest = highest(xBackEdge.target, highest(yBackEdge.target, backEdge.target));
+                    Node lowest = lowest(xBackEdge.target, lowest(yBackEdge.target, backEdge.target));
+                    addPathEdges(subdivision, highest, lowest);
+                    return finish(subdivision);
+                }
+                /*
+                 * If we failed to either case A or B, we have to find a highest obstructing path and
+                 * then deal with cases C - E
+                 */
+                setBoundaryDepth(componentRoot, w, Side1, 1);
+                setBoundaryDepth(componentRoot, w, Side2, -1);
+
+                assert x.boundaryHeight > 0;
+                List<Edge> path = findHighestObstructingPath(componentRoot, w);
+                assert !path.isEmpty();
+
+                Edge firstEdge = path.get(0);
+                Edge lastEdge = path.get(path.size() - 1);
+                Node firstNode = firstEdge.source.boundaryHeight > 0 ? firstEdge.source : firstEdge.target;
+                Node lastNode = lastEdge.source.boundaryHeight < 0 ? lastEdge.source : lastEdge.target;
+                if (firstNode.boundaryHeight < x.boundaryHeight || lastNode.boundaryHeight > y.boundaryHeight) {
+                    // case C, either the first node or the last node of the path is higher than x or y
+                    // respectively
+                    Node removeStart;
+                    if (lastNode.boundaryHeight > y.boundaryHeight) {
+                        removeStart = firstNode.boundaryHeight < x.boundaryHeight ? firstNode : x;
+                        removeUp(removeStart, componentRoot, Side2, subdivision);
+                    } else {
+                        removeUp(y, componentRoot, Side1, subdivision);
+                    }
+                    addPathEdges(subdivision, failedEdge, w);
+                    subdivision.addAll(path);
+                    addPathEdges(subdivision, v, backLower);
+                    return finish(subdivision);
+                }
+                path.forEach(e -> e.source.marked = e.target.marked = true);
+                List<Edge> pathToV = findPathToV(path, v);
+                if (!pathToV.isEmpty()) {
+                    // case D, we have a path to the node v
+                    removeUp(x, componentRoot, Side2, subdivision);
+                    removeUp(y, componentRoot, Side1, subdivision);
+                    subdivision.addAll(path);
+                    subdivision.addAll(pathToV);
+                    addPathEdges(subdivision, v, backLower);
+                    addPathEdges(subdivision, failedEdge, w);
+                    return finish(subdivision);
+                }
+                Edge externallyActive = findBackEdge(w, v.height, failedEdge);
+                assert externallyActive != null;
+                addPathEdges(subdivision, externallyActive, w);
+                if (firstStrictlyHigher(externallyActive.target, xBackEdge.target, yBackEdge.target)) {
+                    // case E_2, equivalent to A
+                    addPathEdges(subdivision, componentRoot.getParent(), backLower);
+                } else if (firstStrictlyHigher(
+                        xBackEdge.target, yBackEdge.target, externallyActive.target)) {
+                    // case E_2, u_x is higher
+                    removeUp(componentRoot, x, Side1, subdivision);
+                    removeUp(w, lastNode, Side1, subdivision);
+                    subdivision.addAll(path);
+                    addPathEdges(subdivision, failedEdge, w);
+                    addPathEdges(subdivision, v,
+                            lowest(backLower, externallyActive.target));
+                } else if (firstStrictlyHigher(
+                        yBackEdge.target, xBackEdge.target, externallyActive.target)) {
+                    // case E_2, u_y is higher
+                    removeUp(y, componentRoot, Side1, subdivision);
+                    removeUp(firstNode, w, Side1, subdivision);
+                    subdivision.addAll(path);
+                    addPathEdges(subdivision, failedEdge, w);
+                    addPathEdges(subdivision, v,
+                            lowest(backLower, externallyActive.target));
+                } else if (firstNode.boundaryHeight > x.boundaryHeight) {
+                    // case E_4, p_x is lower than x
+                    removeUp(w, lastNode, Side1, subdivision);
+                    subdivision.addAll(path);
+                    addPathEdges(subdivision, failedEdge, w);
+                    addPathEdges(
+                            subdivision,
+                            highest(backHigher, externallyActive.target),
+                            lowest(backLower, externallyActive.target));
+                } else if (lastNode.boundaryHeight < y.boundaryHeight) {
+                    // case E_4, p_y is lower than y
+                    removeUp(firstNode, w, Side1, subdivision);
+                    subdivision.addAll(path);
+                    addPathEdges(subdivision, failedEdge, w);
+                    addPathEdges(
+                            subdivision,
+                            highest(backHigher, externallyActive.target),
+                            lowest(backLower, externallyActive.target));
+                } else {
+                    // case E, extracting K_5
+                    subdivision.addAll(path);
+                    addPathEdges(subdivision, v,
+                            lowest(backLower, externallyActive.target));
+                    addPathEdges(subdivision, failedEdge, w);
+                }
+                return finish(subdivision);
+            }
+            return kuratowskiSubdivision;
+        }
+
     }
 
 }
