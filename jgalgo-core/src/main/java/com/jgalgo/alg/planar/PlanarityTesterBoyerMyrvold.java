@@ -46,7 +46,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         Assertions.noSelfEdges(g, "graphs with self edges are not supported");
 
         Worker2 worker = new Worker2(g);
-        if (worker.isPlanar()) {
+        var planarityResult = worker.computePlanarity();
+
+        if (planarityResult.isOk()) {
             return Result.planar(() -> {
                 for (Worker.Node dfsTreeRoot : worker.dfsTreeRoots)
                     Worker.cleanUpDfs(dfsTreeRoot);
@@ -80,7 +82,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 return new PlanarEmbeddings.IndexEmbedding(g, weights);
             });
         } else {
-            return Result.nonPlanar(() -> Optional.of(worker.getKuratowskiSubdivision()));
+            return Result.nonPlanar(() -> Optional.of(worker.getKuratowskiSubdivision(planarityResult.unwrapError())));
         }
     }
 
@@ -124,10 +126,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * stack is cleared
          */
         final Stack<MergeInfo> mergeStack;
-        /**
-         * The node $v$, which has an un-embedded back edge incident to it.
-         */
-        Node failedV;
 
         /**
          * Creates new instance of the planarity testing algorithm for the {@code graph}. The input
@@ -181,7 +179,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * yet. After orienting the graph, sorts the nodes by their lowpoints and adds them to the
          * {@code separatedDfsChildList}
          */
-        private void orient() {
+        private void preprocess() {
             Node[] v2node = new Node[n];
 
             int[] parent = new int[n];
@@ -279,8 +277,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          *
          * @return true if the graph is planar, false otherwise
          */
-        boolean isPlanar() {
-            orient();
+        com.jgalgo.internal.util.Result<Void, Node> computePlanarity() {
+            preprocess();
             for (int currentNode = n - 1; currentNode >= 0; currentNode--) {
                 Node current = nodes[currentNode];
                 for (Edge downEdge : current.downEdges)
@@ -288,14 +286,11 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 for (Edge treeEdge : current.treeEdges)
                     walkDown(treeEdge.target.initialComponentRoot);
 
-                for (Edge downEdge : current.downEdges) {
-                    if (!downEdge.embedded) {
-                        failedV = current;
-                        return false;
-                    }
-                }
+                for (Edge downEdge : current.downEdges)
+                    if (!downEdge.embedded)
+                        return com.jgalgo.internal.util.Result.error(current);
             }
-            return true;
+            return com.jgalgo.internal.util.Result.ok(null);
         }
 
         /**
@@ -1791,7 +1786,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          *
          * @return a Kuratowski subgraph of the {@code graph}
          */
-        private IntGraph getKuratowskiSubdivision() {
+        private IntGraph getKuratowskiSubdivision(Node failedV) {
             if (kuratowskiSubdivision == null) {
                 // remove short-circuit edges and orient all embedded lists clockwise
                 kuratowskiCleanUp();
