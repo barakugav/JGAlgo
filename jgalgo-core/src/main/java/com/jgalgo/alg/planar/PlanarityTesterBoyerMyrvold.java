@@ -1258,6 +1258,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     }
                 }
                 if (invert) {
+                    assert !parentEdge.isInverted;
                     parentEdge.isInverted = true;
                     edges.invert();
                 }

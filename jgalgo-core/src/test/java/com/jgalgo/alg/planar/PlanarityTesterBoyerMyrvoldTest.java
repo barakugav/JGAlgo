@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg.planar;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,17 +28,54 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.alg.common.RandomizedAlgorithm;
+import com.jgalgo.alg.planar.Line.Point;
+import com.jgalgo.alg.traversal.NeighborSampler;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IntGraphFactory;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 
 @SuppressWarnings("boxing")
 public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
+
+	@Test
+	public void randomPlanarGraphs() {
+		final SeedGenerator seedGen = new SeedGenerator(0x1355906a7ab6278eL);
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(10, 10).repeat(128);
+		tester.run((n, m) -> {
+			Graph<Integer, Integer> g = randomPlanarGraph(n, m, seedGen.nextSeed());
+			PlanarityTester algo = new PlanarityTesterBoyerMyrvold();
+			assertTrue(algo.isPlanar(g));
+		});
+	}
+
+	@Test
+	public void randomNonPlanarGraphs() {
+		final SeedGenerator seedGen = new SeedGenerator(0x1355906a7ab6278eL);
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(10, 10).repeat(128);
+		tester.run((n, m) -> {
+			Graph<Integer, Integer> g = randomNonPlanarGraph(n, m, seedGen.nextSeed());
+			PlanarityTester algo = new PlanarityTesterBoyerMyrvold();
+			assertFalse(algo.isPlanar(g));
+		});
+	}
 
 	static IntGraph createUndirected(int[][] edges) {
 		IntGraphBuilder builder = IntGraphBuilder.undirected();
@@ -925,6 +963,122 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 				{ 27, 4 }, { 28, 238 }, { 29, 26 } };
 		boolean isPlanar = testOnGraph(edges);
 		assertFalse(isPlanar);
+	}
+
+	private static IntGraph randomPlanarGraph(int n, int m, long seed) {
+		final Random rand = new Random(seed);
+		IntGraphBuilder g = IntGraphFactory.undirected().allowParallelEdges(false).allowSelfEdges(false).newBuilder();
+		g.ensureVertexCapacity(n);
+		g.ensureEdgeCapacity(m);
+
+		final int gridSize = 64 * n;
+		Bitmap usedXs = new Bitmap(gridSize);
+		Bitmap usedYs = new Bitmap(gridSize);
+		int[] positions = new int[2 * n];
+		for (int v : range(n)) {
+			g.addVertex(v);
+			int x, y;
+			while (!usedXs.set(x = rand.nextInt(gridSize)));
+			while (!usedYs.set(y = rand.nextInt(gridSize)));
+			positions[v * 2 + 0] = x;
+			positions[v * 2 + 1] = y;
+		}
+
+		LongSet edges = new LongOpenHashSet(m);
+		edgeLoop: while (g.edges().size() < m) {
+			int u = rand.nextInt(n);
+			int v = rand.nextInt(n);
+			if (u == v)
+				continue;
+			long setKey = IntPair.of(Math.min(u, v), Math.max(u, v));
+			if (edges.contains(setKey))
+				continue;
+			for (long edge : edges) {
+				int u2 = IntPair.first(edge), v2 = IntPair.second(edge);
+				if (u == u2 || u == v2 || v == u2 || v == v2)
+					continue;
+				Point p1 = new Point(positions[u * 2 + 0], positions[u * 2 + 1]);
+				Point p2 = new Point(positions[v * 2 + 0], positions[v * 2 + 1]);
+				Point p3 = new Point(positions[u2 * 2 + 0], positions[u2 * 2 + 1]);
+				Point p4 = new Point(positions[v2 * 2 + 0], positions[v2 * 2 + 1]);
+				if (Line.doIntersect(p1, p2, p3, p4))
+					continue edgeLoop;
+			}
+			edges.add(setKey);
+			g.addEdge(u, v);
+		}
+		return g.build();
+	}
+
+	private static IntGraph randomNonPlanarGraph(int n, int m, long seed) {
+		final Random rand = new Random(seed);
+		IntGraph g = randomPlanarGraph(n, m, rand.nextLong() & 0x78946678L).copy();
+		NeighborSampler.Int sampler = (NeighborSampler.Int) NeighborSampler.uniform(g.immutableCopy());
+		if (sampler instanceof RandomizedAlgorithm)
+			((RandomizedAlgorithm) sampler).setSeed(rand.nextLong() & 0x3252351);
+		IntSet used = new IntOpenHashSet();
+
+		BiConsumer<Integer, Integer> connect = (u0, v0) -> {
+			int u = u0, v = v0;
+			{
+				for (int z = rand.nextInt(4); z > 0; z--) {
+					for (int retry = 0; retry < 10; retry++) {
+						int nextEdge = sampler.sample(u);
+						if (nextEdge < 0)
+							break;
+						int next = g.edgeEndpoint(nextEdge, u);
+						if (!used.add(next))
+							continue;
+						u = next;
+					}
+				}
+			}
+			{
+				for (int z = rand.nextInt(4); z > 0; z--) {
+					for (int retry = 0; retry < 10; retry++) {
+						int nextEdge = sampler.sample(v);
+						if (nextEdge < 0)
+							break;
+						int next = g.edgeEndpoint(nextEdge, v);
+						if (!used.add(next))
+							continue;
+						v = next;
+					}
+				}
+			}
+			if (u != v && !g.containsEdge(u, v))
+				g.addEdge(u, v);
+
+		};
+
+		if (rand.nextBoolean()) {
+			// K5
+			IntSet vs = new IntOpenHashSet();
+			assert n >= 5;
+			while (vs.size() < 5)
+				vs.add(Graphs.randVertex(g, rand));
+			used.addAll(vs);
+
+			int[] vsArray = vs.toIntArray();
+			for (int i : range(0, 5))
+				for (int j : range(i + 1, 5))
+					connect.accept(vsArray[i], vsArray[j]);
+
+		} else {
+			// K33
+			IntSet vs = new IntOpenHashSet();
+			assert n >= 6;
+			while (vs.size() < 6)
+				vs.add(Graphs.randVertex(g, rand));
+			used.addAll(vs);
+
+			int[] vsArray = vs.toIntArray();
+			for (int i : range(0, 3))
+				for (int j : range(3, 6))
+					connect.accept(vsArray[i], vsArray[j]);
+		}
+		return g.immutableCopy();
+
 	}
 
 	public static <V, E> boolean isKuratowskiSubdivision(Graph<V, E> graph) {
