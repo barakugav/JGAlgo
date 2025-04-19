@@ -82,8 +82,19 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 return new PlanarEmbeddings.IndexEmbedding(g, weights);
             });
         } else {
+            return Result.nonPlanar(() -> {
+                // Clean up the dfs tree
+                for (Worker.Node dfsTreeRoot : worker.dfsTreeRoots)
+                    Worker.cleanUpDfs(dfsTreeRoot);
+                for (Worker.Node node : worker.componentRoots) {
+                    if (node.outerFaceNeighbor1 != null) {
+                        node.removeShortCircuitEdges();
+                        Worker2.fixBoundaryOrder(node);
+                    }
+                }
 
-            return Result.nonPlanar(() -> Optional.of(worker.getKuratowskiSubdivision(planarityResult.unwrapError())));
+                return Optional.of(worker.getKuratowskiSubdivision(planarityResult.unwrapError()));
+            });
         }
     }
 
@@ -1273,12 +1284,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
     private static class Worker2 extends Worker {
 
-        /**
-         * The subgraph of the {@code graph}, which is a Kuratowski subdivision. This subgraph certifies
-         * the non planarity of the graph.
-         */
-        private IntGraph kuratowskiSubdivision;
-
         public Worker2(IndexGraph graph) {
             super(graph);
         }
@@ -1573,7 +1578,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 vertexSubset.add(e.target.graphVertex);
                 vertexSubset.add(e.source.graphVertex);
             });
-            return kuratowskiSubdivision = g.subGraphCopy(vertexSubset, edgeSubset);
+            return g.subGraphCopy(vertexSubset, edgeSubset);
         }
 
         /**
@@ -1592,20 +1597,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 edges.add(edge);
                 current = circulator.next();
             } while (current != componentRoot);
-        }
-
-        /**
-         * Cleans up the dfs trees before the Kuratowski subdivision extraction phase
-         */
-        private void kuratowskiCleanUp() {
-            for (Node dfsTreeRoot : dfsTreeRoots)
-                cleanUpDfs(dfsTreeRoot);
-            for (Node node : componentRoots) {
-                if (node.outerFaceNeighbor1 != null) {
-                    node.removeShortCircuitEdges();
-                    fixBoundaryOrder(node);
-                }
-            }
         }
 
         /**
@@ -1789,156 +1780,152 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @return a Kuratowski subgraph of the {@code graph}
          */
         private IntGraph getKuratowskiSubdivision(Node failedV) {
-            if (kuratowskiSubdivision == null) {
-                // remove short-circuit edges and orient all embedded lists clockwise
-                kuratowskiCleanUp();
-                Set<Edge> subdivision = new HashSet<>();
-                // find the needed un-embedded back edge which can be used to find Kuratowski subgraph
-                Edge failedEdge = findFailedEdge(failedV);
-                assert failedEdge != null;
-                /*
-                 * We're iteratively moving up traversing the outer faces of the biconnected components
-                 * to find externally active nodes x and y, which are on different branches of the outer
-                 * face. The way we're finding the nodes x and y helps us eliminate the case E_1
-                 * described in the original paper. This can be done because we always find the closest
-                 * to the node w externally active nodes x and y.
-                 */
-                Node x, y, v = failedEdge.target, w = failedEdge.source, componentRoot;
-                for (;;) {
-                    componentRoot = getComponentRoot(w);
-                    x = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side2).getCurrent();
-                    y = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side1).getCurrent();
-                    if (x.isRootVertex) {
-                        w = x.getParent();
-                    } else if (y.isRootVertex) {
-                        w = y.getParent();
-                    } else {
-                        componentRoot = getComponentRoot(w);
-                        break;
-                    }
-                }
-                Edge xBackEdge = findBackEdge(x, v.height);
-                Edge yBackEdge = findBackEdge(y, v.height);
-                Node backLower = lowest(xBackEdge.target, yBackEdge.target);
-                Node backHigher = highest(xBackEdge.target, yBackEdge.target);
-                addPathEdges(subdivision, xBackEdge, x);
-                addPathEdges(subdivision, yBackEdge, y);
-                addBoundaryEdges(subdivision, componentRoot);
-
-                if (componentRoot.getParent() != v) {
-                    // case A, v isn't a parent of the component we've found
-                    addPathEdges(subdivision, componentRoot.getParent(), backLower);
-                    addPathEdges(subdivision, failedEdge, w);
-                    return finish(subdivision);
-                }
-                // node z will be null only if the tree path from w to failedEdge is failedEdge itself
-                Node z = getNextOnPath(w, failedEdge);
-                Edge backEdge = null;
-                if (z != null)
-                    backEdge = findBackEdgeSubtreeDfs(z, e -> e.target.height < v.height && e != failedEdge);
-                if (backEdge != null) {
-                    // case B
-                    addPathEdges(subdivision, backEdge, w);
-                    addPathEdges(subdivision, failedEdge, w);
-                    Node highest = highest(xBackEdge.target, highest(yBackEdge.target, backEdge.target));
-                    Node lowest = lowest(xBackEdge.target, lowest(yBackEdge.target, backEdge.target));
-                    addPathEdges(subdivision, highest, lowest);
-                    return finish(subdivision);
-                }
-                /*
-                 * If we failed to either case A or B, we have to find a highest obstructing path and
-                 * then deal with cases C - E
-                 */
-                setBoundaryDepth(componentRoot, w, Side1, 1);
-                setBoundaryDepth(componentRoot, w, Side2, -1);
-
-                assert x.boundaryHeight > 0;
-                List<Edge> path = findHighestObstructingPath(componentRoot, w);
-                assert !path.isEmpty();
-
-                Edge firstEdge = path.get(0);
-                Edge lastEdge = path.get(path.size() - 1);
-                Node firstNode = firstEdge.source.boundaryHeight > 0 ? firstEdge.source : firstEdge.target;
-                Node lastNode = lastEdge.source.boundaryHeight < 0 ? lastEdge.source : lastEdge.target;
-                if (firstNode.boundaryHeight < x.boundaryHeight || lastNode.boundaryHeight > y.boundaryHeight) {
-                    // case C, either the first node or the last node of the path is higher than x or y
-                    // respectively
-                    Node removeStart;
-                    if (lastNode.boundaryHeight > y.boundaryHeight) {
-                        removeStart = firstNode.boundaryHeight < x.boundaryHeight ? firstNode : x;
-                        removeUp(removeStart, componentRoot, Side2, subdivision);
-                    } else {
-                        removeUp(y, componentRoot, Side1, subdivision);
-                    }
-                    addPathEdges(subdivision, failedEdge, w);
-                    subdivision.addAll(path);
-                    addPathEdges(subdivision, v, backLower);
-                    return finish(subdivision);
-                }
-                path.forEach(e -> e.source.marked = e.target.marked = true);
-                List<Edge> pathToV = findPathToV(path, v);
-                if (!pathToV.isEmpty()) {
-                    // case D, we have a path to the node v
-                    removeUp(x, componentRoot, Side2, subdivision);
-                    removeUp(y, componentRoot, Side1, subdivision);
-                    subdivision.addAll(path);
-                    subdivision.addAll(pathToV);
-                    addPathEdges(subdivision, v, backLower);
-                    addPathEdges(subdivision, failedEdge, w);
-                    return finish(subdivision);
-                }
-                Edge externallyActive = findBackEdge(w, v.height, failedEdge);
-                assert externallyActive != null;
-                addPathEdges(subdivision, externallyActive, w);
-                if (firstStrictlyHigher(externallyActive.target, xBackEdge.target, yBackEdge.target)) {
-                    // case E_2, equivalent to A
-                    addPathEdges(subdivision, componentRoot.getParent(), backLower);
-                } else if (firstStrictlyHigher(
-                        xBackEdge.target, yBackEdge.target, externallyActive.target)) {
-                    // case E_2, u_x is higher
-                    removeUp(componentRoot, x, Side1, subdivision);
-                    removeUp(w, lastNode, Side1, subdivision);
-                    subdivision.addAll(path);
-                    addPathEdges(subdivision, failedEdge, w);
-                    addPathEdges(subdivision, v,
-                            lowest(backLower, externallyActive.target));
-                } else if (firstStrictlyHigher(
-                        yBackEdge.target, xBackEdge.target, externallyActive.target)) {
-                    // case E_2, u_y is higher
-                    removeUp(y, componentRoot, Side1, subdivision);
-                    removeUp(firstNode, w, Side1, subdivision);
-                    subdivision.addAll(path);
-                    addPathEdges(subdivision, failedEdge, w);
-                    addPathEdges(subdivision, v,
-                            lowest(backLower, externallyActive.target));
-                } else if (firstNode.boundaryHeight > x.boundaryHeight) {
-                    // case E_4, p_x is lower than x
-                    removeUp(w, lastNode, Side1, subdivision);
-                    subdivision.addAll(path);
-                    addPathEdges(subdivision, failedEdge, w);
-                    addPathEdges(
-                            subdivision,
-                            highest(backHigher, externallyActive.target),
-                            lowest(backLower, externallyActive.target));
-                } else if (lastNode.boundaryHeight < y.boundaryHeight) {
-                    // case E_4, p_y is lower than y
-                    removeUp(firstNode, w, Side1, subdivision);
-                    subdivision.addAll(path);
-                    addPathEdges(subdivision, failedEdge, w);
-                    addPathEdges(
-                            subdivision,
-                            highest(backHigher, externallyActive.target),
-                            lowest(backLower, externallyActive.target));
+            // remove short-circuit edges and orient all embedded lists clockwise
+            Set<Edge> subdivision = new HashSet<>();
+            // find the needed un-embedded back edge which can be used to find Kuratowski subgraph
+            Edge failedEdge = findFailedEdge(failedV);
+            assert failedEdge != null;
+            /*
+             * We're iteratively moving up traversing the outer faces of the biconnected components
+             * to find externally active nodes x and y, which are on different branches of the outer
+             * face. The way we're finding the nodes x and y helps us eliminate the case E_1
+             * described in the original paper. This can be done because we always find the closest
+             * to the node w externally active nodes x and y.
+             */
+            Node x, y, v = failedEdge.target, w = failedEdge.source, componentRoot;
+            for (;;) {
+                componentRoot = getComponentRoot(w);
+                x = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side2).getCurrent();
+                y = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side1).getCurrent();
+                if (x.isRootVertex) {
+                    w = x.getParent();
+                } else if (y.isRootVertex) {
+                    w = y.getParent();
                 } else {
-                    // case E, extracting K_5
-                    subdivision.addAll(path);
-                    addPathEdges(subdivision, v,
-                            lowest(backLower, externallyActive.target));
-                    addPathEdges(subdivision, failedEdge, w);
+                    componentRoot = getComponentRoot(w);
+                    break;
                 }
+            }
+            Edge xBackEdge = findBackEdge(x, v.height);
+            Edge yBackEdge = findBackEdge(y, v.height);
+            Node backLower = lowest(xBackEdge.target, yBackEdge.target);
+            Node backHigher = highest(xBackEdge.target, yBackEdge.target);
+            addPathEdges(subdivision, xBackEdge, x);
+            addPathEdges(subdivision, yBackEdge, y);
+            addBoundaryEdges(subdivision, componentRoot);
+
+            if (componentRoot.getParent() != v) {
+                // case A, v isn't a parent of the component we've found
+                addPathEdges(subdivision, componentRoot.getParent(), backLower);
+                addPathEdges(subdivision, failedEdge, w);
                 return finish(subdivision);
             }
-            return kuratowskiSubdivision;
+            // node z will be null only if the tree path from w to failedEdge is failedEdge itself
+            Node z = getNextOnPath(w, failedEdge);
+            Edge backEdge = null;
+            if (z != null)
+                backEdge = findBackEdgeSubtreeDfs(z, e -> e.target.height < v.height && e != failedEdge);
+            if (backEdge != null) {
+                // case B
+                addPathEdges(subdivision, backEdge, w);
+                addPathEdges(subdivision, failedEdge, w);
+                Node highest = highest(xBackEdge.target, highest(yBackEdge.target, backEdge.target));
+                Node lowest = lowest(xBackEdge.target, lowest(yBackEdge.target, backEdge.target));
+                addPathEdges(subdivision, highest, lowest);
+                return finish(subdivision);
+            }
+            /*
+             * If we failed to either case A or B, we have to find a highest obstructing path and
+             * then deal with cases C - E
+             */
+            setBoundaryDepth(componentRoot, w, Side1, 1);
+            setBoundaryDepth(componentRoot, w, Side2, -1);
+
+            assert x.boundaryHeight > 0;
+            List<Edge> path = findHighestObstructingPath(componentRoot, w);
+            assert !path.isEmpty();
+
+            Edge firstEdge = path.get(0);
+            Edge lastEdge = path.get(path.size() - 1);
+            Node firstNode = firstEdge.source.boundaryHeight > 0 ? firstEdge.source : firstEdge.target;
+            Node lastNode = lastEdge.source.boundaryHeight < 0 ? lastEdge.source : lastEdge.target;
+            if (firstNode.boundaryHeight < x.boundaryHeight || lastNode.boundaryHeight > y.boundaryHeight) {
+                // case C, either the first node or the last node of the path is higher than x or y
+                // respectively
+                Node removeStart;
+                if (lastNode.boundaryHeight > y.boundaryHeight) {
+                    removeStart = firstNode.boundaryHeight < x.boundaryHeight ? firstNode : x;
+                    removeUp(removeStart, componentRoot, Side2, subdivision);
+                } else {
+                    removeUp(y, componentRoot, Side1, subdivision);
+                }
+                addPathEdges(subdivision, failedEdge, w);
+                subdivision.addAll(path);
+                addPathEdges(subdivision, v, backLower);
+                return finish(subdivision);
+            }
+            path.forEach(e -> e.source.marked = e.target.marked = true);
+            List<Edge> pathToV = findPathToV(path, v);
+            if (!pathToV.isEmpty()) {
+                // case D, we have a path to the node v
+                removeUp(x, componentRoot, Side2, subdivision);
+                removeUp(y, componentRoot, Side1, subdivision);
+                subdivision.addAll(path);
+                subdivision.addAll(pathToV);
+                addPathEdges(subdivision, v, backLower);
+                addPathEdges(subdivision, failedEdge, w);
+                return finish(subdivision);
+            }
+            Edge externallyActive = findBackEdge(w, v.height, failedEdge);
+            assert externallyActive != null;
+            addPathEdges(subdivision, externallyActive, w);
+            if (firstStrictlyHigher(externallyActive.target, xBackEdge.target, yBackEdge.target)) {
+                // case E_2, equivalent to A
+                addPathEdges(subdivision, componentRoot.getParent(), backLower);
+            } else if (firstStrictlyHigher(
+                    xBackEdge.target, yBackEdge.target, externallyActive.target)) {
+                // case E_2, u_x is higher
+                removeUp(componentRoot, x, Side1, subdivision);
+                removeUp(w, lastNode, Side1, subdivision);
+                subdivision.addAll(path);
+                addPathEdges(subdivision, failedEdge, w);
+                addPathEdges(subdivision, v,
+                        lowest(backLower, externallyActive.target));
+            } else if (firstStrictlyHigher(
+                    yBackEdge.target, xBackEdge.target, externallyActive.target)) {
+                // case E_2, u_y is higher
+                removeUp(y, componentRoot, Side1, subdivision);
+                removeUp(firstNode, w, Side1, subdivision);
+                subdivision.addAll(path);
+                addPathEdges(subdivision, failedEdge, w);
+                addPathEdges(subdivision, v,
+                        lowest(backLower, externallyActive.target));
+            } else if (firstNode.boundaryHeight > x.boundaryHeight) {
+                // case E_4, p_x is lower than x
+                removeUp(w, lastNode, Side1, subdivision);
+                subdivision.addAll(path);
+                addPathEdges(subdivision, failedEdge, w);
+                addPathEdges(
+                        subdivision,
+                        highest(backHigher, externallyActive.target),
+                        lowest(backLower, externallyActive.target));
+            } else if (lastNode.boundaryHeight < y.boundaryHeight) {
+                // case E_4, p_y is lower than y
+                removeUp(firstNode, w, Side1, subdivision);
+                subdivision.addAll(path);
+                addPathEdges(subdivision, failedEdge, w);
+                addPathEdges(
+                        subdivision,
+                        highest(backHigher, externallyActive.target),
+                        lowest(backLower, externallyActive.target));
+            } else {
+                // case E, extracting K_5
+                subdivision.addAll(path);
+                addPathEdges(subdivision, v,
+                        lowest(backLower, externallyActive.target));
+                addPathEdges(subdivision, failedEdge, w);
+            }
+            return finish(subdivision);
         }
 
     }
