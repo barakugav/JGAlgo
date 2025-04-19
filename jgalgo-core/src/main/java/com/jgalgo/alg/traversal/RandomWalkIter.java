@@ -133,13 +133,15 @@ public interface RandomWalkIter<V, E> extends Iterator<V>, RandomizedAlgorithm {
 	static <V, E> RandomWalkIter<V, E> newInstance(Graph<V, E> g, V source) {
 		if (g instanceof IndexGraph) {
 			int src = ((Integer) source).intValue();
-			return (RandomWalkIter<V, E>) new RandomWalkIters.UnweightedIndexIter((IndexGraph) g, src);
+			NeighborSampler.Int sampler = new NeighborSamplers.UniformNeighborSampler((IndexGraph) g);
+			return (RandomWalkIter<V, E>) new RandomWalkIters.IndexIter(sampler, src);
 
 		} else {
 			IndexGraph ig = g.indexGraph();
 			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 			int src = viMap.idToIndex(source);
-			RandomWalkIter.Int indexIter = new RandomWalkIters.UnweightedIndexIter(ig, src);
+			NeighborSampler.Int sampler = new NeighborSamplers.UniformNeighborSampler(ig);
+			RandomWalkIter.Int indexIter = new RandomWalkIters.IndexIter(sampler, src);
 			return RandomWalkIters.fromIndexIter(indexIter, g);
 		}
 	}
@@ -170,7 +172,8 @@ public interface RandomWalkIter<V, E> extends Iterator<V>, RandomizedAlgorithm {
 		if (g instanceof IndexGraph) {
 			int src = ((Integer) source).intValue();
 			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) weights);
-			return (RandomWalkIter<V, E>) new RandomWalkIters.WeightedIndexIter((IndexGraph) g, src, w0);
+			NeighborSampler.Int sampler = new NeighborSamplers.WeightedNeighborSampler((IndexGraph) g, w0);
+			return (RandomWalkIter<V, E>) new RandomWalkIters.IndexIter(sampler, src);
 
 		} else {
 			IndexGraph ig = g.indexGraph();
@@ -178,7 +181,8 @@ public interface RandomWalkIter<V, E> extends Iterator<V>, RandomizedAlgorithm {
 			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 			int src = viMap.idToIndex(source);
 			IWeightFunction w0 = IndexIdMaps.idToIndexWeightFunc(weights, eiMap);
-			RandomWalkIter.Int indexIter = new RandomWalkIters.WeightedIndexIter(ig, src, w0);
+			NeighborSampler.Int sampler = new NeighborSamplers.WeightedNeighborSampler(ig, w0);
+			RandomWalkIter.Int indexIter = new RandomWalkIters.IndexIter(sampler, src);
 			return RandomWalkIters.fromIndexIter(indexIter, g);
 		}
 	}
