@@ -31,6 +31,7 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.alg.common.RandomizedAlgorithm;
 import com.jgalgo.alg.planar.Line.Point;
@@ -44,6 +45,8 @@ import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -58,6 +61,10 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(0x1355906a7ab6278eL);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(10, 10).repeat(128);
+		tester.addPhase().withArgs(10, 25).repeat(128);
+		tester.addPhase().withArgs(25, 80).repeat(128);
+		tester.addPhase().withArgs(50, 250).repeat(32);
+		tester.addPhase().withArgs(300, 1200).repeat(16);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = randomPlanarGraph(n, m, seedGen.nextSeed());
 			PlanarityTester algo = new PlanarityTesterBoyerMyrvold();
@@ -67,9 +74,13 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 
 	@Test
 	public void randomNonPlanarGraphs() {
-		final SeedGenerator seedGen = new SeedGenerator(0x1355906a7ab6278eL);
+		final SeedGenerator seedGen = new SeedGenerator(0xe324491da3a01528L);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(10, 10).repeat(128);
+		tester.addPhase().withArgs(10, 25).repeat(128);
+		tester.addPhase().withArgs(25, 80).repeat(128);
+		tester.addPhase().withArgs(50, 250).repeat(32);
+		tester.addPhase().withArgs(300, 1200).repeat(16);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = randomNonPlanarGraph(n, m, seedGen.nextSeed());
 			PlanarityTester algo = new PlanarityTesterBoyerMyrvold();
@@ -984,28 +995,53 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 			positions[v * 2 + 1] = y;
 		}
 
-		LongSet edges = new LongOpenHashSet(m);
-		edgeLoop: while (g.edges().size() < m) {
+		BiFunction<Integer, Integer, Double> distance = (u, v) -> {
+			int dx = Math.abs(positions[u * 2 + 0] - positions[v * 2 + 0]);
+			int dy = Math.abs(positions[u * 2 + 1] - positions[v * 2 + 1]);
+			return Math.sqrt(dx * dx + dy * dy);
+		};
+		DoubleList distances = new DoubleArrayList();
+		while (distances.size() < 256) {
 			int u = rand.nextInt(n);
 			int v = rand.nextInt(n);
-			if (u == v)
-				continue;
-			long setKey = IntPair.of(Math.min(u, v), Math.max(u, v));
-			if (edges.contains(setKey))
-				continue;
-			for (long edge : edges) {
-				int u2 = IntPair.first(edge), v2 = IntPair.second(edge);
-				if (u == u2 || u == v2 || v == u2 || v == v2)
-					continue;
-				Point p1 = new Point(positions[u * 2 + 0], positions[u * 2 + 1]);
-				Point p2 = new Point(positions[v * 2 + 0], positions[v * 2 + 1]);
-				Point p3 = new Point(positions[u2 * 2 + 0], positions[u2 * 2 + 1]);
-				Point p4 = new Point(positions[v2 * 2 + 0], positions[v2 * 2 + 1]);
-				if (Line.doIntersect(p1, p2, p3, p4))
-					continue edgeLoop;
+			if (u != v)
+				distances.add(distance.apply(u, v).doubleValue());
+		}
+		distances.sort(Double::compare);
+		final double distanceThreshold = distances.getDouble(distances.size() / 2);
+
+		LongSet edges = new LongOpenHashSet(m);
+		for (int e = 0; e < m; e++) {
+			retryLoop: for (int retry = 0; retry < 20; retry++) {
+				int u, v;
+				long setKey;
+				for (;;) {
+					u = rand.nextInt(n);
+					v = rand.nextInt(n);
+					if (u == v)
+						continue;
+					setKey = IntPair.of(Math.min(u, v), Math.max(u, v));
+					if (edges.contains(setKey))
+						continue;
+					if (distance.apply(u, v) > distanceThreshold)
+						continue;
+					break;
+				}
+				for (long edge : edges) {
+					int u2 = IntPair.first(edge), v2 = IntPair.second(edge);
+					if (u == u2 || u == v2 || v == u2 || v == v2)
+						continue;
+					Point p1 = new Point(positions[u * 2 + 0], positions[u * 2 + 1]);
+					Point p2 = new Point(positions[v * 2 + 0], positions[v * 2 + 1]);
+					Point p3 = new Point(positions[u2 * 2 + 0], positions[u2 * 2 + 1]);
+					Point p4 = new Point(positions[v2 * 2 + 0], positions[v2 * 2 + 1]);
+					if (Line.doIntersect(p1, p2, p3, p4))
+						continue retryLoop;
+				}
+				edges.add(setKey);
+				g.addEdge(u, v);
+				break;
 			}
-			edges.add(setKey);
-			g.addEdge(u, v);
 		}
 		return g.build();
 	}
