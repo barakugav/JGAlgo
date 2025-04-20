@@ -86,11 +86,11 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 // Clean up the dfs tree
                 for (Worker.Node dfsTreeRoot : worker.dfsTreeRoots)
                     Worker.cleanUpDfs(dfsTreeRoot);
-                for (Worker.Node node : worker.componentRoots) {
-                    if (node.outerFaceNeighbor1 != null) {
-                        node.removeShortCircuitEdges();
-                        Worker2.fixBoundaryOrder(node);
-                    }
+                for (Worker.Node bicompRoot : worker.virtualBicompRoots) {
+                    if (bicompRoot.outerFaceNeighbor1 == null)
+                        continue; // merged with parent bicomp
+                    bicompRoot.removeShortCircuitEdges();
+                    Worker2.fixBoundaryOrder(bicompRoot);
                 }
 
                 return Optional.of(worker.getKuratowskiSubdivision(planarityResult.unwrapError()));
@@ -131,7 +131,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * component roots don't belong to the {@code graph}. At each step of the algorithm, every
          * biconnected component has its own unique component root.
          */
-        final List<Node> componentRoots;
+        final List<Node> virtualBicompRoots;
         /**
          * The stack containing merge information for every consecutive pair of biconnected components
          * on the path to the back edge source. After all the biconnected components are merged, this
@@ -150,7 +150,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             this.n = graph.vertices().size();
             this.nodes = new Node[n];
             this.dfsTreeRoots = new ObjectArrayList<>();
-            this.componentRoots = new ObjectArrayList<>(n);
+            this.virtualBicompRoots = new ObjectArrayList<>(n);
             this.mergeStack = new ObjectArrayList<>();
         }
 
@@ -176,7 +176,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 node = Node.newInstance(graphVertex, dfsIndex, parent.height + 1, componentRoot, treeEdge);
                 treeEdge.target = node;
 
-                componentRoots.add(componentRoot);
+                virtualBicompRoots.add(componentRoot);
 
                 parent.treeEdges.add(treeEdge);
 
@@ -1422,7 +1422,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          */
         private void clearVisited() {
             Arrays.stream(nodes).forEach(n -> n.visited = 0);
-            componentRoots.forEach(n -> n.visited = 0);
+            virtualBicompRoots.forEach(n -> n.visited = 0);
         }
 
         /**

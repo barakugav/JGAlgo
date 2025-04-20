@@ -1010,7 +1010,7 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 		final double distanceThreshold = distances.getDouble(distances.size() / 2);
 
 		LongSet edges = new LongOpenHashSet(m);
-		for (int e = 0; e < m; e++) {
+		edgeLoop: while (g.edges().size() < m) {
 			retryLoop: for (int retry = 0; retry < 20; retry++) {
 				int u, v;
 				long setKey;
@@ -1039,7 +1039,7 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 				}
 				edges.add(setKey);
 				g.addEdge(u, v);
-				break;
+				break edgeLoop;
 			}
 		}
 		return g.build();
