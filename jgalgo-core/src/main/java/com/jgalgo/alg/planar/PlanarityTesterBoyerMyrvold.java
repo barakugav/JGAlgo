@@ -363,8 +363,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
             Node child = edge.source;
             child.embedBackEdge(edge, childPrev);
+            assert child.edgeToEmbed == edge;
             child.edgeToEmbed = null;
-            child.backEdgeFlag = Integer.MAX_VALUE;
             embeddedEdgesNum++;
 
             child.substitute(childPrev, root);
@@ -416,7 +416,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 boolean currentComponentEntryDir = componentEntryDir;
                 OuterFaceIter circulator = componentRoot.iterator(currentComponentEntryDir);
                 for (Node current = circulator.next(); current != componentRoot;) {
-                    if (current.hasBackEdgeWrtTo(componentRoot)) {
+                    if (current.hasBackEdge()) {
                         Node childPrev = circulator.getPrev();
                         while (!mergeStack.isEmpty())
                             mergeBiconnectedComponent();
@@ -435,7 +435,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                             currentComponentEntryDir = Side1;
                         } else if (cwActiveNode.isInternallyActiveWrtTo(componentRoot)) {
                             currentComponentEntryDir = Side2;
-                        } else if (ccwActiveNode.isPertinentWrtTo(componentRoot)) {
+                        } else if (ccwActiveNode.isPertinent()) {
                             currentComponentEntryDir = Side1;
                         } else {
                             currentComponentEntryDir = Side2;
@@ -487,7 +487,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         private static void walkUp(Node start, Node end, Edge edge) {
             final int visited = end.dfsIndex;
 
-            start.backEdgeFlag = visited;
             start.edgeToEmbed = edge;
             start.visited = visited;
 
@@ -891,12 +890,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              */
             int visited;
             /**
-             * During the process of embedding of the down edges of the node $v$, this variable is set
-             * to the dfs index of $v$ to indicate that this node has a back edge incident to $v$, which
-             * needs to be embedded.
-             */
-            int backEdgeFlag;
-            /**
              * The height of this node on the boundary of the biconnected component, which is used to
              * extract the Kuratowski subdivision. The height of the component root is $0$, the heights
              * on the left side are positive, on the right side - negative. This value is used to
@@ -985,7 +978,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 this.embedded = new DoublyLinkedList<>();
                 if (parentEdge != null)
                     embedded.add(parentEdge);
-                this.visited = this.backEdgeFlag = Integer.MAX_VALUE;
+                this.visited = Integer.MAX_VALUE;
                 if (!isBicompRoot()) {
                     separatedDfsChildList = new DoublyLinkedList<>();
                     pertinentRoots = new DoublyLinkedList<>();
@@ -1054,8 +1047,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * @param  node the node that is currently been processed
              * @return      true if this node is pertinent, false otherwise
              */
-            boolean isPertinentWrtTo(Node node) {
-                return backEdgeFlag == node.dfsIndex || !pertinentRoots.isEmpty();
+            boolean isPertinent() {
+                return hasBackEdge() || !pertinentRoots.isEmpty();
             }
 
             /**
@@ -1064,8 +1057,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * @param  node the other endpoint of the edge we're looking for
              * @return      true if the edge between this node and {@code node} exists, false otherwise
              */
-            boolean hasBackEdgeWrtTo(Node node) {
-                return backEdgeFlag == node.dfsIndex;
+            boolean hasBackEdge() {
+                return edgeToEmbed != null;
             }
 
             /**
@@ -1090,7 +1083,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * @return      true if this node is internally active, false otherwise
              */
             boolean isInternallyActiveWrtTo(Node node) {
-                return isPertinentWrtTo(node) && !isExternallyActiveWrtTo(node);
+                return isPertinent() && !isExternallyActiveWrtTo(node);
             }
 
             /**
@@ -1101,7 +1094,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * @return      true if this node is active, false otherwise
              */
             boolean isActiveWrtTo(Node node) {
-                return isExternallyActiveWrtTo(node) || isPertinentWrtTo(node);
+                return isExternallyActiveWrtTo(node) || isPertinent();
             }
 
             /**
@@ -1703,7 +1696,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             if (firstDirNode == secondDirNode)
                 return null;
             for (Node current = firstDir.next(); current != secondDirNode; current = firstDir.next())
-                if (current.isPertinentWrtTo(v))
+                if (current.isPertinent())
                     return findBackEdge(current, e -> e.target == v && !embeddedEdges.contains(e));
             return null;
         }
@@ -1721,25 +1714,25 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * <p>
          * <b>Note:</b> not every un-embedded back edge can be used to extract a Kuratowski subdivision
          *
-         * @param  v the vertex which has an un-embedded back edge incident to it
-         * @return   the found un-embedded back edge which can be used to extract a Kuratowski subdivision
+         * @param  failedV the vertex which has an un-embedded back edge incident to it
+         * @return         the found un-embedded back edge which can be used to extract a Kuratowski subdivision
          */
-        private Edge findFailedEdge(Node v) {
+        private Edge findFailedEdge(Node failedV) {
             final Set<Edge> embeddedEdges = new ObjectOpenHashSet<>();
             for (Node node : nodes)
                 embeddedEdges.addAll(node.embedded);
 
             if (mergeStack.isEmpty()) {
-                for (Node child : v.separatedDfsChildList) {
+                for (Node child : failedV.separatedDfsChildList) {
                     Node componentRoot = child.initialComponentRoot;
-                    Edge result = checkComponentForFailedEdge(componentRoot, v, embeddedEdges);
+                    Edge result = checkComponentForFailedEdge(componentRoot, failedV, embeddedEdges);
                     if (result != null)
                         return result;
                 }
                 return null; // should not happen in case node v has an incident un-embedded back edge
             } else {
                 MergeInfo info = mergeStack.top();
-                return checkComponentForFailedEdge(info.child, v, embeddedEdges);
+                return checkComponentForFailedEdge(info.child, failedV, embeddedEdges);
             }
         }
 
