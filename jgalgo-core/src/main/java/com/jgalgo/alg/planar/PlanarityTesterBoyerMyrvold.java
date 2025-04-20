@@ -775,11 +775,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * Whether the edge is embedded or not. This value is important for
              */
             boolean embedded;
-            /**
-             * Whether the edge is real or short-circuit. See the original paper for the definition of
-             * the short-circuit edges.
-             */
-            final boolean shortCircuit;
 
             /**
              * Creates a new tree edge.
@@ -789,7 +784,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              */
             static Edge newTreeEdge(int graphEdge, Node source) {
                 assert graphEdge >= 0;
-                return new Edge(graphEdge, source, null, false, false);
+                return new Edge(graphEdge, source, null, false);
             }
 
             /**
@@ -801,7 +796,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              */
             static Edge newBackEdge(int graphEdge, Node source, Node target) {
                 assert graphEdge >= 0;
-                return new Edge(graphEdge, source, target, false, false);
+                return new Edge(graphEdge, source, target, false);
             }
 
             /**
@@ -815,16 +810,15 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * @param target the target of the short-circuit edge
              */
             static Edge ofShortCircuit(Node source, Node target) {
-                return new Edge(-1, source, target, true, true);
+                return new Edge(-1, source, target, true);
             }
 
-            private Edge(int graphEdge, Node source, Node target, boolean embedded, boolean shortCircuit) {
+            private Edge(int graphEdge, Node source, Node target, boolean embedded) {
                 this.graphEdge = graphEdge;
                 this.source = source;
                 this.target = target;
                 this.isInverted = false;
                 this.embedded = embedded;
-                this.shortCircuit = shortCircuit;
             }
 
             int graphEdge() {
@@ -852,6 +846,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             Node getOpposite(Node node) {
                 assert isIncidentTo(node); // debug purpose assertion
                 return source == node ? target : source;
+            }
+
+            boolean isArtificial() {
+                return graphEdge < 0;
             }
         }
 
@@ -1122,7 +1120,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
 
             void removeShortCircuitEdges() {
-                embedded.removeIf(e -> e.shortCircuit);
+                embedded.removeIf(e -> e.isArtificial());
             }
 
             /**
