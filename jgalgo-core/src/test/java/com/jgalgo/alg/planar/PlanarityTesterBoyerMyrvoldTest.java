@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.alg.common.RandomizedAlgorithm;
 import com.jgalgo.alg.planar.Line.Point;
 import com.jgalgo.alg.traversal.NeighborSampler;
 import com.jgalgo.graph.Graph;
@@ -1050,8 +1049,7 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 		final Random rand = new Random(seed);
 		IntGraph g = randomPlanarGraph(n, m, rand.nextLong() & 0x78946678L).copy();
 		NeighborSampler.Int sampler = (NeighborSampler.Int) NeighborSampler.uniform(g.immutableCopy());
-		if (sampler instanceof RandomizedAlgorithm)
-			((RandomizedAlgorithm) sampler).setSeed(rand.nextLong() & 0x3252351);
+		sampler.setSeed(rand.nextLong() & 0x3252351);
 		IntSet used = new IntOpenHashSet();
 
 		BiConsumer<Integer, Integer> connect = (u0, v0) -> {

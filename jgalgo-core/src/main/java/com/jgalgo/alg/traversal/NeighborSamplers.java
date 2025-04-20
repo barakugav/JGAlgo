@@ -18,7 +18,6 @@ package com.jgalgo.alg.traversal;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Objects;
 import java.util.Random;
-import com.jgalgo.alg.common.RandomizedAlgorithm;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeightFunction;
@@ -32,7 +31,7 @@ class NeighborSamplers {
 
     private NeighborSamplers() {}
 
-    private abstract static class SamplerBase implements NeighborSampler.Int, RandomizedAlgorithm {
+    private abstract static class SamplerBase implements NeighborSampler.Int {
 
         final IndexGraph g;
         final Random rand = new Random();
@@ -165,7 +164,7 @@ class NeighborSamplers {
         }
     }
 
-    private static class IntImpl implements NeighborSampler.Int, RandomizedAlgorithm {
+    private static class IntImpl implements NeighborSampler.Int {
 
         private final IntGraph g;
         private final NeighborSampler.Int indexSampler;
@@ -181,8 +180,7 @@ class NeighborSamplers {
 
         @Override
         public void setSeed(long seed) {
-            if (indexSampler instanceof RandomizedAlgorithm)
-                ((RandomizedAlgorithm) indexSampler).setSeed(seed);
+            indexSampler.setSeed(seed);
         }
 
         @Override
@@ -198,7 +196,7 @@ class NeighborSamplers {
         }
     }
 
-    private static class ObjImpl<V, E> implements NeighborSampler<V, E>, RandomizedAlgorithm {
+    private static class ObjImpl<V, E> implements NeighborSampler<V, E> {
 
         private final Graph<V, E> g;
         private final NeighborSampler.Int indexSampler;
@@ -214,8 +212,7 @@ class NeighborSamplers {
 
         @Override
         public void setSeed(long seed) {
-            if (indexSampler instanceof RandomizedAlgorithm)
-                ((RandomizedAlgorithm) indexSampler).setSeed(seed);
+            indexSampler.setSeed(seed);
         }
 
         @Override

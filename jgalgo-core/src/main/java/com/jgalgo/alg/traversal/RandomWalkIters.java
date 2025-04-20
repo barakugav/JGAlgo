@@ -17,7 +17,6 @@ package com.jgalgo.alg.traversal;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import com.jgalgo.alg.common.RandomizedAlgorithm;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
@@ -67,8 +66,7 @@ class RandomWalkIters {
 
 		@Override
 		public void setSeed(long seed) {
-			if (sampler instanceof RandomizedAlgorithm)
-				((RandomizedAlgorithm) sampler).setSeed(seed);
+			sampler.setSeed(seed);
 		}
 	}
 

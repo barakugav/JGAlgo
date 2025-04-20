@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg.traversal;
 
+import com.jgalgo.alg.common.RandomizedAlgorithm;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -28,7 +29,7 @@ import com.jgalgo.graph.WeightFunctions;
  *
  * @author Barak Ugav
  */
-public interface NeighborSampler<V, E> {
+public interface NeighborSampler<V, E> extends RandomizedAlgorithm {
 
     E sample(V vertex);
 
