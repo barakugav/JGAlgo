@@ -166,14 +166,14 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         private Node createNewNode(int graphVertex, int edge, Node parent, int dfsIndex) {
             Node node;
             if (parent == null) {
-                node = new Node(graphVertex, dfsIndex, 0, null, null, n);
+                node = Node.newDfsRoot(graphVertex, dfsIndex);
                 node.outerFaceNeighbor1 = node.outerFaceNeighbor2 = node;
                 dfsTreeRoots.add(node);
             } else {
                 assert edge >= 0;
-                Edge treeEdge = Edge.ofTreeEdge(edge, parent);
-                Node componentRoot = new Node(parent.dfsIndex, treeEdge, n);
-                node = new Node(graphVertex, dfsIndex, parent.height + 1, componentRoot, treeEdge, n);
+                Edge treeEdge = Edge.newTreeEdge(edge, parent);
+                Node componentRoot = Node.newVirtualBicompRoot(parent.dfsIndex, treeEdge);
+                node = Node.newInstance(graphVertex, dfsIndex, parent.height + 1, componentRoot, treeEdge);
                 treeEdge.target = node;
 
                 componentRoots.add(componentRoot);
@@ -230,7 +230,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                             Node oppositeNode = v2node[v];
                             if (current.dfsIndex < oppositeNode.dfsIndex)
                                 continue; // the reverse edge was already added as a back edge, down edge of current
-                            Edge backEdge = Edge.ofBackEdge(e, current, oppositeNode);
+                            Edge backEdge = Edge.newBackEdge(e, current, oppositeNode);
                             oppositeNode.downEdges.add(backEdge);
                             current.backEdges.add(backEdge);
                         }
@@ -295,8 +295,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 Node current = nodes[currentNode];
                 for (Edge downEdge : current.downEdges)
                     walkUp(downEdge.source, current, downEdge);
-                for (Edge treeEdge : current.treeEdges)
+                for (Edge treeEdge : current.treeEdges) {
+                    assert treeEdge.target.initialComponentRoot.dfsIndex == current.dfsIndex;
                     walkDown(treeEdge.target.initialComponentRoot);
+                }
 
                 for (Edge downEdge : current.downEdges)
                     if (!downEdge.embedded)
@@ -314,8 +316,11 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         private void mergeBiconnectedComponent() {
             MergeInfo info = mergeStack.pop();
             Node virtualRoot = info.child;
-            if (info.isInverted())
-                virtualRoot.swapNeighbors();
+            if (info.isInverted()) {
+                Node t = virtualRoot.outerFaceNeighbor1;
+                virtualRoot.outerFaceNeighbor1 = virtualRoot.outerFaceNeighbor2;
+                virtualRoot.outerFaceNeighbor2 = t;
+            }
             Node root = info.parent;
             Node virtualRootChild = virtualRoot.parentEdge.target;
 
@@ -326,7 +331,12 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     .mergeChildEdges(virtualRoot.embedded, info.vIn, info.vOut, info.parentNext,
                             virtualRoot.parentEdge);
 
-            root.substituteAnother(info.parentNext, info.childPrev);
+            if (root.outerFaceNeighbor1 == info.parentNext) {
+                root.outerFaceNeighbor2 = info.childPrev;
+            } else {
+                assert root.outerFaceNeighbor2 == info.parentNext;
+                root.outerFaceNeighbor1 = info.childPrev;
+            }
             info.childPrev.substitute(virtualRoot, root);
             virtualRoot.outerFaceNeighbor1 = virtualRoot.outerFaceNeighbor2 = null;
         }
@@ -451,7 +461,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                                 embedShortCircuit(root, Side1, ccwCirculator);
                         }
 
-                    } else if (current.isInactiveWrtTo(componentRoot)) {
+                    } else if (!current.isActiveWrtTo(componentRoot)) {
                         current = circulator.next();
                     } else {
                         // current vertex is externally active
@@ -485,9 +495,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     break;
                 x.visited = y.visited = visited;
 
-                if (x.isRootVertex || y.isRootVertex) {
-                    Node root = x.isRootVertex ? x : y;
-                    assert root.isRootVertex;
+                if (x.isBicompRoot() || y.isBicompRoot()) {
+                    Node root = x.isBicompRoot() ? x : y;
+                    assert root.isBicompRoot();
 
                     Node rootChild = root.parentEdge.target;
                     Node newStart = root.parentEdge.source;
@@ -732,7 +742,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * @return      the real counter path of the {@code node}
              */
             private static Node toExistingNode(Node node) {
-                return node.isRootVertex ? node.getParent() : node;
+                return node.isBicompRoot() ? node.getParent() : node;
             }
         }
 
@@ -777,7 +787,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * @param graphEdge the counterpart of this edge in the {@code graph}
              * @param source    the source node of this edge
              */
-            static Edge ofTreeEdge(int graphEdge, Node source) {
+            static Edge newTreeEdge(int graphEdge, Node source) {
                 assert graphEdge >= 0;
                 return new Edge(graphEdge, source, null, false, false);
             }
@@ -789,7 +799,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * @param source    the source node of this edge
              * @param target    the target node of this edge
              */
-            static Edge ofBackEdge(int graphEdge, Node source, Node target) {
+            static Edge newBackEdge(int graphEdge, Node source, Node target) {
                 assert graphEdge >= 0;
                 return new Edge(graphEdge, source, target, false, false);
             }
@@ -856,10 +866,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              */
             final int graphVertex;
             /**
-             * Whether this node is a root of the biconnected component or not.
-             */
-            final boolean isRootVertex;
-            /**
              * The dfs index of this node in the graph. Every node has a unique dfs index in the range
              * $[0,|V| - 1]$. This value is used to order the nodes for the embedding of the edges
              * incident to them. The index of the first dfs root is $1$
@@ -869,7 +875,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * The height of the node in the created dfs tree. The root of the tree has height $0$. The
              * smaller this value is, the lower the node is considered to be.
              */
-            int height;
+            final int height;
             /**
              * The least <b>dfs index</b> of the nodes' least ancestors in the subtree rooted at this
              * node. If the subtree doesn't contain a node with a back edge, that ends lower that this
@@ -920,7 +926,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             /**
              * The component root the node is created in. For dfs tree roots this value is {@code null}
              */
-            /* final */ Node initialComponentRoot;
+            final Node initialComponentRoot;
             /**
              * Two neighbors on the outer face of the biconnected component. Their order is completely
              * irrelevant for the algorithm to traverse the outer face.
@@ -967,32 +973,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             final DoublyLinkedList<Edge> embedded;
 
             /**
-             * Creates a new real node with the specified parameters.
-             *
-             * @param graphVertex          the counterpart of this node in the {@code graph}
-             * @param dfsIndex             the dfs index of this node
-             * @param height               the height of this node in the dfs tree
-             * @param initialComponentRoot the component root of this node.
-             * @param parentEdge           the parent edge of this node
-             */
-            Node(int graphVertex, int dfsIndex, int height, Node initialComponentRoot, Edge parentEdge, int n) {
-                this(graphVertex, dfsIndex, parentEdge, false, n);
-                this.height = height;
-                this.initialComponentRoot = initialComponentRoot;
-            }
-
-            /**
-             * Creates a new component root. Dfs index of the component root is equal to dfs index of
-             * its parent.
-             *
-             * @param dfsIndex   the dfs index of this node
-             * @param parentEdge the parent edge of this component root
-             */
-            Node(int dfsIndex, Edge parentEdge, int n) {
-                this(-1, dfsIndex, parentEdge, true, n);
-            }
-
-            /**
              * Creates a new node with the specified parameters
              *
              * @param graphVertex the vertex in the {@code graph} corresponding to this node
@@ -1000,16 +980,18 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * @param parentEdge  the parent edge of this node
              * @param rootVertex  whether this is real or virtual node
              */
-            private Node(int graphVertex, int dfsIndex, Edge parentEdge, boolean rootVertex, int n) {
+            private Node(int graphVertex, int dfsIndex, Edge parentEdge,
+                    Node initialComponentRoot, int height) {
                 this.graphVertex = graphVertex;
                 this.dfsIndex = dfsIndex;
                 this.parentEdge = parentEdge;
-                this.isRootVertex = rootVertex;
+                this.initialComponentRoot = initialComponentRoot;
+                this.height = height;
                 this.embedded = new DoublyLinkedList<>();
                 if (parentEdge != null)
                     embedded.add(parentEdge);
-                this.visited = this.backEdgeFlag = n;
-                if (!rootVertex) {
+                this.visited = this.backEdgeFlag = Integer.MAX_VALUE;
+                if (!isBicompRoot()) {
                     separatedDfsChildList = new DoublyLinkedList<>();
                     pertinentRoots = new DoublyLinkedList<>();
                     treeEdges = new ObjectArrayList<>();
@@ -1022,6 +1004,41 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     downEdges = null;
                     backEdges = null;
                 }
+            }
+
+            static Node newDfsRoot(int graphVertex, int dfsIndex) {
+                return new Node(graphVertex, dfsIndex, null, null, 0);
+            }
+
+            /**
+             * Creates a new real node with the specified parameters.
+             *
+             * @param graphVertex          the counterpart of this node in the {@code graph}
+             * @param dfsIndex             the dfs index of this node
+             * @param height               the height of this node in the dfs tree
+             * @param initialComponentRoot the component root of this node.
+             * @param parentEdge           the parent edge of this node
+             */
+            static Node newInstance(int graphVertex, int dfsIndex, int height, Node initialComponentRoot,
+                    Edge parentEdge) {
+                return new Node(graphVertex, dfsIndex, Objects.requireNonNull(parentEdge),
+                        Objects.requireNonNull(initialComponentRoot),
+                        height);
+            }
+
+            /**
+             * Creates a new component root. Dfs index of the component root is equal to dfs index of
+             * its parent.
+             *
+             * @param dfsIndex   the dfs index of this node
+             * @param parentEdge the parent edge of this component root
+             */
+            static Node newVirtualBicompRoot(int dfsIndex, Edge parentEdge) {
+                return new Node(-1, dfsIndex, Objects.requireNonNull(parentEdge), null, 0);
+            }
+
+            final boolean isBicompRoot() {
+                return initialComponentRoot == null && parentEdge != null;
             }
 
             /**
@@ -1082,17 +1099,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
 
             /**
-             * Check whether this node is inactive. A node is inactive it is neither pertinent nor
-             * externally active
-             *
-             * @param  node an ancestor of this node
-             * @return      true if this node is inactive, false otherwise
-             */
-            boolean isInactiveWrtTo(Node node) {
-                return !isExternallyActiveWrtTo(node) && !isPertinentWrtTo(node);
-            }
-
-            /**
              * Check whether this node is active. A node is active it is either pertinent or externally
              * active
              *
@@ -1100,7 +1106,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * @return      true if this node is active, false otherwise
              */
             boolean isActiveWrtTo(Node node) {
-                return !isInactiveWrtTo(node);
+                return isExternallyActiveWrtTo(node) || isPertinentWrtTo(node);
             }
 
             /**
@@ -1130,52 +1136,17 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
 
             /**
-             * Checks whether this node has a neighbor {@code node} on the boundary of the biconnected
-             * component
-             *
-             * @param node a possible neighbor of this node
-             */
-            void checkIsAdjacent(Node node) {
-                assert node == outerFaceNeighbor1 || node == outerFaceNeighbor2;
-            }
-
-            /**
-             * Swaps the outer face neighbors of this node
-             */
-            void swapNeighbors() {
-                Node t = outerFaceNeighbor1;
-                outerFaceNeighbor1 = outerFaceNeighbor2;
-                outerFaceNeighbor2 = t;
-            }
-
-            /**
              * Substitutes the neighbor {@code node} with a {@code newNeighbor}
              *
              * @param node        an old neighbor
              * @param newNeighbor a new neighbor
              */
             void substitute(Node node, Node newNeighbor) {
-                checkIsAdjacent(node);
                 if (outerFaceNeighbor1 == node) {
                     outerFaceNeighbor1 = newNeighbor;
                 } else {
+                    assert outerFaceNeighbor2 == node;
                     outerFaceNeighbor2 = newNeighbor;
-                }
-            }
-
-            /**
-             * Substitutes a neighbor of this node, which is not equal to the {@code node}, with the
-             * {@code newNeighbor}
-             *
-             * @param node        the remaining neighbor
-             * @param newNeighbor a new neighbor
-             */
-            void substituteAnother(Node node, Node newNeighbor) {
-                checkIsAdjacent(node);
-                if (outerFaceNeighbor1 == node) {
-                    outerFaceNeighbor2 = newNeighbor;
-                } else {
-                    outerFaceNeighbor1 = newNeighbor;
                 }
             }
 
@@ -1185,7 +1156,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * @return true, if this node has a root node neighbor, false otherwise
              */
             boolean hasRootNeighbor() {
-                return outerFaceNeighbor1.isRootVertex || outerFaceNeighbor2.isRootVertex;
+                return outerFaceNeighbor1.isBicompRoot() || outerFaceNeighbor2.isBicompRoot();
             }
 
             /**
@@ -1195,10 +1166,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * @return      a neighbor, which is not equal to the {@code prev}
              */
             Node nextOnOuterFace(Node prev) {
-                checkIsAdjacent(prev);
                 if (outerFaceNeighbor1 == prev) {
                     return outerFaceNeighbor2;
                 } else {
+                    assert outerFaceNeighbor2 == prev;
                     return outerFaceNeighbor1;
                 }
             }
@@ -1212,7 +1183,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              */
             void embedBackEdge(Edge edge, Node prev) {
                 assert !embedded.isEmpty();
-                if (prev.isRootVertex)
+                if (prev.isBicompRoot())
                     prev = prev.getParent();
                 Edge firstEdge = embedded.getFirst();
                 if (firstEdge.getOpposite(this) == prev) {
@@ -1310,7 +1281,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @return      a component root of the component the {@code node} belongs to
          */
         private static Node getComponentRoot(Node node) {
-            return selectOnOuterFace(n -> n.isRootVertex, node, node, Side1).getCurrent();
+            return selectOnOuterFace(n -> n.isBicompRoot(), node, node, Side1).getCurrent();
         }
 
         /**
@@ -1797,9 +1768,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 componentRoot = getComponentRoot(w);
                 x = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side2).getCurrent();
                 y = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side1).getCurrent();
-                if (x.isRootVertex) {
+                if (x.isBicompRoot()) {
                     w = x.getParent();
-                } else if (y.isRootVertex) {
+                } else if (y.isBicompRoot()) {
                     w = y.getParent();
                 } else {
                     componentRoot = getComponentRoot(w);
