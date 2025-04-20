@@ -265,7 +265,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             for (Node node : v2node)
                 nodes[node.dfsIndex] = node;
 
-            // Sort with (stable) bucket sort by lowpoint
+            // Add the DFS children of each node in order sorted by their lowpoint
             int[] lowpointOffsets = new int[n];
             for (Node node : nodes)
                 lowpointOffsets[node.lowpoint]++;
@@ -274,11 +274,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 lowpointOffsets[i] = s;
                 s += count;
             }
-            Node[] sorted = v2node; // reuse array
+            Node[] nodesSortedByLowpoint = v2node; // reuse array
             for (Node node : nodes)
-                sorted[lowpointOffsets[node.lowpoint]++] = node;
-            for (int i : range(n)) {
-                Node node = nodes[i] = sorted[i];
+                nodesSortedByLowpoint[lowpointOffsets[node.lowpoint]++] = node;
+            for (Node node : nodesSortedByLowpoint) {
                 if (node.parentEdge != null) {
                     Node parentNode = node.parentEdge.source;
                     node.listNode = parentNode.separatedDfsChildList.addElementLast(node);
@@ -294,9 +293,12 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          */
         com.jgalgo.internal.util.Result<Void, Node> computePlanarity() {
             preprocess();
-            for (int currentNode = n - 1; currentNode >= 0; currentNode--) {
+            for (int dfsIndex = n - 1; dfsIndex >= 0; dfsIndex--) {
+                // Zero the counter of number of embedded edges for this DFS index
                 embeddedEdgesNum = 0;
-                Node current = nodes[currentNode];
+
+                Node current = nodes[dfsIndex];
+                assert current.dfsIndex == dfsIndex;
                 for (Edge downEdge : current.downEdges)
                     walkUp(downEdge.source, current, downEdge);
                 for (Edge treeEdge : current.treeEdges) {
@@ -304,6 +306,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     walkDown(treeEdge.target.initialComponentRoot);
                 }
 
+                // Check if some edges where not embedded successfully
                 if (embeddedEdgesNum != current.downEdges.size())
                     return com.jgalgo.internal.util.Result.error(current);
             }
