@@ -112,10 +112,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          */
         final IndexGraph g;
         /**
-         * The number of vertices in the {@code graph}
-         */
-        private final int n;
-        /**
          * List of the vertices of the {@code graph} in their internal representation. After the
          * orientation of the {@code graph} and edge sorting, nodes in this list are sorted according to
          * their dfs indexes
@@ -150,7 +146,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          */
         public Worker(IndexGraph graph) {
             this.g = Objects.requireNonNull(graph, "Graph can't be null");
-            this.n = graph.vertices().size();
+            final int n = graph.vertices().size();
             this.nodes = new Node[n];
             this.dfsTreeRoots = new ObjectArrayList<>();
             this.virtualBicompRoots = new ObjectArrayList<>(n);
@@ -195,6 +191,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * {@code separatedDfsChildList}
          */
         private void preprocess() {
+            final int n = g.vertices().size();
             Node[] v2node = new Node[n];
 
             int[] parent = new int[n];
@@ -293,7 +290,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          */
         com.jgalgo.internal.util.Result<Void, Node> computePlanarity() {
             preprocess();
-            for (int dfsIndex = n - 1; dfsIndex >= 0; dfsIndex--) {
+            for (int dfsIndex = nodes.length - 1; dfsIndex >= 0; dfsIndex--) {
                 // Zero the counter of number of embedded edges for this DFS index
                 embeddedEdgesNum = 0;
 
@@ -367,7 +364,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             Node child = edge.source;
             child.embedBackEdge(edge, childPrev);
             child.edgeToEmbed = null;
-            child.backEdgeFlag = n;
+            child.backEdgeFlag = Integer.MAX_VALUE;
             embeddedEdgesNum++;
 
             child.substitute(childPrev, root);
