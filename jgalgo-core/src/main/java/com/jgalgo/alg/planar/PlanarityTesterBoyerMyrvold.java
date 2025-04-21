@@ -138,6 +138,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
         int embeddedEdgesNum;
 
+        int currentDfsIdx;
+
         /**
          * Creates new instance of the planarity testing algorithm for the {@code graph}. The input
          * graph can't be null.
@@ -212,7 +214,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     for (IEdgeIter eit = stack.top(); eit.hasNext();) {
                         int e = eit.nextInt();
                         int v = eit.targetInt();
-                        // if (dfsIndex[v] < 0) {
                         if (v2node[v] == null) {
                             // Unvisited vertex, e is a tree edge
                             parent[v] = u;
@@ -256,7 +257,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     u = parent[v];
                 }
             }
-            assert Arrays.stream(v2node).allMatch(Objects::nonNull);
 
             // Sort by DFS index
             for (Node node : v2node)
@@ -290,22 +290,22 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          */
         com.jgalgo.internal.util.Result<Void, Node> computePlanarity() {
             preprocess();
-            for (int dfsIndex = nodes.length - 1; dfsIndex >= 0; dfsIndex--) {
+            for (currentDfsIdx = nodes.length - 1; currentDfsIdx >= 0; currentDfsIdx--) {
                 // Zero the counter of number of embedded edges for this DFS index
                 embeddedEdgesNum = 0;
 
-                Node current = nodes[dfsIndex];
-                assert current.dfsIndex == dfsIndex;
-                for (Edge downEdge : current.downEdges)
-                    walkUp(downEdge.source, current, downEdge);
-                for (Edge treeEdge : current.treeEdges) {
-                    assert treeEdge.target.initialComponentRoot.dfsIndex == current.dfsIndex;
+                Node v = nodes[currentDfsIdx];
+                assert v.dfsIndex == currentDfsIdx;
+                for (Edge downEdge : v.downEdges)
+                    walkUp(downEdge.source, v, downEdge);
+                for (Edge treeEdge : v.treeEdges) {
+                    assert treeEdge.target.initialComponentRoot.dfsIndex == v.dfsIndex;
                     walkDown(treeEdge.target.initialComponentRoot);
                 }
 
                 // Check if some edges where not embedded successfully
-                if (embeddedEdgesNum != current.downEdges.size())
-                    return com.jgalgo.internal.util.Result.error(current);
+                if (embeddedEdgesNum != v.downEdges.size())
+                    return com.jgalgo.internal.util.Result.error(v);
             }
             return com.jgalgo.internal.util.Result.ok(null);
         }
@@ -426,14 +426,14 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         boolean parentComponentEntryDir = currentComponentEntryDir;
                         final Node root = current.pertinentRoots.getFirst();
 
-                        OuterFaceIter ccwCirculator = getActiveSuccessorOnOuterFace(root, componentRoot, Side1);
+                        OuterFaceIter ccwCirculator = getActiveSuccessorOnOuterFace(root, Side1);
                         Node ccwActiveNode = ccwCirculator.getCurrent();
-                        OuterFaceIter cwCirculator = getActiveSuccessorOnOuterFace(root, componentRoot, Side2);
+                        OuterFaceIter cwCirculator = getActiveSuccessorOnOuterFace(root, Side2);
                         Node cwActiveNode = cwCirculator.getCurrent();
 
-                        if (ccwActiveNode.isInternallyActiveWrtTo(componentRoot)) {
+                        if (isInternallyActive(ccwActiveNode)) {
                             currentComponentEntryDir = Side1;
-                        } else if (cwActiveNode.isInternallyActiveWrtTo(componentRoot)) {
+                        } else if (isInternallyActive(cwActiveNode)) {
                             currentComponentEntryDir = Side2;
                         } else if (ccwActiveNode.isPertinent()) {
                             currentComponentEntryDir = Side1;
@@ -463,7 +463,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                                 embedShortCircuit(root, Side1, ccwCirculator);
                         }
 
-                    } else if (!current.isActiveWrtTo(componentRoot)) {
+                    } else if (!isActive(current)) {
                         current = circulator.next();
                     } else {
                         // current vertex is externally active
@@ -492,7 +492,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
             for (OuterFaceIter xIter = start.iterator(Side1), yIter = start.iterator(Side2);;) {
                 Node x = xIter.next(), y = yIter.next();
-                if (x.isVisitedWrtTo(end) || y.isVisitedWrtTo(end))
+                if (x.visited == visited || y.visited == visited)
                     break;
                 x.visited = y.visited = visited;
 
@@ -529,8 +529,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param  dir       the direction to start the traversal in
          * @return           a circulator to the node satisfying the {@code predicate} or to the {@code stop} node
          */
-        static OuterFaceIter selectOnOuterFace(Predicate<Node> predicate, Node start, Node stop,
-                boolean dir) {
+        static OuterFaceIter findOnOuterFace(Node start, Node stop, boolean dir, Predicate<Node> predicate) {
             OuterFaceIter circulator = start.iterator(dir);
             for (Node current = circulator.next(); current != stop && !predicate.test(current);)
                 current = circulator.next();
@@ -546,8 +545,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param  dir   the direction of the search
          * @return       a circulator to the found node
          */
-        static OuterFaceIter getActiveSuccessorOnOuterFace(Node start, Node v, boolean dir) {
-            return selectOnOuterFace(n -> n.isActiveWrtTo(v), start, start, dir);
+        OuterFaceIter getActiveSuccessorOnOuterFace(Node start, boolean dir) {
+            return findOnOuterFace(start, start, dir, this::isActive);
         }
 
         /**
@@ -995,6 +994,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
 
             static Node newDfsRoot(int graphVertex, int dfsIndex) {
+                assert graphVertex >= 0;
                 return new Node(graphVertex, dfsIndex, null, null, 0);
             }
 
@@ -1009,6 +1009,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              */
             static Node newInstance(int graphVertex, int dfsIndex, int height, Node initialComponentRoot,
                     Edge parentEdge) {
+                assert graphVertex >= 0;
                 return new Node(graphVertex, dfsIndex, Objects.requireNonNull(parentEdge),
                         Objects.requireNonNull(initialComponentRoot),
                         height);
@@ -1026,17 +1027,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
 
             final boolean isBicompRoot() {
-                return initialComponentRoot == null && parentEdge != null;
-            }
-
-            /**
-             * Checks whether this node is visited in the context of processing the node {@code node}
-             *
-             * @param  node the node that is currently been processed
-             * @return      true if this node is visited, false otherwise
-             */
-            boolean isVisitedWrtTo(Node node) {
-                return node.dfsIndex == visited;
+                return graphVertex < 0;
             }
 
             /**
@@ -1062,42 +1053,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
 
             /**
-             * Checks whether this node is externally active with respect to the {@code node}. A node is
-             * externally active, if it is incident to the edge ending higher than {@code node}, or it
-             * has a child biconnected component with a pertinent node
-             *
-             * @param  node an ancestor of this node
-             * @return      true if this node is externally active with respect to the {@code node}, false
-             *              otherwise
-             */
-            boolean isExternallyActiveWrtTo(Node node) {
-                return leastAncestor < node.dfsIndex || (!separatedDfsChildList.isEmpty()
-                        && separatedDfsChildList.getFirst().lowpoint < node.dfsIndex);
-            }
-
-            /**
-             * Check whether this node is internally active. A node is internally active if it's
-             * pertinent and not externally active
-             *
-             * @param  node an ancestor of this node
-             * @return      true if this node is internally active, false otherwise
-             */
-            boolean isInternallyActiveWrtTo(Node node) {
-                return isPertinent() && !isExternallyActiveWrtTo(node);
-            }
-
-            /**
-             * Check whether this node is active. A node is active it is either pertinent or externally
-             * active
-             *
-             * @param  node an ancestor of this node
-             * @return      true if this node is active, false otherwise
-             */
-            boolean isActiveWrtTo(Node node) {
-                return isExternallyActiveWrtTo(node) || isPertinent();
-            }
-
-            /**
              * Returns a circulator, that moves in the direction {@code direction}. The next node along
              * the traversal will be {@code this.outerFaceNeighbor[direction]}.
              *
@@ -1110,7 +1065,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
 
             void removeShortCircuitEdges() {
-                embedded.removeIf(e -> e.isArtificial());
+                embedded.removeIf(Edge::isArtificial);
             }
 
             /**
@@ -1239,6 +1194,42 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 }
             }
         }
+
+        /**
+         * Checks whether this node is externally active with respect to the {@code node}. A node is
+         * externally active, if it is incident to the edge ending higher than {@code node}, or it
+         * has a child biconnected component with a pertinent node
+         *
+         * @param  node an ancestor of this node
+         * @return      true if this node is externally active with respect to the {@code node}, false
+         *              otherwise
+         */
+        boolean isExternallyActive(Node node) {
+            return node.leastAncestor < currentDfsIdx || (!node.separatedDfsChildList.isEmpty()
+                    && node.separatedDfsChildList.getFirst().lowpoint < currentDfsIdx);
+        }
+
+        /**
+         * Check whether this node is internally active. A node is internally active if it's
+         * pertinent and not externally active
+         *
+         * @param  node an ancestor of this node
+         * @return      true if this node is internally active, false otherwise
+         */
+        boolean isInternallyActive(Node node) {
+            return node.isPertinent() && !isExternallyActive(node);
+        }
+
+        /**
+         * Check whether this node is active. A node is active it is either pertinent or externally
+         * active
+         *
+         * @param  node an ancestor of this node
+         * @return      true if this node is active, false otherwise
+         */
+        boolean isActive(Node node) {
+            return isExternallyActive(node) || node.isPertinent();
+        }
     }
 
     private static class Worker2 extends Worker {
@@ -1257,9 +1248,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param  dir   the direction of the search
          * @return       a circulator to the found node
          */
-        private static OuterFaceIter getExternallyActiveSuccessorOnOuterFace(
-                Node start, Node stop, Node v, boolean dir) {
-            return selectOnOuterFace(n -> n.isExternallyActiveWrtTo(v), start, stop, dir);
+        private OuterFaceIter getExternallyActiveSuccessorOnOuterFace(
+                Node start, Node stop, boolean dir) {
+            return findOnOuterFace(start, stop, dir, this::isExternallyActive);
         }
 
         /**
@@ -1269,7 +1260,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @return      a component root of the component the {@code node} belongs to
          */
         private static Node getComponentRoot(Node node) {
-            return selectOnOuterFace(n -> n.isBicompRoot(), node, node, Side1).getCurrent();
+            return findOnOuterFace(node, node, Side1, Node::isBicompRoot).getCurrent();
         }
 
         /**
@@ -1684,14 +1675,14 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          *                       Kuratowski subdivision, or {@code null} is no such edge exist for this biconnected
          *                       component
          */
-        private static Edge checkComponentForFailedEdge(Node componentRoot, Node v, Set<Edge> embeddedEdges) {
+        private Edge checkComponentForFailedEdge(Node componentRoot, Node v, Set<Edge> embeddedEdges) {
             OuterFaceIter firstDir =
-                    getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, Side1);
+                    getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, Side1);
             Node firstDirNode = firstDir.getCurrent();
             if (firstDirNode == componentRoot)
                 return null;
             OuterFaceIter secondDir =
-                    getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, Side2);
+                    getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, Side2);
             Node secondDirNode = secondDir.getCurrent();
             if (firstDirNode == secondDirNode)
                 return null;
@@ -1748,6 +1739,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             // find the needed un-embedded back edge which can be used to find Kuratowski subgraph
             Edge failedEdge = findFailedEdge(failedV);
             assert failedEdge != null;
+            assert failedEdge.target == failedV;
+
             /*
              * We're iteratively moving up traversing the outer faces of the biconnected components
              * to find externally active nodes x and y, which are on different branches of the outer
@@ -1758,8 +1751,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             Node x, y, v = failedEdge.target, w = failedEdge.source, componentRoot;
             for (;;) {
                 componentRoot = getComponentRoot(w);
-                x = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side2).getCurrent();
-                y = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, v, Side1).getCurrent();
+                x = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, Side2).getCurrent();
+                y = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, Side1).getCurrent();
                 if (x.isBicompRoot()) {
                     w = x.getParent();
                 } else if (y.isBicompRoot()) {
