@@ -196,9 +196,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             final int n = g.vertices().size();
             Node[] v2node = new Node[n];
 
-            int[] parent = new int[n];
-            Arrays.fill(parent, -1);
-
             Stack<IEdgeIter> stack = new ObjectArrayList<>();
             int nextDfsIndex = 0;
             for (final int root : range(n)) {
@@ -209,52 +206,49 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 nextDfsIndex++;
                 stack.push(g.outEdges(root).iterator());
 
-                dfs: for (int u = root;;) {
-                    final Node current = v2node[u];
+                dfs: for (Node u = v2node[root];;) {
+                    Node parent = u.getParent();
                     for (IEdgeIter eit = stack.top(); eit.hasNext();) {
-                        int e = eit.nextInt();
-                        int v = eit.targetInt();
-                        if (v2node[v] == null) {
+                        int graphEdge = eit.nextInt();
+                        int vIdx = eit.targetInt();
+                        if (v2node[vIdx] == null) {
                             // Unvisited vertex, e is a tree edge
-                            parent[v] = u;
-
-                            v2node[v] = createNewNode(v, e, current, nextDfsIndex);
+                            v2node[vIdx] = createNewNode(vIdx, graphEdge, u, nextDfsIndex);
                             nextDfsIndex++;
-                            stack.push(g.outEdges(v).iterator());
+                            stack.push(g.outEdges(vIdx).iterator());
 
-                            u = v;
+                            u = v2node[vIdx];
                             continue dfs;
                         } else {
                             // Visited vertex, e is a back edge
-                            if (v == parent[u])
-                                continue;
-                            Node oppositeNode = v2node[v];
-                            if (current.dfsIndex < oppositeNode.dfsIndex)
-                                continue; // the reverse edge was already added as a back edge, down edge of current
-                            Edge backEdge = Edge.newBackEdge(e, current, oppositeNode);
-                            oppositeNode.downEdges.add(backEdge);
-                            current.backEdges.add(backEdge);
+                            Node ancestor = v2node[vIdx];
+                            if (parent == ancestor)
+                                continue; // Not a back edge, reverse of tree edge from parent to u
+                            if (u.dfsIndex < ancestor.dfsIndex)
+                                continue; // The reverse edge was already added as a back edge, down edge of u
+                            Edge backEdge = Edge.newBackEdge(graphEdge, u, ancestor);
+                            ancestor.downEdges.add(backEdge);
+                            u.backEdges.add(backEdge);
                         }
                     }
 
-                    current.leastAncestor = current.backEdges
+                    u.leastAncestor = u.backEdges
                             .stream()
                             .mapToInt(backEdge -> backEdge.target.dfsIndex)
                             .min()
-                            .orElse(current.dfsIndex);
-                    current.lowpoint = current.treeEdges
+                            .orElse(u.dfsIndex);
+                    u.lowpoint = u.treeEdges
                             .stream()
                             .mapToInt(treeEdge -> treeEdge.target.lowpoint)
                             .min()
-                            .orElse(current.dfsIndex);
-                    current.lowpoint = Math.min(current.lowpoint, current.leastAncestor);
+                            .orElse(u.dfsIndex);
+                    u.lowpoint = Math.min(u.lowpoint, u.leastAncestor);
 
                     // backtrack DFS one vertex up
                     stack.pop();
                     if (stack.isEmpty())
                         break;
-                    int v = u;
-                    u = parent[v];
+                    u = parent;
                 }
             }
 
@@ -296,10 +290,12 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
                 Node v = nodes[currentDfsIdx];
                 assert v.dfsIndex == currentDfsIdx;
-                for (Edge downEdge : v.downEdges)
+                for (Edge downEdge : v.downEdges) {
+                    assert downEdge.target == v;
                     walkUp(downEdge.source, v, downEdge);
+                }
                 for (Edge treeEdge : v.treeEdges) {
-                    assert treeEdge.target.initialComponentRoot.dfsIndex == v.dfsIndex;
+                    assert treeEdge.target.initialComponentRoot.dfsIndex == currentDfsIdx;
                     walkDown(treeEdge.target.initialComponentRoot);
                 }
 
