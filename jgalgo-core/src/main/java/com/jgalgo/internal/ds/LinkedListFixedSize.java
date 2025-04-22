@@ -25,6 +25,12 @@ public class LinkedListFixedSize {
 
 	public static final int None = -1;
 
+	public static boolean isNone(int entry) {
+		assert entry >= 0 || entry == None;
+		return entry < 0;
+	}
+
+	// TODO: rename to undirectional
 	public static class Singly {
 
 		private final int[] arr;
@@ -47,7 +53,7 @@ public class LinkedListFixedSize {
 		}
 
 		public boolean hasNext(int id) {
-			return next(id) != None;
+			return !isNone(next(id));
 		}
 
 		public void clear() {
@@ -61,7 +67,7 @@ public class LinkedListFixedSize {
 
 				@Override
 				public boolean hasNext() {
-					return p != None;
+					return !isNone(p);
 				}
 
 				@Override
@@ -83,6 +89,7 @@ public class LinkedListFixedSize {
 
 	}
 
+	// TODO: rename to bidirectional
 	public static class Doubly {
 
 		private final int[] arr;
@@ -113,7 +120,7 @@ public class LinkedListFixedSize {
 		}
 
 		public boolean hasNext(int id) {
-			return next(id) != None;
+			return !isNone(next(id));
 		}
 
 		public int prev(int id) {
@@ -125,7 +132,7 @@ public class LinkedListFixedSize {
 		}
 
 		public boolean hasPrev(int id) {
-			return prev(id) != None;
+			return !isNone(prev(id));
 		}
 
 		public void insert(int prev, int id) {
@@ -134,7 +141,7 @@ public class LinkedListFixedSize {
 			int next = next(prev);
 			setNext(prev, id);
 			setPrev(id, prev);
-			if (next != None) {
+			if (!isNone(next)) {
 				setNext(id, next);
 				setPrev(next, id);
 			}
@@ -149,11 +156,11 @@ public class LinkedListFixedSize {
 
 		public void disconnect(int id) {
 			int prev = prev(id), next = next(id);
-			if (prev != None) {
+			if (!isNone(prev)) {
 				setNext(prev, next);
 				setPrev(id, None);
 			}
-			if (next != None) {
+			if (!isNone(next)) {
 				setPrev(next, prev);
 				setNext(id, None);
 			}
@@ -182,7 +189,7 @@ public class LinkedListFixedSize {
 
 			@Override
 			public boolean hasNext() {
-				return p != None;
+				return !isNone(p);
 			}
 
 			@Override

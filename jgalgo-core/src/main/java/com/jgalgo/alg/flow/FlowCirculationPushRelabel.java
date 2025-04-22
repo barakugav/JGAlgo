@@ -59,7 +59,7 @@ class FlowCirculationPushRelabel extends FlowCirculationAbstract {
 
 		void activate(int v) {
 			int layer = label[v];
-			if (layersHeadActive[layer] != LinkedListFixedSize.None)
+			if (!LinkedListFixedSize.isNone(layersHeadActive[layer]))
 				layersActive.connect(v, layersHeadActive[layer]);
 			layersHeadActive[layer] = v;
 			if (maxLayerActive < layer)
@@ -77,7 +77,7 @@ class FlowCirculationPushRelabel extends FlowCirculationAbstract {
 			for (;; maxLayerActive--) {
 				if (maxLayerActive < 0)
 					return -1;
-				if (layersHeadActive[maxLayerActive] != LinkedListFixedSize.None)
+				if (!LinkedListFixedSize.isNone(layersHeadActive[maxLayerActive]))
 					return layersHeadActive[maxLayerActive];
 			}
 		}

@@ -163,7 +163,7 @@ public class ShortestPathSingleSourceDial extends ShortestPathSingleSourceAbstra
 
 			int h = bucketsHead[distance];
 			bucketsHead[distance] = v;
-			if (h != LinkedListFixedSize.None)
+			if (!LinkedListFixedSize.isNone(h))
 				bucketsNodes.connect(v, h);
 		}
 
@@ -180,7 +180,7 @@ public class ShortestPathSingleSourceDial extends ShortestPathSingleSourceAbstra
 		int extractMin() {
 			for (int distance = scanIdx; distance <= maxDistance; distance++) {
 				int v = bucketsHead[distance];
-				if (v != LinkedListFixedSize.None) {
+				if (!LinkedListFixedSize.isNone(v)) {
 					bucketsHead[distance] = bucketsNodes.next(v);
 					bucketsNodes.disconnect(v);
 					scanIdx = distance;
