@@ -193,6 +193,20 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * {@code separatedDfsChildList}
          */
         private void preprocess() {
+            // regular nodes matching the real graph vertices are connected via tree and back edges.
+            // virtual bi-connected component roots are created for each non-dfs-root node, with the DFS index
+            // of the parent node, with the tree edge from the parent to the current node.
+            //
+            // - For a regular node u with parent v, the tree edge is (v,u).
+            // - For a regular node u and ancestor v, and the back edge is (u,v).
+            // - For a virtual node that is created for u, that actually represent a duplication of the parent v, the
+            // tree edge is (v, u).
+            //
+            // Given a regular node u, u.parentEdge.source is the parent, and the target is u
+            // Given a regular node v, v.backEdges[:].source is the child, and the target is v
+            // Given a virtual node w that is created for u, that actually represent a duplication of the parent v,
+            // u.parentEdge.source is v, and the target is u (none of them is w)
+
             final int n = g.vertices().size();
             Node[] v2node = new Node[n];
 
@@ -207,7 +221,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 stack.push(g.outEdges(root).iterator());
 
                 dfs: for (Node u = v2node[root];;) {
-                    Node parent = u.getParent();
+                    final Node parent = u.getParent();
                     for (IEdgeIter eit = stack.top(); eit.hasNext();) {
                         int graphEdge = eit.nextInt();
                         int vIdx = eit.targetInt();
@@ -406,11 +420,11 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param componentRoot the root of the component to start the walkdown from
          */
         private void walkDown(final Node componentRoot) {
-            for (boolean componentEntryDir : sides()) {
+            for (final boolean componentEntryDir : sides()) {
                 if (!mergeStack.isEmpty())
                     break;
-                boolean currentComponentEntryDir = componentEntryDir;
-                OuterFaceIter circulator = componentRoot.iterator(currentComponentEntryDir);
+                boolean side = componentEntryDir;
+                OuterFaceIter circulator = componentRoot.iterator(side);
                 for (Node current = circulator.next(); current != componentRoot;) {
                     if (current.hasBackEdge()) {
                         Node childPrev = circulator.getPrev();
@@ -419,53 +433,60 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         circulator = embedBackEdge(componentRoot, componentEntryDir, current.edgeToEmbed, childPrev);
                     }
                     if (!current.pertinentRoots.isEmpty()) {
-                        boolean parentComponentEntryDir = currentComponentEntryDir;
+                        final boolean prevSide = side;
+                        // 'root' is a virtual node, matching current, a root of a bi-comp.
                         final Node root = current.pertinentRoots.getFirst();
 
-                        OuterFaceIter ccwCirculator = getActiveSuccessorOnOuterFace(root, Side1);
-                        Node ccwActiveNode = ccwCirculator.getCurrent();
-                        OuterFaceIter cwCirculator = getActiveSuccessorOnOuterFace(root, Side2);
-                        Node cwActiveNode = cwCirculator.getCurrent();
+                        // TODO: we should search both sides simultaneously, for linear time
+                        OuterFaceIter circulator1 = getActiveSuccessorOnOuterFace(root, Side1);
+                        OuterFaceIter circulator2 = getActiveSuccessorOnOuterFace(root, Side2);
+                        Node activeNode1 = circulator1.getCurrent();
+                        Node activeNode2 = circulator2.getCurrent();
+                        assert isActive(activeNode1);
+                        assert isActive(activeNode2);
+                        assert activeNode1 != root;
+                        assert activeNode2 != root;
 
-                        if (isInternallyActive(ccwActiveNode)) {
-                            currentComponentEntryDir = Side1;
-                        } else if (isInternallyActive(cwActiveNode)) {
-                            currentComponentEntryDir = Side2;
-                        } else if (ccwActiveNode.isPertinent()) {
-                            currentComponentEntryDir = Side1;
+                        if (isInternallyActive(activeNode1)) {
+                            side = Side1;
+                        } else if (isInternallyActive(activeNode2)) {
+                            side = Side2;
+                        } else if (activeNode1.isPertinent()) {
+                            side = Side1;
                         } else {
-                            currentComponentEntryDir = Side2;
+                            side = Side2;
                         }
 
-                        if (currentComponentEntryDir == Side1) {
+                        if (side == Side1) {
                             mergeStack
-                                    .push(new MergeInfo(
-                                            current, circulator.peekNext(), root, root.outerFaceNeighbor2,
-                                            parentComponentEntryDir, currentComponentEntryDir));
-                            current = ccwActiveNode;
-                            circulator = ccwCirculator;
+                                    .push(new MergeInfo(current, circulator.peekNext(), root, root.outerFaceNeighbor2,
+                                            prevSide, side));
+                            current = activeNode1;
+                            circulator = circulator1;
 
-                            if (!cwActiveNode.hasRootNeighbor())
-                                embedShortCircuit(root, Side2, cwCirculator);
+                            if (!activeNode2.hasRootNeighbor())
+                                embedShortCircuit(root, Side2, circulator2);
                         } else {
                             mergeStack
-                                    .push(new MergeInfo(
-                                            current, circulator.peekNext(), root, root.outerFaceNeighbor1,
-                                            parentComponentEntryDir, currentComponentEntryDir));
-                            current = cwActiveNode;
-                            circulator = cwCirculator;
+                                    .push(new MergeInfo(current, circulator.peekNext(), root, root.outerFaceNeighbor1,
+                                            prevSide, side));
+                            current = activeNode2;
+                            circulator = circulator2;
 
-                            if (!ccwActiveNode.hasRootNeighbor())
-                                embedShortCircuit(root, Side1, ccwCirculator);
+                            if (!activeNode1.hasRootNeighbor())
+                                embedShortCircuit(root, Side1, circulator1);
                         }
 
-                    } else if (!isActive(current)) {
-                        current = circulator.next();
-                    } else {
-                        // current vertex is externally active
-                        if (!current.hasRootNeighbor() && mergeStack.isEmpty())
-                            embedShortCircuit(componentRoot, componentEntryDir, circulator);
+                    } else if (isActive(current)) {
+                        // current vertex is externally active, cant continue in this side.
+                        if (!current.hasRootNeighbor()) {
+                            // assert mergeStack.isEmpty();
+                            if (mergeStack.isEmpty())
+                                embedShortCircuit(componentRoot, componentEntryDir, circulator);
+                        }
                         break;
+                    } else {
+                        current = circulator.next();
                     }
                 }
             }
@@ -480,7 +501,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param end   the node currently processed by the main loop of the algorithm
          * @param edge  a back edge to embed
          */
-        private static void walkUp(Node start, Node end, Edge edge) {
+        private static void walkUp(Node start, final Node end, Edge edge) {
             final int visited = end.dfsIndex;
 
             start.edgeToEmbed = edge;
@@ -495,16 +516,18 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 if (x.isBicompRoot() || y.isBicompRoot()) {
                     Node root = x.isBicompRoot() ? x : y;
                     assert root.isBicompRoot();
+                    // 'root' is a virtual node, the root of the current bi-comp.
 
-                    Node rootChild = root.parentEdge.target;
-                    Node newStart = root.parentEdge.source;
+                    // continue up by jumping to the real node, matching the virtual root, in the parent bi-comp.
+                    Node newStart = root.realNodeInParentBiComp();
                     if (newStart == end)
                         break;
-                    if (rootChild.lowpoint < end.dfsIndex) {
+                    if (root.parentEdge.target.lowpoint < end.dfsIndex) {
                         // the component in externally active
                         root.listNode = newStart.pertinentRoots.addElementLast(root);
                     } else {
                         // the component is internally active
+                        assert root.parentEdge.target.lowpoint == end.dfsIndex;
                         root.listNode = newStart.pertinentRoots.addElementFirst(root);
                     }
                     newStart.visited = visited;
@@ -527,8 +550,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          */
         static OuterFaceIter findOnOuterFace(Node start, Node stop, boolean dir, Predicate<Node> predicate) {
             OuterFaceIter circulator = start.iterator(dir);
-            for (Node current = circulator.next(); current != stop && !predicate.test(current);)
-                current = circulator.next();
+            for (Node v = circulator.next(); v != stop && !predicate.test(v); v = circulator.next());
             return circulator;
         }
 
@@ -701,8 +723,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              */
             Edge edgeToNext() {
                 Edge edge = prev.embedded.getFirst();
-                Node target = toExistingNode(current);
-                Node source = toExistingNode(prev);
+                Node target = current.toExistingNode();
+                Node source = prev.toExistingNode();
                 if (edge.getOpposite(source) == target) {
                     return edge;
                 } else {
@@ -730,16 +752,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 return prev.nextOnOuterFace(current);
             }
 
-            /**
-             * Returns either {@code node} or its real counterpart in the case the {@code node} is a
-             * component root.
-             *
-             * @param  node the input argument
-             * @return      the real counter path of the {@code node}
-             */
-            private static Node toExistingNode(Node node) {
-                return node.isBicompRoot() ? node.getParent() : node;
-            }
         }
 
         /**
@@ -924,7 +936,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             /**
              * The roots of the pertinent components during the processing of the node $v$. These are
              * the components that have pertinent descendant nodes, i.e. nodes incident to the node $v$
-             * via a back edge
+             * via a back edge.
+             *
+             * This list contains virtual nodes matching this node. The virtual nodes are the roots in the child bi-comp
+             * of this node.
              */
             final DoublyLinkedList<Node> pertinentRoots;
             /**
@@ -1099,6 +1114,24 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
 
             /**
+             * Returns either {@code node} or its real counterpart in the case the {@code node} is a
+             * component root.
+             *
+             * @param  node the input argument
+             * @return      the real counter path of the {@code node}
+             */
+            private Node toExistingNode() {
+                return isBicompRoot() ? realNodeInParentBiComp() : this;
+            }
+
+            private Node realNodeInParentBiComp() {
+                assert isBicompRoot();
+                Node real = parentEdge.source;
+                assert dfsIndex == real.dfsIndex;
+                return real;
+            }
+
+            /**
              * Returns a neighbor of this node which is not equal to the {@code prev}
              *
              * @param  prev a neighbor of this node
@@ -1187,6 +1220,15 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     embedded.append(edges);
                 } else {
                     embedded.prepend(edges);
+                }
+            }
+
+            @Override
+            public String toString() {
+                if (!isBicompRoot()) {
+                    return String.valueOf(graphVertex);
+                } else {
+                    return String.valueOf(realNodeInParentBiComp().graphVertex) + "v";
                 }
             }
         }

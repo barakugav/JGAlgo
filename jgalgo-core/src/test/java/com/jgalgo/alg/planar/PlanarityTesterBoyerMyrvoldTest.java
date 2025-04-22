@@ -38,7 +38,6 @@ import com.jgalgo.alg.traversal.NeighborSampler;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntPair;
@@ -47,10 +46,12 @@ import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 @SuppressWarnings("boxing")
 public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
@@ -88,15 +89,19 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 	}
 
 	static IntGraph createUndirected(int[][] edges) {
-		IntGraphBuilder builder = IntGraphBuilder.undirected();
+		IntGraph g = IntGraph.newUndirected();
+		Random rand = new Random(0x3893298);
+		ObjectArrays.shuffle(edges, rand);
 		for (int[] edge : edges) {
-			if (!builder.vertices().contains(edge[0]))
-				builder.addVertex(edge[0]);
-			if (!builder.vertices().contains(edge[1]))
-				builder.addVertex(edge[1]);
-			builder.addEdge(edge[0], edge[1]);
+			IntArrays.shuffle(edge, rand);
+			int u = edge[0], v = edge[1];
+			if (!g.vertices().contains(u))
+				g.addVertex(u);
+			if (!g.vertices().contains(v))
+				g.addVertex(v);
+			g.addEdge(u, v);
 		}
-		return builder.build();
+		return g;
 	}
 
 	/**
@@ -977,15 +982,19 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 
 	private static IntGraph randomPlanarGraph(int n, int m, long seed) {
 		final Random rand = new Random(seed);
-		IntGraphBuilder g = IntGraphFactory.undirected().allowParallelEdges(false).allowSelfEdges(false).newBuilder();
-		g.ensureVertexCapacity(n);
-		g.ensureEdgeCapacity(m);
+		IntGraph g = IntGraphFactory
+				.undirected()
+				.allowParallelEdges(false)
+				.allowSelfEdges(false)
+				.expectedVerticesNum(n)
+				.expectedEdgesNum(n)
+				.newGraph();
 
 		final int gridSize = 64 * n;
 		Bitmap usedXs = new Bitmap(gridSize);
 		Bitmap usedYs = new Bitmap(gridSize);
 		int[] positions = new int[2 * n];
-		for (int v : range(n)) {
+		for (int v : IntArrays.shuffle(range(n).toIntArray(), rand)) {
 			g.addVertex(v);
 			int x, y;
 			while (!usedXs.set(x = rand.nextInt(gridSize)));
@@ -1010,11 +1019,15 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 		final double distanceThreshold = distances.getDouble(distances.size() / 2);
 
 		LongSet edges = new LongOpenHashSet(m);
-		edgeLoop: while (g.edges().size() < m) {
-			retryLoop: for (int retry = 0; retry < 20; retry++) {
+		edgesLoop: while (g.edges().size() < m) {
+			retryLoop: for (int retry = 0;; retry++) {
+				if (retry >= 20)
+					break edgesLoop;
 				int u, v;
 				long setKey;
-				for (;;) {
+				for (int retry2 = 0;; retry2++) {
+					if (retry2 >= 20)
+						break edgesLoop;
 					u = rand.nextInt(n);
 					v = rand.nextInt(n);
 					if (u == v)
@@ -1039,15 +1052,15 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 				}
 				edges.add(setKey);
 				g.addEdge(u, v);
-				break edgeLoop;
+				break;
 			}
 		}
-		return g.build();
+		return g;
 	}
 
 	private static IntGraph randomNonPlanarGraph(int n, int m, long seed) {
 		final Random rand = new Random(seed);
-		IntGraph g = randomPlanarGraph(n, m, rand.nextLong() & 0x78946678L).copy();
+		IntGraph g = randomPlanarGraph(n, m, rand.nextLong() & 0x78946678L);
 		NeighborSampler.Int sampler = (NeighborSampler.Int) NeighborSampler.uniform(g.immutableCopy());
 		sampler.setSeed(rand.nextLong() & 0x3252351);
 		IntSet used = new IntOpenHashSet();
@@ -1111,7 +1124,7 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 				for (int j : range(3, 6))
 					connect.accept(vsArray[i], vsArray[j]);
 		}
-		return g.immutableCopy();
+		return g;
 
 	}
 
