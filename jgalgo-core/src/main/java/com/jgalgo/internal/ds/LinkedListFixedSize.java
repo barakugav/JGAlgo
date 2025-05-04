@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.function.IntPredicate;
 import com.jgalgo.internal.util.Assertions;
@@ -180,6 +181,17 @@ public class LinkedListFixedSize {
 		}
 
 		public IntIntPair removeIf(int head, IntPredicate pred) {
+			var x = removeIf0(head, pred);
+			int newHead = x.firstInt(), newTail = x.secondInt();
+			assert newHead < 0 == newTail < 0;
+			if (newHead >= 0 && newTail >= 0) {
+				assert !hasPrev(newHead);
+				assert !hasNext(newTail);
+			}
+			return x;
+		}
+
+		private IntIntPair removeIf0(int head, IntPredicate pred) {
 			if (isNone(head))
 				return IntIntPair.of(None, None);
 			if (hasPrev(head))
@@ -215,13 +227,13 @@ public class LinkedListFixedSize {
 			final int origPrev = prev(start);
 			for (int curr = start;;) {
 				int prev = prev(curr), next = next(curr);
+				setNext(curr, prev);
+				setPrev(curr, next);
 				if (isNone(next)) {
 					if (!isNone(origPrev))
 						throw new IllegalArgumentException("Given start vertex is not a head of a list");
 					break;
 				}
-				setNext(curr, prev);
-				setPrev(curr, next);
 				if (next == start)
 					break;
 				curr = next;
@@ -303,6 +315,29 @@ public class LinkedListFixedSize {
 			}
 		}
 
+	}
+
+	public static class PoolAllocator {
+
+		private final int[] freeEntries;
+		private int freeEntriesNum;
+
+		public PoolAllocator(int n) {
+			freeEntries = new int[n];
+			for (int i : range(n))
+				freeEntries[i] = n - i - 1;
+			freeEntriesNum = n;
+		}
+
+		public int alloc() {
+			if (freeEntriesNum == 0)
+				throw new IllegalStateException("No free entries left");
+			return freeEntries[--freeEntriesNum];
+		}
+
+		public void free(int index) {
+			freeEntries[freeEntriesNum++] = index;
+		}
 	}
 
 }
