@@ -17,9 +17,12 @@
 package com.jgalgo.internal.ds;
 
 import java.util.Arrays;
+import java.util.function.IntPredicate;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IterTools;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 
+// TODO: Rename to LinkedList
 public class LinkedListFixedSize {
 	private LinkedListFixedSize() {}
 
@@ -100,11 +103,11 @@ public class LinkedListFixedSize {
 		}
 
 		private static int idxOfNext(int id) {
-			return id * 2 + 0;
+			return (id << 1) + 0;
 		}
 
 		private static int idxOfPrev(int id) {
-			return id * 2 + 1;
+			return (id << 1) + 1;
 		}
 
 		public int size() {
@@ -135,7 +138,7 @@ public class LinkedListFixedSize {
 			return !isNone(prev(id));
 		}
 
-		public void insert(int prev, int id) {
+		public void insertAfter(int prev, int id) {
 			// if (hasNext(id) || hasPrev(id))
 			// throw new IllegalArgumentException();
 			int next = next(prev);
@@ -145,6 +148,16 @@ public class LinkedListFixedSize {
 				setNext(id, next);
 				setPrev(next, id);
 			}
+		}
+
+		public void insertBefore(int next, int id) {
+			int prev = prev(next);
+			if (!isNone(prev)) {
+				setNext(prev, id);
+				setPrev(id, prev);
+			}
+			setNext(id, next);
+			setPrev(next, id);
 		}
 
 		public void connect(int prev, int next) {
@@ -166,17 +179,72 @@ public class LinkedListFixedSize {
 			}
 		}
 
+		public IntIntPair removeIf(int head, IntPredicate pred) {
+			if (isNone(head))
+				return IntIntPair.of(None, None);
+			if (hasPrev(head))
+				throw new IllegalArgumentException("head must not have a previous element");
+			for (int prev = None, curr = head;;) {
+				int next = next(curr);
+				if (pred.test(curr)) {
+					if (isNone(prev)) {
+						head = next;
+					} else {
+						setPrev(curr, None);
+						setNext(prev, next);
+					}
+					if (!isNone(next)) {
+						setNext(curr, None);
+						setPrev(next, prev);
+					} else {
+						int tail = prev;
+						return IntIntPair.of(head, tail);
+					}
+				} else {
+					if (isNone(next)) {
+						int tail = curr;
+						return IntIntPair.of(head, tail);
+					}
+					prev = curr;
+				}
+				curr = next;
+			}
+		}
+
+		public void reverse(final int start) {
+			final int origPrev = prev(start);
+			for (int curr = start;;) {
+				int prev = prev(curr), next = next(curr);
+				if (isNone(next)) {
+					if (!isNone(origPrev))
+						throw new IllegalArgumentException("Given start vertex is not a head of a list");
+					break;
+				}
+				setNext(curr, prev);
+				setPrev(curr, next);
+				if (next == start)
+					break;
+				curr = next;
+			}
+		}
+
 		public void clear() {
 			Arrays.fill(arr, None);
 		}
 
 		public IterTools.Peek.Int iterator(int id) {
 			Assertions.checkArrayIndex(id, 0, size());
-			return new Iter(id);
+			return iteratorMaybeNone(id);
 		}
 
-		public IterTools.Peek.Int emptyIter() {
-			return new Iter(None);
+		public IterTools.Peek.Int iteratorMaybeNone(int idMaybeNone) {
+			assert idMaybeNone >= 0 || idMaybeNone == None;
+			return new Iter(idMaybeNone);
+		}
+
+		public IterTools.Peek.Int iteratorRev(int id) {
+			Assertions.checkArrayIndex(id, 0, size());
+			return new IterRev(id);
 		}
 
 		private class Iter implements IterTools.Peek.Int {
@@ -205,7 +273,34 @@ public class LinkedListFixedSize {
 				Assertions.hasNext(this);
 				return p;
 			}
+		}
 
+		private class IterRev implements IterTools.Peek.Int {
+
+			int p;
+
+			IterRev(int start) {
+				p = start;
+			}
+
+			@Override
+			public boolean hasNext() {
+				return !isNone(p);
+			}
+
+			@Override
+			public int nextInt() {
+				Assertions.hasNext(this);
+				int ret = p;
+				p = LinkedListFixedSize.Doubly.this.prev(p);
+				return ret;
+			}
+
+			@Override
+			public int peekNextInt() {
+				Assertions.hasNext(this);
+				return p;
+			}
 		}
 
 	}
