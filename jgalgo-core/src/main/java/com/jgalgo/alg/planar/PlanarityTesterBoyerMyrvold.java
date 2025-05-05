@@ -155,6 +155,47 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             this.mergeStack = new ObjectArrayList<>();
         }
 
+        private static Edge newEdge(int graphEdge, Node source, Node target) {
+            return new Edge(graphEdge, source, target);
+        }
+
+        /**
+         * Creates a new tree edge.
+         *
+         * @param graphEdge the counterpart of this edge in the {@code graph}
+         * @param source    the source node of this edge
+         */
+        static Edge newTreeEdge(int graphEdge, Node source) {
+            assert graphEdge >= 0;
+            return newEdge(graphEdge, source, null);
+        }
+
+        /**
+         * Creates a new edge. This constructor is used directly for the creation of the back edges
+         *
+         * @param graphEdge the counterpart of this edge in the {@code graph}
+         * @param source    the source node of this edge
+         * @param target    the target node of this edge
+         */
+        static Edge newBackEdge(int graphEdge, Node source, Node target) {
+            assert graphEdge >= 0;
+            return newEdge(graphEdge, source, target);
+        }
+
+        /**
+         * Creates a new short-circuit edge with no counterpart in {@code graph}. The {@code source}
+         * of this edge is always a real node on the boundary of some biconnected component, and the
+         * {@code target} node is the parent node of the biconnected component the source node
+         * belongs to, so the edge resembles a regular back edge except for that it doesn't have a
+         * counterpart in the {@code graph}
+         *
+         * @param source the source of the short-circuit edge
+         * @param target the target of the short-circuit edge
+         */
+        static Edge newShortCircuitEdge(Node source, Node target) {
+            return newEdge(-1, source, target);
+        }
+
         /**
          * Creates a new node by converting the {@code graphVertex} to the internal node representation.
          *
@@ -172,7 +213,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 dfsTreeRoots.add(node);
             } else {
                 assert edge >= 0;
-                Edge treeEdge = Edge.newTreeEdge(edge, parent);
+                Edge treeEdge = newTreeEdge(edge, parent);
                 Node componentRoot = Node.newVirtualBicompRoot(parent.dfsIndex, treeEdge);
                 node = Node.newInstance(graphVertex, dfsIndex, parent.height + 1, componentRoot, treeEdge);
                 treeEdge.target = node;
@@ -240,7 +281,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                                 continue; // Not a back edge, reverse of tree edge from parent to u
                             if (u.dfsIndex < ancestor.dfsIndex)
                                 continue; // The reverse edge was already added as a back edge, down edge of u
-                            Edge backEdge = Edge.newBackEdge(graphEdge, u, ancestor);
+                            Edge backEdge = newBackEdge(graphEdge, u, ancestor);
                             ancestor.downEdges.add(backEdge);
                             u.backEdges.add(backEdge);
                         }
@@ -397,7 +438,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          */
         private static void embedShortCircuit(Node componentRoot, boolean entryDir, OuterFaceIter circulator) {
             Node current = circulator.getCurrent(), prev = circulator.getPrev();
-            Edge shortCircuit = Edge.newShortCircuit(current, componentRoot.getParent());
+            Edge shortCircuit = newShortCircuitEdge(current, componentRoot.getParent());
             if (entryDir == Side1) {
                 componentRoot.embedded.addLast(shortCircuit);
                 componentRoot.outerFaceNeighbor1 = current;
@@ -779,43 +820,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * component
              */
             boolean isInverted;
-
-            /**
-             * Creates a new tree edge.
-             *
-             * @param graphEdge the counterpart of this edge in the {@code graph}
-             * @param source    the source node of this edge
-             */
-            static Edge newTreeEdge(int graphEdge, Node source) {
-                assert graphEdge >= 0;
-                return new Edge(graphEdge, source, null);
-            }
-
-            /**
-             * Creates a new edge. This constructor is used directly for the creation of the back edges
-             *
-             * @param graphEdge the counterpart of this edge in the {@code graph}
-             * @param source    the source node of this edge
-             * @param target    the target node of this edge
-             */
-            static Edge newBackEdge(int graphEdge, Node source, Node target) {
-                assert graphEdge >= 0;
-                return new Edge(graphEdge, source, target);
-            }
-
-            /**
-             * Creates a new short-circuit edge with no counterpart in {@code graph}. The {@code source}
-             * of this edge is always a real node on the boundary of some biconnected component, and the
-             * {@code target} node is the parent node of the biconnected component the source node
-             * belongs to, so the edge resembles a regular back edge except for that it doesn't have a
-             * counterpart in the {@code graph}
-             *
-             * @param source the source of the short-circuit edge
-             * @param target the target of the short-circuit edge
-             */
-            static Edge newShortCircuit(Node source, Node target) {
-                return new Edge(-1, source, target);
-            }
 
             private Edge(int graphEdge, Node source, Node target) {
                 this.graphEdge = graphEdge;
