@@ -381,9 +381,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             root.pertinentRoots.removeNode(virtualRoot.listNode);
             root.separatedDfsChildList.removeNode(virtualRootChild.listNode);
 
-            root
-                    .mergeChildEdges(virtualRoot.embedded, info.vIn, info.vOut, info.parentNext,
-                            virtualRoot.parentEdge);
+            mergeChildEdges(root, virtualRoot, info.vIn, info.vOut, info.parentNext,
+                    virtualRoot.parentEdge);
 
             if (root.outerFaceNeighbor1 == info.parentNext) {
                 root.outerFaceNeighbor2 = info.childPrev;
@@ -1170,63 +1169,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 }
             }
 
-            /**
-             * Merges the embedded edges of the child component root into this node's embedded edges.
-             * Note, that the edges in the {@code edges} list are always in the clockwise order. There
-             * are 3 parameters which determine how the {@code edges} list is merged: the {@code vIn}
-             * direction, the {@code vOut} direction and the orientation of the edges around this node
-             * (clockwise or counterclockwise). The edges in the {@code edges} list should have the same
-             * orientation. If this list is inverted, the sign of the {@code parentEdge} is set to $-1$.
-             *
-             * @param edges      the edges from the child component root
-             * @param vIn        the direction used to enter the parent component
-             * @param vOut       the direction used to enter the child component
-             * @param parentNext the next node along the traversal of the parent biconnected component
-             * @param parentEdge the parent edge if the child component
-             */
-            void mergeChildEdges(
-                    DoublyLinkedList<Edge> edges, boolean vIn, boolean vOut, Node parentNext, Edge parentEdge) {
-                assert !embedded.isEmpty();
-                Node firstOpposite = embedded.getFirst().getOpposite(this);
-                boolean alongParentTraversal = firstOpposite != parentNext;
-                boolean actionAppend = false, invert = false;
-                if (vIn == Side1) {
-                    if (vOut == Side1) {
-                        if (!alongParentTraversal) {
-                            invert = actionAppend = true;
-                        }
-                    } else {
-                        if (alongParentTraversal) {
-                            invert = true;
-                        } else {
-                            actionAppend = true;
-                        }
-                    }
-                } else {
-                    if (vOut == Side1) {
-                        if (!alongParentTraversal) {
-                            invert = actionAppend = true;
-                        }
-                    } else {
-                        if (alongParentTraversal) {
-                            invert = true;
-                        } else {
-                            actionAppend = true;
-                        }
-                    }
-                }
-                if (invert) {
-                    assert !parentEdge.isInverted;
-                    parentEdge.isInverted = true;
-                    edges.invert();
-                }
-                if (actionAppend) {
-                    embedded.append(edges);
-                } else {
-                    embedded.prepend(edges);
-                }
-            }
-
             @Override
             public String toString() {
                 if (!isBicompRoot()) {
@@ -1234,6 +1176,63 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 } else {
                     return String.valueOf(realNodeInParentBiComp().graphVertex) + "v";
                 }
+            }
+        }
+
+        /**
+         * Merges the embedded edges of the child component root into this node's embedded edges.
+         * Note, that the edges in the {@code edges} list are always in the clockwise order. There
+         * are 3 parameters which determine how the {@code edges} list is merged: the {@code vIn}
+         * direction, the {@code vOut} direction and the orientation of the edges around this node
+         * (clockwise or counterclockwise). The edges in the {@code edges} list should have the same
+         * orientation. If this list is inverted, the sign of the {@code parentEdge} is set to $-1$.
+         *
+         * @param edges      the edges from the child component root
+         * @param vIn        the direction used to enter the parent component
+         * @param vOut       the direction used to enter the child component
+         * @param parentNext the next node along the traversal of the parent biconnected component
+         * @param parentEdge the parent edge if the child component
+         */
+        static void mergeChildEdges(Node this2, Node virtualRoot,
+                boolean vIn, boolean vOut, Node parentNext, Edge parentEdge) {
+            assert !this2.embedded.isEmpty();
+            Node firstOpposite = this2.embedded.getFirst().getOpposite(this2);
+            boolean alongParentTraversal = firstOpposite != parentNext;
+            boolean actionAppend = false, invert = false;
+            if (vIn == Side1) {
+                if (vOut == Side1) {
+                    if (!alongParentTraversal) {
+                        invert = actionAppend = true;
+                    }
+                } else {
+                    if (alongParentTraversal) {
+                        invert = true;
+                    } else {
+                        actionAppend = true;
+                    }
+                }
+            } else {
+                if (vOut == Side1) {
+                    if (!alongParentTraversal) {
+                        invert = actionAppend = true;
+                    }
+                } else {
+                    if (alongParentTraversal) {
+                        invert = true;
+                    } else {
+                        actionAppend = true;
+                    }
+                }
+            }
+            if (invert) {
+                assert !parentEdge.isInverted;
+                parentEdge.isInverted = true;
+                virtualRoot.embedded.invert();
+            }
+            if (actionAppend) {
+                this2.embedded.append(virtualRoot.embedded);
+            } else {
+                this2.embedded.prepend(virtualRoot.embedded);
             }
         }
 
