@@ -464,7 +464,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 if (!mergeStack.isEmpty())
                     break;
                 boolean side = componentEntryDir;
-                OuterFaceIter circulator = componentRoot.iterator(side);
+                OuterFaceIter circulator = outerFace(componentRoot, side);
                 for (Node current = circulator.next(); current != componentRoot;) {
                     if (current.hasBackEdge()) {
                         Node childPrev = circulator.getPrev();
@@ -547,7 +547,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             start.edgeToEmbed = edge;
             start.visited = visited;
 
-            for (OuterFaceIter xIter = start.iterator(Side1), yIter = start.iterator(Side2);;) {
+            for (OuterFaceIter xIter = outerFace(start, Side1), yIter = outerFace(start, Side2);;) {
                 Node x = xIter.next(), y = yIter.next();
                 if (x.visited == visited || y.visited == visited)
                     break;
@@ -572,8 +572,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     }
                     newStart.visited = visited;
 
-                    xIter = newStart.iterator(Side1);
-                    yIter = newStart.iterator(Side2);
+                    xIter = outerFace(newStart, Side1);
+                    yIter = outerFace(newStart, Side2);
                 }
             }
         }
@@ -589,7 +589,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @return           a circulator to the node satisfying the {@code predicate} or to the {@code stop} node
          */
         static OuterFaceIter findOnOuterFace(Node start, Node stop, boolean dir, Predicate<Node> predicate) {
-            OuterFaceIter circulator = start.iterator(dir);
+            OuterFaceIter circulator = outerFace(start, dir);
             for (Node v = circulator.next(); v != stop && !predicate.test(v); v = circulator.next());
             return circulator;
         }
@@ -1067,18 +1067,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
 
             /**
-             * Returns a circulator, that moves in the direction {@code direction}. The next node along
-             * the traversal will be {@code this.outerFaceNeighbor[direction]}.
-             *
-             * @param  direction the direction to move in
-             * @return           an iterator over the boundary nodes in the direction {@code direction}
-             */
-            OuterFaceIter iterator(boolean direction) {
-                Node neighbor = direction == Side1 ? outerFaceNeighbor1 : outerFaceNeighbor2;
-                return new OuterFaceIter(neighbor, this);
-            }
-
-            /**
              * Returns the parent of this node in the dfs tree. Tree parent of the dfs root node is
              * {@code null}
              *
@@ -1173,6 +1161,18 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     return String.valueOf(realNodeInParentBiComp().graphVertex) + "v";
                 }
             }
+        }
+
+        /**
+         * Returns a circulator, that moves in the direction {@code direction}. The next node along
+         * the traversal will be {@code this.outerFaceNeighbor[direction]}.
+         *
+         * @param  direction the direction to move in
+         * @return           an iterator over the boundary nodes in the direction {@code direction}
+         */
+        static OuterFaceIter outerFace(Node node, boolean direction) {
+            Node neighbor = direction == Side1 ? node.outerFaceNeighbor1 : node.outerFaceNeighbor2;
+            return new OuterFaceIter(neighbor, node);
         }
 
         static void removeShortCircuitEdges(Node node) {
@@ -1429,7 +1429,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param delta         a value in $\{+1, -1\}$ to set either positive or negative boundary height
          */
         private static void setBoundaryDepth(Node componentRoot, Node w, boolean dir, int delta) {
-            OuterFaceIter circulator = componentRoot.iterator(dir);
+            OuterFaceIter circulator = outerFace(componentRoot, dir);
             int currentHeight = delta;
             for (Node current = circulator.next(); current != w; current = circulator.next()) {
                 current.boundaryHeight = currentHeight;
@@ -1543,7 +1543,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         private List<Edge> findHighestObstructingPath(Node componentRoot, Node w) {
             clearVisited();
             List<Edge> result = new ObjectArrayList<>();
-            OuterFaceIter circulator = componentRoot.iterator(Side1);
+            OuterFaceIter circulator = outerFace(componentRoot, Side1);
 
             for (Node current = circulator.next(); current != w; current = circulator.next()) {
                 if (findPathDfs(
@@ -1580,7 +1580,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param componentRoot the root of the biconnected component
          */
         private static void addBoundaryEdges(Set<Edge> edges, Node componentRoot) {
-            OuterFaceIter circulator = componentRoot.iterator(Side1);
+            OuterFaceIter circulator = outerFace(componentRoot, Side1);
             Node current;
             do {
                 Edge edge = circulator.edgeToNext();
@@ -1636,7 +1636,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         private static void removeUp(Node start, Node end, boolean dir, Set<Edge> edges) {
             if (start == end)
                 return;
-            OuterFaceIter circulator = start.iterator(dir);
+            OuterFaceIter circulator = outerFace(start, dir);
             Node next;
             do {
                 Edge edge = circulator.edgeToNext();
