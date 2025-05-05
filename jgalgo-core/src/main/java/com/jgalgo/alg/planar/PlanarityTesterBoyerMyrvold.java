@@ -90,7 +90,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 for (Worker.Node bicompRoot : worker.virtualBicompRoots) {
                     if (bicompRoot.outerFaceNeighbor1 == null)
                         continue; // merged with parent bicomp
-                    bicompRoot.removeShortCircuitEdges();
+                    Worker.removeShortCircuitEdges(bicompRoot);
                     Worker2.fixBoundaryOrder(bicompRoot);
                 }
 
@@ -622,7 +622,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 boolean isInverted = entry.second().booleanValue();
                 if (isInverted)
                     current.embedded.invert();
-                current.removeShortCircuitEdges();
+                removeShortCircuitEdges(current);
                 for (Node node : current.separatedDfsChildList) {
                     // all the components, that aren't merged, aren't inverted
                     node.parentEdge.isInverted = isInverted;
@@ -1078,10 +1078,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 return new OuterFaceIter(neighbor, this);
             }
 
-            void removeShortCircuitEdges() {
-                embedded.removeIf(Edge::isArtificial);
-            }
-
             /**
              * Returns the parent of this node in the dfs tree. Tree parent of the dfs root node is
              * {@code null}
@@ -1177,6 +1173,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     return String.valueOf(realNodeInParentBiComp().graphVertex) + "v";
                 }
             }
+        }
+
+        static void removeShortCircuitEdges(Node node) {
+            node.embedded.removeIf(Edge::isArtificial);
         }
 
         /**
