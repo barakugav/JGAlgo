@@ -61,7 +61,7 @@ public class IterTools {
 
 		E peekNext();
 
-		static interface Int extends IntIterator, Peek<Integer> {
+		static interface Int extends Iter, Peek<Integer> {
 
 			static Peek.Int of(IntIterator iter) {
 				return new PeekImpl.Int(iter);
@@ -300,4 +300,50 @@ public class IterTools {
 		return it.nextInt();
 	}
 
+	public static interface Iter extends IntIterator {
+		default IntIterator map(IntUnaryOperator map) {
+			return mapInt(this, map);
+		}
+
+		default IntIterator filter(IntPredicate filter) {
+			IntIterator orig = this;
+			return new IntIterator() {
+
+				boolean hasNext;
+				int next;
+
+				{
+					advance();
+				}
+
+				void advance() {
+					for (;;) {
+						if (!orig.hasNext()) {
+							hasNext = false;
+							break;
+						}
+						int maybeNext = orig.nextInt();
+						if (filter.test(maybeNext)) {
+							hasNext = true;
+							next = maybeNext;
+							break;
+						}
+					}
+				}
+
+				@Override
+				public boolean hasNext() {
+					return hasNext;
+				}
+
+				@Override
+				public int nextInt() {
+					Assertions.hasNext(this);
+					int ret = next;
+					advance();
+					return ret;
+				}
+			};
+		}
+	}
 }

@@ -1644,15 +1644,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                      * The iteration is performed in the reverse order since the infos are pushed on the
                      * stack and therefore will be processed in the again reverse order
                      */
-                    int begin;
-                    for (IntIterator it = embedded.iterator(info.current.embeddedFirst);;) {
-                        assert it.hasNext();
-                        int x = it.nextInt();
-                        if (embedded2edge[x] == info.prevEdge) {
-                            begin = x;
-                            break;
-                        }
-                    }
+                    int begin = embedded
+                            .iterator(info.current.embeddedFirst)
+                            .filter(x -> embedded2edge[x] == info.prevEdge)
+                            .nextInt();
                     checkMe();
                     for (IntIterator it = embedded.iteratorRev(begin); it.hasNext();) {
                         Edge currentEdge = embedded2edge[it.nextInt()];
