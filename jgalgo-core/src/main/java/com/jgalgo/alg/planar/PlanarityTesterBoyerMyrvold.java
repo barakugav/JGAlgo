@@ -172,86 +172,34 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             this.virtualBicompRoots = new ObjectArrayList<>(n);
             this.mergeStack = new ObjectArrayList<>();
 
-            this.embedded = new LinkedListFixedSize.Doubly(maxEdgesNum * 2);
-            this.embeddedAllocator = new LinkedListFixedSize.PoolAllocator(maxEdgesNum * 2);
-            this.embedded2edge = new Edge[maxEdgesNum * 2];
+            int embeddedListsMaxLen = maxEdgesNum * 2; // each edge can be added in the lists of both of its endpoints
+            this.embedded = new LinkedListFixedSize.Doubly(embeddedListsMaxLen);
+            this.embeddedAllocator = new LinkedListFixedSize.PoolAllocator(embeddedListsMaxLen);
+            this.embedded2edge = new Edge[embeddedListsMaxLen];
         }
 
-        private static Edge newEdge(int graphEdge, Node source, Node target) {
-            return new Edge(graphEdge, source, target);
-        }
+        com.jgalgo.internal.util.Result<Void, Node> computePlanarity() {
+            preprocess();
+            for (currentDfsIdx = nodes.length - 1; currentDfsIdx >= 0; currentDfsIdx--) {
+                // Zero the counter of number of embedded edges for this DFS index
+                embeddedEdgesNum = 0;
 
-        /**
-         * Creates a new tree edge.
-         *
-         * @param graphEdge the counterpart of this edge in the {@code graph}
-         * @param source    the source node of this edge
-         */
-        static Edge newTreeEdge(int graphEdge, Node source) {
-            assert graphEdge >= 0;
-            return newEdge(graphEdge, source, null);
-        }
+                Node v = nodes[currentDfsIdx];
+                assert v.dfsIndex == currentDfsIdx;
+                for (Edge downEdge : v.downEdges) {
+                    assert downEdge.target == v;
+                    walkUp(downEdge.source, v, downEdge);
+                }
+                for (Edge treeEdge : v.treeEdges) {
+                    assert treeEdge.target.initialComponentRoot.dfsIndex == currentDfsIdx;
+                    walkDown(treeEdge.target.initialComponentRoot);
+                }
 
-        /**
-         * Creates a new edge. This constructor is used directly for the creation of the back edges
-         *
-         * @param graphEdge the counterpart of this edge in the {@code graph}
-         * @param source    the source node of this edge
-         * @param target    the target node of this edge
-         */
-        static Edge newBackEdge(int graphEdge, Node source, Node target) {
-            assert graphEdge >= 0;
-            return newEdge(graphEdge, source, target);
-        }
-
-        /**
-         * Creates a new short-circuit edge with no counterpart in {@code graph}. The {@code source}
-         * of this edge is always a real node on the boundary of some biconnected component, and the
-         * {@code target} node is the parent node of the biconnected component the source node
-         * belongs to, so the edge resembles a regular back edge except for that it doesn't have a
-         * counterpart in the {@code graph}
-         *
-         * @param source the source of the short-circuit edge
-         * @param target the target of the short-circuit edge
-         */
-        static Edge newShortCircuitEdge(Node source, Node target) {
-            return newEdge(-1, source, target);
-        }
-
-        /**
-         * Creates a new node by converting the {@code graphVertex} to the internal node representation.
-         *
-         * @param  graphVertex the vertex of the {@code graph} we're processing
-         * @param  edge        the parent edge of the {@code graphVertex}, is {@code -1} for dfs tree roots
-         * @param  parent      the parent node of the {@code graphVertex}
-         * @param  dfsIndex    the dfs index of the {@code graphVertex}
-         * @return             the newly created node
-         */
-        private Node createNewNode(int graphVertex, int edge, Node parent, int dfsIndex) {
-            Node node;
-            if (parent == null) {
-                node = Node.newDfsRoot(graphVertex, dfsIndex);
-                node.outerFaceNeighbor1 = node.outerFaceNeighbor2 = node;
-                dfsTreeRoots.add(node);
-            } else {
-                assert edge >= 0;
-                Edge treeEdge = newTreeEdge(edge, parent);
-                Node componentRoot = Node.newVirtualBicompRoot(parent.dfsIndex, treeEdge);
-                node = Node.newInstance(graphVertex, dfsIndex, parent.height + 1, componentRoot, treeEdge);
-
-                addToEmbeddedFirst(componentRoot, treeEdge);
-                addToEmbeddedFirst(node, treeEdge);
-
-                treeEdge.target = node;
-
-                virtualBicompRoots.add(componentRoot);
-
-                parent.treeEdges.add(treeEdge);
-
-                node.outerFaceNeighbor1 = node.outerFaceNeighbor2 = componentRoot;
-                componentRoot.outerFaceNeighbor1 = componentRoot.outerFaceNeighbor2 = node;
+                // Check if some edges where not embedded successfully
+                if (embeddedEdgesNum != v.downEdges.size())
+                    return com.jgalgo.internal.util.Result.error(v);
             }
-            return node;
+            return com.jgalgo.internal.util.Result.ok(null);
         }
 
         /**
@@ -309,7 +257,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                                 continue; // Not a back edge, reverse of tree edge from parent to u
                             if (u.dfsIndex < ancestor.dfsIndex)
                                 continue; // The reverse edge was already added as a back edge, down edge of u
-                            Edge backEdge = newBackEdge(graphEdge, u, ancestor);
+                            Edge backEdge = Edge.newBackEdge(graphEdge, u, ancestor);
                             ancestor.downEdges.add(backEdge);
                             u.backEdges.add(backEdge);
                         }
@@ -360,33 +308,169 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         }
 
         /**
-         * Lazily tests the planarity of the graph. The implementation below is close to the code
-         * presented in the original paper
+         * Creates a new node by converting the {@code graphVertex} to the internal node representation.
          *
-         * @return true if the graph is planar, false otherwise
+         * @param  graphVertex the vertex of the {@code graph} we're processing
+         * @param  edge        the parent edge of the {@code graphVertex}, is {@code -1} for dfs tree roots
+         * @param  parent      the parent node of the {@code graphVertex}
+         * @param  dfsIndex    the dfs index of the {@code graphVertex}
+         * @return             the newly created node
          */
-        com.jgalgo.internal.util.Result<Void, Node> computePlanarity() {
-            preprocess();
-            for (currentDfsIdx = nodes.length - 1; currentDfsIdx >= 0; currentDfsIdx--) {
-                // Zero the counter of number of embedded edges for this DFS index
-                embeddedEdgesNum = 0;
+        private Node createNewNode(int graphVertex, int edge, Node parent, int dfsIndex) {
+            Node node;
+            if (parent == null) {
+                node = Node.newDfsRoot(graphVertex, dfsIndex);
+                node.outerFaceNeighbor1 = node.outerFaceNeighbor2 = node;
+                dfsTreeRoots.add(node);
+            } else {
+                assert edge >= 0;
+                Edge treeEdge = Edge.newTreeEdge(edge, parent);
+                Node componentRoot = Node.newVirtualBicompRoot(parent.dfsIndex, treeEdge);
+                node = Node.newInstance(graphVertex, dfsIndex, parent.height + 1, componentRoot, treeEdge);
 
-                Node v = nodes[currentDfsIdx];
-                assert v.dfsIndex == currentDfsIdx;
-                for (Edge downEdge : v.downEdges) {
-                    assert downEdge.target == v;
-                    walkUp(downEdge.source, v, downEdge);
-                }
-                for (Edge treeEdge : v.treeEdges) {
-                    assert treeEdge.target.initialComponentRoot.dfsIndex == currentDfsIdx;
-                    walkDown(treeEdge.target.initialComponentRoot);
-                }
+                addToEmbeddedFirst(componentRoot, treeEdge);
+                addToEmbeddedFirst(node, treeEdge);
 
-                // Check if some edges where not embedded successfully
-                if (embeddedEdgesNum != v.downEdges.size())
-                    return com.jgalgo.internal.util.Result.error(v);
+                treeEdge.target = node;
+
+                virtualBicompRoots.add(componentRoot);
+
+                parent.treeEdges.add(treeEdge);
+
+                node.outerFaceNeighbor1 = node.outerFaceNeighbor2 = componentRoot;
+                componentRoot.outerFaceNeighbor1 = componentRoot.outerFaceNeighbor2 = node;
             }
-            return com.jgalgo.internal.util.Result.ok(null);
+            return node;
+        }
+
+        /**
+         * The walkup procedure from the original paper. Identifies the pertinent subgraph of the graph
+         * by going up the dfs tree from the {@code start} node to the {@code end} node using the edge
+         * {@code edge}
+         *
+         * @param start the node to start the walkup from
+         * @param end   the node currently processed by the main loop of the algorithm
+         * @param edge  a back edge to embed
+         */
+        private void walkUp(Node start, final Node end, Edge edge) {
+            final int visited = end.dfsIndex;
+
+            start.edgeToEmbed = edge;
+            start.visited = visited;
+
+            for (OuterFaceIter xIter = outerFace(start, Side1), yIter = outerFace(start, Side2);;) {
+                Node x = xIter.next(), y = yIter.next();
+                if (x.visited == visited || y.visited == visited)
+                    break;
+                x.visited = y.visited = visited;
+
+                if (x.isBicompRoot() || y.isBicompRoot()) {
+                    Node root = x.isBicompRoot() ? x : y;
+                    assert root.isBicompRoot();
+                    // 'root' is a virtual node, the root of the current bi-comp.
+
+                    // continue up by jumping to the real node, matching the virtual root, in the parent bi-comp.
+                    Node newStart = root.realNodeInParentBiComp();
+                    if (newStart == end)
+                        break;
+                    if (root.parentEdge.target.lowpoint < end.dfsIndex) {
+                        // the component in externally active
+                        root.listNode = newStart.pertinentRoots.addElementLast(root);
+                    } else {
+                        // the component is internally active
+                        assert root.parentEdge.target.lowpoint == end.dfsIndex;
+                        root.listNode = newStart.pertinentRoots.addElementFirst(root);
+                    }
+                    newStart.visited = visited;
+
+                    xIter = outerFace(newStart, Side1);
+                    yIter = outerFace(newStart, Side2);
+                }
+            }
+        }
+
+        /**
+         * The walkdown procedure from the original paper. Either embeds all of the back edges in the
+         * subtree rooted at the child of the {@code componentRoot} or identifies the back edges which
+         * can be used to extract a Kuratowski subdivision. Iteratively traverses the tree of the
+         * biconnected component and descends only to the pertinent components. This procedure is also
+         * responsible for embedding short-circuit edges to make the algorithm run in linear time in the
+         * worst case.
+         *
+         * @param componentRoot the root of the component to start the walkdown from
+         */
+        private void walkDown(final Node componentRoot) {
+            for (final boolean componentEntryDir : sides()) {
+                if (!mergeStack.isEmpty())
+                    break;
+                boolean side = componentEntryDir;
+                OuterFaceIter circulator = outerFace(componentRoot, side);
+                for (Node current = circulator.next(); current != componentRoot;) {
+                    if (current.hasBackEdge()) {
+                        Node childPrev = circulator.getPrev();
+                        while (!mergeStack.isEmpty())
+                            mergeBiconnectedComponent();
+                        circulator = embedBackEdge(componentRoot, componentEntryDir, current.edgeToEmbed, childPrev);
+                        checkMe();
+                    }
+                    if (!current.pertinentRoots.isEmpty()) {
+                        final boolean prevSide = side;
+                        // 'root' is a virtual node, matching current, a root of a bi-comp.
+                        final Node root = current.pertinentRoots.getFirst();
+
+                        // TODO: we should search both sides simultaneously, for linear time
+                        OuterFaceIter circulator1 = getActiveSuccessorOnOuterFace(root, Side1);
+                        OuterFaceIter circulator2 = getActiveSuccessorOnOuterFace(root, Side2);
+                        Node activeNode1 = circulator1.getCurrent();
+                        Node activeNode2 = circulator2.getCurrent();
+                        assert isActive(activeNode1);
+                        assert isActive(activeNode2);
+                        assert activeNode1 != root;
+                        assert activeNode2 != root;
+
+                        if (isInternallyActive(activeNode1)) {
+                            side = Side1;
+                        } else if (isInternallyActive(activeNode2)) {
+                            side = Side2;
+                        } else if (activeNode1.isPertinent()) {
+                            side = Side1;
+                        } else {
+                            side = Side2;
+                        }
+
+                        if (side == Side1) {
+                            mergeStack
+                                    .push(new MergeInfo(current, circulator.peekNext(), root, root.outerFaceNeighbor2,
+                                            prevSide, side));
+                            current = activeNode1;
+                            circulator = circulator1;
+
+                            if (!activeNode2.hasRootNeighbor())
+                                addShortCircuitEdge(root, Side2, circulator2);
+                        } else {
+                            mergeStack
+                                    .push(new MergeInfo(current, circulator.peekNext(), root, root.outerFaceNeighbor1,
+                                            prevSide, side));
+                            current = activeNode2;
+                            circulator = circulator2;
+
+                            if (!activeNode1.hasRootNeighbor())
+                                addShortCircuitEdge(root, Side1, circulator1);
+                        }
+
+                    } else if (isActive(current)) {
+                        // current vertex is externally active, cant continue in this side.
+                        if (!current.hasRootNeighbor()) {
+                            // assert mergeStack.isEmpty();
+                            if (mergeStack.isEmpty())
+                                addShortCircuitEdge(componentRoot, componentEntryDir, circulator);
+                        }
+                        break;
+                    } else {
+                        current = circulator.next();
+                    }
+                }
+            }
         }
 
         /**
@@ -424,6 +508,72 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         }
 
         /**
+         * Merges the embedded edges of the child component root into this node's embedded edges.
+         * Note, that the edges in the {@code edges} list are always in the clockwise order. There
+         * are 3 parameters which determine how the {@code edges} list is merged: the {@code vIn}
+         * direction, the {@code vOut} direction and the orientation of the edges around this node
+         * (clockwise or counterclockwise). The edges in the {@code edges} list should have the same
+         * orientation. If this list is inverted, the sign of the {@code parentEdge} is set to $-1$.
+         *
+         * @param edges      the edges from the child component root
+         * @param vIn        the direction used to enter the parent component
+         * @param vOut       the direction used to enter the child component
+         * @param parentNext the next node along the traversal of the parent biconnected component
+         * @param parentEdge the parent edge if the child component
+         */
+        void mergeChildEdges(Node this2, Node virtualRoot,
+                // int edgesFirst, int edgesLast,
+                boolean vIn, boolean vOut, Node parentNext, Edge parentEdge) {
+            Node firstOpposite = embedded2edge[this2.embeddedFirst].getOpposite(this2);
+            boolean alongParentTraversal = firstOpposite != parentNext;
+            boolean actionAppend = false, invert = false;
+            if (vIn == Side1) {
+                if (vOut == Side1) {
+                    if (!alongParentTraversal) {
+                        invert = actionAppend = true;
+                    }
+                } else {
+                    if (alongParentTraversal) {
+                        invert = true;
+                    } else {
+                        actionAppend = true;
+                    }
+                }
+            } else {
+                if (vOut == Side1) {
+                    if (!alongParentTraversal) {
+                        invert = actionAppend = true;
+                    }
+                } else {
+                    if (alongParentTraversal) {
+                        invert = true;
+                    } else {
+                        actionAppend = true;
+                    }
+                }
+            }
+            int edgesFirst = virtualRoot.embeddedFirst, edgesLast = virtualRoot.embeddedLast;
+            assert !embedded.hasPrev(edgesFirst);
+            assert !embedded.hasNext(edgesLast);
+            debug++;
+            if (invert) {
+                assert !parentEdge.isInverted;
+                parentEdge.isInverted = true;
+                this.embedded.reverse(edgesFirst); // TODO: is this linear?
+                int temp = edgesFirst;
+                edgesFirst = edgesLast;
+                edgesLast = temp;
+            }
+            assert !embedded.hasPrev(edgesFirst);
+            assert !embedded.hasNext(edgesLast);
+            if (actionAppend) {
+                addAllToEmbeddedLast(this2, edgesFirst, edgesLast);
+            } else {
+                addAllToEmbeddedFirst(this2, edgesFirst, edgesLast);
+            }
+        }
+
+        /**
          * Embeds the back edge {@code edge} into the list of embedded edges of the source and the
          * virtual target of the edge such that the {@code childPrev} belongs to the new inner face.
          * This method also takes care of modifying the boundary of the outer face accordingly
@@ -441,7 +591,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 addToEmbeddedFirst(root, edge);
             }
             Node child = edge.source;
-            embedBackEdge(edge, child, childPrev);
+            embedEdge(edge, child, childPrev);
             assert child.edgeToEmbed == edge;
             child.edgeToEmbed = null;
             embeddedEdgesNum++;
@@ -464,7 +614,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param edge an edge to embed
          * @param prev the node which should be on the new inner face
          */
-        void embedBackEdge(Edge edge, Node node, Node prev) {
+        void embedEdge(Edge edge, Node node, Node prev) {
             if (prev.isBicompRoot())
                 prev = prev.getParent();
             Edge firstEdge = embedded2edge[node.embeddedFirst];
@@ -474,6 +624,58 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             } else {
                 addToEmbeddedLast(node, edge);
             }
+        }
+
+        /**
+         * Embeds a short-circuit edge from the {@code componentRoot} to the current node of the
+         * {@code circulator}. Changes the outer face accordingly
+         *
+         * @param componentRoot the component root
+         * @param entryDir      the direction used to enter the component
+         * @param circulator    a circulator to the source of the new edge
+         */
+        private void addShortCircuitEdge(Node componentRoot, boolean entryDir, OuterFaceIter circulator) {
+            Node current = circulator.getCurrent(), prev = circulator.getPrev();
+            Edge shortCircuit = Edge.newShortCircuitEdge(current, componentRoot.getParent());
+            if (entryDir == Side1) {
+                addToEmbeddedLast(componentRoot, shortCircuit);
+                componentRoot.outerFaceNeighbor1 = current;
+            } else {
+                addToEmbeddedFirst(componentRoot, shortCircuit);
+                componentRoot.outerFaceNeighbor2 = current;
+            }
+            embedEdge(shortCircuit, current, prev);
+            current.substitute(prev, componentRoot);
+            checkMe();
+        }
+
+        /**
+         * Either finds and returns a circulator to the node on the boundary of the component, which
+         * satisfies the {@code predicate} or returns a circulator to the {@code stop} node.
+         *
+         * @param  predicate the condition the desired node should satisfy
+         * @param  start     the node to start the search from
+         * @param  stop      the node to end the search with
+         * @param  dir       the direction to start the traversal in
+         * @return           a circulator to the node satisfying the {@code predicate} or to the {@code stop} node
+         */
+        OuterFaceIter findOnOuterFace(Node start, Node stop, boolean dir, Predicate<Node> predicate) {
+            OuterFaceIter circulator = outerFace(start, dir);
+            for (Node v = circulator.next(); v != stop && !predicate.test(v); v = circulator.next());
+            return circulator;
+        }
+
+        /**
+         * Returns an active node on the outer face in the direction {@code dir} starting from the
+         * {@code start} node
+         *
+         * @param  start the node to start the search from
+         * @param  v     an ancestor of the {@code start}
+         * @param  dir   the direction of the search
+         * @return       a circulator to the found node
+         */
+        OuterFaceIter getActiveSuccessorOnOuterFace(Node start, boolean dir) {
+            return findOnOuterFace(start, start, dir, this::isActive);
         }
 
         void addToEmbeddedFirst(Node node, Edge edge) {
@@ -537,188 +739,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 node.embeddedLast = last;
             }
             assert !embedded.hasPrev(node.embeddedFirst);
-        }
-
-        /**
-         * Embeds a short-circuit edge from the {@code componentRoot} to the current node of the
-         * {@code circulator}. Changes the outer face accordingly
-         *
-         * @param componentRoot the component root
-         * @param entryDir      the direction used to enter the component
-         * @param circulator    a circulator to the source of the new edge
-         */
-        private void embedShortCircuit(Node componentRoot, boolean entryDir, OuterFaceIter circulator) {
-            Node current = circulator.getCurrent(), prev = circulator.getPrev();
-            Edge shortCircuit = newShortCircuitEdge(current, componentRoot.getParent());
-            if (entryDir == Side1) {
-                addToEmbeddedLast(componentRoot, shortCircuit);
-                componentRoot.outerFaceNeighbor1 = current;
-            } else {
-                addToEmbeddedFirst(componentRoot, shortCircuit);
-                componentRoot.outerFaceNeighbor2 = current;
-            }
-            embedBackEdge(shortCircuit, current, prev);
-            current.substitute(prev, componentRoot);
-            checkMe();
-        }
-
-        /**
-         * The walkdown procedure from the original paper. Either embeds all of the back edges in the
-         * subtree rooted at the child of the {@code componentRoot} or identifies the back edges which
-         * can be used to extract a Kuratowski subdivision. Iteratively traverses the tree of the
-         * biconnected component and descends only to the pertinent components. This procedure is also
-         * responsible for embedding short-circuit edges to make the algorithm run in linear time in the
-         * worst case.
-         *
-         * @param componentRoot the root of the component to start the walkdown from
-         */
-        private void walkDown(final Node componentRoot) {
-            for (final boolean componentEntryDir : sides()) {
-                if (!mergeStack.isEmpty())
-                    break;
-                boolean side = componentEntryDir;
-                OuterFaceIter circulator = outerFace(componentRoot, side);
-                for (Node current = circulator.next(); current != componentRoot;) {
-                    if (current.hasBackEdge()) {
-                        Node childPrev = circulator.getPrev();
-                        while (!mergeStack.isEmpty())
-                            mergeBiconnectedComponent();
-                        circulator = embedBackEdge(componentRoot, componentEntryDir, current.edgeToEmbed, childPrev);
-                        checkMe();
-                    }
-                    if (!current.pertinentRoots.isEmpty()) {
-                        final boolean prevSide = side;
-                        // 'root' is a virtual node, matching current, a root of a bi-comp.
-                        final Node root = current.pertinentRoots.getFirst();
-
-                        // TODO: we should search both sides simultaneously, for linear time
-                        OuterFaceIter circulator1 = getActiveSuccessorOnOuterFace(root, Side1);
-                        OuterFaceIter circulator2 = getActiveSuccessorOnOuterFace(root, Side2);
-                        Node activeNode1 = circulator1.getCurrent();
-                        Node activeNode2 = circulator2.getCurrent();
-                        assert isActive(activeNode1);
-                        assert isActive(activeNode2);
-                        assert activeNode1 != root;
-                        assert activeNode2 != root;
-
-                        if (isInternallyActive(activeNode1)) {
-                            side = Side1;
-                        } else if (isInternallyActive(activeNode2)) {
-                            side = Side2;
-                        } else if (activeNode1.isPertinent()) {
-                            side = Side1;
-                        } else {
-                            side = Side2;
-                        }
-
-                        if (side == Side1) {
-                            mergeStack
-                                    .push(new MergeInfo(current, circulator.peekNext(), root, root.outerFaceNeighbor2,
-                                            prevSide, side));
-                            current = activeNode1;
-                            circulator = circulator1;
-
-                            if (!activeNode2.hasRootNeighbor())
-                                embedShortCircuit(root, Side2, circulator2);
-                        } else {
-                            mergeStack
-                                    .push(new MergeInfo(current, circulator.peekNext(), root, root.outerFaceNeighbor1,
-                                            prevSide, side));
-                            current = activeNode2;
-                            circulator = circulator2;
-
-                            if (!activeNode1.hasRootNeighbor())
-                                embedShortCircuit(root, Side1, circulator1);
-                        }
-
-                    } else if (isActive(current)) {
-                        // current vertex is externally active, cant continue in this side.
-                        if (!current.hasRootNeighbor()) {
-                            // assert mergeStack.isEmpty();
-                            if (mergeStack.isEmpty())
-                                embedShortCircuit(componentRoot, componentEntryDir, circulator);
-                        }
-                        break;
-                    } else {
-                        current = circulator.next();
-                    }
-                }
-            }
-        }
-
-        /**
-         * The walkup procedure from the original paper. Identifies the pertinent subgraph of the graph
-         * by going up the dfs tree from the {@code start} node to the {@code end} node using the edge
-         * {@code edge}
-         *
-         * @param start the node to start the walkup from
-         * @param end   the node currently processed by the main loop of the algorithm
-         * @param edge  a back edge to embed
-         */
-        private void walkUp(Node start, final Node end, Edge edge) {
-            final int visited = end.dfsIndex;
-
-            start.edgeToEmbed = edge;
-            start.visited = visited;
-
-            for (OuterFaceIter xIter = outerFace(start, Side1), yIter = outerFace(start, Side2);;) {
-                Node x = xIter.next(), y = yIter.next();
-                if (x.visited == visited || y.visited == visited)
-                    break;
-                x.visited = y.visited = visited;
-
-                if (x.isBicompRoot() || y.isBicompRoot()) {
-                    Node root = x.isBicompRoot() ? x : y;
-                    assert root.isBicompRoot();
-                    // 'root' is a virtual node, the root of the current bi-comp.
-
-                    // continue up by jumping to the real node, matching the virtual root, in the parent bi-comp.
-                    Node newStart = root.realNodeInParentBiComp();
-                    if (newStart == end)
-                        break;
-                    if (root.parentEdge.target.lowpoint < end.dfsIndex) {
-                        // the component in externally active
-                        root.listNode = newStart.pertinentRoots.addElementLast(root);
-                    } else {
-                        // the component is internally active
-                        assert root.parentEdge.target.lowpoint == end.dfsIndex;
-                        root.listNode = newStart.pertinentRoots.addElementFirst(root);
-                    }
-                    newStart.visited = visited;
-
-                    xIter = outerFace(newStart, Side1);
-                    yIter = outerFace(newStart, Side2);
-                }
-            }
-        }
-
-        /**
-         * Either finds and returns a circulator to the node on the boundary of the component, which
-         * satisfies the {@code predicate} or returns a circulator to the {@code stop} node.
-         *
-         * @param  predicate the condition the desired node should satisfy
-         * @param  start     the node to start the search from
-         * @param  stop      the node to end the search with
-         * @param  dir       the direction to start the traversal in
-         * @return           a circulator to the node satisfying the {@code predicate} or to the {@code stop} node
-         */
-        OuterFaceIter findOnOuterFace(Node start, Node stop, boolean dir, Predicate<Node> predicate) {
-            OuterFaceIter circulator = outerFace(start, dir);
-            for (Node v = circulator.next(); v != stop && !predicate.test(v); v = circulator.next());
-            return circulator;
-        }
-
-        /**
-         * Returns an active node on the outer face in the direction {@code dir} starting from the
-         * {@code start} node
-         *
-         * @param  start the node to start the search from
-         * @param  v     an ancestor of the {@code start}
-         * @param  dir   the direction of the search
-         * @return       a circulator to the found node
-         */
-        OuterFaceIter getActiveSuccessorOnOuterFace(Node start, boolean dir) {
-            return findOnOuterFace(start, start, dir, this::isActive);
         }
 
         /**
@@ -820,7 +840,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             boolean isInverted() {
                 return vIn != vOut;
             }
-
         }
 
         /**
@@ -911,21 +930,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             Node getPrev() {
                 return prev.nextOnOuterFace(current);
             }
-
-        }
-
-        void checkMe() {
-            for (Node node : nodes) {
-                assert LinkedListFixedSize.isNone(node.embeddedFirst) == LinkedListFixedSize.isNone(node.embeddedLast);
-                var x = new IntArrayList(embedded.iteratorMaybeNone(node.embeddedFirst));
-                for (int i : range(x.size())) {
-                    int u = i > 0 ? x.getInt(i - 1) : LinkedListFixedSize.None;
-                    int v = x.getInt(i);
-                    int w = i < x.size() - 1 ? x.getInt(i + 1) : LinkedListFixedSize.None;
-                    assert u == embedded.prev(v);
-                    assert w == embedded.next(v);
-                }
-            }
         }
 
         /**
@@ -954,11 +958,48 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              */
             boolean isInverted;
 
-            Edge(int graphEdge, Node source, Node target) {
+            private Edge(int graphEdge, Node source, Node target) {
                 this.graphEdge = graphEdge;
                 this.source = source;
                 this.target = target;
                 this.isInverted = false;
+            }
+
+            /**
+             * Creates a new tree edge.
+             *
+             * @param graphEdge the counterpart of this edge in the {@code graph}
+             * @param source    the source node of this edge
+             */
+            static Edge newTreeEdge(int graphEdge, Node source) {
+                assert graphEdge >= 0;
+                return new Edge(graphEdge, source, null);
+            }
+
+            /**
+             * Creates a new edge. This constructor is used directly for the creation of the back edges
+             *
+             * @param graphEdge the counterpart of this edge in the {@code graph}
+             * @param source    the source node of this edge
+             * @param target    the target node of this edge
+             */
+            static Edge newBackEdge(int graphEdge, Node source, Node target) {
+                assert graphEdge >= 0;
+                return new Edge(graphEdge, source, target);
+            }
+
+            /**
+             * Creates a new short-circuit edge with no counterpart in {@code graph}. The {@code source}
+             * of this edge is always a real node on the boundary of some biconnected component, and the
+             * {@code target} node is the parent node of the biconnected component the source node
+             * belongs to, so the edge resembles a regular back edge except for that it doesn't have a
+             * counterpart in the {@code graph}
+             *
+             * @param source the source of the short-circuit edge
+             * @param target the target of the short-circuit edge
+             */
+            static Edge newShortCircuitEdge(Node source, Node target) {
+                return new Edge(-1, source, target);
             }
 
             int graphEdge() {
@@ -988,8 +1029,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 return source == node ? target : source;
             }
 
-            boolean isArtificial() {
-                return graphEdge < 0;
+            boolean isGraphEdge() {
+                return graphEdge >= 0;
             }
 
             @Override
@@ -1173,9 +1214,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             /**
              * Creates a new component root. Dfs index of the component root is equal to dfs index of
              * its parent.
-             *
-             * @param dfsIndex   the dfs index of this node
-             * @param parentEdge the parent edge of this component root
              */
             static Node newVirtualBicompRoot(int dfsIndex, Edge parentEdge) {
                 return new Node(-1, dfsIndex, Objects.requireNonNull(parentEdge), null, 0);
@@ -1185,24 +1223,13 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 return graphVertex < 0;
             }
 
-            /**
-             * Checks whether this node is pertinent in the context of processing the node {@code node}.
-             * During the processing of the node {@code node}, a node is pertinent if it has a back edge
-             * to {@code node} or it has a child biconnected component, which has a pertinent node.
-             *
-             * @param  node the node that is currently been processed
-             * @return      true if this node is pertinent, false otherwise
-             */
+            // A node is pertinent if it has a back edge to the "current visited vertex" or it has a
+            // child biconnected component which has a pertinent node.
             boolean isPertinent() {
                 return hasBackEdge() || !pertinentRoots.isEmpty();
             }
 
-            /**
-             * Checks whether this node has a back edge to the {@code node}.
-             *
-             * @param  node the other endpoint of the edge we're looking for
-             * @return      true if the edge between this node and {@code node} exists, false otherwise
-             */
+            // Checks whether this node has a back edge to the "current visited vertex"
             boolean hasBackEdge() {
                 return edgeToEmbed != null;
             }
@@ -1284,126 +1311,48 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
         }
 
-        /**
-         * Returns a circulator, that moves in the direction {@code direction}. The next node along
-         * the traversal will be {@code this.outerFaceNeighbor[direction]}.
-         *
-         * @param  direction the direction to move in
-         * @return           an iterator over the boundary nodes in the direction {@code direction}
-         */
         OuterFaceIter outerFace(Node node, boolean direction) {
             Node neighbor = direction == Side1 ? node.outerFaceNeighbor1 : node.outerFaceNeighbor2;
             return new OuterFaceIter(neighbor, node);
         }
 
         void removeShortCircuitEdges(Node node) {
-            var x = embedded.removeIf(node.embeddedFirst, eIdx -> embedded2edge[eIdx].isArtificial());
+            var x = embedded.removeIf(node.embeddedFirst, eIdx -> !embedded2edge[eIdx].isGraphEdge());
             node.embeddedFirst = x.firstInt();
             node.embeddedLast = x.secondInt();
             assert LinkedListFixedSize.isNone(node.embeddedFirst) || !embedded.hasPrev(node.embeddedFirst);
             checkMe();
         }
 
-        /**
-         * Merges the embedded edges of the child component root into this node's embedded edges.
-         * Note, that the edges in the {@code edges} list are always in the clockwise order. There
-         * are 3 parameters which determine how the {@code edges} list is merged: the {@code vIn}
-         * direction, the {@code vOut} direction and the orientation of the edges around this node
-         * (clockwise or counterclockwise). The edges in the {@code edges} list should have the same
-         * orientation. If this list is inverted, the sign of the {@code parentEdge} is set to $-1$.
-         *
-         * @param edges      the edges from the child component root
-         * @param vIn        the direction used to enter the parent component
-         * @param vOut       the direction used to enter the child component
-         * @param parentNext the next node along the traversal of the parent biconnected component
-         * @param parentEdge the parent edge if the child component
-         */
-        void mergeChildEdges(Node this2, Node virtualRoot,
-                // int edgesFirst, int edgesLast,
-                boolean vIn, boolean vOut, Node parentNext, Edge parentEdge) {
-            Node firstOpposite = embedded2edge[this2.embeddedFirst].getOpposite(this2);
-            boolean alongParentTraversal = firstOpposite != parentNext;
-            boolean actionAppend = false, invert = false;
-            if (vIn == Side1) {
-                if (vOut == Side1) {
-                    if (!alongParentTraversal) {
-                        invert = actionAppend = true;
-                    }
-                } else {
-                    if (alongParentTraversal) {
-                        invert = true;
-                    } else {
-                        actionAppend = true;
-                    }
-                }
-            } else {
-                if (vOut == Side1) {
-                    if (!alongParentTraversal) {
-                        invert = actionAppend = true;
-                    }
-                } else {
-                    if (alongParentTraversal) {
-                        invert = true;
-                    } else {
-                        actionAppend = true;
-                    }
-                }
-            }
-            int edgesFirst = virtualRoot.embeddedFirst, edgesLast = virtualRoot.embeddedLast;
-            assert !embedded.hasPrev(edgesFirst);
-            assert !embedded.hasNext(edgesLast);
-            debug++;
-            if (invert) {
-                assert !parentEdge.isInverted;
-                parentEdge.isInverted = true;
-                this.embedded.reverse(edgesFirst); // TODO: is this linear?
-                int temp = edgesFirst;
-                edgesFirst = edgesLast;
-                edgesLast = temp;
-            }
-            assert !embedded.hasPrev(edgesFirst);
-            assert !embedded.hasNext(edgesLast);
-            if (actionAppend) {
-                addAllToEmbeddedLast(this2, edgesFirst, edgesLast);
-            } else {
-                addAllToEmbeddedFirst(this2, edgesFirst, edgesLast);
-            }
-        }
-
-        /**
-         * Checks whether this node is externally active with respect to the {@code node}. A node is
-         * externally active, if it is incident to the edge ending higher than {@code node}, or it
-         * has a child biconnected component with a pertinent node
-         *
-         * @param  node an ancestor of this node
-         * @return      true if this node is externally active with respect to the {@code node}, false
-         *              otherwise
-         */
+        // A node is externally active, if it is incident to the edge ending higher than {@code node}, or it
+        // has a child biconnected component with a pertinent node
         boolean isExternallyActive(Node node) {
             return node.leastAncestor < currentDfsIdx || (!node.separatedDfsChildList.isEmpty()
                     && node.separatedDfsChildList.getFirst().lowpoint < currentDfsIdx);
         }
 
-        /**
-         * Check whether this node is internally active. A node is internally active if it's
-         * pertinent and not externally active
-         *
-         * @param  node an ancestor of this node
-         * @return      true if this node is internally active, false otherwise
-         */
+        // A node is internally active if it's pertinent and not externally active
         boolean isInternallyActive(Node node) {
             return node.isPertinent() && !isExternallyActive(node);
         }
 
-        /**
-         * Check whether this node is active. A node is active it is either pertinent or externally
-         * active
-         *
-         * @param  node an ancestor of this node
-         * @return      true if this node is active, false otherwise
-         */
+        // A node is active it is either pertinent or externally active
         boolean isActive(Node node) {
             return isExternallyActive(node) || node.isPertinent();
+        }
+
+        void checkMe() {
+            for (Node node : nodes) {
+                assert LinkedListFixedSize.isNone(node.embeddedFirst) == LinkedListFixedSize.isNone(node.embeddedLast);
+                var x = new IntArrayList(embedded.iteratorMaybeNone(node.embeddedFirst));
+                for (int i : range(x.size())) {
+                    int u = i > 0 ? x.getInt(i - 1) : LinkedListFixedSize.None;
+                    int v = x.getInt(i);
+                    int w = i < x.size() - 1 ? x.getInt(i + 1) : LinkedListFixedSize.None;
+                    assert u == embedded.prev(v);
+                    assert w == embedded.next(v);
+                }
+            }
         }
     }
 
