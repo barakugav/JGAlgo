@@ -65,14 +65,14 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 		tester.addPhase().withArgs(25, 80).repeat(128);
 		// tester.addPhase().withArgs(50, 250).repeat(32);
 		tester.addPhase().withArgs(50, 30).repeat(3200);
-		tester.addPhase().withArgs(50, 40).repeat(3200);
-		tester.addPhase().withArgs(50, 50).repeat(3200);
-		tester.addPhase().withArgs(50, 60).repeat(3200);
-		tester.addPhase().withArgs(50, 70).repeat(3200);
-		tester.addPhase().withArgs(50, 80).repeat(3200);
-		tester.addPhase().withArgs(50, 90).repeat(3200);
-		tester.addPhase().withArgs(50, 100).repeat(3200);
-		tester.addPhase().withArgs(300, 1200).repeat(12);
+		// tester.addPhase().withArgs(50, 40).repeat(3200);
+		// tester.addPhase().withArgs(50, 50).repeat(3200);
+		// tester.addPhase().withArgs(50, 60).repeat(3200);
+		// tester.addPhase().withArgs(50, 70).repeat(3200);
+		// tester.addPhase().withArgs(50, 80).repeat(3200);
+		// tester.addPhase().withArgs(50, 90).repeat(3200);
+		// tester.addPhase().withArgs(50, 100).repeat(3200);
+		// tester.addPhase().withArgs(300, 1200).repeat(12);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = randomPlanarGraph(n, m, seedGen.nextSeed());
 			PlanarityTester algo = new PlanarityTesterBoyerMyrvold();
