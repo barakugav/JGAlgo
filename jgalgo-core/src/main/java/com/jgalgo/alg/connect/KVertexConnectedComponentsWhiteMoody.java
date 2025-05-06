@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg.connect;
 
+import static com.jgalgo.internal.util.IterTools.foreach;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -239,7 +240,7 @@ public class KVertexConnectedComponentsWhiteMoody extends KVertexConnectedCompon
 	List<IntSet> generateSubCompsFromCuts(IndexGraph g, Iterator<IntSet> cuts, int k) {
 		final int n = g.vertices().size();
 		Bitmap cut = new Bitmap(n);
-		for (IntSet c : IterTools.foreach(cuts))
+		for (IntSet c : foreach(cuts))
 			for (int v : c)
 				cut.set(v);
 

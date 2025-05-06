@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg.planar;
 
+import static com.jgalgo.internal.util.IterTools.foreach;
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -41,7 +42,6 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntPair;
-import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
@@ -151,7 +151,7 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 			if (set.size() != edges.size()) {
 				System.out.println(edges);
 			}
-			for (Integer edge : IterTools.foreach(embedding.allEdges(vertex))) {
+			for (Integer edge : foreach(embedding.allEdges(vertex))) {
 				assertTrue(graph.edges().contains(edge));
 				if (cnt.containsKey(edge)) {
 					cnt.put(edge, cnt.get(edge) + 1);

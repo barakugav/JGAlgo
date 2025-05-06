@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg.planar;
 
+import static com.jgalgo.internal.util.IterTools.foreach;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -991,6 +992,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 return graphEdge < 0;
             }
 
+            @Override
             public String toString() {
                 return Integer.toString(graphEdge);
             }
@@ -1649,19 +1651,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                             .filter(x -> embedded2edge[x] == info.prevEdge)
                             .nextInt();
                     checkMe();
-                    for (IntIterator it = embedded.iteratorRev(begin); it.hasNext();) {
-                        Edge currentEdge = embedded2edge[it.nextInt()];
-                        Node opposite = currentEdge.getOpposite(info.current);
-                        if ((!canGo.test(opposite) || opposite.visited != 0)
-                                && !isFinish.test(opposite)) {
-                            continue;
-                        }
-                        stack.push(new SearchInfo(opposite, currentEdge, false));
-                    }
-                    for (IntIterator it = embedded.iteratorRev(info.current.embeddedLast); it.hasNext();) {
-                        int i = it.nextInt();
-                        if (i == begin)
-                            break;
+                    for (int i : foreach(embedded
+                            .iteratorRev(begin)
+                            .chain(embedded.iteratorRev(info.current.embeddedLast).fuse(x -> x == begin)))) {
                         Edge currentEdge = embedded2edge[i];
                         Node opposite = currentEdge.getOpposite(info.current);
                         if ((!canGo.test(opposite) || opposite.visited != 0)
@@ -1903,8 +1895,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         private Edge findFailedEdge(Node failedV) {
             final Set<Edge> embeddedEdges = new ObjectOpenHashSet<>();
             for (Node node : nodes)
-                for (IntIterator it = embedded.iteratorMaybeNone(node.embeddedFirst); it.hasNext();)
-                    embeddedEdges.add(embedded2edge[it.nextInt()]);
+                for (int i : foreach(embedded.iteratorMaybeNone(node.embeddedFirst)))
+                    embeddedEdges.add(embedded2edge[i]);
 
             if (mergeStack.isEmpty()) {
                 for (Node child : failedV.separatedDfsChildList) {

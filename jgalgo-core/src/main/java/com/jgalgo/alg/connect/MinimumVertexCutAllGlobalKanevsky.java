@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg.connect;
 
+import static com.jgalgo.internal.util.IterTools.foreach;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
@@ -115,7 +116,7 @@ public class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutAllGlobal
 					Iterator<IVertexBiPartition> minEdgeCuts =
 							minEdgeCutAllStAlgo.minimumCutsIter(auxGraph.graph, null, xAux, vAux, maxFlow);
 
-					for (IVertexBiPartition minEdgeCut : IterTools.foreach(minEdgeCuts)) {
+					for (IVertexBiPartition minEdgeCut : foreach(minEdgeCuts)) {
 						int[] cut = minEdgeCut.crossEdges().toIntArray();
 						auxGraph.edgeCutToVertexCut(cut);
 						cuts.add(ImmutableIntArraySet.withNaiveContains(cut));

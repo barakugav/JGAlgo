@@ -306,6 +306,7 @@ public class IterTools {
 		}
 
 		default IntIterator filter(IntPredicate filter) {
+			Objects.requireNonNull(filter);
 			IntIterator orig = this;
 			return new IntIterator() {
 
@@ -329,6 +330,72 @@ public class IterTools {
 							break;
 						}
 					}
+				}
+
+				@Override
+				public boolean hasNext() {
+					return hasNext;
+				}
+
+				@Override
+				public int nextInt() {
+					Assertions.hasNext(this);
+					int ret = next;
+					advance();
+					return ret;
+				}
+			};
+		}
+
+		default IntIterator chain(IntIterator other) {
+			IntIterator orig = this;
+			return new IntIterator() {
+
+				IntIterator iter = orig;
+				IntIterator nextIter = Objects.requireNonNull(other);
+
+				{
+					sync();
+				}
+
+				void sync() {
+					for (;;) {
+						if (iter == null || iter.hasNext())
+							break;
+						iter = nextIter;
+						nextIter = null;
+					}
+				}
+
+				@Override
+				public boolean hasNext() {
+					return iter != null;
+				}
+
+				@Override
+				public int nextInt() {
+					Assertions.hasNext(this);
+					int next = iter.nextInt();
+					sync();
+					return next;
+				}
+
+			};
+		}
+
+		default IntIterator fuse(IntPredicate fuse) {
+			IntIterator orig = this;
+			return new IntIterator() {
+
+				boolean hasNext;
+				int next;
+
+				{
+					advance();
+				}
+
+				void advance() {
+					hasNext = orig.hasNext() && !fuse.test(next = orig.nextInt());
 				}
 
 				@Override
