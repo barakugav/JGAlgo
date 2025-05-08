@@ -32,6 +32,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
+import com.jgalgo.internal.ds.PoolAllocator;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntPair;
 import it.unimi.dsi.fastutil.Pair;
@@ -149,7 +150,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         int currentDfsIdx;
 
         final LinkedListFixedSize.Doubly embedded;
-        final LinkedListFixedSize.PoolAllocator embeddedAllocator;
+        final PoolAllocator embeddedAllocator;
         final Edge[] embedded2edge;
 
         /**
@@ -173,7 +174,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
             int embeddedListsMaxLen = maxEdgesNum * 2; // each edge can be added in the lists of both of its endpoints
             this.embedded = new LinkedListFixedSize.Doubly(embeddedListsMaxLen);
-            this.embeddedAllocator = new LinkedListFixedSize.PoolAllocator(embeddedListsMaxLen);
+            this.embeddedAllocator = new PoolAllocator(embeddedListsMaxLen);
             this.embedded2edge = new Edge[embeddedListsMaxLen];
         }
 

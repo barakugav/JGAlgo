@@ -16,7 +16,6 @@
 
 package com.jgalgo.internal.ds;
 
-import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.function.IntPredicate;
 import com.jgalgo.internal.util.Assertions;
@@ -394,29 +393,6 @@ public class LinkedListFixedSize {
 			}
 		}
 
-	}
-
-	public static class PoolAllocator {
-
-		private final int[] freeEntries;
-		private int freeEntriesNum;
-
-		public PoolAllocator(int n) {
-			freeEntries = new int[n];
-			for (int i : range(n))
-				freeEntries[i] = n - i - 1;
-			freeEntriesNum = n;
-		}
-
-		public int alloc() {
-			if (freeEntriesNum == 0)
-				throw new IllegalStateException("No free entries left");
-			return freeEntries[--freeEntriesNum];
-		}
-
-		public void free(int index) {
-			freeEntries[freeEntriesNum++] = index;
-		}
 	}
 
 }
