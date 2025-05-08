@@ -214,7 +214,7 @@ public class IterTools {
 		return new IterMapIntObj<>(it, map);
 	}
 
-	private static class IterMapIntInt implements IntIterator {
+	private static class IterMapIntInt implements Iter {
 		private final IntIterator it;
 		private final IntUnaryOperator map;
 
@@ -239,12 +239,12 @@ public class IterTools {
 		}
 	}
 
-	public static IntIterator mapInt(IntIterator it, IntUnaryOperator map) {
+	public static Iter mapInt(IntIterator it, IntUnaryOperator map) {
 		return new IterMapIntInt(it, map);
 	}
 
-	public static IntIterator filter(IntIterator it, IntPredicate pred) {
-		return new IntIterator() {
+	public static Iter filter(IntIterator it, IntPredicate pred) {
+		return new Iter() {
 
 			private int next;
 			private boolean isNextValid;
@@ -300,15 +300,21 @@ public class IterTools {
 		return it.nextInt();
 	}
 
-	public static interface Iter extends IntIterator {
-		default IntIterator map(IntUnaryOperator map) {
+	public static interface Iter extends IntIterator, IntIterable {
+
+		@Override
+		default Iter iterator() {
+			return this;
+		}
+
+		default Iter map(IntUnaryOperator map) {
 			return mapInt(this, map);
 		}
 
-		default IntIterator filter(IntPredicate filter) {
+		default Iter filter(IntPredicate filter) {
 			Objects.requireNonNull(filter);
 			IntIterator orig = this;
-			return new IntIterator() {
+			return new Iter() {
 
 				boolean hasNext;
 				int next;
@@ -347,9 +353,9 @@ public class IterTools {
 			};
 		}
 
-		default IntIterator chain(IntIterator other) {
+		default Iter chain(IntIterator other) {
 			IntIterator orig = this;
-			return new IntIterator() {
+			return new Iter() {
 
 				IntIterator iter = orig;
 				IntIterator nextIter = Objects.requireNonNull(other);

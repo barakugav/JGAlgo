@@ -335,7 +335,7 @@ public class LinkedListDoublyTest extends TestBase {
 						elements.intStream().filter(e -> !elementsToRemove.contains(e)).toArray();
 
 				var newHeadTail = list.removeIf(head, elementsToRemove::contains);
-				int newHead = newHeadTail.firstInt(), newTail = newHeadTail.secondInt();
+				int newHead = LinkedListFixedSize.head(newHeadTail), newTail = LinkedListFixedSize.tail(newHeadTail);
 
 				for (int v : elementsToRemove) {
 					assertFalse(list.hasNext(v));

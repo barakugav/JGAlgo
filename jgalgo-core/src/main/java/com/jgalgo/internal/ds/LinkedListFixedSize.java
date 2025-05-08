@@ -20,18 +20,31 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.function.IntPredicate;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.IterTools;
-import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 // TODO: Rename to LinkedList
 public class LinkedListFixedSize {
 	private LinkedListFixedSize() {}
 
 	public static final int None = -1;
+	public static final long HeadTailNone = headTail(None, None);
 
 	public static boolean isNone(int entry) {
 		assert entry >= 0 || entry == None;
 		return entry < 0;
+	}
+
+	public static int head(long headTail) {
+		return IntPair.first(headTail);
+	}
+
+	public static int tail(long headTail) {
+		return IntPair.second(headTail);
+	}
+
+	public static long headTail(int head, int tail) {
+		return IntPair.of(head, tail);
 	}
 
 	// TODO: rename to undirectional
@@ -180,9 +193,59 @@ public class LinkedListFixedSize {
 			}
 		}
 
-		public IntIntPair removeIf(int head, IntPredicate pred) {
+		public long addFirst(long list, int id) {
+			int head = head(list), tail = tail(list);
+			assert !hasNext(id) && !hasPrev(id);
+			if (isNone(head)) {
+				head = tail = id;
+			} else {
+				connect(id, head);
+				head = id;
+			}
+			assert !hasPrev(head);
+			return headTail(head, tail);
+		}
+
+		public long addLast(long list, int id) {
+			int head = head(list), tail = tail(list);
+			assert !hasNext(id) && !hasPrev(id);
+			if (isNone(tail)) {
+				head = tail = id;
+			} else {
+				connect(tail, id);
+				tail = id;
+			}
+			assert !hasPrev(head);
+			return headTail(head, tail);
+		}
+
+		public long concat(long list1, long list2) {
+			int head1 = head(list1), tail1 = tail(list1);
+			int head2 = head(list2), tail2 = tail(list2);
+			assert isNone(head2) == isNone(tail2);
+			assert isNone(head1) == isNone(tail1);
+			if (isNone(head2))
+				return list1;
+
+			if (isNone(tail1)) {
+				head1 = head2;
+				tail1 = tail2;
+			} else {
+				assert !hasNext(tail1);
+				connect(tail1, head2);
+				tail1 = tail2;
+			}
+			assert !hasPrev(head1);
+			return headTail(head1, tail1);
+		}
+
+		public long removeIf(long list, IntPredicate pred) {
+			return removeIf(head(list), pred);
+		}
+
+		public long removeIf(int head, IntPredicate pred) {
 			var x = removeIf0(head, pred);
-			int newHead = x.firstInt(), newTail = x.secondInt();
+			int newHead = head(x), newTail = tail(x);
 			assert newHead < 0 == newTail < 0;
 			if (newHead >= 0 && newTail >= 0) {
 				assert !hasPrev(newHead);
@@ -191,9 +254,9 @@ public class LinkedListFixedSize {
 			return x;
 		}
 
-		private IntIntPair removeIf0(int head, IntPredicate pred) {
+		private long removeIf0(int head, IntPredicate pred) {
 			if (isNone(head))
-				return IntIntPair.of(None, None);
+				return headTail(None, None);
 			if (hasPrev(head))
 				throw new IllegalArgumentException("head must not have a previous element");
 			for (int prev = None, curr = head;;) {
@@ -210,12 +273,12 @@ public class LinkedListFixedSize {
 						setPrev(next, prev);
 					} else {
 						int tail = prev;
-						return IntIntPair.of(head, tail);
+						return headTail(head, tail);
 					}
 				} else {
 					if (isNone(next)) {
 						int tail = curr;
-						return IntIntPair.of(head, tail);
+						return headTail(head, tail);
 					}
 					prev = curr;
 				}
@@ -223,25 +286,37 @@ public class LinkedListFixedSize {
 			}
 		}
 
-		public void reverse(final int start) {
-			final int origPrev = prev(start);
-			for (int curr = start;;) {
+		public long reverse(long list) {
+			int head = head(list), tail = tail(list);
+			int newHead = reverse(head);
+			assert newHead == tail;
+			return headTail(tail, head);
+		}
+
+		// returns new head
+		public int reverse(final int head) {
+			final int origPrev = prev(head);
+			for (int curr = head;;) {
 				int prev = prev(curr), next = next(curr);
 				setNext(curr, prev);
 				setPrev(curr, next);
 				if (isNone(next)) {
 					if (!isNone(origPrev))
 						throw new IllegalArgumentException("Given start vertex is not a head of a list");
-					break;
+					return curr;
 				}
-				if (next == start)
-					break;
+				if (next == head)
+					return head;
 				curr = next;
 			}
 		}
 
 		public void clear() {
 			Arrays.fill(arr, None);
+		}
+
+		public IterTools.Peek.Int iterator(long list) {
+			return iteratorMaybeNone(head(list));
 		}
 
 		public IterTools.Peek.Int iterator(int id) {
@@ -252,6 +327,10 @@ public class LinkedListFixedSize {
 		public IterTools.Peek.Int iteratorMaybeNone(int idMaybeNone) {
 			assert idMaybeNone >= 0 || idMaybeNone == None;
 			return new Iter(idMaybeNone);
+		}
+
+		public IterTools.Peek.Int iteratorRev(long list) {
+			return iteratorRev(tail(list));
 		}
 
 		public IterTools.Peek.Int iteratorRev(int id) {
