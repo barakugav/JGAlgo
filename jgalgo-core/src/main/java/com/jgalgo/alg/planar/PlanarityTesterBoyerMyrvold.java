@@ -153,12 +153,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         final PoolAllocator embeddedAllocator;
         final Edge[] embedded2edge;
 
-        /**
-         * Creates new instance of the planarity testing algorithm for the {@code graph}. The input
-         * graph can't be null.
-         *
-         * @param graph the graph to test the planarity of
-         */
         public Worker(IndexGraph g) {
             final int n = g.vertices().size();
             final int m = g.edges().size();
@@ -186,10 +180,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
                 Node v = nodes[currentDfsIdx];
                 assert v.dfsIndex == currentDfsIdx;
-                for (Edge downEdge : v.downEdges) {
-                    assert downEdge.target == v;
-                    walkUp(downEdge.source, v, downEdge);
-                }
+                for (Edge downEdge : v.downEdges)
+                    walkUp(downEdge);
                 for (Edge treeEdge : v.treeEdges) {
                     assert treeEdge.target.initialComponentRoot.dfsIndex == currentDfsIdx;
                     walkDown(treeEdge.target.initialComponentRoot);
@@ -202,11 +194,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             return com.jgalgo.internal.util.Result.ok(null);
         }
 
-        /**
-         * Iteratively start an orienting dfs from every {@code graph} vertex that hasn't been visited
-         * yet. After orienting the graph, sorts the nodes by their lowpoints and adds them to the
-         * {@code separatedDfsChildList}
-         */
         private void preprocess() {
             // regular nodes matching the real graph vertices are connected via tree and back edges.
             // virtual bi-connected component roots are created for each non-dfs-root node, with the DFS index
@@ -223,41 +210,47 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             // u.parentEdge.source is v, and the target is u (none of them is w)
 
             final int n = g.vertices().size();
-            // final int m = g.edges().size();
-
             Node[] v2node = new Node[n];
-
             Stack<IEdgeIter> stack = new ObjectArrayList<>();
-            int nextDfsIndex = 0;
+            int dfsIndex = 0;
             for (final int root : range(n)) {
                 if (v2node[root] != null)
                     continue;
 
-                v2node[root] = createNewNode(root, -1, null, nextDfsIndex);
-                nextDfsIndex++;
+                Node rootNode = v2node[root] = Node.newDfsRoot(root, dfsIndex++);
+                rootNode.outerFaceNeighbor1 = rootNode.outerFaceNeighbor2 = rootNode;
+                dfsTreeRoots.add(rootNode);
                 stack.push(g.outEdges(root).iterator());
 
                 dfs: for (Node u = v2node[root];;) {
                     final Node parent = u.getParent();
                     for (IEdgeIter eit = stack.top(); eit.hasNext();) {
-                        int graphEdge = eit.nextInt();
-                        int vIdx = eit.targetInt();
-                        if (v2node[vIdx] == null) {
+                        int e = eit.nextInt();
+                        int v = eit.targetInt();
+                        if (v2node[v] == null) {
                             // Unvisited vertex, e is a tree edge
-                            v2node[vIdx] = createNewNode(vIdx, graphEdge, u, nextDfsIndex);
-                            nextDfsIndex++;
-                            stack.push(g.outEdges(vIdx).iterator());
+                            Edge treeEdge = Edge.newTreeEdge(e, u);
+                            Node componentRoot = Node.newVirtualBicompRoot(u.dfsIndex, treeEdge);
+                            Node node = Node.newInstance(v, dfsIndex++, u.height + 1, componentRoot, treeEdge);
+                            addToEmbeddedFirst(componentRoot, treeEdge);
+                            addToEmbeddedFirst(node, treeEdge);
+                            treeEdge.target = node;
+                            virtualBicompRoots.add(componentRoot);
+                            u.treeEdges.add(treeEdge);
+                            node.outerFaceNeighbor1 = node.outerFaceNeighbor2 = componentRoot;
+                            componentRoot.outerFaceNeighbor1 = componentRoot.outerFaceNeighbor2 = node;
 
-                            u = v2node[vIdx];
+                            stack.push(g.outEdges(v).iterator());
+                            u = v2node[v] = node;
                             continue dfs;
                         } else {
                             // Visited vertex, e is a back edge
-                            Node ancestor = v2node[vIdx];
+                            Node ancestor = v2node[v];
                             if (parent == ancestor)
                                 continue; // Not a back edge, reverse of tree edge from parent to u
                             if (u.dfsIndex < ancestor.dfsIndex)
                                 continue; // The reverse edge was already added as a back edge, down edge of u
-                            Edge backEdge = Edge.newBackEdge(graphEdge, u, ancestor);
+                            Edge backEdge = Edge.newBackEdge(e, u, ancestor);
                             ancestor.downEdges.add(backEdge);
                             u.backEdges.add(backEdge);
                         }
@@ -268,12 +261,12 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                             .mapToInt(backEdge -> backEdge.target.dfsIndex)
                             .min()
                             .orElse(u.dfsIndex);
-                    u.lowpoint = u.treeEdges
+                    int lowpoint = u.treeEdges
                             .stream()
                             .mapToInt(treeEdge -> treeEdge.target.lowpoint)
                             .min()
                             .orElse(u.dfsIndex);
-                    u.lowpoint = Math.min(u.lowpoint, u.leastAncestor);
+                    u.lowpoint = Math.min(lowpoint, u.leastAncestor);
 
                     // backtrack DFS one vertex up
                     stack.pop();
@@ -307,84 +300,40 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
         }
 
-        /**
-         * Creates a new node by converting the {@code graphVertex} to the internal node representation.
-         *
-         * @param  graphVertex the vertex of the {@code graph} we're processing
-         * @param  edge        the parent edge of the {@code graphVertex}, is {@code -1} for dfs tree roots
-         * @param  parent      the parent node of the {@code graphVertex}
-         * @param  dfsIndex    the dfs index of the {@code graphVertex}
-         * @return             the newly created node
-         */
-        private Node createNewNode(int graphVertex, int edge, Node parent, int dfsIndex) {
-            Node node;
-            if (parent == null) {
-                node = Node.newDfsRoot(graphVertex, dfsIndex);
-                node.outerFaceNeighbor1 = node.outerFaceNeighbor2 = node;
-                dfsTreeRoots.add(node);
-            } else {
-                assert edge >= 0;
-                Edge treeEdge = Edge.newTreeEdge(edge, parent);
-                Node componentRoot = Node.newVirtualBicompRoot(parent.dfsIndex, treeEdge);
-                node = Node.newInstance(graphVertex, dfsIndex, parent.height + 1, componentRoot, treeEdge);
+        private void walkUp(final Edge downEdge) {
+            final Node source = downEdge.source;
+            final Node target = downEdge.target;
+            final int visited = target.dfsIndex;
 
-                addToEmbeddedFirst(componentRoot, treeEdge);
-                addToEmbeddedFirst(node, treeEdge);
+            source.edgeToEmbed = downEdge;
+            source.visited = visited;
 
-                treeEdge.target = node;
-
-                virtualBicompRoots.add(componentRoot);
-
-                parent.treeEdges.add(treeEdge);
-
-                node.outerFaceNeighbor1 = node.outerFaceNeighbor2 = componentRoot;
-                componentRoot.outerFaceNeighbor1 = componentRoot.outerFaceNeighbor2 = node;
-            }
-            return node;
-        }
-
-        /**
-         * The walkup procedure from the original paper. Identifies the pertinent subgraph of the graph
-         * by going up the dfs tree from the {@code start} node to the {@code end} node using the edge
-         * {@code edge}
-         *
-         * @param start the node to start the walkup from
-         * @param end   the node currently processed by the main loop of the algorithm
-         * @param edge  a back edge to embed
-         */
-        private void walkUp(Node start, final Node end, Edge edge) {
-            final int visited = end.dfsIndex;
-
-            start.edgeToEmbed = edge;
-            start.visited = visited;
-
-            for (OuterFaceIter xIter = outerFace(start, Side1), yIter = outerFace(start, Side2);;) {
-                Node x = xIter.next(), y = yIter.next();
-                if (x.visited == visited || y.visited == visited)
+            for (Iterator<Node> leftIter = outerFace(source, Side1), rightIter = outerFace(source, Side2);;) {
+                Node left = leftIter.next(), right = rightIter.next();
+                if (left.visited == visited || right.visited == visited)
                     break;
-                x.visited = y.visited = visited;
+                left.visited = right.visited = visited;
 
-                if (x.isBicompRoot() || y.isBicompRoot()) {
-                    Node root = x.isBicompRoot() ? x : y;
+                if (left.isBicompRoot() || right.isBicompRoot()) {
+                    Node root = left.isBicompRoot() ? left : right;
                     assert root.isBicompRoot();
                     // 'root' is a virtual node, the root of the current bi-comp.
 
                     // continue up by jumping to the real node, matching the virtual root, in the parent bi-comp.
-                    Node newStart = root.realNodeInParentBiComp();
-                    if (newStart == end)
+                    Node newBegin = root.realNodeInParentBiComp();
+                    if (newBegin == target)
                         break;
-                    if (root.parentEdge.target.lowpoint < end.dfsIndex) {
-                        // the component in externally active
-                        root.listNode = newStart.pertinentRoots.addElementLast(root);
-                    } else {
-                        // the component is internally active
-                        assert root.parentEdge.target.lowpoint == end.dfsIndex;
-                        root.listNode = newStart.pertinentRoots.addElementFirst(root);
+                    newBegin.visited = visited;
+                    if (root.parentEdge.target.lowpoint < target.dfsIndex) { // externally active
+                        root.listNode = newBegin.pertinentRoots.addElementLast(root);
+                    } else { // internally active
+                        assert root.parentEdge.target.lowpoint == target.dfsIndex;
+                        root.listNode = newBegin.pertinentRoots.addElementFirst(root);
                     }
-                    newStart.visited = visited;
 
-                    xIter = outerFace(newStart, Side1);
-                    yIter = outerFace(newStart, Side2);
+                    // Continue iterating over the two sides of the upper bicomp
+                    leftIter = outerFace(newBegin, Side1);
+                    rightIter = outerFace(newBegin, Side2);
                 }
             }
         }
