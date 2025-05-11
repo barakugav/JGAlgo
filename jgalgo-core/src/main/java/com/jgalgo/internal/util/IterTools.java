@@ -22,6 +22,7 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
 import java.util.function.IntUnaryOperator;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -61,7 +62,7 @@ public class IterTools {
 
 		E peekNext();
 
-		static interface Int extends Iter, Peek<Integer> {
+		static interface Int extends IntIter, Peek<Integer> {
 
 			static Peek.Int of(IntIterator iter) {
 				return new PeekImpl.Int(iter);
@@ -156,11 +157,11 @@ public class IterTools {
 
 	}
 
-	private static class IterMapObjObj<A, B> implements ObjectIterator<B> {
+	private static class IterMapObjObj<A, B> implements Iter<B> {
 		private final Iterator<A> it;
-		private final Function<A, B> map;
+		private final Function<? super A, ? extends B> map;
 
-		IterMapObjObj(Iterator<A> it, Function<A, B> map) {
+		IterMapObjObj(Iterator<A> it, Function<? super A, ? extends B> map) {
 			this.it = Objects.requireNonNull(it);
 			this.map = Objects.requireNonNull(map);
 		}
@@ -181,7 +182,7 @@ public class IterTools {
 		}
 	}
 
-	public static <A, B> Iterator<B> map(Iterator<A> it, Function<A, B> map) {
+	public static <A, B> Iter<B> map(Iterator<A> it, Function<? super A, ? extends B> map) {
 		return new IterMapObjObj<>(it, map);
 	}
 
@@ -214,7 +215,7 @@ public class IterTools {
 		return new IterMapIntObj<>(it, map);
 	}
 
-	private static class IterMapIntInt implements Iter {
+	private static class IterMapIntInt implements IntIter {
 		private final IntIterator it;
 		private final IntUnaryOperator map;
 
@@ -239,12 +240,12 @@ public class IterTools {
 		}
 	}
 
-	public static Iter mapInt(IntIterator it, IntUnaryOperator map) {
+	public static IntIter mapInt(IntIterator it, IntUnaryOperator map) {
 		return new IterMapIntInt(it, map);
 	}
 
-	public static Iter filter(IntIterator it, IntPredicate pred) {
-		return new Iter() {
+	public static IntIter filter(IntIterator it, IntPredicate pred) {
+		return new IntIter() {
 
 			private int next;
 			private boolean isNextValid;
@@ -300,21 +301,110 @@ public class IterTools {
 		return it.nextInt();
 	}
 
-	public static interface Iter extends IntIterator, IntIterable {
+	public static interface Iter<E> extends ObjectIterator<E>, Iterable<E> {
 
 		@Override
-		default Iter iterator() {
+		default Iterator<E> iterator() {
 			return this;
 		}
 
-		default Iter map(IntUnaryOperator map) {
+		default <T> Iter<T> map(Function<? super E, ? extends T> map) {
+			return IterTools.map(this, map);
+		}
+
+		default Iter<E> filter(Predicate<? super E> filter) {
+			Objects.requireNonNull(filter);
+			Iterator<E> orig = this;
+			return new Iter<>() {
+
+				boolean hasNext;
+				E next;
+
+				{
+					advance();
+				}
+
+				private void advance() {
+					for (;;) {
+						if (!orig.hasNext()) {
+							hasNext = false;
+							break;
+						}
+						E maybeNext = orig.next();
+						if (filter.test(maybeNext)) {
+							hasNext = true;
+							next = maybeNext;
+							break;
+						}
+					}
+				}
+
+				@Override
+				public boolean hasNext() {
+					return hasNext;
+				}
+
+				@Override
+				public E next() {
+					Assertions.hasNext(this);
+					E ret = next;
+					advance();
+					return ret;
+				}
+			};
+		}
+	}
+
+	public static interface IntIter extends IntIterator, IntIterable {
+
+		static IntIter of(IntIterable iter) {
+			IntIterator iter0 = iter.intIterator();
+			if (iter0 instanceof IntIter)
+				return (IntIter) iter0;
+			return new IntIter() {
+
+				@Override
+				public int nextInt() {
+					return iter0.nextInt();
+				}
+
+				@Override
+				public boolean hasNext() {
+					return iter0.hasNext();
+				}
+			};
+		}
+
+		@Override
+		default IntIter iterator() {
+			return this;
+		}
+
+		default IntIter map(IntUnaryOperator map) {
 			return mapInt(this, map);
 		}
 
-		default Iter filter(IntPredicate filter) {
+		default <E> Iter<E> mapObj(IntFunction<? extends E> map) {
+			Objects.requireNonNull(map);
+			IntIter orig = this;
+			return new Iter<>() {
+
+				@Override
+				public boolean hasNext() {
+					return orig.hasNext();
+				}
+
+				@Override
+				public E next() {
+					return map.apply(orig.nextInt());
+				}
+			};
+		}
+
+		default IntIter filter(IntPredicate filter) {
 			Objects.requireNonNull(filter);
 			IntIterator orig = this;
-			return new Iter() {
+			return new IntIter() {
 
 				boolean hasNext;
 				int next;
@@ -353,9 +443,9 @@ public class IterTools {
 			};
 		}
 
-		default Iter chain(IntIterator other) {
+		default IntIter chain(IntIterator other) {
 			IntIterator orig = this;
-			return new Iter() {
+			return new IntIter() {
 
 				IntIterator iter = orig;
 				IntIterator nextIter = Objects.requireNonNull(other);
