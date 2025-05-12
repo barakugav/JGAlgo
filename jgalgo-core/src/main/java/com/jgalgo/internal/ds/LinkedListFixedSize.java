@@ -238,6 +238,26 @@ public class LinkedListFixedSize {
 			return headTail(head1, tail1);
 		}
 
+		public long remove(long list, int id) {
+			int head = head(list), tail = tail(list);
+			int prev = prev(id), next = next(id);
+			if (isNone(prev)) {
+				assert head == id;
+				head = next;
+			} else {
+				setNext(prev, next);
+				setPrev(id, None);
+			}
+			if (!isNone(next)) {
+				setPrev(next, prev);
+				setNext(id, None);
+			} else {
+				assert tail == id;
+				tail = prev;
+			}
+			return headTail(head, tail);
+		}
+
 		public long removeIf(long list, IntPredicate pred) {
 			return removeIf(head(list), pred);
 		}
