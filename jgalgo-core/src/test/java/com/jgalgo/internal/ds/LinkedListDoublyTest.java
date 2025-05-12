@@ -237,7 +237,7 @@ public class LinkedListDoublyTest extends TestBase {
 			}
 			for (int i = 0; i < len; i++) {
 				final int begin = i;
-				IntIterator it = list.iterator(begin);
+				IntIterator it = list.iter(begin);
 				int expectedNext = begin;
 				for (int laps = 0;;) {
 					assertTrue(it.hasNext());
@@ -257,7 +257,7 @@ public class LinkedListDoublyTest extends TestBase {
 			}
 			for (int i = 0; i < len; i++) {
 				final int begin = i;
-				IntIterator it = list.iteratorRev(begin);
+				IntIterator it = list.iterRev(begin);
 				int expectedNext = begin;
 				for (int laps = 0;;) {
 					assertTrue(it.hasNext());
@@ -327,7 +327,7 @@ public class LinkedListDoublyTest extends TestBase {
 					head = v;
 				}
 
-				IntList elements = new IntArrayList(list.iterator(head));
+				IntList elements = new IntArrayList(list.iter(head));
 				// final int tail = elements.getLast().intValue();
 				IntSet elementsToRemove =
 						new IntOpenHashSet(elements.intStream().filter(e -> rand.nextInt(4) == 0).toArray());
@@ -348,7 +348,7 @@ public class LinkedListDoublyTest extends TestBase {
 					assertEquals(u, list.prev(v));
 				}
 
-				IntList elementsAfterRemove = new IntArrayList(list.iteratorMaybeNone(newHead));
+				IntList elementsAfterRemove = new IntArrayList(list.iterMaybeNone(newHead));
 				if (LinkedListFixedSize.isNone(newHead)) {
 					assertTrue(elementsAfterRemove.isEmpty());
 				} else {

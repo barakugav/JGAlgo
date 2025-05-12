@@ -71,15 +71,15 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 }
 
                 for (Worker.Node node : worker.realNodes()) {
-                    for (int child : worker.separatedDfsChildList2.iterator(node.separatedDfsChildList3)) {
+                    for (int child : worker.childrenLists.iter(node.children)) {
                         Worker.Node virtualRoot = worker.nodes[child].initialComponentRoot;
-                        node.embeddedEdges = worker.embedded.concat(node.embeddedEdges, virtualRoot.embeddedEdges);
+                        node.embeddedEdges = worker.embeddedLists.concat(node.embeddedEdges, virtualRoot.embeddedEdges);
                         virtualRoot.embeddedEdges = LinkedListFixedSize.HeadTailNone;
                         worker.checkMe();
                     }
 
                     int i = 0;
-                    for (IntIterator it = worker.embedded.iterator(node.embeddedEdges); it.hasNext(); i++) {
+                    for (IntIterator it = worker.embeddedLists.iter(node.embeddedEdges); it.hasNext(); i++) {
                         int edge = worker.embedded2edge[it.nextInt()].graphEdge();
                         long x = weights.get(edge);
                         if (g.edgeSource(edge) == node.graphVertex)
@@ -139,15 +139,15 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
         int currentDfsIdx;
 
-        final LinkedListFixedSize.Doubly embedded;
-        final PoolAllocator embeddedAllocator;
+        final LinkedListFixedSize.Doubly embeddedLists;
+        final PoolAllocator embeddedListsAllocator;
         final Edge[] embedded2edge;
 
         /**
          * The list containing the dfs children of this node, which are in the different child
          * biconnected component, i.e. their weren't merged in the parent component.
          */
-        final LinkedListFixedSize.Doubly separatedDfsChildList2;
+        final LinkedListFixedSize.Doubly childrenLists;
         /**
          * The roots of the pertinent components during the processing of the node $v$. These are
          * the components that have pertinent descendant nodes, i.e. nodes incident to the node $v$
@@ -156,7 +156,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * This list contains virtual nodes matching this node. The virtual nodes are the roots in the child bi-comp
          * of this node.
          */
-        final LinkedListFixedSize.Doubly pertinentRoots2;
+        final LinkedListFixedSize.Doubly pertinentRootsLists;
 
         public Worker(IndexGraph g) {
             final int n = g.vertices().size();
@@ -171,12 +171,12 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             this.mergeStack = new ObjectArrayList<>();
 
             int embeddedListsMaxLen = maxEdgesNum * 2; // each edge can be added in the lists of both of its endpoints
-            this.embedded = new LinkedListFixedSize.Doubly(embeddedListsMaxLen);
-            this.embeddedAllocator = new PoolAllocator(embeddedListsMaxLen);
+            this.embeddedLists = new LinkedListFixedSize.Doubly(embeddedListsMaxLen);
+            this.embeddedListsAllocator = new PoolAllocator(embeddedListsMaxLen);
             this.embedded2edge = new Edge[embeddedListsMaxLen];
 
-            this.separatedDfsChildList2 = new LinkedListFixedSize.Doubly(maxVerticesNum);
-            this.pertinentRoots2 = new LinkedListFixedSize.Doubly(maxVerticesNum);
+            this.childrenLists = new LinkedListFixedSize.Doubly(maxVerticesNum);
+            this.pertinentRootsLists = new LinkedListFixedSize.Doubly(maxVerticesNum);
         }
 
         com.jgalgo.internal.util.Result<Void, Node> computePlanarity() {
@@ -185,11 +185,11 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             final int n = g.vertices().size();
             int[] dfsIdxToNode = new int[n];
             for (Node node : realNodes())
-                dfsIdxToNode[node.dfsIndex] = node.nodeIdx;
+                dfsIdxToNode[node.dfsIdx] = node.idx;
 
             for (currentDfsIdx = dfsIdxToNode.length - 1; currentDfsIdx >= 0; currentDfsIdx--) {
                 Node v = nodes[dfsIdxToNode[currentDfsIdx]];
-                assert v.dfsIndex == currentDfsIdx;
+                assert v.dfsIdx == currentDfsIdx;
 
                 for (Edge downEdge : v.downEdges)
                     walkUp(downEdge);
@@ -197,7 +197,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 // Zero the counter of number of embedded edges for this DFS index
                 embeddedEdgesNum = 0;
                 for (Edge treeEdge : v.treeEdges) {
-                    assert treeEdge.target.initialComponentRoot.dfsIndex == currentDfsIdx;
+                    assert treeEdge.target.initialComponentRoot.dfsIdx == currentDfsIdx;
                     walkDown(treeEdge.target.initialComponentRoot);
                 }
 
@@ -244,7 +244,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         if (v2node[v] == null) {
                             // Unvisited vertex, e is a tree edge
                             Edge treeEdge = Edge.newTreeEdge(e, u);
-                            Node componentRoot = newVirtualBicompRoot(u.dfsIndex, treeEdge);
+                            Node componentRoot = newVirtualBicompRoot(u.dfsIdx, treeEdge);
                             Node node = newRealNode(v, dfsIndex++, u.height + 1, componentRoot, treeEdge);
                             addToEmbeddedFirst(componentRoot, treeEdge);
                             addToEmbeddedFirst(node, treeEdge);
@@ -261,7 +261,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                             Node ancestor = v2node[v];
                             if (parent == ancestor)
                                 continue; // Not a back edge, reverse of tree edge from parent to u
-                            if (u.dfsIndex < ancestor.dfsIndex)
+                            if (u.dfsIdx < ancestor.dfsIdx)
                                 continue; // The reverse edge was already added as a back edge, down edge of u
                             Edge backEdge = Edge.newBackEdge(e, u, ancestor);
                             ancestor.downEdges.add(backEdge);
@@ -271,14 +271,14 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
                     u.leastAncestor = u.backEdges
                             .stream()
-                            .mapToInt(backEdge -> backEdge.target.dfsIndex)
+                            .mapToInt(backEdge -> backEdge.target.dfsIdx)
                             .min()
-                            .orElse(u.dfsIndex);
+                            .orElse(u.dfsIdx);
                     int lowpoint = u.treeEdges
                             .stream()
                             .mapToInt(treeEdge -> treeEdge.target.lowpoint)
                             .min()
-                            .orElse(u.dfsIndex);
+                            .orElse(u.dfsIdx);
                     u.lowpoint = Math.min(lowpoint, u.leastAncestor);
 
                     // backtrack DFS one vertex up
@@ -304,8 +304,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             for (Node node : nodesSortedByLowpoint) {
                 if (node.parentEdge != null) {
                     Node parentNode = node.parentEdge.source;
-                    parentNode.separatedDfsChildList3 =
-                            separatedDfsChildList2.addLast(parentNode.separatedDfsChildList3, node.nodeIdx);
+                    parentNode.children = childrenLists.addLast(parentNode.children, node.idx);
                 }
             }
         }
@@ -351,7 +350,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         private void walkUp(final Edge downEdge) {
             final Node source = downEdge.source;
             final Node target = downEdge.target;
-            final int visited = target.dfsIndex;
+            final int visited = target.dfsIdx;
 
             source.edgeToEmbed = downEdge;
             source.visited = visited;
@@ -372,11 +371,11 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     if (newBegin == target)
                         break;
                     newBegin.visited = visited;
-                    if (root.parentEdge.target.lowpoint < target.dfsIndex) { // externally active
-                        newBegin.pertinentRoots3 = pertinentRoots2.addLast(newBegin.pertinentRoots3, root.nodeIdx);
+                    if (root.parentEdge.target.lowpoint < target.dfsIdx) { // externally active
+                        newBegin.pertinentRoots = pertinentRootsLists.addLast(newBegin.pertinentRoots, root.idx);
                     } else { // internally active
-                        assert root.parentEdge.target.lowpoint == target.dfsIndex;
-                        newBegin.pertinentRoots3 = pertinentRoots2.addFirst(newBegin.pertinentRoots3, root.nodeIdx);
+                        assert root.parentEdge.target.lowpoint == target.dfsIdx;
+                        newBegin.pertinentRoots = pertinentRootsLists.addFirst(newBegin.pertinentRoots, root.idx);
                     }
 
                     // Continue iterating over the two sides of the upper bicomp
@@ -410,10 +409,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         circulator = embedBackEdge(componentRoot, componentEntryDir, current.edgeToEmbed, childPrev);
                         checkMe();
                     }
-                    if (!isNone(head(current.pertinentRoots3))) {
+                    if (!isNone(head(current.pertinentRoots))) {
                         final boolean prevSide = side;
                         // 'root' is a virtual node, matching current, a root of a bi-comp.
-                        final Node root = nodes[head(current.pertinentRoots3)];
+                        final Node root = nodes[head(current.pertinentRoots)];
 
                         // TODO: we should search both sides simultaneously, for linear time
                         OuterFaceIter circulator1 = getActiveSuccessorOnOuterFace(root, Side1);
@@ -487,9 +486,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             Node root = info.parent;
             Node virtualRootChild = virtualRoot.parentEdge.target;
 
-            root.pertinentRoots3 = pertinentRoots2.remove(root.pertinentRoots3, virtualRoot.nodeIdx);
-            root.separatedDfsChildList3 =
-                    separatedDfsChildList2.remove(root.separatedDfsChildList3, virtualRootChild.nodeIdx);
+            root.pertinentRoots = pertinentRootsLists.remove(root.pertinentRoots, virtualRoot.idx);
+            root.children = childrenLists.remove(root.children, virtualRootChild.idx);
 
             mergeChildEdges(root, virtualRoot, info.vIn, info.vOut, info.parentNext,
                     virtualRoot.parentEdge);
@@ -550,25 +548,25 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 }
             }
             int edgesFirst = head(virtualRoot.embeddedEdges), edgesLast = tail(virtualRoot.embeddedEdges);
-            assert !embedded.hasPrev(edgesFirst);
-            assert !embedded.hasNext(edgesLast);
+            assert !embeddedLists.hasPrev(edgesFirst);
+            assert !embeddedLists.hasNext(edgesLast);
             debug++;
             if (invert) {
                 assert !parentEdge.isInverted;
                 parentEdge.isInverted = true;
-                this.embedded.reverse(edgesFirst); // TODO: is this linear?
+                this.embeddedLists.reverse(edgesFirst); // TODO: is this linear?
                 int temp = edgesFirst;
                 edgesFirst = edgesLast;
                 edgesLast = temp;
             }
-            assert !embedded.hasPrev(edgesFirst);
-            assert !embedded.hasNext(edgesLast);
+            assert !embeddedLists.hasPrev(edgesFirst);
+            assert !embeddedLists.hasNext(edgesLast);
             if (actionAppend) {
                 this2.embeddedEdges =
-                        embedded.concat(this2.embeddedEdges, LinkedListFixedSize.headTail(edgesFirst, edgesLast));
+                        embeddedLists.concat(this2.embeddedEdges, LinkedListFixedSize.headTail(edgesFirst, edgesLast));
             } else {
                 this2.embeddedEdges =
-                        embedded.concat(LinkedListFixedSize.headTail(edgesFirst, edgesLast), this2.embeddedEdges);
+                        embeddedLists.concat(LinkedListFixedSize.headTail(edgesFirst, edgesLast), this2.embeddedEdges);
             }
         }
 
@@ -692,15 +690,15 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         }
 
         void addToEmbeddedFirst(Node node, Edge edge) {
-            int edgeIdx = embeddedAllocator.alloc();
+            int edgeIdx = embeddedListsAllocator.alloc();
             embedded2edge[edgeIdx] = edge;
-            node.embeddedEdges = embedded.addFirst(node.embeddedEdges, edgeIdx);
+            node.embeddedEdges = embeddedLists.addFirst(node.embeddedEdges, edgeIdx);
         }
 
         void addToEmbeddedLast(Node node, Edge edge) {
-            int edgeIdx = embeddedAllocator.alloc();
+            int edgeIdx = embeddedListsAllocator.alloc();
             embedded2edge[edgeIdx] = edge;
-            node.embeddedEdges = embedded.addLast(node.embeddedEdges, edgeIdx);
+            node.embeddedEdges = embeddedLists.addLast(node.embeddedEdges, edgeIdx);
         }
 
         /**
@@ -717,13 +715,12 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 Node current = entry.first();
                 boolean isInverted = entry.second().booleanValue();
                 if (isInverted) {
-                    current.embeddedEdges = embedded.reverse(current.embeddedEdges);
+                    current.embeddedEdges = embeddedLists.reverse(current.embeddedEdges);
                 }
-                assert LinkedListFixedSize.isNone(head(current.embeddedEdges))
-                        || !embedded.hasPrev(head(current.embeddedEdges));
+                assert isNone(head(current.embeddedEdges)) || !embeddedLists.hasPrev(head(current.embeddedEdges));
 
                 removeShortCircuitEdges(current);
-                for (int node : separatedDfsChildList2.iterator(current.separatedDfsChildList3)) {
+                for (int node : childrenLists.iter(current.children)) {
                     // all the components, that aren't merged, aren't inverted
                     nodes[node].parentEdge.isInverted = isInverted;
                 }
@@ -1004,7 +1001,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * perform dfs traversals, biconnected component boundary traversals, to embed edges, etc.
          */
         static class Node {
-            final int nodeIdx;
+            final int idx;
 
             /**
              * The counterpart of this node in the {@code graph}. For the component roots this value is
@@ -1016,7 +1013,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * $[0,|V| - 1]$. This value is used to order the nodes for the embedding of the edges
              * incident to them. The index of the first dfs root is $1$
              */
-            final int dfsIndex;
+            final int dfsIdx;
             /**
              * The height of the node in the created dfs tree. The root of the tree has height $0$. The
              * smaller this value is, the lower the node is considered to be.
@@ -1080,7 +1077,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * The list containing the dfs children of this node, which are in the different child
              * biconnected component, i.e. their weren't merged in the parent component.
              */
-            long separatedDfsChildList3;
+            long children;
+
             /**
              * The roots of the pertinent components during the processing of the node $v$. These are
              * the components that have pertinent descendant nodes, i.e. nodes incident to the node $v$
@@ -1089,7 +1087,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * This list contains virtual nodes matching this node. The virtual nodes are the roots in the child bi-comp
              * of this node.
              */
-            long pertinentRoots3;
+            long pertinentRoots;
             /**
              * The list of tree edges incident to this node in the dfs tree. This list doesn't contain a
              * parent edge of this node
@@ -1105,8 +1103,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              */
             final List<Edge> backEdges;
             /**
-             * Stores the list node from the {@code separatedDfsChildList} of the parent node this node
-             * is stored in. This enable deleting of this node from the {@code separatedDfsChildList}
+             * Stores the list node from the {@code children} of the parent node this node
+             * is stored in. This enable deleting of this node from the {@code children}
              * list in $O(1)$ time
              */
             // DoublyLinkedList.ListNode<Node> listNode;
@@ -1128,16 +1126,16 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              */
             private Node(int nodeIdx, int graphVertex, int dfsIndex, Edge parentEdge,
                     Node initialComponentRoot, int height) {
-                this.nodeIdx = nodeIdx;
+                this.idx = nodeIdx;
                 this.graphVertex = graphVertex;
-                this.dfsIndex = dfsIndex;
+                this.dfsIdx = dfsIndex;
                 this.parentEdge = parentEdge;
                 this.initialComponentRoot = initialComponentRoot;
                 this.height = height;
                 this.embeddedEdges = LinkedListFixedSize.HeadTailNone;
                 this.visited = Integer.MAX_VALUE;
-                this.separatedDfsChildList3 = LinkedListFixedSize.HeadTailNone;
-                this.pertinentRoots3 = LinkedListFixedSize.HeadTailNone;
+                this.children = LinkedListFixedSize.HeadTailNone;
+                this.pertinentRoots = LinkedListFixedSize.HeadTailNone;
                 if (!isBicompRoot()) {
                     treeEdges = new ObjectArrayList<>();
                     downEdges = new ObjectArrayList<>();
@@ -1160,7 +1158,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             // A node is pertinent if it has a back edge to the "current visited vertex" or it has a
             // child biconnected component which has a pertinent node.
             boolean isPertinent() {
-                return hasBackEdge() || !isNone(head(pertinentRoots3));
+                return hasBackEdge() || !isNone(head(pertinentRoots));
             }
 
             // Checks whether this node has a back edge to the "current visited vertex"
@@ -1216,7 +1214,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             private Node realNodeInParentBiComp() {
                 assert isBicompRoot();
                 Node real = parentEdge.source;
-                assert dfsIndex == real.dfsIndex;
+                assert dfsIdx == real.dfsIdx;
                 return real;
             }
 
@@ -1251,8 +1249,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         }
 
         void removeShortCircuitEdges(Node node) {
-            node.embeddedEdges = embedded.removeIf(node.embeddedEdges, eIdx -> !embedded2edge[eIdx].isGraphEdge());
-            assert LinkedListFixedSize.isNone(head(node.embeddedEdges)) || !embedded.hasPrev(head(node.embeddedEdges));
+            node.embeddedEdges = embeddedLists.removeIf(node.embeddedEdges, eIdx -> !embedded2edge[eIdx].isGraphEdge());
+            assert isNone(head(node.embeddedEdges)) || !embeddedLists.hasPrev(head(node.embeddedEdges));
             checkMe();
         }
 
@@ -1261,8 +1259,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         boolean isExternallyActive(Node node) {
             if (node.leastAncestor < currentDfsIdx)
                 return true;
-            // separatedDfsChildList are sorted by lowpoint, so its enough to check the first
-            int firstChild = head(node.separatedDfsChildList3);
+            // children are sorted by lowpoint, so its enough to check the first
+            int firstChild = head(node.children);
             return !isNone(firstChild) && nodes[firstChild].lowpoint < currentDfsIdx;
         }
 
@@ -1278,15 +1276,14 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
         void checkMe() {
             for (Node node : realNodes()) {
-                assert LinkedListFixedSize.isNone(head(node.embeddedEdges)) == LinkedListFixedSize
-                        .isNone(tail(node.embeddedEdges));
-                var x = new IntArrayList(embedded.iterator(node.embeddedEdges));
+                assert isNone(head(node.embeddedEdges)) == isNone(tail(node.embeddedEdges));
+                var x = new IntArrayList(embeddedLists.iter(node.embeddedEdges));
                 for (int i : range(x.size())) {
                     int u = i > 0 ? x.getInt(i - 1) : LinkedListFixedSize.None;
                     int v = x.getInt(i);
                     int w = i < x.size() - 1 ? x.getInt(i + 1) : LinkedListFixedSize.None;
-                    assert u == embedded.prev(v);
-                    assert w == embedded.next(v);
+                    assert u == embeddedLists.prev(v);
+                    assert w == embeddedLists.next(v);
                 }
             }
         }
@@ -1385,7 +1382,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             for (Edge edge : current.backEdges)
                 if (predicate.test(edge))
                     return edge;
-            for (int node : separatedDfsChildList2.iterator(current.separatedDfsChildList3)) {
+            for (int node : childrenLists.iter(current.children)) {
                 Edge result = findBackEdgeSubtreeDfs(nodes[node], predicate);
                 if (result != null)
                     return result;
@@ -1530,15 +1527,15 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                      * The iteration is performed in the reverse order since the infos are pushed on the
                      * stack and therefore will be processed in the again reverse order
                      */
-                    int begin = embedded
-                            .iterator(info.current.embeddedEdges)
+                    int begin = embeddedLists
+                            .iter(info.current.embeddedEdges)
                             .filter(x -> embedded2edge[x] == info.prevEdge)
                             .nextInt();
                     checkMe();
-                    for (int i : embedded
-                            .iteratorRev(begin)
-                            .chain(embedded.iteratorRev(info.current.embeddedEdges).fuse(x -> x == begin))) {
-                        Edge currentEdge = embedded2edge[i];
+                    for (Edge currentEdge : embeddedLists
+                            .iterRev(begin)
+                            .chain(embeddedLists.iterRev(info.current.embeddedEdges).fuse(x -> x == begin))
+                            .mapObj(i -> embedded2edge[i])) {
                         Node opposite = currentEdge.getOpposite(info.current);
                         if ((!canGo.test(opposite) || opposite.visited != 0)
                                 && !isFinish.test(opposite)) {
@@ -1779,11 +1776,11 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         private Edge findFailedEdge(Node failedV) {
             final Set<Edge> embeddedEdges = new ObjectOpenHashSet<>();
             for (Node node : realNodes())
-                for (int i : embedded.iterator(node.embeddedEdges))
+                for (int i : embeddedLists.iter(node.embeddedEdges))
                     embeddedEdges.add(embedded2edge[i]);
 
             if (mergeStack.isEmpty()) {
-                for (int child : separatedDfsChildList2.iterator(failedV.separatedDfsChildList3)) {
+                for (int child : childrenLists.iter(failedV.children)) {
                     Node componentRoot = nodes[child].initialComponentRoot;
                     Edge result = checkComponentForFailedEdge(componentRoot, failedV, embeddedEdges);
                     if (result != null)

@@ -334,25 +334,25 @@ public class LinkedListFixedSize {
 			Arrays.fill(arr, None);
 		}
 
-		public IterTools.Peek.Int iterator(long list) {
-			return iteratorMaybeNone(head(list));
+		public IterTools.Peek.Int iter(long list) {
+			return iterMaybeNone(head(list));
 		}
 
-		public IterTools.Peek.Int iterator(int id) {
+		public IterTools.Peek.Int iter(int id) {
 			Assertions.checkArrayIndex(id, 0, size());
-			return iteratorMaybeNone(id);
+			return iterMaybeNone(id);
 		}
 
-		public IterTools.Peek.Int iteratorMaybeNone(int idMaybeNone) {
+		public IterTools.Peek.Int iterMaybeNone(int idMaybeNone) {
 			assert idMaybeNone >= 0 || idMaybeNone == None;
 			return new Iter(idMaybeNone);
 		}
 
-		public IterTools.Peek.Int iteratorRev(long list) {
-			return iteratorRev(tail(list));
+		public IterTools.Peek.Int iterRev(long list) {
+			return iterRev(tail(list));
 		}
 
-		public IterTools.Peek.Int iteratorRev(int id) {
+		public IterTools.Peek.Int iterRev(int id) {
 			Assertions.checkArrayIndex(id, 0, size());
 			return new IterRev(id);
 		}
