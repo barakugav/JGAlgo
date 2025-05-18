@@ -539,44 +539,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 Node parentNext, Edge parentEdge) {
             Node firstOpposite = embedded2edge[head(parent.embeddedEdges)].otherEndpoint(parent);
             boolean alongParentTraversal = firstOpposite != parentNext;
-            boolean actionAppend, invert;
-            if (parentDirection == Side1) {
-                if (childDirection == Side1) {
-                    if (!alongParentTraversal) {
-                        invert = true;
-                        actionAppend = true;
-                    } else {
-                        invert = false;
-                        actionAppend = false;
-                    }
-                } else {
-                    if (alongParentTraversal) {
-                        invert = true;
-                        actionAppend = false;
-                    } else {
-                        invert = false;
-                        actionAppend = true;
-                    }
-                }
-            } else {
-                if (childDirection == Side1) {
-                    if (!alongParentTraversal) {
-                        invert = true;
-                        actionAppend = true;
-                    } else {
-                        invert = false;
-                        actionAppend = false;
-                    }
-                } else {
-                    if (alongParentTraversal) {
-                        invert = true;
-                        actionAppend = false;
-                    } else {
-                        invert = false;
-                        actionAppend = true;
-                    }
-                }
-            }
+            boolean actionAppend = !alongParentTraversal;
+            boolean invert = (childDirection == Side1) ^ alongParentTraversal;
+
             int edgesFirst = head(childVirtualRoot.embeddedEdges), edgesLast = tail(childVirtualRoot.embeddedEdges);
             assert !embeddedLists.hasPrev(edgesFirst);
             assert !embeddedLists.hasNext(edgesLast);
