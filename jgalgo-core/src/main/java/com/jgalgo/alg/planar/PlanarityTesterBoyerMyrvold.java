@@ -194,6 +194,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
                 int embeddedEdgesNum = 0;
                 for (Edge treeEdge : v.treeEdges) {
+                    if (!mergeStack.isEmpty())
+                        break;
                     assert treeEdge.target.initialComponentRoot.dfsIdx == currentDfsIdx;
                     embeddedEdgesNum += walkDown(treeEdge.target.initialComponentRoot);
                 }
@@ -395,13 +397,15 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          */
         private int walkDown(final Node bicompRoot) {
             int embeddedEdgesNum = 0;
-            for (final boolean entryDir : sides()) {
-                if (!mergeStack.isEmpty())
-                    break;
+            sideLoop: for (final boolean entryDir : sides()) {
                 boolean side = entryDir;
                 OuterFaceIter outerFace = outerFace(bicompRoot, side);
-                for (Node current = outerFace.next(); current != bicompRoot;) {
+                outFaceLoop: for (Node current = outerFace.next(); current != bicompRoot;) {
                     if (current.activeBackEdge != null) {
+                        // At this point we walked down from the top vertex along the bi-comps util we reached a vertex
+                        // with an edge to the top vertex, which we should embed. When we add the back edge, all the
+                        // vertices along the path we walked down become inner vertices, and the separated bi-comps
+                        // are merged into one.
                         // The prev vertex on the outer face will be an inner vertex after we embed the edge
                         Node innerNeighbor = outerFace.prev();
                         while (!mergeStack.isEmpty())
@@ -414,16 +418,15 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     // Continue down the tree to a child bi-comp if its pertinent (has a back edge in its sub-tree)
                     if (!isNone(head(current.pertinentRoots))) {
                         final boolean prevSide = side;
-                        // 'root' is a virtual node, matching current, a root of a bi-comp.
-                        final Node root = nodes[head(current.pertinentRoots)];
+                        // 'childRoot' is a virtual node, matching current, a root of a bi-comp.
+                        final Node childRoot = nodes[head(current.pertinentRoots)];
 
                         // TODO: we should search both sides simultaneously, for linear time
-                        OuterFaceIter outerFace1 = findOnOuterFace(root, Side1, this::isActive);
-                        OuterFaceIter outerFace2 = findOnOuterFace(root, Side2, this::isActive);
-                        Node activeNode1 = outerFace1.getCurrent();
-                        Node activeNode2 = outerFace2.getCurrent();
-                        assert isActive(activeNode1) && activeNode1 != root;
-                        assert isActive(activeNode2) && activeNode2 != root;
+                        OuterFaceIter outerFace1 = findOnOuterFace(childRoot, Side1, this::isActive);
+                        OuterFaceIter outerFace2 = findOnOuterFace(childRoot, Side2, this::isActive);
+                        Node activeNode1 = outerFace1.current(), activeNode2 = outerFace2.current();
+                        assert isActive(activeNode1) && activeNode1 != childRoot;
+                        assert isActive(activeNode2) && activeNode2 != childRoot;
 
                         if (isInternallyActive(activeNode1)) {
                             side = Side1;
@@ -435,37 +438,39 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                             side = Side2;
                         }
 
+                        Node parent = current, parentNext = outerFace.peekNext();
                         if (side == Side1) {
-                            mergeStack
-                                    .push(new MergeInfo(current, outerFace.peekNext(), root, root.outerFaceNeighbor2,
-                                            prevSide, side));
+                            Node childPrev = childRoot.outerFaceNeighbor2;
+                            mergeStack.push(new MergeInfo(parent, parentNext, childRoot, childPrev, prevSide, side));
                             current = activeNode1;
                             outerFace = outerFace1;
 
                             if (!activeNode2.hasRootNeighbor())
-                                addShortCircuitEdge(root, Side2, outerFace2);
+                                addShortCircuitEdge(childRoot, Side2, activeNode2, outerFace2.prev());
                         } else {
-                            mergeStack
-                                    .push(new MergeInfo(current, outerFace.peekNext(), root, root.outerFaceNeighbor1,
-                                            prevSide, side));
+                            assert side == Side2;
+                            Node childPrev = childRoot.outerFaceNeighbor1;
+                            mergeStack.push(new MergeInfo(parent, parentNext, childRoot, childPrev, prevSide, side));
                             current = activeNode2;
                             outerFace = outerFace2;
 
                             if (!activeNode1.hasRootNeighbor())
-                                addShortCircuitEdge(root, Side1, outerFace1);
+                                addShortCircuitEdge(childRoot, Side1, activeNode1, outerFace1.prev());
                         }
-
-                    } else if (isActive(current)) {
-                        // current vertex is externally active, cant continue in this side.
-                        if (!current.hasRootNeighbor()) {
-                            // assert mergeStack.isEmpty();
-                            if (mergeStack.isEmpty())
-                                addShortCircuitEdge(bicompRoot, entryDir, outerFace);
-                        }
-                        break;
-                    } else {
-                        current = outerFace.next();
+                        continue outFaceLoop;
                     }
+
+                    if (isActive(current)) {
+                        // current vertex is externally active, cant continue in this side.
+                        if (!mergeStack.isEmpty())
+                            break sideLoop; // abort
+                        if (!current.hasRootNeighbor())
+                            addShortCircuitEdge(bicompRoot, entryDir, current, outerFace.prev());
+                        continue sideLoop;
+                    }
+
+                    // continue in the current side
+                    current = outerFace.next();
                 }
             }
             return embeddedEdgesNum;
@@ -490,7 +495,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             root.pertinentRoots = pertinentRootsLists.remove(root.pertinentRoots, virtualRoot.idx);
             root.children = childrenLists.remove(root.children, virtualRootChild.idx);
 
-            mergeChildEdges(root, virtualRoot, info.vIn, info.vOut, info.parentNext,
+            mergeChildEdges(root, virtualRoot, info.parentDirection, info.childDirection, info.parentNext,
                     virtualRoot.parentEdge);
             virtualRoot.embeddedEdges = LinkedListFixedSize.HeadTailNone;
 
@@ -573,7 +578,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
         /**
          * Embeds the back edge {@code edge} into the list of embedded edges of the source and the
-         * virtual target of the edge such that the {@code childPrev} belongs to the new inner face.
+         * virtual target of the edge such that the {@code innerNeighbor} belongs to the new inner face.
          * This method also takes care of modifying the boundary of the outer face accordingly
          *
          * @param  root          the component root
@@ -628,18 +633,18 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param entryDir      the direction used to enter the component
          * @param circulator    a circulator to the source of the new edge
          */
-        private void addShortCircuitEdge(Node componentRoot, boolean entryDir, OuterFaceIter circulator) {
-            Node current = circulator.getCurrent(), prev = circulator.prev();
-            Edge shortCircuit = Edge.newShortCircuitEdge(current, componentRoot.getParent());
+        private void addShortCircuitEdge(Node componentRoot, boolean entryDir, Node node, Node nodeInnerNeighbor) {
+            // Node current = circulator.getCurrent(), prev = circulator.prev();
+            Edge shortCircuit = Edge.newShortCircuitEdge(node, componentRoot.getParent());
             if (entryDir == Side1) {
                 addToEmbeddedLast(componentRoot, shortCircuit);
-                componentRoot.outerFaceNeighbor1 = current;
+                componentRoot.outerFaceNeighbor1 = node;
             } else {
                 addToEmbeddedFirst(componentRoot, shortCircuit);
-                componentRoot.outerFaceNeighbor2 = current;
+                componentRoot.outerFaceNeighbor2 = node;
             }
-            embedEdge(shortCircuit, current, prev);
-            current.replaceNeighbor(prev, componentRoot);
+            embedEdge(shortCircuit, node, nodeInnerNeighbor);
+            node.replaceNeighbor(nodeInnerNeighbor, componentRoot);
             checkMe();
         }
 
@@ -748,31 +753,32 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * the {@code parentNext}. Instead, this value specifies the direction used to start the
              * traversal from the parent's biconnected component virtual root.
              */
-            final boolean vIn;
+            final boolean parentDirection;
             /**
              * The direction used to start the traversal of the child biconnected component. Since the
              * {@code child} is the component root, {@code child.outerFaceNeighbors[|1-vOut|]} is equal
              * to the {@code childPrev}
              */
-            final boolean vOut;
+            final boolean childDirection;
 
             /**
              * Creates new instance of the information needed to merge to biconnected components
              *
-             * @param parent     the node current traversal descended from
-             * @param parentNext the next node along the traversal of the parent component
-             * @param child      the virtual root of the child biconnected component
-             * @param childPrev  the previous node along the traversal of the child component
-             * @param vIn        the direction used to enter the parent biconnected component
-             * @param vOut       the direction used to enter the child biconnected component
+             * @param parent          the node current traversal descended from
+             * @param parentNext      the next node along the traversal of the parent component
+             * @param child           the virtual root of the child biconnected component
+             * @param childPrev       the previous node along the traversal of the child component
+             * @param parentDirection the direction used to enter the parent biconnected component
+             * @param childDirection  the direction used to enter the child biconnected component
              */
-            MergeInfo(Node parent, Node parentNext, Node child, Node childPrev, boolean vIn, boolean vOut) {
+            MergeInfo(Node parent, Node parentNext, Node child, Node childPrev, boolean parentDirection,
+                    boolean childDirection) {
                 this.parent = parent;
                 this.parentNext = parentNext;
                 this.child = child;
                 this.childPrev = childPrev;
-                this.vIn = vIn;
-                this.vOut = vOut;
+                this.parentDirection = parentDirection;
+                this.childDirection = childDirection;
             }
 
             /**
@@ -783,7 +789,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              *         component, false otherwise
              */
             boolean isInverted() {
-                return vIn != vOut;
+                return parentDirection != childDirection;
             }
         }
 
@@ -795,74 +801,44 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             /**
              * The node this circulator will return next
              */
-            private Node current;
+            private Node next;
             /**
              * The previous node along the traversal of the component boundary. This node is needed
              * because the component boundary nodes aren't connected in an ordered way.
              */
-            private Node prev;
+            private Node current;
 
             /**
              * Creates a new instance of the circulator over the biconnected component boundary nodes.
              * The {@code prev} node is considered to be just traversed
              *
-             * @param current the node this circulator will return next
-             * @param prev    the previous node along the traversal
+             * @param next the node this circulator will return next
+             * @param prev the previous node along the traversal
              */
-            OuterFaceIter(Node current, Node prev) {
-                this.current = current;
-                this.prev = prev;
+            OuterFaceIter(Node next, Node prev) {
+                this.next = next;
+                this.current = prev;
             }
 
-            /**
-             * {@inheritDoc}
-             * <p>
-             * Always returns true since this is a circulator
-             */
             @Override
             public boolean hasNext() {
                 return true;
             }
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             public Node next() {
-                Node t = current;
-                current = current.nextOnOuterFace(prev);
-                return prev = t;
+                Node ret = next;
+                next = next.nextOnOuterFace(current);
+                return current = ret;
             }
 
             Node peekNext() {
+                return next;
+            }
+
+            // Last element returned by next()
+            Node current() {
                 return current;
-            }
-
-            /**
-             * Returns an edge connecting previously returned node with node, which will be returned
-             * next. If either of the mentioned nodes is virtual, the edge will be incident to its real
-             * counterpart.
-             *
-             * @return an edge from the current node to the next node
-             */
-            Edge edgeToNext() {
-                Edge edge = embedded2edge[head(prev.embeddedEdges)];
-                Node target = current.toExistingNode();
-                Node source = prev.toExistingNode();
-                if (edge.otherEndpoint(source) == target) {
-                    return edge;
-                } else {
-                    return embedded2edge[tail(prev.embeddedEdges)];
-                }
-            }
-
-            /**
-             * Returns the node this circulator has just traversed
-             *
-             * @return the node this circulator has just traversed
-             */
-            Node getCurrent() {
-                return prev;
             }
 
             /**
@@ -873,7 +849,25 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * @return node before the current node along the traversal
              */
             Node prev() {
-                return prev.nextOnOuterFace(current);
+                return current.nextOnOuterFace(next);
+            }
+
+            /**
+             * Returns an edge connecting previously returned node with node, which will be returned
+             * next. If either of the mentioned nodes is virtual, the edge will be incident to its real
+             * counterpart.
+             *
+             * @return an edge from the current node to the next node
+             */
+            Edge nextEdge() {
+                Edge edge = embedded2edge[head(current.embeddedEdges)];
+                Node target = next.toExistingNode();
+                Node source = current.toExistingNode();
+                if (edge.otherEndpoint(source) == target) {
+                    return edge;
+                } else {
+                    return embedded2edge[tail(current.embeddedEdges)];
+                }
             }
         }
 
@@ -1287,7 +1281,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @return      a component root of the component the {@code node} belongs to
          */
         private Node getComponentRoot(Node node) {
-            return findOnOuterFace(node, node, Side1, Node::isBicompRoot).getCurrent();
+            return findOnOuterFace(node, node, Side1, Node::isBicompRoot).current();
         }
 
         /**
@@ -1573,7 +1567,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             OuterFaceIter circulator = outerFace(componentRoot, Side1);
             Node current;
             do {
-                Edge edge = circulator.edgeToNext();
+                Edge edge = circulator.nextEdge();
                 edge.source.marked = edge.target.marked = true;
                 edges.add(edge);
                 current = circulator.next();
@@ -1633,7 +1627,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             OuterFaceIter circulator = outerFace(start, dir);
             Node next;
             do {
-                Edge edge = circulator.edgeToNext();
+                Edge edge = circulator.nextEdge();
                 edges.remove(edge);
                 next = circulator.next();
             } while (next != end);
@@ -1713,12 +1707,12 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         private Edge checkComponentForFailedEdge(Node componentRoot, Node v, Set<Edge> embeddedEdges) {
             OuterFaceIter firstDir =
                     getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, Side1);
-            Node firstDirNode = firstDir.getCurrent();
+            Node firstDirNode = firstDir.current();
             if (firstDirNode == componentRoot)
                 return null;
             OuterFaceIter secondDir =
                     getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, Side2);
-            Node secondDirNode = secondDir.getCurrent();
+            Node secondDirNode = secondDir.current();
             if (firstDirNode == secondDirNode)
                 return null;
             for (Node current = firstDir.next(); current != secondDirNode; current = firstDir.next())
@@ -1788,8 +1782,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             Node x, y, v = failedEdge.target, w = failedEdge.source, componentRoot;
             for (;;) {
                 componentRoot = getComponentRoot(w);
-                x = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, Side2).getCurrent();
-                y = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, Side1).getCurrent();
+                x = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, Side2).current();
+                y = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, Side1).current();
                 if (x.isBicompRoot()) {
                     w = x.getParent();
                 } else if (y.isBicompRoot()) {
