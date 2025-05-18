@@ -422,7 +422,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
                     // Continue down the tree to a child bi-comp if its pertinent (has a back edge in its sub-tree)
                     if (!isNone(head(current.pertinentRoots))) {
-                        final boolean prevSide = side;
                         // 'childRoot' is a virtual node, matching current, a root of a bi-comp.
                         final Node childRoot = nodes[head(current.pertinentRoots)];
 
@@ -451,12 +450,11 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                             childPrev = childRoot.outerFaceNeighbor1;
                         }
                         Node parent = current, parentNext = outerFace.peekNext();
-                        boolean parentSide = prevSide, childSide = side;
                         biCompMergeStack
                                 .push(new MergeInfo(
                                         parent, parentNext,
                                         childRoot, childPrev,
-                                        parentSide, childSide));
+                                        side));
 
                         if (side == Side1) {
                             current = activeNode1;
@@ -504,7 +502,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             parent.pertinentRoots = pertinentRootsLists.remove(parent.pertinentRoots, virtualRoot.idx);
             parent.children = childrenLists.remove(parent.children, virtualRootChild.idx);
 
-            mergeChildEdges(parent, virtualRoot, info.parentDirection, info.childDirection, info.parentNext,
+            mergeChildEdges(parent, virtualRoot, info.childDirection, info.parentNext,
                     virtualRoot.parentEdge);
             virtualRoot.embeddedEdges = LinkedListFixedSize.HeadTailNone;
 
@@ -527,40 +525,30 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * (clockwise or counterclockwise). The edges in the {@code edges} list should have the same
          * orientation. If this list is inverted, the sign of the {@code parentEdge} is set to $-1$.
          *
-         * @param edges           the edges from the child component root
-         * @param parentDirection the direction used to enter the parent component
-         * @param childDirection  the direction used to enter the child component
-         * @param parentNext      the next node along the traversal of the parent biconnected component
-         * @param parentEdge      the parent edge if the child component
+         * @param edges          the edges from the child component root
+         * @param childDirection the direction used to enter the child component
+         * @param parentNext     the next node along the traversal of the parent biconnected component
+         * @param parentEdge     the parent edge if the child component
          */
         void mergeChildEdges(
                 Node parent, Node childVirtualRoot,
-                boolean parentDirection, boolean childDirection,
+                boolean childDirection,
                 Node parentNext, Edge parentEdge) {
             Node firstOpposite = embedded2edge[head(parent.embeddedEdges)].otherEndpoint(parent);
             boolean alongParentTraversal = firstOpposite != parentNext;
             boolean actionAppend = !alongParentTraversal;
             boolean invert = (childDirection == Side1) ^ alongParentTraversal;
 
-            int edgesFirst = head(childVirtualRoot.embeddedEdges), edgesLast = tail(childVirtualRoot.embeddedEdges);
-            assert !embeddedLists.hasPrev(edgesFirst);
-            assert !embeddedLists.hasNext(edgesLast);
+            long childEdges = childVirtualRoot.embeddedEdges;
             if (invert) {
                 assert !parentEdge.isInverted;
                 parentEdge.isInverted = true;
-                this.embeddedLists.reverse(edgesFirst); // TODO: is this linear?
-                int temp = edgesFirst;
-                edgesFirst = edgesLast;
-                edgesLast = temp;
+                childEdges = this.embeddedLists.reverse(childEdges); // TODO: is this linear?
             }
-            assert !embeddedLists.hasPrev(edgesFirst);
-            assert !embeddedLists.hasNext(edgesLast);
             if (actionAppend) {
-                parent.embeddedEdges =
-                        embeddedLists.concat(parent.embeddedEdges, LinkedListFixedSize.headTail(edgesFirst, edgesLast));
+                parent.embeddedEdges = embeddedLists.concat(parent.embeddedEdges, childEdges);
             } else {
-                parent.embeddedEdges =
-                        embeddedLists.concat(LinkedListFixedSize.headTail(edgesFirst, edgesLast), parent.embeddedEdges);
+                parent.embeddedEdges = embeddedLists.concat(childEdges, parent.embeddedEdges);
             }
         }
 
@@ -732,15 +720,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              */
             final Node childPrev;
             /**
-             * The direction used to enter the parent biconnected component.
-             * <p>
-             * <b>Note:</b> this value doesn't specify the direction from {@code parent} node to the
-             * {@code parentNext} node, i.e. {@code parent.outerFaceNeighbors[vIn]} may not be equal to
-             * the {@code parentNext}. Instead, this value specifies the direction used to start the
-             * traversal from the parent's biconnected component virtual root.
-             */
-            final boolean parentDirection;
-            /**
              * The direction used to start the traversal of the child biconnected component. Since the
              * {@code child} is the component root, {@code child.outerFaceNeighbors[|1-vOut|]} is equal
              * to the {@code childPrev}
@@ -750,21 +729,18 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             /**
              * Creates new instance of the information needed to merge to biconnected components
              *
-             * @param parent          the node current traversal descended from
-             * @param parentNext      the next node along the traversal of the parent component
-             * @param child           the virtual root of the child biconnected component
-             * @param childPrev       the previous node along the traversal of the child component
-             * @param parentDirection the direction used to enter the parent biconnected component
-             * @param childDirection  the direction used to enter the child biconnected component
+             * @param parent         the node current traversal descended from
+             * @param parentNext     the next node along the traversal of the parent component
+             * @param child          the virtual root of the child biconnected component
+             * @param childPrev      the previous node along the traversal of the child component
+             * @param childDirection the direction used to enter the child biconnected component
              */
-            MergeInfo(Node parent, Node parentNext, Node child, Node childPrev, boolean parentDirection,
-                    boolean childDirection) {
+            MergeInfo(Node parent, Node parentNext, Node child, Node childPrev, boolean childDirection) {
                 assert parent.dfsIdx == child.dfsIdx;
                 this.parent = parent;
                 this.parentNext = parentNext;
                 this.child = child;
                 this.childPrev = childPrev;
-                this.parentDirection = parentDirection;
                 this.childDirection = childDirection;
             }
         }
