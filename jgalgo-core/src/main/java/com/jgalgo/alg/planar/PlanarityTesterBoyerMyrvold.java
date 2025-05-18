@@ -397,8 +397,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          */
         private int walkDown(final Node bicompRoot) {
             int embeddedEdgesNum = 0;
-            sideLoop: for (final boolean entryDir : sides()) {
-                boolean side = entryDir;
+            sideLoop: for (final boolean initialDirection : sides()) {
+                boolean side = initialDirection;
                 OuterFaceIter outerFace = outerFace(bicompRoot, side);
                 outFaceLoop: for (Node current = outerFace.next(); current != bicompRoot;) {
                     if (current.activeBackEdge != null) {
@@ -406,13 +406,18 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         // with an edge to the top vertex, which we should embed. When we add the back edge, all the
                         // vertices along the path we walked down become inner vertices, and the separated bi-comps
                         // are merged into one.
+                        Edge backEdge = current.activeBackEdge;
                         // The prev vertex on the outer face will be an inner vertex after we embed the edge
                         Node innerNeighbor = outerFace.prev();
+
                         while (!mergeStack.isEmpty())
                             mergeBiconnectedComponent(mergeStack.pop());
-                        outerFace = embedBackEdge(bicompRoot, entryDir, current.activeBackEdge, innerNeighbor);
+
+                        embedBackEdge(bicompRoot, initialDirection, backEdge, innerNeighbor);
                         embeddedEdgesNum++;
                         checkMe();
+
+                        outerFace = new OuterFaceIter(backEdge.source.nextOnOuterFace(bicompRoot), backEdge.source);
                     }
 
                     // Continue down the tree to a child bi-comp if its pertinent (has a back edge in its sub-tree)
@@ -465,7 +470,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         if (!mergeStack.isEmpty())
                             break sideLoop; // abort
                         if (!current.hasRootNeighbor())
-                            addShortCircuitEdge(bicompRoot, entryDir, current, outerFace.prev());
+                            addShortCircuitEdge(bicompRoot, initialDirection, current, outerFace.prev());
                         continue sideLoop;
                     }
 
@@ -587,7 +592,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param  innerNeighbor the neighbor of the source of the edge that should belong to the inner face
          * @return               a circulator starting from the edge's source
          */
-        private OuterFaceIter embedBackEdge(Node root, boolean entryDir, Edge edge, Node innerNeighbor) {
+        private void embedBackEdge(Node root, boolean entryDir, Edge edge, Node innerNeighbor) {
             Node source = edge.source;
             if (entryDir == Side1) {
                 addToEmbeddedLast(root, edge);
@@ -602,8 +607,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             checkMe();
 
             source.replaceNeighbor(innerNeighbor, root);
-            Node next = source.nextOnOuterFace(root);
-            return new OuterFaceIter(next, source);
         }
 
         /**
