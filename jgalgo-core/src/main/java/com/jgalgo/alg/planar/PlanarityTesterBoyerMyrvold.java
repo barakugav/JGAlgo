@@ -496,25 +496,26 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * node.
          */
         private void mergeBiconnectedComponent(MergeInfo info) {
-            Node root = info.parent;
+            Node parent = info.parent;
             Node virtualRoot = info.child;
             Node virtualRootChild = virtualRoot.parentEdge.target;
             assert info.parent.dfsIdx == info.child.dfsIdx;
 
-            root.pertinentRoots = pertinentRootsLists.remove(root.pertinentRoots, virtualRoot.idx);
-            root.children = childrenLists.remove(root.children, virtualRootChild.idx);
+            parent.pertinentRoots = pertinentRootsLists.remove(parent.pertinentRoots, virtualRoot.idx);
+            parent.children = childrenLists.remove(parent.children, virtualRootChild.idx);
 
-            mergeChildEdges(root, virtualRoot, info.parentDirection, info.childDirection, info.parentNext,
+            mergeChildEdges(parent, virtualRoot, info.parentDirection, info.childDirection, info.parentNext,
                     virtualRoot.parentEdge);
             virtualRoot.embeddedEdges = LinkedListFixedSize.HeadTailNone;
 
-            if (root.outerFaceNeighbor1 == info.parentNext) {
-                root.outerFaceNeighbor2 = info.childPrev;
+            if (parent.outerFaceNeighbor1 == info.parentNext) {
+                parent.outerFaceNeighbor2 = info.childPrev;
             } else {
-                assert root.outerFaceNeighbor2 == info.parentNext;
-                root.outerFaceNeighbor1 = info.childPrev;
+                assert parent.outerFaceNeighbor2 == info.parentNext;
+                parent.outerFaceNeighbor1 = info.childPrev;
             }
-            info.childPrev.replaceNeighbor(virtualRoot, root);
+            // root.replaceNeighbor(root.nextOnOuterFace(info.parentNext), info.childPrev);
+            info.childPrev.replaceNeighbor(virtualRoot, parent);
             virtualRoot.outerFaceNeighbor1 = virtualRoot.outerFaceNeighbor2 = null;
         }
 
@@ -526,46 +527,59 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * (clockwise or counterclockwise). The edges in the {@code edges} list should have the same
          * orientation. If this list is inverted, the sign of the {@code parentEdge} is set to $-1$.
          *
-         * @param edges      the edges from the child component root
-         * @param vIn        the direction used to enter the parent component
-         * @param vOut       the direction used to enter the child component
-         * @param parentNext the next node along the traversal of the parent biconnected component
-         * @param parentEdge the parent edge if the child component
+         * @param edges           the edges from the child component root
+         * @param parentDirection the direction used to enter the parent component
+         * @param childDirection  the direction used to enter the child component
+         * @param parentNext      the next node along the traversal of the parent biconnected component
+         * @param parentEdge      the parent edge if the child component
          */
-        void mergeChildEdges(Node this2, Node virtualRoot, boolean vIn, boolean vOut, Node parentNext,
-                Edge parentEdge) {
-            Node firstOpposite = embedded2edge[head(this2.embeddedEdges)].otherEndpoint(this2);
+        void mergeChildEdges(
+                Node parent, Node childVirtualRoot,
+                boolean parentDirection, boolean childDirection,
+                Node parentNext, Edge parentEdge) {
+            Node firstOpposite = embedded2edge[head(parent.embeddedEdges)].otherEndpoint(parent);
             boolean alongParentTraversal = firstOpposite != parentNext;
-            boolean actionAppend = false, invert = false;
-            if (vIn == Side1) {
-                if (vOut == Side1) {
+            boolean actionAppend, invert;
+            if (parentDirection == Side1) {
+                if (childDirection == Side1) {
                     if (!alongParentTraversal) {
-                        invert = actionAppend = true;
+                        invert = true;
+                        actionAppend = true;
+                    } else {
+                        invert = false;
+                        actionAppend = false;
                     }
                 } else {
                     if (alongParentTraversal) {
                         invert = true;
+                        actionAppend = false;
                     } else {
+                        invert = false;
                         actionAppend = true;
                     }
                 }
             } else {
-                if (vOut == Side1) {
+                if (childDirection == Side1) {
                     if (!alongParentTraversal) {
-                        invert = actionAppend = true;
+                        invert = true;
+                        actionAppend = true;
+                    } else {
+                        invert = false;
+                        actionAppend = false;
                     }
                 } else {
                     if (alongParentTraversal) {
                         invert = true;
+                        actionAppend = false;
                     } else {
+                        invert = false;
                         actionAppend = true;
                     }
                 }
             }
-            int edgesFirst = head(virtualRoot.embeddedEdges), edgesLast = tail(virtualRoot.embeddedEdges);
+            int edgesFirst = head(childVirtualRoot.embeddedEdges), edgesLast = tail(childVirtualRoot.embeddedEdges);
             assert !embeddedLists.hasPrev(edgesFirst);
             assert !embeddedLists.hasNext(edgesLast);
-            debug++;
             if (invert) {
                 assert !parentEdge.isInverted;
                 parentEdge.isInverted = true;
@@ -577,11 +591,11 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             assert !embeddedLists.hasPrev(edgesFirst);
             assert !embeddedLists.hasNext(edgesLast);
             if (actionAppend) {
-                this2.embeddedEdges =
-                        embeddedLists.concat(this2.embeddedEdges, LinkedListFixedSize.headTail(edgesFirst, edgesLast));
+                parent.embeddedEdges =
+                        embeddedLists.concat(parent.embeddedEdges, LinkedListFixedSize.headTail(edgesFirst, edgesLast));
             } else {
-                this2.embeddedEdges =
-                        embeddedLists.concat(LinkedListFixedSize.headTail(edgesFirst, edgesLast), this2.embeddedEdges);
+                parent.embeddedEdges =
+                        embeddedLists.concat(LinkedListFixedSize.headTail(edgesFirst, edgesLast), parent.embeddedEdges);
             }
         }
 
