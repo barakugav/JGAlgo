@@ -406,18 +406,18 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         // with an edge to the top vertex, which we should embed. When we add the back edge, all the
                         // vertices along the path we walked down become inner vertices, and the separated bi-comps
                         // are merged into one.
-                        Edge backEdge = current.activeBackEdge;
                         // The prev vertex on the outer face will be an inner vertex after we embed the edge
                         Node innerNeighbor = outerFace.prev();
 
                         while (!biCompMergeStack.isEmpty())
                             mergeBicomps(biCompMergeStack.pop());
 
-                        embedBackEdge(bicompRoot, initialDirection, backEdge, innerNeighbor);
+                        embedEdge(bicompRoot, initialDirection, current.activeBackEdge, innerNeighbor);
+                        current.activeBackEdge = null;
                         embeddedEdgesNum++;
                         checkMe();
 
-                        outerFace = new OuterFaceIter(backEdge.source.nextOnOuterFace(bicompRoot), backEdge.source);
+                        outerFace = new OuterFaceIter(current.nextOnOuterFace(bicompRoot), current);
                     }
 
                     // Continue down the tree to a child bi-comp if its pertinent (has a back edge in its sub-tree)
@@ -528,27 +528,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         }
 
         /**
-         * Embeds the back edge {@code edge} into the list of embedded edges of the source and the
-         * virtual target of the edge such that the {@code innerNeighbor} belongs to the new inner face.
-         * This method also takes care of modifying the boundary of the outer face accordingly
-         *
-         * @param  root          the component root
-         * @param  entryDir      the component entry direction
-         * @param  edge          the edge to embed
-         * @param  innerNeighbor the neighbor of the source of the edge that should belong to the inner face
-         * @return               a circulator starting from the edge's source
-         */
-        private void embedBackEdge(Node root, boolean entryDir, Edge edge, Node innerNeighbor) {
-            Node source = edge.source;
-            embedEdge(root, entryDir, edge, innerNeighbor);
-            assert source.activeBackEdge == edge;
-            source.activeBackEdge = null;
-            checkMe();
-
-            source.replaceNeighbor(innerNeighbor, root);
-        }
-
-        /**
          * Embeds a short-circuit edge from the {@code componentRoot} to the current node of the
          * {@code circulator}. Changes the outer face accordingly
          *
@@ -559,7 +538,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         private void addShortCircuitEdge(Node source, Node targetBicompRoot, boolean entryDir, Node innerNeighbor) {
             Edge shortCircuit = Edge.newShortCircuitEdge(source, targetBicompRoot.getParent());
             embedEdge(targetBicompRoot, entryDir, shortCircuit, innerNeighbor);
-            source.replaceNeighbor(innerNeighbor, targetBicompRoot);
             checkMe();
         }
 
@@ -579,6 +557,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             } else {
                 addToEmbeddedLast(source, edge);
             }
+
+            source.replaceNeighbor(innerNeighbor, root);
         }
 
         Iter<Node> realNodes() {
