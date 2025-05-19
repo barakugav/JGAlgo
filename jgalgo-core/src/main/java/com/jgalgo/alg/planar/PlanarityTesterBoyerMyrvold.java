@@ -411,7 +411,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         Node innerNeighbor = outerFace.prev();
 
                         while (!biCompMergeStack.isEmpty())
-                            mergeBiconnectedComponent(biCompMergeStack.pop());
+                            mergeBicomps(biCompMergeStack.pop());
 
                         embedBackEdge(bicompRoot, initialDirection, backEdge, innerNeighbor);
                         embeddedEdgesNum++;
@@ -456,18 +456,22 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                                         childRoot, childPrev,
                                         side));
 
+                        Node otherActiveNode;
+                        OuterFaceIter otherOuterFace;
                         if (side == Side1) {
                             current = activeNode1;
                             outerFace = outerFace1;
-                            if (!activeNode2.hasRootNeighbor())
-                                addShortCircuitEdge(childRoot, !side, activeNode2, outerFace2.prev());
+                            otherActiveNode = activeNode2;
+                            otherOuterFace = outerFace2;
                         } else {
                             assert side == Side2;
                             current = activeNode2;
                             outerFace = outerFace2;
-                            if (!activeNode1.hasRootNeighbor())
-                                addShortCircuitEdge(childRoot, !side, activeNode1, outerFace1.prev());
+                            otherActiveNode = activeNode1;
+                            otherOuterFace = outerFace1;
                         }
+                        if (!otherActiveNode.hasRootNeighbor())
+                            addShortCircuitEdge(otherActiveNode, childRoot, !side, otherOuterFace.prev());
                         continue outFaceLoop;
                     }
 
@@ -476,7 +480,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         if (!biCompMergeStack.isEmpty())
                             break sideLoop; // abort
                         if (!current.hasRootNeighbor())
-                            addShortCircuitEdge(bicompRoot, initialDirection, current, outerFace.prev());
+                            addShortCircuitEdge(current, bicompRoot, initialDirection, outerFace.prev());
                         continue sideLoop;
                     }
 
@@ -493,7 +497,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * embedded edges of the child component root with the embedded edges of the component parent
          * node.
          */
-        private void mergeBiconnectedComponent(MergeInfo info) {
+        private void mergeBicomps(MergeInfo info) {
             Node parent = info.parent;
             Node virtualRoot = info.child;
             Node virtualRootChild = virtualRoot.parentEdge.target;
@@ -502,29 +506,23 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             parent.pertinentRoots = pertinentRootsLists.remove(parent.pertinentRoots, virtualRoot.idx);
             parent.children = childrenLists.remove(parent.children, virtualRootChild.idx);
 
-            // mergeChildEdges
-            boolean alongParentTraversal =
+            // merge embedded edges lists of the virtual root and the parent (real node)
+            boolean parentEdgesDirection =
                     embedded2edge[head(parent.embeddedEdges)].otherEndpoint(parent) != info.parentNext;
-            if ((info.childDirection == Side1) ^ alongParentTraversal) {
+            if ((info.childDirection == Side1) ^ parentEdgesDirection) {
                 assert !virtualRoot.parentEdge.isInverted;
                 virtualRoot.parentEdge.isInverted = true;
-                // TODO: is this linear?
-                virtualRoot.embeddedEdges = this.embeddedLists.reverse(virtualRoot.embeddedEdges);
+                // This doesn't take more than O(E) overall as we only reverse the list once per virtual node
+                virtualRoot.embeddedEdges = embeddedLists.reverse(virtualRoot.embeddedEdges);
             }
-            if (!alongParentTraversal) {
+            if (!parentEdgesDirection) {
                 parent.embeddedEdges = embeddedLists.concat(parent.embeddedEdges, virtualRoot.embeddedEdges);
             } else {
                 parent.embeddedEdges = embeddedLists.concat(virtualRoot.embeddedEdges, parent.embeddedEdges);
             }
             virtualRoot.embeddedEdges = LinkedListFixedSize.HeadTailNone;
 
-            if (parent.outerFaceNeighbor1 == info.parentNext) {
-                parent.outerFaceNeighbor2 = info.childPrev;
-            } else {
-                assert parent.outerFaceNeighbor2 == info.parentNext;
-                parent.outerFaceNeighbor1 = info.childPrev;
-            }
-            // root.replaceNeighbor(root.nextOnOuterFace(info.parentNext), info.childPrev);
+            parent.replaceNeighborOpposite(info.parentNext, info.childPrev);
             info.childPrev.replaceNeighbor(virtualRoot, parent);
             virtualRoot.outerFaceNeighbor1 = virtualRoot.outerFaceNeighbor2 = null;
         }
@@ -542,14 +540,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          */
         private void embedBackEdge(Node root, boolean entryDir, Edge edge, Node innerNeighbor) {
             Node source = edge.source;
-            if (entryDir == Side1) {
-                addToEmbeddedLast(root, edge);
-                root.outerFaceNeighbor1 = source;
-            } else {
-                addToEmbeddedFirst(root, edge);
-                root.outerFaceNeighbor2 = source;
-            }
-            embedEdge(edge, source, innerNeighbor);
+            embedEdge(root, entryDir, edge, innerNeighbor);
             assert source.activeBackEdge == edge;
             source.activeBackEdge = null;
             checkMe();
@@ -558,45 +549,36 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         }
 
         /**
-         * Adds {@code edge} to the list of the embedded edges such that the {@code prev} node
-         * becomes an inner node.
-         *
-         * @param edge an edge to embed
-         * @param prev the node which should be on the new inner face
-         */
-        void embedEdge(Edge edge, Node node, Node prev) {
-            if (prev.isBicompRoot())
-                prev = prev.getParent();
-            Edge firstEdge = embedded2edge[head(node.embeddedEdges)];
-            if (firstEdge.otherEndpoint(node) == prev) {
-                // edge on the new inner face is at the beginning of the list
-                addToEmbeddedFirst(node, edge);
-            } else {
-                addToEmbeddedLast(node, edge);
-            }
-        }
-
-        /**
          * Embeds a short-circuit edge from the {@code componentRoot} to the current node of the
          * {@code circulator}. Changes the outer face accordingly
          *
-         * @param componentRoot the component root
-         * @param entryDir      the direction used to enter the component
-         * @param circulator    a circulator to the source of the new edge
+         * @param targetBicompRoot the component root
+         * @param entryDir         the direction used to enter the component
+         * @param circulator       a circulator to the source of the new edge
          */
-        private void addShortCircuitEdge(Node componentRoot, boolean entryDir, Node node, Node nodeInnerNeighbor) {
-            // Node current = circulator.getCurrent(), prev = circulator.prev();
-            Edge shortCircuit = Edge.newShortCircuitEdge(node, componentRoot.getParent());
-            if (entryDir == Side1) {
-                addToEmbeddedLast(componentRoot, shortCircuit);
-                componentRoot.outerFaceNeighbor1 = node;
-            } else {
-                addToEmbeddedFirst(componentRoot, shortCircuit);
-                componentRoot.outerFaceNeighbor2 = node;
-            }
-            embedEdge(shortCircuit, node, nodeInnerNeighbor);
-            node.replaceNeighbor(nodeInnerNeighbor, componentRoot);
+        private void addShortCircuitEdge(Node source, Node targetBicompRoot, boolean entryDir, Node innerNeighbor) {
+            Edge shortCircuit = Edge.newShortCircuitEdge(source, targetBicompRoot.getParent());
+            embedEdge(targetBicompRoot, entryDir, shortCircuit, innerNeighbor);
+            source.replaceNeighbor(innerNeighbor, targetBicompRoot);
             checkMe();
+        }
+
+        private void embedEdge(Node root, boolean entryDir, Edge edge, Node innerNeighbor) {
+            Node source = edge.source;
+            if (entryDir == Side1) {
+                addToEmbeddedLast(root, edge);
+                root.outerFaceNeighbor1 = source;
+            } else {
+                addToEmbeddedFirst(root, edge);
+                root.outerFaceNeighbor2 = source;
+            }
+
+            Edge firstEdge = embedded2edge[head(source.embeddedEdges)];
+            if (firstEdge.otherEndpoint(source) == innerNeighbor.toExistingNode()) {
+                addToEmbeddedFirst(source, edge);
+            } else {
+                addToEmbeddedLast(source, edge);
+            }
         }
 
         Iter<Node> realNodes() {
@@ -1076,6 +1058,15 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 } else {
                     assert outerFaceNeighbor2 == oldNeighbor;
                     outerFaceNeighbor2 = newNeighbor;
+                }
+            }
+
+            void replaceNeighborOpposite(Node oppositeNeighbor, Node newNeighbor) {
+                if (outerFaceNeighbor1 == oppositeNeighbor) {
+                    outerFaceNeighbor2 = newNeighbor;
+                } else {
+                    assert outerFaceNeighbor2 == oppositeNeighbor;
+                    outerFaceNeighbor1 = newNeighbor;
                 }
             }
 
