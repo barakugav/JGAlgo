@@ -502,8 +502,20 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             parent.pertinentRoots = pertinentRootsLists.remove(parent.pertinentRoots, virtualRoot.idx);
             parent.children = childrenLists.remove(parent.children, virtualRootChild.idx);
 
-            mergeChildEdges(parent, virtualRoot, info.childDirection, info.parentNext,
-                    virtualRoot.parentEdge);
+            // mergeChildEdges
+            boolean alongParentTraversal =
+                    embedded2edge[head(parent.embeddedEdges)].otherEndpoint(parent) != info.parentNext;
+            if ((info.childDirection == Side1) ^ alongParentTraversal) {
+                assert !virtualRoot.parentEdge.isInverted;
+                virtualRoot.parentEdge.isInverted = true;
+                // TODO: is this linear?
+                virtualRoot.embeddedEdges = this.embeddedLists.reverse(virtualRoot.embeddedEdges);
+            }
+            if (!alongParentTraversal) {
+                parent.embeddedEdges = embeddedLists.concat(parent.embeddedEdges, virtualRoot.embeddedEdges);
+            } else {
+                parent.embeddedEdges = embeddedLists.concat(virtualRoot.embeddedEdges, parent.embeddedEdges);
+            }
             virtualRoot.embeddedEdges = LinkedListFixedSize.HeadTailNone;
 
             if (parent.outerFaceNeighbor1 == info.parentNext) {
@@ -515,41 +527,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             // root.replaceNeighbor(root.nextOnOuterFace(info.parentNext), info.childPrev);
             info.childPrev.replaceNeighbor(virtualRoot, parent);
             virtualRoot.outerFaceNeighbor1 = virtualRoot.outerFaceNeighbor2 = null;
-        }
-
-        /**
-         * Merges the embedded edges of the child component root into this node's embedded edges.
-         * Note, that the edges in the {@code edges} list are always in the clockwise order. There
-         * are 3 parameters which determine how the {@code edges} list is merged: the {@code vIn}
-         * direction, the {@code vOut} direction and the orientation of the edges around this node
-         * (clockwise or counterclockwise). The edges in the {@code edges} list should have the same
-         * orientation. If this list is inverted, the sign of the {@code parentEdge} is set to $-1$.
-         *
-         * @param edges          the edges from the child component root
-         * @param childDirection the direction used to enter the child component
-         * @param parentNext     the next node along the traversal of the parent biconnected component
-         * @param parentEdge     the parent edge if the child component
-         */
-        void mergeChildEdges(
-                Node parent, Node childVirtualRoot,
-                boolean childDirection,
-                Node parentNext, Edge parentEdge) {
-            Node firstOpposite = embedded2edge[head(parent.embeddedEdges)].otherEndpoint(parent);
-            boolean alongParentTraversal = firstOpposite != parentNext;
-            boolean actionAppend = !alongParentTraversal;
-            boolean invert = (childDirection == Side1) ^ alongParentTraversal;
-
-            long childEdges = childVirtualRoot.embeddedEdges;
-            if (invert) {
-                assert !parentEdge.isInverted;
-                parentEdge.isInverted = true;
-                childEdges = this.embeddedLists.reverse(childEdges); // TODO: is this linear?
-            }
-            if (actionAppend) {
-                parent.embeddedEdges = embeddedLists.concat(parent.embeddedEdges, childEdges);
-            } else {
-                parent.embeddedEdges = embeddedLists.concat(childEdges, parent.embeddedEdges);
-            }
         }
 
         /**
