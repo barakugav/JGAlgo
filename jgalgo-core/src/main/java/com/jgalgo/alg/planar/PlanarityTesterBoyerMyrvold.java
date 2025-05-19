@@ -39,7 +39,6 @@ import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.IterTools.Iter;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.Stack;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -75,7 +74,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         Worker.Node virtualRoot = worker.nodes[child].initialComponentRoot;
                         node.embeddedEdges = worker.embeddedLists.concat(node.embeddedEdges, virtualRoot.embeddedEdges);
                         virtualRoot.embeddedEdges = LinkedListFixedSize.HeadTailNone;
-                        worker.checkMe();
                     }
 
                     int i = 0;
@@ -103,7 +101,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     worker.removeShortCircuitEdges(bicompRoot);
                     worker.fixBoundaryOrder(bicompRoot);
                 }
-                worker.checkMe();
 
                 return Optional.of(worker.getKuratowskiSubdivision(planarityResult.unwrapError()));
             });
@@ -415,7 +412,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         embedEdge(bicompRoot, initialDirection, current.activeBackEdge, innerNeighbor);
                         current.activeBackEdge = null;
                         embeddedEdgesNum++;
-                        checkMe();
 
                         outerFace = new OuterFaceIter(current.nextOnOuterFace(bicompRoot), current);
                     }
@@ -491,12 +487,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             return embeddedEdgesNum;
         }
 
-        /**
-         * Merges the last two biconnected components using the info stored on top of the stack. The key
-         * goal of this method is to merge the outer faces of the two components and to merge the
-         * embedded edges of the child component root with the embedded edges of the component parent
-         * node.
-         */
         private void mergeBicomps(MergeInfo info) {
             Node parent = info.parent;
             Node virtualRoot = info.child;
@@ -527,23 +517,15 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             virtualRoot.outerFaceNeighbor1 = virtualRoot.outerFaceNeighbor2 = null;
         }
 
-        /**
-         * Embeds a short-circuit edge from the {@code componentRoot} to the current node of the
-         * {@code circulator}. Changes the outer face accordingly
-         *
-         * @param targetBicompRoot the component root
-         * @param entryDir         the direction used to enter the component
-         * @param circulator       a circulator to the source of the new edge
-         */
-        private void addShortCircuitEdge(Node source, Node targetBicompRoot, boolean entryDir, Node innerNeighbor) {
+        private void addShortCircuitEdge(Node source, Node targetBicompRoot, boolean direction, Node innerNeighbor) {
             Edge shortCircuit = Edge.newShortCircuitEdge(source, targetBicompRoot.getParent());
-            embedEdge(targetBicompRoot, entryDir, shortCircuit, innerNeighbor);
-            checkMe();
+            embedEdge(targetBicompRoot, direction, shortCircuit, innerNeighbor);
         }
 
-        private void embedEdge(Node root, boolean entryDir, Edge edge, Node innerNeighbor) {
+        private void embedEdge(Node root, boolean direction, Edge edge, Node innerNeighbor) {
+            assert root.isBicompRoot();
             Node source = edge.source;
-            if (entryDir == Side1) {
+            if (direction == Side1) {
                 addToEmbeddedLast(root, edge);
                 root.outerFaceNeighbor1 = source;
             } else {
@@ -634,7 +616,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 for (Edge treeEdge : current.treeEdges)
                     stack.push(Pair.of(treeEdge.target, Boolean.valueOf(isInverted ^ treeEdge.isInverted)));
             }
-            checkMe();
         }
 
         /**
@@ -1110,7 +1091,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         void removeShortCircuitEdges(Node node) {
             node.embeddedEdges = embeddedLists.removeIf(node.embeddedEdges, eIdx -> !embedded2edge[eIdx].isRealEdge());
             assert isNone(head(node.embeddedEdges)) || !embeddedLists.hasPrev(head(node.embeddedEdges));
-            checkMe();
         }
 
         // A node is externally active if it is incident to the edge ending higher than {@code node}, or it
@@ -1138,19 +1118,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             return isExternallyActive(node) || node.isPertinent();
         }
 
-        void checkMe() {
-            for (Node node : realNodes()) {
-                assert isNone(head(node.embeddedEdges)) == isNone(tail(node.embeddedEdges));
-                var x = new IntArrayList(embeddedLists.iter(node.embeddedEdges));
-                for (int i : range(x.size())) {
-                    int u = i > 0 ? x.getInt(i - 1) : LinkedListFixedSize.None;
-                    int v = x.getInt(i);
-                    int w = i < x.size() - 1 ? x.getInt(i + 1) : LinkedListFixedSize.None;
-                    assert u == embeddedLists.prev(v);
-                    assert w == embeddedLists.next(v);
-                }
-            }
-        }
     }
 
     private static class Worker2 extends Worker {
@@ -1395,7 +1362,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                             .iter(info.current.embeddedEdges)
                             .filter(x -> embedded2edge[x] == info.prevEdge)
                             .nextInt();
-                    checkMe();
                     for (Edge currentEdge : embeddedLists
                             .iterRev(begin)
                             .chain(embeddedLists.iterRev(info.current.embeddedEdges).fuse(x -> x == begin))
@@ -1678,7 +1644,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * described in the original paper. This can be done because we always find the closest
              * to the node w externally active nodes x and y.
              */
-            checkMe();
             Node x, y, v = failedEdge.target, w = failedEdge.source, componentRoot;
             for (;;) {
                 componentRoot = getComponentRoot(w);
@@ -1693,7 +1658,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     break;
                 }
             }
-            checkMe();
             Edge xBackEdge = findBackEdge(x, v.height);
             Edge yBackEdge = findBackEdge(y, v.height);
             Node backLower = lowest(xBackEdge.target, yBackEdge.target);
@@ -1701,7 +1665,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             addPathEdges(subdivision, xBackEdge, x);
             addPathEdges(subdivision, yBackEdge, y);
             addBoundaryEdges(subdivision, componentRoot);
-            checkMe();
 
             if (componentRoot.getParent() != v) {
                 // case A, v isn't a parent of the component we've found
@@ -1709,7 +1672,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 addPathEdges(subdivision, failedEdge, w);
                 return finish(subdivision);
             }
-            checkMe();
             // node z will be null only if the tree path from w to failedEdge is failedEdge itself
             Node z = getNextOnPath(w, failedEdge);
             Edge backEdge = null;
@@ -1730,7 +1692,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              */
             setBoundaryDepth(componentRoot, w, Side1, 1);
             setBoundaryDepth(componentRoot, w, Side2, -1);
-            checkMe();
 
             assert x.boundaryHeight > 0;
             List<Edge> path = findHighestObstructingPath(componentRoot, w);
