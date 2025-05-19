@@ -41,12 +41,14 @@ public final class Result<T, E> {
         return !ok;
     }
 
+    @SuppressWarnings("unchecked")
     public T unwrap() {
         if (!isOk())
             throw new IllegalStateException("Result is not ok");
         return (T) result;
     }
 
+    @SuppressWarnings("unchecked")
     public E unwrapError() {
         if (!isErr())
             throw new IllegalStateException("Result is ok");

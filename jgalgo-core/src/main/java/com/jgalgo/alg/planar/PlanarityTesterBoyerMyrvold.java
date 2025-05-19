@@ -60,48 +60,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         var planarityResult = worker.computePlanarity();
 
         if (planarityResult.isOk()) {
-            return Result.planar(() -> {
-                worker.cleanUp();
-
-                IWeightsLong weights;
-                Long defaultWeight = Long.valueOf(IntPair.of(-1, -1));
-                if (addAsEdgesWeights) {
-                    weights = g.addEdgesWeights(PlanarEmbedding.EdgeOrderWeightKey, long.class, defaultWeight);
-                } else {
-                    weights = Weights.createExternalEdgesWeights(g, long.class, defaultWeight);
-                }
-
-                for (Worker.Node node : worker.realNodes()) {
-                    for (Worker.Node child : worker.children(node)) {
-                        Worker.Node virtualRoot = child.bicompRoot;
-                        node.embeddedEdges = worker.embeddedLists.concat(node.embeddedEdges, virtualRoot.embeddedEdges);
-                        virtualRoot.embeddedEdges = LinkedListFixedSize.HeadTailNone;
-                    }
-
-                    int i = 0;
-                    for (IntIterator it = worker.embeddedLists.iter(node.embeddedEdges); it.hasNext(); i++) {
-                        int edge = worker.edges[worker.embedded2edge[it.nextInt()]].graphEdge();
-                        long x = weights.get(edge);
-                        if (g.edgeSource(edge) == node.graphVertex)
-                            x = IntPair.setFirst(x, i);
-                        if (g.edgeTarget(edge) == node.graphVertex)
-                            x = IntPair.setSecond(x, i);
-                        weights.set(edge, x);
-                    }
-                }
-
-                return new PlanarEmbeddings.IndexEmbedding(g, weights);
-            });
+            return Result.planar(() -> worker.createEmbeddings(addAsEdgesWeights));
         } else {
             return Result.nonPlanar(() -> {
-                worker.cleanUp();
-                for (Worker.Node bicompRoot : worker.virtualBicompRoots()) {
-                    if (bicompRoot.outerFaceNeighbor1 == null)
-                        continue; // merged with parent bicomp
-                    worker.cleanShortCircuitEdges(bicompRoot);
-                    worker.fixBoundaryOrder(bicompRoot);
-                }
-
                 return Optional.of(worker.getKuratowskiSubdivision(planarityResult.unwrapError()));
             });
         }
@@ -614,10 +575,44 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             node.embeddedEdges = embeddedLists.addLast(node.embeddedEdges, idx);
         }
 
+        IPlanarEmbedding createEmbeddings(boolean addAsEdgesWeights) {
+            cleanUp();
+
+            IWeightsLong weights;
+            Long defaultWeight = Long.valueOf(IntPair.of(-1, -1));
+            if (addAsEdgesWeights) {
+                weights = g.addEdgesWeights(PlanarEmbedding.EdgeOrderWeightKey, long.class, defaultWeight);
+            } else {
+                weights = Weights.createExternalEdgesWeights(g, long.class, defaultWeight);
+            }
+
+            for (Node node : realNodes()) {
+                for (Node child : children(node)) {
+                    Node virtualRoot = child.bicompRoot;
+                    node.embeddedEdges = embeddedLists.concat(node.embeddedEdges, virtualRoot.embeddedEdges);
+                    virtualRoot.embeddedEdges = LinkedListFixedSize.HeadTailNone;
+                }
+
+                int i = 0;
+                for (IntIterator it = embeddedLists.iter(node.embeddedEdges); it.hasNext(); i++) {
+                    int edge = edges[embedded2edge[it.nextInt()]].graphEdge();
+                    long x = weights.get(edge);
+                    if (g.edgeSource(edge) == node.graphVertex)
+                        x = IntPair.setFirst(x, i);
+                    if (g.edgeTarget(edge) == node.graphVertex)
+                        x = IntPair.setSecond(x, i);
+                    weights.set(edge, x);
+                }
+            }
+
+            return new PlanarEmbeddings.IndexEmbedding(g, weights);
+
+        }
+
         // Removes all the short-circuit edges and properly orienting other embedded edges
         void cleanUp() {
             Stack<Pair<Node, Boolean>> stack = new ObjectArrayList<>();
-            for (Worker.Node dfsTreeRoot : nodes().filter(n -> n.parentEdge == null)) {
+            for (Node dfsTreeRoot : nodes().filter(n -> n.parentEdge == null)) {
                 stack.push(Pair.of(dfsTreeRoot, Boolean.FALSE));
                 while (!stack.isEmpty()) {
                     Pair<Node, Boolean> entry = stack.pop();
@@ -1566,6 +1561,14 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @return a Kuratowski subgraph of the {@code graph}
          */
         private IntGraph getKuratowskiSubdivision(Node failedV) {
+            cleanUp();
+            for (Node bicompRoot : virtualBicompRoots()) {
+                if (bicompRoot.outerFaceNeighbor1 == null)
+                    continue; // merged with parent bicomp
+                cleanShortCircuitEdges(bicompRoot);
+                fixBoundaryOrder(bicompRoot);
+            }
+
             // remove short-circuit edges and orient all embedded lists clockwise
             Set<Edge> subdivision = new HashSet<>();
             // find the needed un-embedded back edge which can be used to find Kuratowski subgraph
