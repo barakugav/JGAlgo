@@ -38,7 +38,9 @@ import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.IterTools.Iter;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.Stack;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -194,11 +196,12 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 Node v = nodes[dfsIdxToNode[currentDfsIdx]];
                 assert v.dfsIdx == currentDfsIdx;
 
-                for (Edge downEdge : v.downEdges)
-                    walkUp(downEdge);
+                for (int downEdge : v.downEdges)
+                    walkUp(edges[downEdge]);
 
                 int embeddedEdgesNum = 0;
-                for (Edge treeEdge : v.treeEdges) {
+                for (int treeEdgeIdx : v.treeEdges) {
+                    Edge treeEdge = edges[treeEdgeIdx];
                     assert treeEdge.target.initialComponentRoot.dfsIdx == currentDfsIdx;
                     embeddedEdgesNum += walkDown(treeEdge.target.initialComponentRoot);
                     if (!biCompMergeStack.isEmpty())
@@ -251,7 +254,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                             addToEmbeddedFirst(componentRoot, treeEdge);
                             addToEmbeddedFirst(node, treeEdge);
                             treeEdge.target = node;
-                            u.treeEdges.add(treeEdge);
+                            u.treeEdges.add(treeEdge.idx);
                             node.outerFaceNeighbor1 = node.outerFaceNeighbor2 = componentRoot;
                             componentRoot.outerFaceNeighbor1 = componentRoot.outerFaceNeighbor2 = node;
 
@@ -266,19 +269,19 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                             if (u.dfsIdx < ancestor.dfsIdx)
                                 continue; // The reverse edge was already added as a back edge, down edge of u
                             Edge backEdge = newBackEdge(e, u, ancestor);
-                            ancestor.downEdges.add(backEdge);
-                            u.backEdges.add(backEdge);
+                            ancestor.downEdges.add(backEdge.idx);
+                            u.backEdges.add(backEdge.idx);
                         }
                     }
 
                     u.leastAncestor = u.backEdges
-                            .stream()
-                            .mapToInt(backEdge -> backEdge.target.dfsIdx)
+                            .intStream()
+                            .map(backEdge -> edges[backEdge].target.dfsIdx)
                             .min()
                             .orElse(u.dfsIdx);
                     int lowpoint = u.treeEdges
-                            .stream()
-                            .mapToInt(treeEdge -> treeEdge.target.lowpoint)
+                            .intStream()
+                            .map(treeEdge -> edges[treeEdge].target.lowpoint)
                             .min()
                             .orElse(u.dfsIdx);
                     u.lowpoint = Math.min(lowpoint, u.leastAncestor);
@@ -632,8 +635,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         node.parentEdge.isInverted = isInverted;
                     }
 
-                    for (Edge treeEdge : current.treeEdges)
+                    for (int treeEdgeIdx : current.treeEdges) {
+                        Edge treeEdge = edges[treeEdgeIdx];
                         stack.push(Pair.of(treeEdge.target, Boolean.valueOf(isInverted ^ treeEdge.isInverted)));
+                    }
                 }
             }
         }
@@ -959,16 +964,16 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * The list of tree edges incident to this node in the dfs tree. This list doesn't contain a
              * parent edge of this node
              */
-            final List<Edge> treeEdges;
+            final IntList treeEdges;
             /**
              * The list containing the edges from descendants of this node in the dfs tree. For each
              * such descendant the corresponding edge is a back edge.
              */
-            final List<Edge> downEdges;
+            final IntList downEdges;
             /**
              * The list of back edges incident to this node.
              */
-            final List<Edge> backEdges;
+            final IntList backEdges;
             /**
              * Stores the list node from the {@code children} of the parent node this node
              * is stored in. This enable deleting of this node from the {@code children}
@@ -1004,9 +1009,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 this.children = LinkedListFixedSize.HeadTailNone;
                 this.pertinentRoots = LinkedListFixedSize.HeadTailNone;
                 if (!isBicompRoot()) {
-                    treeEdges = new ObjectArrayList<>();
-                    downEdges = new ObjectArrayList<>();
-                    backEdges = new ObjectArrayList<>();
+                    treeEdges = new IntArrayList();
+                    downEdges = new IntArrayList();
+                    backEdges = new IntArrayList();
                 } else {
                     treeEdges = null;
                     downEdges = null;
@@ -1236,9 +1241,11 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @return           an edge which satisfies the {@code predicate}, or null if such an edge doesn't exist
          */
         private Edge findBackEdge(Node current, Predicate<Edge> predicate) {
-            for (Edge edge : current.backEdges)
+            for (int edgeIdx : current.backEdges) {
+                Edge edge = edges[edgeIdx];
                 if (predicate.test(edge))
                     return edge;
+            }
             for (Node node : children(current)) {
                 Edge result = findBackEdgeSubtreeDfs(node, predicate);
                 if (result != null)
@@ -1255,17 +1262,19 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param  predicate a predicate, which the desired edge should satisfy
          * @return           a desired edge, or null if no such edge exist.
          */
-        private static Edge findBackEdgeSubtreeDfs(Node start, Predicate<Edge> predicate) {
+        private Edge findBackEdgeSubtreeDfs(Node start, Predicate<Edge> predicate) {
             Stack<Node> stack = new ObjectArrayList<>();
             stack.push(start);
             while (!stack.isEmpty()) {
                 Node current = stack.pop();
 
-                for (Edge edge : current.backEdges)
+                for (int edgeIdx : current.backEdges) {
+                    Edge edge = edges[edgeIdx];
                     if (predicate.test(edge))
                         return edge;
-                for (Edge edge : current.treeEdges)
-                    stack.push(edge.target);
+                }
+                for (int edge : current.treeEdges)
+                    stack.push(edges[edge].target);
             }
             return null;
         }
