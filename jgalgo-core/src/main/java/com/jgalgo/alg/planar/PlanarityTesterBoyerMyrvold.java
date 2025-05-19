@@ -33,7 +33,6 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
-import com.jgalgo.internal.ds.PoolAllocator;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.IterTools.Iter;
@@ -49,8 +48,11 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
     @Override
     protected PlanarityTester.Result<Integer, Integer> findPlanarEmbedding(IndexGraph g, boolean addAsEdgesWeights) {
+        // TODO: support directed graphs
         Assertions.onlyUndirected(g);
+        // TODO: support graphs with parallel edges
         Assertions.noParallelEdges(g, "graphs with parallel edges are not supported");
+        // TODO: support graphs with self edges
         Assertions.noSelfEdges(g, "graphs with self edges are not supported");
 
         Worker2 worker = new Worker2(g);
@@ -58,8 +60,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
         if (planarityResult.isOk()) {
             return Result.planar(() -> {
-                for (Worker.Node dfsTreeRoot : worker.dfsTreeRoots)
-                    worker.cleanUpDfs(dfsTreeRoot);
+                worker.cleanUpDfs();
 
                 IWeightsLong weights;
                 Long defaultWeight = Long.valueOf(IntPair.of(-1, -1));
@@ -70,8 +71,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 }
 
                 for (Worker.Node node : worker.realNodes()) {
-                    for (int child : worker.childrenLists.iter(node.children)) {
-                        Worker.Node virtualRoot = worker.nodes[child].initialComponentRoot;
+                    for (Worker.Node child : worker.children(node)) {
+                        Worker.Node virtualRoot = child.initialComponentRoot;
                         node.embeddedEdges = worker.embeddedLists.concat(node.embeddedEdges, virtualRoot.embeddedEdges);
                         virtualRoot.embeddedEdges = LinkedListFixedSize.HeadTailNone;
                     }
@@ -92,9 +93,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             });
         } else {
             return Result.nonPlanar(() -> {
-                // Clean up the dfs tree
-                for (Worker.Node dfsTreeRoot : worker.dfsTreeRoots)
-                    worker.cleanUpDfs(dfsTreeRoot);
+                worker.cleanUpDfs();
                 for (Worker.Node bicompRoot : worker.virtualBicompRoots()) {
                     if (bicompRoot.outerFaceNeighbor1 == null)
                         continue; // merged with parent bicomp
@@ -117,61 +116,66 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
     private static class Worker {
         final IndexGraph g;
 
+        // The nodes of the algorithms.
+        // There is a Node object for each real vertex in the graph, and a virtual node for any non DFS root vertex.
+        // Each such virtual node is a root of a biconnected component. After preprocessing, each biconnected component
+        // is composed of a single real node and a virtual node matching its (real) parent.
+        // Real node and their matching virtual nodes share the same dfs index.
         final Node[] nodes;
         int nodesNum;
 
-        /**
-         * List of the dfs tree roots of the {@code graph}. This list has length more than 1 if the
-         * input {@code graph} isn't connected
-         */
-        final List<Node> dfsTreeRoots;
-        /**
-         * The stack containing merge information for every consecutive pair of biconnected components
-         * on the path to the back edge source. After all the biconnected components are merged, this
-         * stack is cleared
-         */
-        final Stack<MergeInfo> biCompMergeStack;
-
-        int currentDfsIdx;
-
-        final LinkedListFixedSize.Doubly embeddedLists;
-        final PoolAllocator embeddedListsAllocator;
-        final Edge[] embedded2edge;
-
-        /**
-         * The list containing the dfs children of this node, which are in the different child
-         * biconnected component, i.e. their weren't merged in the parent component.
-         */
+        // A data structure representing multiple linked lists, each one of them is a list of DFS children of a node.
+        // When two bi-comps are merged, the root of the child bi-comp is removed from the parent's list of children.
+        //
+        // Each node is stored by its Node::idx.
         final LinkedListFixedSize.Doubly childrenLists;
-        /**
-         * The roots of the pertinent components during the processing of the node $v$. These are
-         * the components that have pertinent descendant nodes, i.e. nodes incident to the node $v$
-         * via a back edge.
-         *
-         * This list contains virtual nodes matching this node. The virtual nodes are the roots in the child bi-comp
-         * of this node.
-         */
+
+        // A data structure representing multiple linked lists, each one of them is a list of pertinent roots of a node.
+        // For each node, the list contains virtual nodes matching this node, which are the roots in the child bi-comps
+        // of this node.
+        //
+        // Each node is stored by its Node::idx.
         final LinkedListFixedSize.Doubly pertinentRootsLists;
 
-        public Worker(IndexGraph g) {
+        // A data structure representing multiple linked lists, each one of them is a list of embedded edges of a node.
+        //
+        // Each edge appear in two lists (one for each of its endpoints), therefore there is no 1:1 mapping between
+        // each Edge to a single index in the data structure. For that, we use an allocator to 'allocate' indices
+        // each time we add an edge to a list. In addition, we keep a mapping from allocated indices to Edge objects
+        // in the {@code embedded2edge} array.
+        final LinkedListFixedSize.Doubly embeddedLists;
+        final Edge[] embedded2edge;
+        int embedded2edgeSize;
+
+        // After preprocessing, we iterate over the dfs tree nodes in reverse order of their dfs index, performing a
+        // walk up and walk down for each node. This field is the current dfs index of the node we are processing.
+        //
+        // All the terminology of active (regular, externally or internally), pertinent, etc. is with respect to the
+        // current processed node, and methods checking these properties compare to the current dfs index.
+        int currentDfsIdx;
+
+        final Stack<BiCompMerge> biCompMergeStack;
+
+        Worker(IndexGraph g) {
             final int n = g.vertices().size();
             final int m = g.edges().size();
+            this.g = g;
 
-            final int maxVerticesNum = n + n; // we may add n virtual nodes
+            final int maxNodesNum = n + n; // we may add n virtual nodes
             final int maxEdgesNum = m + n; // we may add n short circuit edges
 
-            this.g = g;
-            this.nodes = new Node[maxVerticesNum];
-            this.dfsTreeRoots = new ObjectArrayList<>();
-            this.biCompMergeStack = new ObjectArrayList<>();
+            this.nodes = new Node[maxNodesNum];
+            this.nodesNum = 0;
+
+            this.childrenLists = new LinkedListFixedSize.Doubly(maxNodesNum);
+            this.pertinentRootsLists = new LinkedListFixedSize.Doubly(maxNodesNum);
 
             int embeddedListsMaxLen = maxEdgesNum * 2; // each edge can be added in the lists of both of its endpoints
             this.embeddedLists = new LinkedListFixedSize.Doubly(embeddedListsMaxLen);
-            this.embeddedListsAllocator = new PoolAllocator(embeddedListsMaxLen);
             this.embedded2edge = new Edge[embeddedListsMaxLen];
+            this.embedded2edgeSize = 0;
 
-            this.childrenLists = new LinkedListFixedSize.Doubly(maxVerticesNum);
-            this.pertinentRootsLists = new LinkedListFixedSize.Doubly(maxVerticesNum);
+            this.biCompMergeStack = new ObjectArrayList<>();
         }
 
         com.jgalgo.internal.util.Result<Void, Node> computePlanarity() {
@@ -191,10 +195,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
                 int embeddedEdgesNum = 0;
                 for (Edge treeEdge : v.treeEdges) {
-                    if (!biCompMergeStack.isEmpty())
-                        break;
                     assert treeEdge.target.initialComponentRoot.dfsIdx == currentDfsIdx;
                     embeddedEdgesNum += walkDown(treeEdge.target.initialComponentRoot);
+                    if (!biCompMergeStack.isEmpty())
+                        break;
                 }
                 if (embeddedEdgesNum != v.downEdges.size())
                     // Some edges were not embedded successfully
@@ -228,7 +232,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
                 Node rootNode = v2node[root] = newDfsRoot(root, dfsIndex++);
                 rootNode.outerFaceNeighbor1 = rootNode.outerFaceNeighbor2 = rootNode;
-                dfsTreeRoots.add(rootNode);
                 stack.push(g.outEdges(root).iterator());
 
                 dfs: for (Node u = v2node[root];;) {
@@ -337,9 +340,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         private Node newNodeImpl(int graphVertex, int dfsIndex, Edge parentEdge, Node initialComponentRoot,
                 int height) {
             int nodeIdx = nodesNum++;
-            Node node = new Node(nodeIdx, graphVertex, dfsIndex, parentEdge, initialComponentRoot, height);
-            nodes[nodeIdx] = node;
-            return node;
+            return nodes[nodeIdx] = new Node(nodeIdx, graphVertex, dfsIndex, parentEdge, initialComponentRoot, height);
         }
 
         private void walkUp(final Edge downEdge) {
@@ -447,7 +448,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         }
                         Node parent = current, parentNext = outerFace.peekNext();
                         biCompMergeStack
-                                .push(new MergeInfo(
+                                .push(new BiCompMerge(
                                         parent, parentNext,
                                         childRoot, childPrev,
                                         side));
@@ -487,19 +488,19 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             return embeddedEdgesNum;
         }
 
-        private void mergeBicomps(MergeInfo info) {
-            Node parent = info.parent;
-            Node virtualRoot = info.child;
+        private void mergeBicomps(BiCompMerge merge) {
+            Node parent = merge.parent;
+            Node virtualRoot = merge.child;
             Node virtualRootChild = virtualRoot.parentEdge.target;
-            assert info.parent.dfsIdx == info.child.dfsIdx;
+            assert merge.parent.dfsIdx == merge.child.dfsIdx;
 
             parent.pertinentRoots = pertinentRootsLists.remove(parent.pertinentRoots, virtualRoot.idx);
             parent.children = childrenLists.remove(parent.children, virtualRootChild.idx);
 
             // merge embedded edges lists of the virtual root and the parent (real node)
             boolean parentEdgesDirection =
-                    embedded2edge[head(parent.embeddedEdges)].otherEndpoint(parent) != info.parentNext;
-            if ((info.childDirection == Side1) ^ parentEdgesDirection) {
+                    embedded2edge[head(parent.embeddedEdges)].otherEndpoint(parent) != merge.parentNext;
+            if ((merge.childDirection == Side1) ^ parentEdgesDirection) {
                 assert !virtualRoot.parentEdge.isInverted;
                 virtualRoot.parentEdge.isInverted = true;
                 // This doesn't take more than O(E) overall as we only reverse the list once per virtual node
@@ -512,14 +513,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
             virtualRoot.embeddedEdges = LinkedListFixedSize.HeadTailNone;
 
-            parent.replaceNeighborOpposite(info.parentNext, info.childPrev);
-            info.childPrev.replaceNeighbor(virtualRoot, parent);
+            parent.replaceNeighborOpposite(merge.parentNext, merge.childPrev);
+            merge.childPrev.replaceNeighbor(virtualRoot, parent);
             virtualRoot.outerFaceNeighbor1 = virtualRoot.outerFaceNeighbor2 = null;
-        }
-
-        private void addShortCircuitEdge(Node source, Node targetBicompRoot, boolean direction, Node innerNeighbor) {
-            Edge shortCircuit = Edge.newShortCircuitEdge(source, targetBicompRoot.getParent());
-            embedEdge(targetBicompRoot, direction, shortCircuit, innerNeighbor);
         }
 
         private void embedEdge(Node root, boolean direction, Edge edge, Node innerNeighbor) {
@@ -543,8 +539,26 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             source.replaceNeighbor(innerNeighbor, root);
         }
 
+        private void addShortCircuitEdge(Node source, Node targetBicompRoot, boolean direction, Node innerNeighbor) {
+            Edge shortCircuit = Edge.newShortCircuitEdge(source, targetBicompRoot.getParent());
+            embedEdge(targetBicompRoot, direction, shortCircuit, innerNeighbor);
+        }
+
+        Node node(int idx) {
+            assert idx < nodesNum;
+            return nodes[idx];
+        }
+
+        Iter<Node> nodes() {
+            return range(nodesNum).iterator().mapObj(this::node);
+        }
+
         Iter<Node> realNodes() {
-            return range(nodesNum).iterator().mapObj(i -> nodes[i]).filter(n -> n.isRealNode());
+            return nodes().filter(Node::isRealNode);
+        }
+
+        Iter<Node> children(Node node) {
+            return childrenLists.iter(node.children).mapObj(this::node);
         }
 
         /**
@@ -554,7 +568,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * biconnected component has its own unique component root.
          */
         Iter<Node> virtualBicompRoots() {
-            return range(nodesNum).iterator().mapObj(i -> nodes[i]).filter(n -> n.isBicompRoot());
+            return nodes().filter(Node::isBicompRoot);
         }
 
         OuterFaceIter findOnOuterFace(Node start, boolean dir, Predicate<Node> predicate) {
@@ -578,13 +592,13 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         }
 
         void addToEmbeddedFirst(Node node, Edge edge) {
-            int edgeIdx = embeddedListsAllocator.alloc();
+            int edgeIdx = embedded2edgeSize++;
             embedded2edge[edgeIdx] = edge;
             node.embeddedEdges = embeddedLists.addFirst(node.embeddedEdges, edgeIdx);
         }
 
         void addToEmbeddedLast(Node node, Edge edge) {
-            int edgeIdx = embeddedListsAllocator.alloc();
+            int edgeIdx = embedded2edgeSize++;
             embedded2edge[edgeIdx] = edge;
             node.embeddedEdges = embeddedLists.addLast(node.embeddedEdges, edgeIdx);
         }
@@ -595,33 +609,35 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          *
          * @param dfsTreeRoot the root of the dfs tree to clean up
          */
-        void cleanUpDfs(Node dfsTreeRoot) {
+        void cleanUpDfs() {
             Stack<Pair<Node, Boolean>> stack = new ObjectArrayList<>();
-            stack.push(Pair.of(dfsTreeRoot, Boolean.FALSE));
-            while (!stack.isEmpty()) {
-                Pair<Node, Boolean> entry = stack.pop();
-                Node current = entry.first();
-                boolean isInverted = entry.second().booleanValue();
-                if (isInverted) {
-                    current.embeddedEdges = embeddedLists.reverse(current.embeddedEdges);
-                }
-                assert isNone(head(current.embeddedEdges)) || !embeddedLists.hasPrev(head(current.embeddedEdges));
+            for (Worker.Node dfsTreeRoot : nodes().filter(n -> n.parentEdge == null)) {
+                stack.push(Pair.of(dfsTreeRoot, Boolean.FALSE));
+                while (!stack.isEmpty()) {
+                    Pair<Node, Boolean> entry = stack.pop();
+                    Node current = entry.first();
+                    boolean isInverted = entry.second().booleanValue();
+                    if (isInverted) {
+                        current.embeddedEdges = embeddedLists.reverse(current.embeddedEdges);
+                    }
+                    assert isNone(head(current.embeddedEdges)) || !embeddedLists.hasPrev(head(current.embeddedEdges));
 
-                removeShortCircuitEdges(current);
-                for (int node : childrenLists.iter(current.children)) {
-                    // all the components, that aren't merged, aren't inverted
-                    nodes[node].parentEdge.isInverted = isInverted;
-                }
+                    removeShortCircuitEdges(current);
+                    for (Node node : children(current)) {
+                        // all the components, that aren't merged, aren't inverted
+                        node.parentEdge.isInverted = isInverted;
+                    }
 
-                for (Edge treeEdge : current.treeEdges)
-                    stack.push(Pair.of(treeEdge.target, Boolean.valueOf(isInverted ^ treeEdge.isInverted)));
+                    for (Edge treeEdge : current.treeEdges)
+                        stack.push(Pair.of(treeEdge.target, Boolean.valueOf(isInverted ^ treeEdge.isInverted)));
+                }
             }
         }
 
         /**
          * The information needed to merge two consecutive biconnected components
          */
-        static class MergeInfo {
+        static class BiCompMerge {
             /**
              * The node current traversal descended from. This node belongs to the parent biconnected
              * component
@@ -655,7 +671,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * @param childPrev      the previous node along the traversal of the child component
              * @param childDirection the direction used to enter the child biconnected component
              */
-            MergeInfo(Node parent, Node parentNext, Node child, Node childPrev, boolean childDirection) {
+            BiCompMerge(Node parent, Node parentNext, Node child, Node childPrev, boolean childDirection) {
                 assert parent.dfsIdx == child.dfsIdx;
                 this.parent = parent;
                 this.parentNext = parentNext;
@@ -743,9 +759,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
         }
 
-        /**
-         * Internal representation of the edges of the input {@code graph}.
-         */
         static class Edge {
             /**
              * The counterpart of this edge in the {@code graph}. This value can be -1 if the edge was
@@ -1213,8 +1226,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             for (Edge edge : current.backEdges)
                 if (predicate.test(edge))
                     return edge;
-            for (int node : childrenLists.iter(current.children)) {
-                Edge result = findBackEdgeSubtreeDfs(nodes[node], predicate);
+            for (Node node : children(current)) {
+                Edge result = findBackEdgeSubtreeDfs(node, predicate);
                 if (result != null)
                     return result;
             }
@@ -1610,15 +1623,15 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     embeddedEdges.add(embedded2edge[i]);
 
             if (biCompMergeStack.isEmpty()) {
-                for (int child : childrenLists.iter(failedV.children)) {
-                    Node componentRoot = nodes[child].initialComponentRoot;
+                for (Node child : children(failedV)) {
+                    Node componentRoot = child.initialComponentRoot;
                     Edge result = checkComponentForFailedEdge(componentRoot, failedV, embeddedEdges);
                     if (result != null)
                         return result;
                 }
                 return null; // should not happen in case node v has an incident un-embedded back edge
             } else {
-                MergeInfo info = biCompMergeStack.top();
+                BiCompMerge info = biCompMergeStack.top();
                 return checkComponentForFailedEdge(info.child, failedV, embeddedEdges);
             }
         }
