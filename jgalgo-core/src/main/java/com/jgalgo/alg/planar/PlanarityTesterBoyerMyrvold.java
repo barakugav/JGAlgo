@@ -61,7 +61,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
         if (planarityResult.isOk()) {
             return Result.planar(() -> {
-                worker.cleanUpDfs();
+                worker.cleanUp();
 
                 IWeightsLong weights;
                 Long defaultWeight = Long.valueOf(IntPair.of(-1, -1));
@@ -94,7 +94,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             });
         } else {
             return Result.nonPlanar(() -> {
-                worker.cleanUpDfs();
+                worker.cleanUp();
                 for (Worker.Node bicompRoot : worker.virtualBicompRoots()) {
                     if (bicompRoot.outerFaceNeighbor1 == null)
                         continue; // merged with parent bicomp
@@ -118,13 +118,22 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         final IndexGraph g;
 
         // The nodes of the algorithms.
+        //
         // There is a Node object for each real vertex in the graph, and a virtual node for any non DFS root vertex.
         // Each such virtual node is a root of a biconnected component. After preprocessing, each biconnected component
         // is composed of a single real node and a virtual node matching its (real) parent.
         // Real node and their matching virtual nodes share the same dfs index.
+        // Each node (real or virtual) at every step of the algorithm is contained in a biconnected component and has a
+        // single virtual bi-comp root, which is the root of the biconnected component this node is contained in.
         final Node[] nodes;
         int nodesNum;
 
+        // The edges of the algorithm.
+        //
+        // There is an Edge object for each edge in the graph, and a virtual edge for each short circuit edge.
+        // Short circuit edges are used to connect nodes on the outer edges to make the traversal of the outer face
+        // faster the next time we need to traverse it. When we add a short circuit edge, some nodes become inner
+        // vertices (not on the outer face anymore), therefore we can do it only when the nodes are not active.
         final Edge[] edges;
         int edgesNum;
 
@@ -242,7 +251,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 stack.push(g.outEdges(root).iterator());
 
                 dfs: for (Node u = v2node[root];;) {
-                    final Node parent = u.getParent();
+                    final Node parent = u.parent();
                     for (IEdgeIter eit = stack.top(); eit.hasNext();) {
                         int e = eit.nextInt();
                         int v = eit.targetInt();
@@ -421,7 +430,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         current.activeBackEdge = null;
                         embeddedEdgesNum++;
 
-                        outerFace = new OuterFaceIter(current.nextOnOuterFace(bicompRoot), current);
+                        outerFace = new OuterFaceIter(current.otherOuterFaceNeighbor(bicompRoot), current);
                     }
 
                     // Continue down the tree to a child bi-comp if its pertinent (has a back edge in its sub-tree)
@@ -547,7 +556,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         }
 
         private void addShortCircuitEdge(Node source, Node targetBicompRoot, boolean direction, Node innerNeighbor) {
-            Edge shortCircuit = newShortCircuitEdge(source, targetBicompRoot.getParent());
+            Edge shortCircuit = newShortCircuitEdge(source, targetBicompRoot.parent());
             embedEdge(targetBicompRoot, direction, shortCircuit, innerNeighbor);
         }
 
@@ -568,12 +577,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             return childrenLists.iter(node.children).mapObj(this::node);
         }
 
-        /**
-         * List of the virtual biconnected component roots. Initially, a virtual biconnected component
-         * root is created for every node in the {@code graph}, except for the dfs roots. These
-         * component roots don't belong to the {@code graph}. At each step of the algorithm, every
-         * biconnected component has its own unique component root.
-         */
         Iter<Node> virtualBicompRoots() {
             return nodes().filter(Node::isBicompRoot);
         }
@@ -610,13 +613,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             node.embeddedEdges = embeddedLists.addLast(node.embeddedEdges, idx);
         }
 
-        /**
-         * Recursively cleans up the dfs tree rooted at the {@code dfsTreeRoot} my removing all the
-         * short-circuit edges and properly orienting other embedded edges
-         *
-         * @param dfsTreeRoot the root of the dfs tree to clean up
-         */
-        void cleanUpDfs() {
+        // Removes all the short-circuit edges and properly orienting other embedded edges
+        void cleanUp() {
             Stack<Pair<Node, Boolean>> stack = new ObjectArrayList<>();
             for (Worker.Node dfsTreeRoot : nodes().filter(n -> n.parentEdge == null)) {
                 stack.push(Pair.of(dfsTreeRoot, Boolean.FALSE));
@@ -643,129 +641,252 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
         }
 
-        /**
-         * The information needed to merge two consecutive biconnected components
-         */
-        static class BiCompMerge {
+        static class Node {
+            final int idx;
+
+            // Index of graph vertex in the original graph or -1 for a virtual node
+            final int graphVertex;
+
+            final int dfsIdx;
             /**
-             * The node current traversal descended from. This node belongs to the parent biconnected
-             * component
+             * The least <b>dfs index</b> of the nodes' least ancestors in the subtree rooted at this
+             * node. If the subtree doesn't contain a node with a back edge, that ends lower that this
+             * node, this value is equal to the dfs index of this node.
              */
-            final Node parent;
+            int lowpoint;
             /**
-             * The next node along the traversal of the parent biconnected component
+             * The least dfs index of the nodes adjacent to this node. If the node doesn't have incident
+             * back edges, this value is equal to the dfs index of the node itself.
              */
-            final Node parentNext;
+            int leastAncestor;
             /**
-             * The virtual root of the child biconnected component
+             * Stores some value to indicate whether this node is visited in the current context or not.
+             * During the testing phase, if this value if equal to the dfs index of the currently
+             * processed node $v$, then this node is visited, otherwise not. During the Kuratowski
+             * subdivision extraction phase, the value of $0$ indicates that the node isn't visited,
+             * otherwise, the node is considered to be visited.
              */
-            final Node child;
+            int visited;
             /**
-             * The previous node along the traversal of the child biconnected component
+             * Edge to the parent node of this node in the dfs tree. For tree roots this value is
+             * {@code null}
              */
-            final Node childPrev;
+            final Edge parentEdge;
             /**
-             * The direction used to start the traversal of the child biconnected component. Since the
-             * {@code child} is the component root, {@code child.outerFaceNeighbors[|1-vOut|]} is equal
-             * to the {@code childPrev}
+             * If this node has a back edge incident to the currently processed node $v$, then this
+             * variable stores this edge
              */
-            final boolean childDirection;
+            Edge activeBackEdge;
+            /**
+             * The component root the node is created in. For dfs tree roots this value is {@code null}
+             */
+            final Node initialComponentRoot;
+            /**
+             * Two neighbors on the outer face of the biconnected component. Their order is completely
+             * irrelevant for the algorithm to traverse the outer face.
+             */
+            Node outerFaceNeighbor1;
+            Node outerFaceNeighbor2;
+            /**
+             * The list containing the dfs children of this node, which are in the different child
+             * biconnected component, i.e. their weren't merged in the parent component.
+             */
+            long children;
 
             /**
-             * Creates new instance of the information needed to merge to biconnected components
+             * The roots of the pertinent components during the processing of the node $v$. These are
+             * the components that have pertinent descendant nodes, i.e. nodes incident to the node $v$
+             * via a back edge.
              *
-             * @param parent         the node current traversal descended from
-             * @param parentNext     the next node along the traversal of the parent component
-             * @param child          the virtual root of the child biconnected component
-             * @param childPrev      the previous node along the traversal of the child component
-             * @param childDirection the direction used to enter the child biconnected component
+             * This list contains virtual nodes matching this node. The virtual nodes are the roots in the child bi-comp
+             * of this node.
              */
-            BiCompMerge(Node parent, Node parentNext, Node child, Node childPrev, boolean childDirection) {
-                assert parent.dfsIdx == child.dfsIdx;
-                this.parent = parent;
-                this.parentNext = parentNext;
-                this.child = child;
-                this.childPrev = childPrev;
-                this.childDirection = childDirection;
+            long pertinentRoots;
+            /**
+             * The list of tree edges incident to this node in the dfs tree. This list doesn't contain a
+             * parent edge of this node
+             */
+            final IntList treeEdges;
+            /**
+             * The list containing the edges from descendants of this node in the dfs tree. For each
+             * such descendant the corresponding edge is a back edge.
+             */
+            final IntList downEdges;
+            /**
+             * The list of back edges incident to this node.
+             */
+            final IntList backEdges;
+            /**
+             * The list of the embedded edges incident to this node in a clockwise or a counterclockwise
+             * order. The order is counterclockwise if the product of the signs of the parent edges
+             * along the path from the root of the component this node is contained in to this node is
+             * equal to $-1$. Otherwise, the order is clockwise.
+             */
+            long embeddedEdges;
+
+            /**
+             * The height of the node in the created dfs tree. The root of the tree has height $0$. The
+             * smaller this value is, the lower the node is considered to be.
+             */
+            // TODO: move
+            final int height;
+            /**
+             * The height of this node on the boundary of the biconnected component, which is used to
+             * extract the Kuratowski subdivision. The height of the component root is $0$, the heights
+             * on the left side are positive, on the right side - negative. This value is used to
+             * quickly determine for two nodes on the same boundary branch which one is higher (closer
+             * to the component root).
+             */
+            // TODO: move
+            int boundaryHeight;
+            /**
+             * Used to mark the boundary nodes of the biconnected
+             */
+            // TODO: move
+            boolean marked;
+
+            /**
+             * Creates a new node with the specified parameters
+             *
+             * @param graphVertex the vertex in the {@code graph} corresponding to this node
+             * @param dfsIndex    the dfs index of this node
+             * @param parentEdge  the parent edge of this node
+             * @param rootVertex  whether this is real or virtual node
+             */
+            private Node(int nodeIdx, int graphVertex, int dfsIndex, Edge parentEdge,
+                    Node initialComponentRoot, int height) {
+                this.idx = nodeIdx;
+                this.graphVertex = graphVertex;
+                this.dfsIdx = dfsIndex;
+                this.parentEdge = parentEdge;
+                this.initialComponentRoot = initialComponentRoot;
+                this.height = height;
+                this.embeddedEdges = LinkedListFixedSize.HeadTailNone;
+                this.visited = Integer.MAX_VALUE;
+                this.children = LinkedListFixedSize.HeadTailNone;
+                this.pertinentRoots = LinkedListFixedSize.HeadTailNone;
+                if (!isBicompRoot()) {
+                    treeEdges = new IntArrayList();
+                    downEdges = new IntArrayList();
+                    backEdges = new IntArrayList();
+                } else {
+                    treeEdges = null;
+                    downEdges = null;
+                    backEdges = null;
+                }
+            }
+
+            final boolean isBicompRoot() {
+                return graphVertex < 0;
+            }
+
+            final boolean isRealNode() {
+                return graphVertex >= 0;
+            }
+
+            Node parent() {
+                return parentEdge == null ? null : parentEdge.source;
+            }
+
+            // A node is pertinent if it has a back edge to the "current visited vertex" or it has a
+            // child biconnected component which has a pertinent node.
+            boolean isPertinent() {
+                return activeBackEdge != null || !isNone(head(pertinentRoots));
+            }
+
+            void replaceNeighbor(Node oldNeighbor, Node newNeighbor) {
+                if (outerFaceNeighbor1 == oldNeighbor) {
+                    outerFaceNeighbor1 = newNeighbor;
+                } else {
+                    assert outerFaceNeighbor2 == oldNeighbor;
+                    outerFaceNeighbor2 = newNeighbor;
+                }
+            }
+
+            void replaceNeighborOpposite(Node oppositeNeighbor, Node newNeighbor) {
+                if (outerFaceNeighbor1 == oppositeNeighbor) {
+                    outerFaceNeighbor2 = newNeighbor;
+                } else {
+                    assert outerFaceNeighbor2 == oppositeNeighbor;
+                    outerFaceNeighbor1 = newNeighbor;
+                }
+            }
+
+            boolean hasRootNeighbor() {
+                return outerFaceNeighbor1.isBicompRoot() || outerFaceNeighbor2.isBicompRoot();
+            }
+
+            /**
+             * Returns either {@code node} or its real counterpart in the case the {@code node} is a
+             * component root.
+             *
+             * @param  node the input argument
+             * @return      the real counter path of the {@code node}
+             */
+            private Node toExistingNode() {
+                return isBicompRoot() ? realNodeInParentBiComp() : this;
+            }
+
+            private Node realNodeInParentBiComp() {
+                assert isBicompRoot();
+                Node real = parentEdge.source;
+                assert dfsIdx == real.dfsIdx;
+                return real;
+            }
+
+            Node otherOuterFaceNeighbor(Node neighbor) {
+                if (outerFaceNeighbor1 == neighbor) {
+                    return outerFaceNeighbor2;
+                } else {
+                    assert outerFaceNeighbor2 == neighbor;
+                    return outerFaceNeighbor1;
+                }
+            }
+
+            @Override
+            public String toString() {
+                if (!isBicompRoot()) {
+                    return String.valueOf(graphVertex);
+                } else {
+                    return String.valueOf(realNodeInParentBiComp().graphVertex) + "v";
+                }
             }
         }
 
-        /**
-         * A circulator over the nodes on the boundary of the biconnected component. Traverses the nodes
-         * in the cyclic manner, i.e. it doesn't stop when all the nodes are traversed
-         */
-        class OuterFaceIter implements Iterator<Node> {
-            /**
-             * The node this circulator will return next
-             */
-            private Node next;
-            /**
-             * The previous node along the traversal of the component boundary. This node is needed
-             * because the component boundary nodes aren't connected in an ordered way.
-             */
-            private Node current;
+        OuterFaceIter outerFace(Node node, boolean direction) {
+            Node neighbor = direction == Side1 ? node.outerFaceNeighbor1 : node.outerFaceNeighbor2;
+            return new OuterFaceIter(neighbor, node);
+        }
 
-            /**
-             * Creates a new instance of the circulator over the biconnected component boundary nodes.
-             * The {@code prev} node is considered to be just traversed
-             *
-             * @param next the node this circulator will return next
-             * @param prev the previous node along the traversal
-             */
-            OuterFaceIter(Node next, Node prev) {
-                this.next = next;
-                this.current = prev;
-            }
+        void removeShortCircuitEdges(Node node) {
+            node.embeddedEdges =
+                    embeddedLists.removeIf(node.embeddedEdges, eIdx -> !edges[embedded2edge[eIdx]].isRealEdge());
+            assert isNone(head(node.embeddedEdges)) || !embeddedLists.hasPrev(head(node.embeddedEdges));
+        }
 
-            @Override
-            public boolean hasNext() {
+        // A node is externally active if it is incident to the edge ending higher than {@code node}, or it
+        // has a child biconnected component with a pertinent node
+        boolean isExternallyActive(Node node) {
+            // Checking node.lowpoint < currentDfsIdx is simpler than this function implementation, and actually correct
+            // right after preprocessing, but we may remove some children from the children list of this node, as the
+            // list only maintain the children that are not yet merged to the bi-comp of the node, therefore we must
+            // check the edges of this node, and the edge of the existing children 'manually'.
+
+            if (node.leastAncestor < currentDfsIdx)
                 return true;
-            }
+            // children are sorted by lowpoint, so its enough to check the first
+            int firstChild = head(node.children);
+            return !isNone(firstChild) && nodes[firstChild].lowpoint < currentDfsIdx;
+        }
 
-            @Override
-            public Node next() {
-                Node ret = next;
-                next = next.nextOnOuterFace(current);
-                return current = ret;
-            }
+        // A node is internally active if it's pertinent and not externally active
+        boolean isInternallyActive(Node node) {
+            return node.isPertinent() && !isExternallyActive(node);
+        }
 
-            Node peekNext() {
-                return next;
-            }
-
-            // Last element returned by next()
-            Node current() {
-                return current;
-            }
-
-            /**
-             * Returns a node adjacent to the current node along the boundary, which is not equal to the
-             * next node along the traversal. If the component consist of just one real node, returns
-             * the only neighbor the the current node.
-             *
-             * @return node before the current node along the traversal
-             */
-            Node prev() {
-                return current.nextOnOuterFace(next);
-            }
-
-            /**
-             * Returns an edge connecting previously returned node with node, which will be returned
-             * next. If either of the mentioned nodes is virtual, the edge will be incident to its real
-             * counterpart.
-             *
-             * @return an edge from the current node to the next node
-             */
-            Edge nextEdge() {
-                Edge edge = edges[embedded2edge[head(current.embeddedEdges)]];
-                Node target = next.toExistingNode();
-                Node source = current.toExistingNode();
-                if (edge.otherEndpoint(source) == target) {
-                    return edge;
-                } else {
-                    return edges[embedded2edge[tail(current.embeddedEdges)]];
-                }
-            }
+        // A node is active it is either pertinent or externally active
+        boolean isActive(Node node) {
+            return isExternallyActive(node) || node.isPertinent();
         }
 
         static class Edge {
@@ -802,8 +923,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
 
             int graphEdge() {
-                if (graphEdge < 0)
-                    throw new IllegalStateException("This edge is a short-circuit edge");
+                assert isRealEdge() : "This edge is not real";
                 return graphEdge;
             }
 
@@ -868,287 +988,103 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             return newEdgeImpl(-1, source, target);
         }
 
-        /**
-         * The internal representation of the vertices of the graph. Contains necessary information to
-         * perform dfs traversals, biconnected component boundary traversals, to embed edges, etc.
-         */
-        static class Node {
-            final int idx;
+        class OuterFaceIter implements Iterator<Node> {
+            private Node next;
+            private Node current;
 
-            /**
-             * The counterpart of this node in the {@code graph}. For the component roots this value is
-             * {@code -1}.
-             */
-            final int graphVertex;
-            /**
-             * The dfs index of this node in the graph. Every node has a unique dfs index in the range
-             * $[0,|V| - 1]$. This value is used to order the nodes for the embedding of the edges
-             * incident to them. The index of the first dfs root is $1$
-             */
-            final int dfsIdx;
-            /**
-             * The height of the node in the created dfs tree. The root of the tree has height $0$. The
-             * smaller this value is, the lower the node is considered to be.
-             */
-            // TODO: move
-            final int height;
-            /**
-             * The least <b>dfs index</b> of the nodes' least ancestors in the subtree rooted at this
-             * node. If the subtree doesn't contain a node with a back edge, that ends lower that this
-             * node, this value is equal to the dfs index of this node.
-             */
-            int lowpoint;
-            /**
-             * The least dfs index of the nodes adjacent to this node. If the node doesn't have incident
-             * back edges, this value is equal to the dfs index of the node itself.
-             */
-            int leastAncestor;
-            /**
-             * Stores some value to indicate whether this node is visited in the current context or not.
-             * During the testing phase, if this value if equal to the dfs index of the currently
-             * processed node $v$, then this node is visited, otherwise not. During the Kuratowski
-             * subdivision extraction phase, the value of $0$ indicates that the node isn't visited,
-             * otherwise, the node is considered to be visited.
-             */
-            int visited;
-            /**
-             * The height of this node on the boundary of the biconnected component, which is used to
-             * extract the Kuratowski subdivision. The height of the component root is $0$, the heights
-             * on the left side are positive, on the right side - negative. This value is used to
-             * quickly determine for two nodes on the same boundary branch which one is higher (closer
-             * to the component root).
-             */
-            // TODO: move
-            int boundaryHeight;
-            /**
-             * Used to mark the boundary nodes of the biconnected
-             */
-            // TODO: move
-            boolean marked;
-            /**
-             * Edge to the parent node of this node in the dfs tree. For tree roots this value is
-             * {@code null}
-             */
-            final Edge parentEdge;
-            /**
-             * If this node has a back edge incident to the currently processed node $v$, then this
-             * variable stores this edge
-             */
-            Edge activeBackEdge;
-            /**
-             * The component root the node is created in. For dfs tree roots this value is {@code null}
-             */
-            final Node initialComponentRoot;
-            /**
-             * Two neighbors on the outer face of the biconnected component. Their order is completely
-             * irrelevant for the algorithm to traverse the outer face.
-             */
-            Node outerFaceNeighbor1;
-            Node outerFaceNeighbor2;
-            /**
-             * The list containing the dfs children of this node, which are in the different child
-             * biconnected component, i.e. their weren't merged in the parent component.
-             */
-            long children;
-
-            /**
-             * The roots of the pertinent components during the processing of the node $v$. These are
-             * the components that have pertinent descendant nodes, i.e. nodes incident to the node $v$
-             * via a back edge.
-             *
-             * This list contains virtual nodes matching this node. The virtual nodes are the roots in the child bi-comp
-             * of this node.
-             */
-            long pertinentRoots;
-            /**
-             * The list of tree edges incident to this node in the dfs tree. This list doesn't contain a
-             * parent edge of this node
-             */
-            final IntList treeEdges;
-            /**
-             * The list containing the edges from descendants of this node in the dfs tree. For each
-             * such descendant the corresponding edge is a back edge.
-             */
-            final IntList downEdges;
-            /**
-             * The list of back edges incident to this node.
-             */
-            final IntList backEdges;
-            /**
-             * Stores the list node from the {@code children} of the parent node this node
-             * is stored in. This enable deleting of this node from the {@code children}
-             * list in $O(1)$ time
-             */
-            // DoublyLinkedList.ListNode<Node> listNode;
-            /**
-             * The list of the embedded edges incident to this node in a clockwise or a counterclockwise
-             * order. The order is counterclockwise if the product of the signs of the parent edges
-             * along the path from the root of the component this node is contained in to this node is
-             * equal to $-1$. Otherwise, the order is clockwise.
-             */
-            long embeddedEdges;
-
-            /**
-             * Creates a new node with the specified parameters
-             *
-             * @param graphVertex the vertex in the {@code graph} corresponding to this node
-             * @param dfsIndex    the dfs index of this node
-             * @param parentEdge  the parent edge of this node
-             * @param rootVertex  whether this is real or virtual node
-             */
-            private Node(int nodeIdx, int graphVertex, int dfsIndex, Edge parentEdge,
-                    Node initialComponentRoot, int height) {
-                this.idx = nodeIdx;
-                this.graphVertex = graphVertex;
-                this.dfsIdx = dfsIndex;
-                this.parentEdge = parentEdge;
-                this.initialComponentRoot = initialComponentRoot;
-                this.height = height;
-                this.embeddedEdges = LinkedListFixedSize.HeadTailNone;
-                this.visited = Integer.MAX_VALUE;
-                this.children = LinkedListFixedSize.HeadTailNone;
-                this.pertinentRoots = LinkedListFixedSize.HeadTailNone;
-                if (!isBicompRoot()) {
-                    treeEdges = new IntArrayList();
-                    downEdges = new IntArrayList();
-                    backEdges = new IntArrayList();
-                } else {
-                    treeEdges = null;
-                    downEdges = null;
-                    backEdges = null;
-                }
-            }
-
-            final boolean isBicompRoot() {
-                return graphVertex < 0;
-            }
-
-            final boolean isRealNode() {
-                return graphVertex >= 0;
-            }
-
-            // A node is pertinent if it has a back edge to the "current visited vertex" or it has a
-            // child biconnected component which has a pertinent node.
-            boolean isPertinent() {
-                return activeBackEdge != null || !isNone(head(pertinentRoots));
-            }
-
-            /**
-             * Returns the parent of this node in the dfs tree. Tree parent of the dfs root node is
-             * {@code null}
-             *
-             * @return the parent of this node in the dfs tree
-             */
-            Node getParent() {
-                return parentEdge == null ? null : parentEdge.source;
-            }
-
-            void replaceNeighbor(Node oldNeighbor, Node newNeighbor) {
-                if (outerFaceNeighbor1 == oldNeighbor) {
-                    outerFaceNeighbor1 = newNeighbor;
-                } else {
-                    assert outerFaceNeighbor2 == oldNeighbor;
-                    outerFaceNeighbor2 = newNeighbor;
-                }
-            }
-
-            void replaceNeighborOpposite(Node oppositeNeighbor, Node newNeighbor) {
-                if (outerFaceNeighbor1 == oppositeNeighbor) {
-                    outerFaceNeighbor2 = newNeighbor;
-                } else {
-                    assert outerFaceNeighbor2 == oppositeNeighbor;
-                    outerFaceNeighbor1 = newNeighbor;
-                }
-            }
-
-            /**
-             * Checks whether this node has a neighbor, which is a root of a biconnected component
-             *
-             * @return true, if this node has a root node neighbor, false otherwise
-             */
-            boolean hasRootNeighbor() {
-                return outerFaceNeighbor1.isBicompRoot() || outerFaceNeighbor2.isBicompRoot();
-            }
-
-            /**
-             * Returns either {@code node} or its real counterpart in the case the {@code node} is a
-             * component root.
-             *
-             * @param  node the input argument
-             * @return      the real counter path of the {@code node}
-             */
-            private Node toExistingNode() {
-                return isBicompRoot() ? realNodeInParentBiComp() : this;
-            }
-
-            private Node realNodeInParentBiComp() {
-                assert isBicompRoot();
-                Node real = parentEdge.source;
-                assert dfsIdx == real.dfsIdx;
-                return real;
-            }
-
-            /**
-             * Returns a neighbor of this node which is not equal to the {@code prev}
-             *
-             * @param  prev a neighbor of this node
-             * @return      a neighbor, which is not equal to the {@code prev}
-             */
-            Node nextOnOuterFace(Node prev) {
-                if (outerFaceNeighbor1 == prev) {
-                    return outerFaceNeighbor2;
-                } else {
-                    assert outerFaceNeighbor2 == prev;
-                    return outerFaceNeighbor1;
-                }
+            OuterFaceIter(Node next, Node prev) {
+                this.next = next;
+                this.current = prev;
             }
 
             @Override
-            public String toString() {
-                if (!isBicompRoot()) {
-                    return String.valueOf(graphVertex);
+            public boolean hasNext() {
+                return true;
+            }
+
+            @Override
+            public Node next() {
+                Node ret = next;
+                next = next.otherOuterFaceNeighbor(current);
+                return current = ret;
+            }
+
+            Node peekNext() {
+                return next;
+            }
+
+            // Last element returned by next()
+            Node current() {
+                return current;
+            }
+
+            // The node returned *before* the last call to next()
+            Node prev() {
+                return current.otherOuterFaceNeighbor(next);
+            }
+
+            /**
+             * Returns an edge connecting previously returned node with node, which will be returned
+             * next. If either of the mentioned nodes is virtual, the edge will be incident to its real
+             * counterpart.
+             *
+             * @return an edge from the current node to the next node
+             */
+            // The edge connecting the last node returned by next() and the next node.
+            Edge nextEdge() {
+                Edge edge = edges[embedded2edge[head(current.embeddedEdges)]];
+                Node target = next.toExistingNode();
+                Node source = current.toExistingNode();
+                if (edge.otherEndpoint(source) == target) {
+                    return edge;
                 } else {
-                    return String.valueOf(realNodeInParentBiComp().graphVertex) + "v";
+                    return edges[embedded2edge[tail(current.embeddedEdges)]];
                 }
             }
         }
 
-        OuterFaceIter outerFace(Node node, boolean direction) {
-            Node neighbor = direction == Side1 ? node.outerFaceNeighbor1 : node.outerFaceNeighbor2;
-            return new OuterFaceIter(neighbor, node);
+        static class BiCompMerge {
+            /**
+             * The node current traversal descended from. This node belongs to the parent biconnected
+             * component
+             */
+            // A node in the parent biconnected component, always real.
+            final Node parent;
+            /**
+             * The next node along the traversal of the parent biconnected component
+             */
+            final Node parentNext;
+            // The bi-comp root of the child bi-comp, which is a virtual node matching the real parent node.
+            final Node child;
+            /**
+             * The previous node along the traversal of the child biconnected component
+             */
+            final Node childPrev;
+            /**
+             * The direction used to start the traversal of the child biconnected component. Since the
+             * {@code child} is the component root, {@code child.outerFaceNeighbors[|1-vOut|]} is equal
+             * to the {@code childPrev}
+             */
+            final boolean childDirection;
+
+            /**
+             * Creates new instance of the information needed to merge to biconnected components
+             *
+             * @param parent         the node current traversal descended from
+             * @param parentNext     the next node along the traversal of the parent component
+             * @param child          the virtual root of the child biconnected component
+             * @param childPrev      the previous node along the traversal of the child component
+             * @param childDirection the direction used to enter the child biconnected component
+             */
+            BiCompMerge(Node parent, Node parentNext, Node child, Node childPrev, boolean childDirection) {
+                assert parent.dfsIdx == child.dfsIdx;
+                this.parent = parent;
+                this.parentNext = parentNext;
+                this.child = child;
+                this.childPrev = childPrev;
+                this.childDirection = childDirection;
+            }
         }
-
-        void removeShortCircuitEdges(Node node) {
-            node.embeddedEdges =
-                    embeddedLists.removeIf(node.embeddedEdges, eIdx -> !edges[embedded2edge[eIdx]].isRealEdge());
-            assert isNone(head(node.embeddedEdges)) || !embeddedLists.hasPrev(head(node.embeddedEdges));
-        }
-
-        // A node is externally active if it is incident to the edge ending higher than {@code node}, or it
-        // has a child biconnected component with a pertinent node
-        boolean isExternallyActive(Node node) {
-            // Checking node.lowpoint < currentDfsIdx is simpler than this function implementation, and actually correct
-            // right after preprocessing, but we may remove some children from the children list of this node, as the
-            // list only maintain the children that are not yet merged to the bi-comp of the node, therefore we must
-            // check the edges of this node, and the edge of the existing children 'manually'.
-
-            if (node.leastAncestor < currentDfsIdx)
-                return true;
-            // children are sorted by lowpoint, so its enough to check the first
-            int firstChild = head(node.children);
-            return !isNone(firstChild) && nodes[firstChild].lowpoint < currentDfsIdx;
-        }
-
-        // A node is internally active if it's pertinent and not externally active
-        boolean isInternallyActive(Node node) {
-            return node.isPertinent() && !isExternallyActive(node);
-        }
-
-        // A node is active it is either pertinent or externally active
-        boolean isActive(Node node) {
-            return isExternallyActive(node) || node.isPertinent();
-        }
-
     }
 
     private static class Worker2 extends Worker {
@@ -1192,7 +1128,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          */
         private static void addPathEdges(Set<Edge> edges, Edge startEdge, Node stop) {
             edges.add(startEdge);
-            for (Node current = startEdge.source; current != stop; current = current.getParent())
+            for (Node current = startEdge.source; current != stop; current = current.parent())
                 edges.add(current.parentEdge);
         }
 
@@ -1487,7 +1423,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 // there are <2 embedded edges
                 return;
             }
-            Node componentParent = componentRoot.getParent();
+            Node componentParent = componentRoot.parent();
             Edge edgeToNext = edges[embedded2edge[tail(componentRoot.embeddedEdges)]];
             Edge edgeToPrev = edges[embedded2edge[head(componentRoot.embeddedEdges)]];
             Node next = edgeToNext.otherEndpoint(componentParent);
@@ -1549,10 +1485,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             if (backEdge.source == w) {
                 return null;
             }
-            Node prev = backEdge.source, current = backEdge.source.getParent();
+            Node prev = backEdge.source, current = backEdge.source.parent();
             while (current != w) {
                 prev = current;
-                current = current.getParent();
+                current = current.parent();
             }
             return prev;
         }
@@ -1686,9 +1622,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 x = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, Side2).current();
                 y = getExternallyActiveSuccessorOnOuterFace(w, componentRoot, Side1).current();
                 if (x.isBicompRoot()) {
-                    w = x.getParent();
+                    w = x.parent();
                 } else if (y.isBicompRoot()) {
-                    w = y.getParent();
+                    w = y.parent();
                 } else {
                     componentRoot = getComponentRoot(w);
                     break;
@@ -1702,9 +1638,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             addPathEdges(subdivision, yBackEdge, y);
             addBoundaryEdges(subdivision, componentRoot);
 
-            if (componentRoot.getParent() != v) {
+            if (componentRoot.parent() != v) {
                 // case A, v isn't a parent of the component we've found
-                addPathEdges(subdivision, componentRoot.getParent(), backLower);
+                addPathEdges(subdivision, componentRoot.parent(), backLower);
                 addPathEdges(subdivision, failedEdge, w);
                 return finish(subdivision);
             }
@@ -1769,7 +1705,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             addPathEdges(subdivision, externallyActive, w);
             if (firstStrictlyHigher(externallyActive.target, xBackEdge.target, yBackEdge.target)) {
                 // case E_2, equivalent to A
-                addPathEdges(subdivision, componentRoot.getParent(), backLower);
+                addPathEdges(subdivision, componentRoot.parent(), backLower);
             } else if (firstStrictlyHigher(
                     xBackEdge.target, yBackEdge.target, externallyActive.target)) {
                 // case E_2, u_x is higher
