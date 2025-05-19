@@ -42,7 +42,6 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
@@ -79,7 +78,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
                     int i = 0;
                     for (IntIterator it = worker.embeddedLists.iter(node.embeddedEdges); it.hasNext(); i++) {
-                        int edge = worker.embedded2edge[it.nextInt()].graphEdge();
+                        int edge = worker.edges[worker.embedded2edge[it.nextInt()]].graphEdge();
                         long x = weights.get(edge);
                         if (g.edgeSource(edge) == node.graphVertex)
                             x = IntPair.setFirst(x, i);
@@ -124,6 +123,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         final Node[] nodes;
         int nodesNum;
 
+        final Edge[] edges;
+        int edgesNum;
+
         // A data structure representing multiple linked lists, each one of them is a list of DFS children of a node.
         // When two bi-comps are merged, the root of the child bi-comp is removed from the parent's list of children.
         //
@@ -144,7 +146,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         // each time we add an edge to a list. In addition, we keep a mapping from allocated indices to Edge objects
         // in the {@code embedded2edge} array.
         final LinkedListFixedSize.Doubly embeddedLists;
-        final Edge[] embedded2edge;
+        final int[] embedded2edge;
         int embedded2edgeSize;
 
         // After preprocessing, we iterate over the dfs tree nodes in reverse order of their dfs index, performing a
@@ -166,13 +168,15 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
             this.nodes = new Node[maxNodesNum];
             this.nodesNum = 0;
+            this.edges = new Edge[maxEdgesNum];
+            this.edgesNum = 0;
 
             this.childrenLists = new LinkedListFixedSize.Doubly(maxNodesNum);
             this.pertinentRootsLists = new LinkedListFixedSize.Doubly(maxNodesNum);
 
             int embeddedListsMaxLen = maxEdgesNum * 2; // each edge can be added in the lists of both of its endpoints
             this.embeddedLists = new LinkedListFixedSize.Doubly(embeddedListsMaxLen);
-            this.embedded2edge = new Edge[embeddedListsMaxLen];
+            this.embedded2edge = new int[embeddedListsMaxLen];
             this.embedded2edgeSize = 0;
 
             this.biCompMergeStack = new ObjectArrayList<>();
@@ -241,7 +245,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         int v = eit.targetInt();
                         if (v2node[v] == null) {
                             // Unvisited vertex, e is a tree edge
-                            Edge treeEdge = Edge.newTreeEdge(e, u);
+                            Edge treeEdge = newTreeEdge(e, u);
                             Node componentRoot = newVirtualBicompRoot(u.dfsIdx, treeEdge);
                             Node node = newRealNode(v, dfsIndex++, u.height + 1, componentRoot, treeEdge);
                             addToEmbeddedFirst(componentRoot, treeEdge);
@@ -261,7 +265,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                                 continue; // Not a back edge, reverse of tree edge from parent to u
                             if (u.dfsIdx < ancestor.dfsIdx)
                                 continue; // The reverse edge was already added as a back edge, down edge of u
-                            Edge backEdge = Edge.newBackEdge(e, u, ancestor);
+                            Edge backEdge = newBackEdge(e, u, ancestor);
                             ancestor.downEdges.add(backEdge);
                             u.backEdges.add(backEdge);
                         }
@@ -499,7 +503,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
             // merge embedded edges lists of the virtual root and the parent (real node)
             boolean parentEdgesDirection =
-                    embedded2edge[head(parent.embeddedEdges)].otherEndpoint(parent) != merge.parentNext;
+                    edges[embedded2edge[head(parent.embeddedEdges)]].otherEndpoint(parent) != merge.parentNext;
             if ((merge.childDirection == Side1) ^ parentEdgesDirection) {
                 assert !virtualRoot.parentEdge.isInverted;
                 virtualRoot.parentEdge.isInverted = true;
@@ -529,7 +533,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 root.outerFaceNeighbor2 = source;
             }
 
-            Edge firstEdge = embedded2edge[head(source.embeddedEdges)];
+            Edge firstEdge = edges[embedded2edge[head(source.embeddedEdges)]];
             if (firstEdge.otherEndpoint(source) == innerNeighbor.toExistingNode()) {
                 addToEmbeddedFirst(source, edge);
             } else {
@@ -540,7 +544,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         }
 
         private void addShortCircuitEdge(Node source, Node targetBicompRoot, boolean direction, Node innerNeighbor) {
-            Edge shortCircuit = Edge.newShortCircuitEdge(source, targetBicompRoot.getParent());
+            Edge shortCircuit = newShortCircuitEdge(source, targetBicompRoot.getParent());
             embedEdge(targetBicompRoot, direction, shortCircuit, innerNeighbor);
         }
 
@@ -592,15 +596,15 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         }
 
         void addToEmbeddedFirst(Node node, Edge edge) {
-            int edgeIdx = embedded2edgeSize++;
-            embedded2edge[edgeIdx] = edge;
-            node.embeddedEdges = embeddedLists.addFirst(node.embeddedEdges, edgeIdx);
+            int idx = embedded2edgeSize++;
+            embedded2edge[idx] = edge.idx;
+            node.embeddedEdges = embeddedLists.addFirst(node.embeddedEdges, idx);
         }
 
         void addToEmbeddedLast(Node node, Edge edge) {
-            int edgeIdx = embedded2edgeSize++;
-            embedded2edge[edgeIdx] = edge;
-            node.embeddedEdges = embeddedLists.addLast(node.embeddedEdges, edgeIdx);
+            int idx = embedded2edgeSize++;
+            embedded2edge[idx] = edge.idx;
+            node.embeddedEdges = embeddedLists.addLast(node.embeddedEdges, idx);
         }
 
         /**
@@ -748,18 +752,20 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              * @return an edge from the current node to the next node
              */
             Edge nextEdge() {
-                Edge edge = embedded2edge[head(current.embeddedEdges)];
+                Edge edge = edges[embedded2edge[head(current.embeddedEdges)]];
                 Node target = next.toExistingNode();
                 Node source = current.toExistingNode();
                 if (edge.otherEndpoint(source) == target) {
                     return edge;
                 } else {
-                    return embedded2edge[tail(current.embeddedEdges)];
+                    return edges[embedded2edge[tail(current.embeddedEdges)]];
                 }
             }
         }
 
         static class Edge {
+            final int idx;
+
             /**
              * The counterpart of this edge in the {@code graph}. This value can be -1 if the edge was
              * created as a short-circuit edge.
@@ -782,48 +788,12 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
              */
             boolean isInverted;
 
-            private Edge(int graphEdge, Node source, Node target) {
+            private Edge(int idx, int graphEdge, Node source, Node target) {
+                this.idx = idx;
                 this.graphEdge = graphEdge;
                 this.source = source;
                 this.target = target;
                 this.isInverted = false;
-            }
-
-            /**
-             * Creates a new tree edge.
-             *
-             * @param graphEdge the counterpart of this edge in the {@code graph}
-             * @param source    the source node of this edge
-             */
-            static Edge newTreeEdge(int graphEdge, Node source) {
-                assert graphEdge >= 0;
-                return new Edge(graphEdge, source, null);
-            }
-
-            /**
-             * Creates a new edge. This constructor is used directly for the creation of the back edges
-             *
-             * @param graphEdge the counterpart of this edge in the {@code graph}
-             * @param source    the source node of this edge
-             * @param target    the target node of this edge
-             */
-            static Edge newBackEdge(int graphEdge, Node source, Node target) {
-                assert graphEdge >= 0;
-                return new Edge(graphEdge, source, target);
-            }
-
-            /**
-             * Creates a new short-circuit edge with no counterpart in {@code graph}. The {@code source}
-             * of this edge is always a real node on the boundary of some biconnected component, and the
-             * {@code target} node is the parent node of the biconnected component the source node
-             * belongs to, so the edge resembles a regular back edge except for that it doesn't have a
-             * counterpart in the {@code graph}
-             *
-             * @param source the source of the short-circuit edge
-             * @param target the target of the short-circuit edge
-             */
-            static Edge newShortCircuitEdge(Node source, Node target) {
-                return new Edge(-1, source, target);
             }
 
             int graphEdge() {
@@ -849,6 +819,48 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             public String toString() {
                 return Integer.toString(graphEdge);
             }
+        }
+
+        Edge newEdgeImpl(int graphEdge, Node source, Node target) {
+            int edgeIdx = edgesNum++;
+            return edges[edgeIdx] = new Edge(edgeIdx, graphEdge, source, target);
+        }
+
+        /**
+         * Creates a new tree edge.
+         *
+         * @param graphEdge the counterpart of this edge in the {@code graph}
+         * @param source    the source node of this edge
+         */
+        Edge newTreeEdge(int graphEdge, Node source) {
+            assert graphEdge >= 0;
+            return newEdgeImpl(graphEdge, source, null);
+        }
+
+        /**
+         * Creates a new edge. This constructor is used directly for the creation of the back edges
+         *
+         * @param graphEdge the counterpart of this edge in the {@code graph}
+         * @param source    the source node of this edge
+         * @param target    the target node of this edge
+         */
+        Edge newBackEdge(int graphEdge, Node source, Node target) {
+            assert graphEdge >= 0;
+            return newEdgeImpl(graphEdge, source, target);
+        }
+
+        /**
+         * Creates a new short-circuit edge with no counterpart in {@code graph}. The {@code source}
+         * of this edge is always a real node on the boundary of some biconnected component, and the
+         * {@code target} node is the parent node of the biconnected component the source node
+         * belongs to, so the edge resembles a regular back edge except for that it doesn't have a
+         * counterpart in the {@code graph}
+         *
+         * @param source the source of the short-circuit edge
+         * @param target the target of the short-circuit edge
+         */
+        Edge newShortCircuitEdge(Node source, Node target) {
+            return newEdgeImpl(-1, source, target);
         }
 
         /**
@@ -1102,7 +1114,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         }
 
         void removeShortCircuitEdges(Node node) {
-            node.embeddedEdges = embeddedLists.removeIf(node.embeddedEdges, eIdx -> !embedded2edge[eIdx].isRealEdge());
+            node.embeddedEdges =
+                    embeddedLists.removeIf(node.embeddedEdges, eIdx -> !edges[embedded2edge[eIdx]].isRealEdge());
             assert isNone(head(node.embeddedEdges)) || !embeddedLists.hasPrev(head(node.embeddedEdges));
         }
 
@@ -1373,12 +1386,12 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                      */
                     int begin = embeddedLists
                             .iter(info.current.embeddedEdges)
-                            .filter(x -> embedded2edge[x] == info.prevEdge)
+                            .filter(x -> embedded2edge[x] == info.prevEdge.idx)
                             .nextInt();
                     for (Edge currentEdge : embeddedLists
                             .iterRev(begin)
                             .chain(embeddedLists.iterRev(info.current.embeddedEdges).fuse(x -> x == begin))
-                            .mapObj(i -> embedded2edge[i])) {
+                            .mapObj(i -> this.edges[embedded2edge[i]])) {
                         Node opposite = currentEdge.otherEndpoint(info.current);
                         if ((!canGo.test(opposite) || opposite.visited != 0)
                                 && !isFinish.test(opposite)) {
@@ -1410,7 +1423,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
             for (Node current = circulator.next(); current != w; current = circulator.next()) {
                 if (findPathDfs(
-                        current, embedded2edge[head(current.embeddedEdges)], n -> !n.marked, n -> n.boundaryHeight < 0,
+                        current, edges[embedded2edge[head(current.embeddedEdges)]], n -> !n.marked,
+                        n -> n.boundaryHeight < 0,
                         result)) {
                     return result;
                 }
@@ -1465,8 +1479,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 return;
             }
             Node componentParent = componentRoot.getParent();
-            Edge edgeToNext = embedded2edge[tail(componentRoot.embeddedEdges)];
-            Edge edgeToPrev = embedded2edge[head(componentRoot.embeddedEdges)];
+            Edge edgeToNext = edges[embedded2edge[tail(componentRoot.embeddedEdges)]];
+            Edge edgeToPrev = edges[embedded2edge[head(componentRoot.embeddedEdges)]];
             Node next = edgeToNext.otherEndpoint(componentParent);
             Node prev = edgeToPrev.otherEndpoint(componentParent);
 
@@ -1479,8 +1493,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             prev.outerFaceNeighbor1 = componentRoot;
             Node current = componentRoot.outerFaceNeighbor1;
             do {
-                edgeToNext = embedded2edge[tail(current.embeddedEdges)];
-                edgeToPrev = embedded2edge[head(current.embeddedEdges)];
+                edgeToNext = edges[embedded2edge[tail(current.embeddedEdges)]];
+                edgeToPrev = edges[embedded2edge[head(current.embeddedEdges)]];
                 next = edgeToNext.otherEndpoint(current);
                 prev = edgeToPrev.otherEndpoint(current);
                 if (prev != componentParent)
@@ -1583,7 +1597,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          *                       Kuratowski subdivision, or {@code null} is no such edge exist for this biconnected
          *                       component
          */
-        private Edge checkComponentForFailedEdge(Node componentRoot, Node v, Set<Edge> embeddedEdges) {
+        private Edge checkComponentForFailedEdge(Node componentRoot, Node v, IntSet embeddedEdges) {
             OuterFaceIter firstDir =
                     getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, Side1);
             Node firstDirNode = firstDir.current();
@@ -1596,7 +1610,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 return null;
             for (Node current = firstDir.next(); current != secondDirNode; current = firstDir.next())
                 if (current.isPertinent())
-                    return findBackEdge(current, e -> e.target == v && !embeddedEdges.contains(e));
+                    return findBackEdge(current, e -> e.target == v && !embeddedEdges.contains(e.idx));
             return null;
         }
 
@@ -1617,7 +1631,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @return         the found un-embedded back edge which can be used to extract a Kuratowski subdivision
          */
         private Edge findFailedEdge(Node failedV) {
-            final Set<Edge> embeddedEdges = new ObjectOpenHashSet<>();
+            final IntSet embeddedEdges = new IntOpenHashSet();
             for (Node node : realNodes())
                 for (int i : embeddedLists.iter(node.embeddedEdges))
                     embeddedEdges.add(embedded2edge[i]);
