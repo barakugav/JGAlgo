@@ -310,8 +310,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             final Node target = downEdge.target;
             final int visited = target.dfsIdx;
 
-            assert source.activeBackEdge == null;
-            source.activeBackEdge = downEdge;
+            assert source.activeBackEdge < 0;
+            source.activeBackEdge = downEdge.idx;
             source.visited = visited;
 
             for (Iterator<Node> leftIter = outerFace(source, Side1), rightIter = outerFace(source, Side2);;) {
@@ -361,7 +361,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 boolean side = initialDirection;
                 OuterFaceIter outerFace = outerFace(bicompRoot, side);
                 outFaceLoop: for (Node current = outerFace.next(); current != bicompRoot;) {
-                    if (current.activeBackEdge != null) {
+                    if (current.activeBackEdge >= 0) {
                         // At this point we walked down from the top vertex along the bi-comps util we reached a vertex
                         // with an edge to the top vertex, which we should embed. When we add the back edge, all the
                         // vertices along the path we walked down become inner vertices, and the separated bi-comps
@@ -372,8 +372,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         while (!biCompMergeStack.isEmpty())
                             mergeBicomps(biCompMergeStack.pop());
 
-                        embedEdge(bicompRoot, initialDirection, current.activeBackEdge, innerNeighbor);
-                        current.activeBackEdge = null;
+                        embedEdge(bicompRoot, initialDirection, edges[current.activeBackEdge], innerNeighbor);
+                        current.activeBackEdge = -1;
                         embeddedEdgesNum++;
 
                         outerFace = new OuterFaceIter(current.otherOuterFaceNeighbor(bicompRoot), current);
@@ -638,8 +638,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             // bi-comp.
             final Node bicompRoot;
 
-            // The back edge from this node to the currently processed node, or {@code null} if no such edge exists.
-            Edge activeBackEdge;
+            // The back edge (index) from this node to the currently processed node, or {@code null} if no such edge
+            // exists.
+            int activeBackEdge;
 
             // The neighbors of this node on the outer face of this node's bi-comp.
             Node outerFaceNeighbor1;
@@ -676,7 +677,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 this.visited = Integer.MAX_VALUE;
                 this.children = LinkedListFixedSize.HeadTailNone;
                 this.pertinentRoots = LinkedListFixedSize.HeadTailNone;
-                if (!isBicompRoot()) {
+                this.activeBackEdge = -1;
+                if (isRealNode()) {
                     treeEdges = new IntArrayList();
                     downEdges = new IntArrayList();
                     backEdges = new IntArrayList();
@@ -702,7 +704,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             // A node is pertinent if it has a back edge to the "current visited vertex" or it has a
             // child biconnected component which has a pertinent node.
             boolean isPertinent() {
-                return activeBackEdge != null || !isNone(head(pertinentRoots));
+                return activeBackEdge >= 0 || !isNone(head(pertinentRoots));
             }
 
             void replaceNeighbor(Node oldNeighbor, Node newNeighbor) {
@@ -729,11 +731,11 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
             // This node or the real node in the parent bi-comp if this node is a virtual bicomp root
             private Node realNode() {
-                return isBicompRoot() ? realNodeInParentBiComp() : this;
+                return isRealNode() ? this : realNodeInParentBiComp();
             }
 
             private Node realNodeInParentBiComp() {
-                assert isBicompRoot();
+                assert !isRealNode() && isBicompRoot();
                 Node real = parentEdge.source;
                 assert dfsIdx == real.dfsIdx;
                 return real;
@@ -750,7 +752,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
             // @Override
             // public String toString() {
-            // if (!isBicompRoot()) {
+            // if (isRealNode()) {
             // return String.valueOf(graphVertex);
             // } else {
             // return String.valueOf(realNodeInParentBiComp().graphVertex) + "v";
