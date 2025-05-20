@@ -34,6 +34,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.IterTools.Iter;
 import it.unimi.dsi.fastutil.Pair;
@@ -665,21 +666,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             // This value can be remain dirty and not clear, as long use a different value for each step.
             int visited;
 
-            /**
-             * The height of this node on the boundary of the biconnected component, which is used to
-             * extract the Kuratowski subdivision. The height of the component root is $0$, the heights
-             * on the left side are positive, on the right side - negative. This value is used to
-             * quickly determine for two nodes on the same boundary branch which one is higher (closer
-             * to the component root).
-             */
-            // TODO: move
-            int boundaryHeight;
-            /**
-             * Used to mark the boundary nodes of the biconnected
-             */
-            // TODO: move
-            boolean marked;
-
             private Node(int nodeIdx, int graphVertex, int dfsIndex, Edge parentEdge, Node bicompRoot) {
                 this.idx = nodeIdx;
                 this.graphVertex = graphVertex;
@@ -973,9 +959,24 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         // smaller this value is, the lower the node is considered to be.
         private final int[] heights;
 
+        /**
+         * The height of this node on the boundary of the biconnected component, which is used to
+         * extract the Kuratowski subdivision. The height of the component root is $0$, the heights
+         * on the left side are positive, on the right side - negative. This value is used to
+         * quickly determine for two nodes on the same boundary branch which one is higher (closer
+         * to the component root).
+         */
+        private final int[] boundaryHeights;
+        /**
+         * Used to mark the boundary nodes of the biconnected
+         */
+        private final Bitmap marked;
+
         public Worker2(IndexGraph graph) {
             super(graph);
             heights = new int[this.nodes.length];
+            boundaryHeights = new int[this.nodes.length];
+            marked = new Bitmap(this.nodes.length);
         }
 
         /**
@@ -1151,7 +1152,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             OuterFaceIter circulator = outerFace(componentRoot, dir);
             int currentHeight = delta;
             for (Node current = circulator.next(); current != w; current = circulator.next()) {
-                current.boundaryHeight = currentHeight;
+                boundaryHeights[current.idx] = currentHeight;
                 currentHeight += delta;
             }
         }
@@ -1269,8 +1270,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
             for (Node current = circulator.next(); current != w; current = circulator.next()) {
                 if (findPathDfs(
-                        current, edges[embedded2edge[head(current.embeddedEdges)]], n -> !n.marked,
-                        n -> n.boundaryHeight < 0,
+                        current, edges[embedded2edge[head(current.embeddedEdges)]], n -> !marked.get(n.idx),
+                        n -> boundaryHeights[n.idx] < 0,
                         result)) {
                     return result;
                 }
@@ -1307,7 +1308,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             Node current;
             do {
                 Edge edge = nextEdge(circulator);
-                edge.source.marked = edge.target.marked = true;
+                marked.set(edge.source.idx);
+                marked.set(edge.target.idx);
                 edges.add(edge);
                 current = circulator.next();
             } while (current != componentRoot);
@@ -1407,10 +1409,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             clearVisited();
             int i = 0;
             Edge currentEdge = path.get(i);
-            Node current = currentEdge.source.boundaryHeight != 0 ? currentEdge.target : currentEdge.source;
+            Node current = boundaryHeights[currentEdge.source.idx] != 0 ? currentEdge.target : currentEdge.source;
             List<Edge> result = new ObjectArrayList<>();
             while (i < path.size() - 1) {
-                if (findPathDfs(current, currentEdge, n -> !n.marked, n -> n == v, result))
+                if (findPathDfs(current, currentEdge, n -> !marked.get(n.idx), n -> n == v, result))
                     return result;
                 ++i;
                 currentEdge = path.get(i);
@@ -1599,20 +1601,21 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             setBoundaryDepth(componentRoot, w, Side1, 1);
             setBoundaryDepth(componentRoot, w, Side2, -1);
 
-            assert x.boundaryHeight > 0;
+            assert boundaryHeights[x.idx] > 0;
             List<Edge> path = findHighestObstructingPath(componentRoot, w);
             assert !path.isEmpty();
 
             Edge firstEdge = path.get(0);
             Edge lastEdge = path.get(path.size() - 1);
-            Node firstNode = firstEdge.source.boundaryHeight > 0 ? firstEdge.source : firstEdge.target;
-            Node lastNode = lastEdge.source.boundaryHeight < 0 ? lastEdge.source : lastEdge.target;
-            if (firstNode.boundaryHeight < x.boundaryHeight || lastNode.boundaryHeight > y.boundaryHeight) {
+            Node firstNode = boundaryHeights[firstEdge.source.idx] > 0 ? firstEdge.source : firstEdge.target;
+            Node lastNode = boundaryHeights[lastEdge.source.idx] < 0 ? lastEdge.source : lastEdge.target;
+            if (boundaryHeights[firstNode.idx] < boundaryHeights[x.idx]
+                    || boundaryHeights[lastNode.idx] > boundaryHeights[y.idx]) {
                 // case C, either the first node or the last node of the path is higher than x or y
                 // respectively
                 Node removeStart;
-                if (lastNode.boundaryHeight > y.boundaryHeight) {
-                    removeStart = firstNode.boundaryHeight < x.boundaryHeight ? firstNode : x;
+                if (boundaryHeights[lastNode.idx] > boundaryHeights[y.idx]) {
+                    removeStart = boundaryHeights[firstNode.idx] < boundaryHeights[x.idx] ? firstNode : x;
                     removeUp(removeStart, componentRoot, Side2, subdivision);
                 } else {
                     removeUp(y, componentRoot, Side1, subdivision);
@@ -1622,7 +1625,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 addPathEdges(subdivision, v, backLower);
                 return finish(subdivision);
             }
-            path.forEach(e -> e.source.marked = e.target.marked = true);
+            for (Edge e : path) {
+                marked.set(e.source.idx);
+                marked.set(e.target.idx);
+            }
             List<Edge> pathToV = findPathToV(path, v);
             if (!pathToV.isEmpty()) {
                 // case D, we have a path to the node v
@@ -1658,7 +1664,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 addPathEdges(subdivision, failedEdge, w);
                 addPathEdges(subdivision, v,
                         lowest(backLower, externallyActive.target));
-            } else if (firstNode.boundaryHeight > x.boundaryHeight) {
+            } else if (boundaryHeights[firstNode.idx] > boundaryHeights[x.idx]) {
                 // case E_4, p_x is lower than x
                 removeUp(w, lastNode, Side1, subdivision);
                 subdivision.addAll(path);
@@ -1667,7 +1673,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         subdivision,
                         highest(backHigher, externallyActive.target),
                         lowest(backLower, externallyActive.target));
-            } else if (lastNode.boundaryHeight < y.boundaryHeight) {
+            } else if (boundaryHeights[lastNode.idx] < boundaryHeights[y.idx]) {
                 // case E_4, p_y is lower than y
                 removeUp(firstNode, w, Side1, subdivision);
                 subdivision.addAll(path);
