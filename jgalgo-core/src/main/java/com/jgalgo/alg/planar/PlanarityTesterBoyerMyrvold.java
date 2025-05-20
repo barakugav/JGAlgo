@@ -43,6 +43,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
@@ -219,7 +220,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                             // Unvisited vertex, e is a tree edge
                             Edge treeEdge = newTreeEdge(e, u);
                             Node componentRoot = newVirtualBicompRoot(u.dfsIdx, treeEdge);
-                            Node node = newRealNode(v, dfsIndex++, u.height + 1, componentRoot, treeEdge);
+                            Node node = newRealNode(v, dfsIndex++, componentRoot, treeEdge);
                             addToEmbeddedFirst(componentRoot, treeEdge);
                             addToEmbeddedFirst(node, treeEdge);
                             treeEdge.target = node;
@@ -285,25 +286,22 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
         private Node newDfsRoot(int graphVertex, int dfsIndex) {
             assert graphVertex >= 0;
-            return newNodeImpl(graphVertex, dfsIndex, null, null, 0);
+            return newNodeImpl(graphVertex, dfsIndex, null, null);
         }
 
-        private Node newRealNode(int graphVertex, int dfsIndex, int height, Node bicompRoot,
-                Edge parentEdge) {
+        private Node newRealNode(int graphVertex, int dfsIndex, Node bicompRoot, Edge parentEdge) {
             assert graphVertex >= 0;
             return newNodeImpl(graphVertex, dfsIndex, Objects.requireNonNull(parentEdge),
-                    Objects.requireNonNull(bicompRoot),
-                    height);
+                    Objects.requireNonNull(bicompRoot));
         }
 
         private Node newVirtualBicompRoot(int dfsIndex, Edge parentEdge) {
-            return newNodeImpl(-1, dfsIndex, Objects.requireNonNull(parentEdge), null, 0);
+            return newNodeImpl(-1, dfsIndex, Objects.requireNonNull(parentEdge), null);
         }
 
-        private Node newNodeImpl(int graphVertex, int dfsIndex, Edge parentEdge, Node bicompRoot,
-                int height) {
+        private Node newNodeImpl(int graphVertex, int dfsIndex, Edge parentEdge, Node bicompRoot) {
             int nodeIdx = nodesNum++;
-            return nodes[nodeIdx] = new Node(nodeIdx, graphVertex, dfsIndex, parentEdge, bicompRoot, height);
+            return nodes[nodeIdx] = new Node(nodeIdx, graphVertex, dfsIndex, parentEdge, bicompRoot);
         }
 
         private void walkUp(final Edge downEdge) {
@@ -668,12 +666,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             int visited;
 
             /**
-             * The height of the node in the created dfs tree. The root of the tree has height $0$. The
-             * smaller this value is, the lower the node is considered to be.
-             */
-            // TODO: move
-            final int height;
-            /**
              * The height of this node on the boundary of the biconnected component, which is used to
              * extract the Kuratowski subdivision. The height of the component root is $0$, the heights
              * on the left side are positive, on the right side - negative. This value is used to
@@ -688,14 +680,12 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             // TODO: move
             boolean marked;
 
-            private Node(int nodeIdx, int graphVertex, int dfsIndex, Edge parentEdge,
-                    Node bicompRoot, int height) {
+            private Node(int nodeIdx, int graphVertex, int dfsIndex, Edge parentEdge, Node bicompRoot) {
                 this.idx = nodeIdx;
                 this.graphVertex = graphVertex;
                 this.dfsIdx = dfsIndex;
                 this.parentEdge = parentEdge;
                 this.bicompRoot = bicompRoot;
-                this.height = height;
                 this.embeddedEdges = LinkedListFixedSize.HeadTailNone;
                 this.visited = Integer.MAX_VALUE;
                 this.children = LinkedListFixedSize.HeadTailNone;
@@ -979,8 +969,13 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
     private static class Worker2 extends Worker {
 
+        // The height of the node in the created dfs tree. The root of the tree has height $0$. The
+        // smaller this value is, the lower the node is considered to be.
+        private final int[] heights;
+
         public Worker2(IndexGraph graph) {
             super(graph);
+            heights = new int[this.nodes.length];
         }
 
         /**
@@ -1070,7 +1065,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @return               the desired back edge or null, if no such edge exist
          */
         private Edge findBackEdge(Node current, int heightMax, Edge forbiddenEdge) {
-            return findBackEdge(current, e -> forbiddenEdge != e && e.target.height < heightMax);
+            return findBackEdge(current, e -> forbiddenEdge != e && heights[e.target.idx] < heightMax);
         }
 
         /**
@@ -1128,8 +1123,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param  b a node in the dfs tree
          * @return   the highest of the two nodes
          */
-        private static Node highest(Node a, Node b) {
-            return a.height > b.height ? a : b;
+        private Node highest(Node a, Node b) {
+            return heights[a.idx] > heights[b.idx] ? a : b;
         }
 
         /**
@@ -1139,8 +1134,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param  b a node in the dfs tree
          * @return   the lowest of the two nodes
          */
-        private static Node lowest(Node a, Node b) {
-            return a.height < b.height ? a : b;
+        private Node lowest(Node a, Node b) {
+            return heights[a.idx] < heights[b.idx] ? a : b;
         }
 
         /**
@@ -1432,8 +1427,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          * @param  c a node in the dfs tree
          * @return   true if the first node in strictly higher that other node, false otherwise
          */
-        private static boolean firstStrictlyHigher(Node a, Node b, Node c) {
-            return a.height > b.height && a.height > c.height;
+        private boolean firstStrictlyHigher(Node a, Node b, Node c) {
+            return heights[a.idx] > heights[b.idx] && heights[a.idx] > heights[c.idx];
         }
 
         /**
@@ -1501,6 +1496,30 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
         }
 
+        private void computeHeights() {
+            Arrays.fill(heights, -1);
+            IntStack stack = new IntArrayList();
+            for (Node node0 : realNodes()) {
+                if (heights[node0.idx] >= 0)
+                    continue;
+                stack.push(node0.idx);
+                while (!stack.isEmpty()) {
+                    int idx = stack.topInt();
+                    Node node = nodes[idx];
+                    Node parent = node.parent();
+                    if (parent == null) {
+                        heights[idx] = 0;
+                        stack.popInt();
+                    } else if (heights[parent.idx] >= 0) {
+                        heights[idx] = heights[parent.idx] + 1;
+                        stack.popInt();
+                    } else {
+                        stack.push(parent.idx);
+                    }
+                }
+            }
+        }
+
         /**
          * Lazily extracts a Kuratowski subdivision from the {@code graph}. The process of adding the
          * edges of the subdivision to the resulting set of edges had been made explicit for every case.
@@ -1515,6 +1534,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 cleanShortCircuitEdges(bicompRoot);
                 fixBoundaryOrder(bicompRoot);
             }
+            computeHeights();
 
             // remove short-circuit edges and orient all embedded lists clockwise
             Set<Edge> subdivision = new HashSet<>();
@@ -1544,8 +1564,8 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                     break;
                 }
             }
-            Edge xBackEdge = findBackEdge(x, v.height);
-            Edge yBackEdge = findBackEdge(y, v.height);
+            Edge xBackEdge = findBackEdge(x, heights[v.idx]);
+            Edge yBackEdge = findBackEdge(y, heights[v.idx]);
             Node backLower = lowest(xBackEdge.target, yBackEdge.target);
             Node backHigher = highest(xBackEdge.target, yBackEdge.target);
             addPathEdges(subdivision, xBackEdge, x);
@@ -1562,7 +1582,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             Node z = getNextOnPath(w, failedEdge);
             Edge backEdge = null;
             if (z != null)
-                backEdge = findBackEdgeSubtreeDfs(z, e -> e.target.height < v.height && e != failedEdge);
+                backEdge = findBackEdgeSubtreeDfs(z, e -> heights[e.target.idx] < heights[v.idx] && e != failedEdge);
             if (backEdge != null) {
                 // case B
                 addPathEdges(subdivision, backEdge, w);
@@ -1614,7 +1634,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 addPathEdges(subdivision, failedEdge, w);
                 return finish(subdivision);
             }
-            Edge externallyActive = findBackEdge(w, v.height, failedEdge);
+            Edge externallyActive = findBackEdge(w, heights[v.idx], failedEdge);
             assert externallyActive != null;
             addPathEdges(subdivision, externallyActive, w);
             if (firstStrictlyHigher(externallyActive.target, xBackEdge.target, yBackEdge.target)) {
