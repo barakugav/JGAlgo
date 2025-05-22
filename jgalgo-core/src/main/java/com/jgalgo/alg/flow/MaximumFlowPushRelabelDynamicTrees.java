@@ -264,7 +264,7 @@ public class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstractWithR
 			/* cut all vertices pointing into u */
 			assert U.dtVertex.getParent() == null;
 			if (U.firstDtChild >= 0) {
-				for (IntIterator childIt = children.iterator(U.firstDtChild); childIt.hasNext();) {
+				for (IntIterator childIt = children.iter(U.firstDtChild); childIt.hasNext();) {
 					int child = childIt.nextInt();
 					Vertex childData = vertexData(child);
 					assert childData.dtVertex.getParent() == U.dtVertex;

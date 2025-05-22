@@ -460,7 +460,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 				int head = layersHeadActive[layer];
 				if (LinkedList.isNone(head))
 					continue;
-				for (IntIterator it = layers.iterator(head); it.hasNext();) {
+				for (IntIterator it = layers.iter(head); it.hasNext();) {
 					int u = it.nextInt();
 					layers.disconnect(u);
 					label[u] = n;
@@ -473,7 +473,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 				int head = layersHeadInactive[layer];
 				if (LinkedList.isNone(head))
 					continue;
-				for (IntIterator it = layers.iterator(head); it.hasNext();) {
+				for (IntIterator it = layers.iter(head); it.hasNext();) {
 					int u = it.nextInt();
 					layers.disconnect(u);
 					label[u] = n;
@@ -1444,7 +1444,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 						vertices.connect(v, listHead);
 						listHead = v;
 					}
-					listIter = vertices.iterator(listHead);
+					listIter = vertices.iter(listHead);
 				}
 
 				@Override

@@ -331,11 +331,11 @@ public class LinkedList {
 			Arrays.fill(arr, None);
 		}
 
-		public IterTools.Peek.Int iterator(long list) {
+		public IterTools.Peek.Int iter(long list) {
 			return iterMaybeNone(head(list));
 		}
 
-		public IterTools.Peek.Int iterator(int id) {
+		public IterTools.Peek.Int iter(int id) {
 			Assertions.checkArrayIndex(id, 0, size());
 			return iterMaybeNone(id);
 		}
