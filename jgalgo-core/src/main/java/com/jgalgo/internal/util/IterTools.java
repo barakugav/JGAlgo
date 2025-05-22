@@ -26,6 +26,7 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
@@ -439,6 +440,24 @@ public class IterTools {
 					int ret = next;
 					advance();
 					return ret;
+				}
+			};
+		}
+
+		default Iter<IntIntPair> enumerate() {
+			IntIter orig = this;
+			return new Iter<>() {
+
+				int index;
+
+				@Override
+				public boolean hasNext() {
+					return orig.hasNext();
+				}
+
+				@Override
+				public IntIntPair next() {
+					return IntIntPair.of(index++, orig.nextInt());
 				}
 			};
 		}

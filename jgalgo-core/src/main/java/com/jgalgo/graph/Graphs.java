@@ -668,12 +668,12 @@ public class Graphs {
 	 * @param  g                        the graph
 	 * @param  rand                     the random number generator
 	 * @return                          a random vertex from the given graph
-	 * @throws IllegalArgumentException if the graph is contains no vertices
+	 * @throws IllegalArgumentException if the graph contains no vertices
 	 */
 	public static <V> V randVertex(Graph<V, ?> g, Random rand) {
 		int n = g.vertices().size();
 		if (n == 0)
-			throw new IllegalArgumentException("Can't choose a random graph from a graph without vertices");
+			throw new IllegalArgumentException("Can't choose a random vertex from a graph without vertices");
 		return g.indexGraphVerticesMap().indexToId(rand.nextInt(n));
 	}
 
@@ -683,12 +683,12 @@ public class Graphs {
 	 * @param  g                        the graph
 	 * @param  rand                     the random number generator
 	 * @return                          a random vertex from the given graph
-	 * @throws IllegalArgumentException if the graph is contains no vertices
+	 * @throws IllegalArgumentException if the graph contains no vertices
 	 */
 	public static int randVertex(IntGraph g, Random rand) {
 		int n = g.vertices().size();
 		if (n == 0)
-			throw new IllegalArgumentException("Can't choose a random graph from a graph without vertices");
+			throw new IllegalArgumentException("Can't choose a random vertex from a graph without vertices");
 		return g.indexGraphVerticesMap().indexToIdInt(rand.nextInt(n));
 	}
 
@@ -699,12 +699,12 @@ public class Graphs {
 	 * @param  g                        the graph
 	 * @param  rand                     the random number generator
 	 * @return                          a random edge from the given graph
-	 * @throws IllegalArgumentException if the graph is contains no edges
+	 * @throws IllegalArgumentException if the graph contains no edges
 	 */
 	public static <E> E randEdge(Graph<?, E> g, Random rand) {
 		int m = g.edges().size();
 		if (m == 0)
-			throw new IllegalArgumentException("Can't choose a random graph from a graph without edges");
+			throw new IllegalArgumentException("Can't choose a random edge from a graph without edges");
 		return g.indexGraphEdgesMap().indexToId(rand.nextInt(m));
 	}
 
@@ -714,12 +714,12 @@ public class Graphs {
 	 * @param  g                        the graph
 	 * @param  rand                     the random number generator
 	 * @return                          a random edge from the given graph
-	 * @throws IllegalArgumentException if the graph is contains no edges
+	 * @throws IllegalArgumentException if the graph contains no edges
 	 */
 	public static int randEdge(IntGraph g, Random rand) {
 		int m = g.edges().size();
 		if (m == 0)
-			throw new IllegalArgumentException("Can't choose a random graph from a graph without edges");
+			throw new IllegalArgumentException("Can't choose a random edge from a graph without edges");
 		return g.indexGraphEdgesMap().indexToIdInt(rand.nextInt(m));
 	}
 
@@ -727,9 +727,6 @@ public class Graphs {
 	static boolean isEquals(Graph<?, ?> g1, Graph<?, ?> g2) {
 		if (g1 == g2)
 			return true;
-		if (g1 instanceof IntGraph && g2 instanceof IntGraph)
-			return isEquals((IntGraph) g1, (IntGraph) g2);
-
 		if (g1.isDirected() != g2.isDirected())
 			return false;
 		if (!g1.vertices().equals(g2.vertices()))
@@ -741,16 +738,33 @@ public class Graphs {
 	}
 
 	private static <V, E> boolean isEquals0(Graph<V, E> g1, Graph<V, E> g2) {
+		IntGraph ig1 = g1 instanceof IntGraph ? (IntGraph) g1 : null;
+		IntGraph ig2 = g2 instanceof IntGraph ? (IntGraph) g2 : null;
 		if (g1.isDirected()) {
-			for (E e : g1.edges())
-				if (!g1.edgeSource(e).equals(g2.edgeSource(e)) || !g1.edgeTarget(e).equals(g2.edgeTarget(e)))
-					return false;
+			if (g1 instanceof IntGraph && g2 instanceof IntGraph) {
+				for (int e : ig1.edges())
+					if (ig1.edgeSource(e) != ig2.edgeSource(e) || ig1.edgeTarget(e) != ig2.edgeTarget(e))
+						return false;
+			} else {
+				for (E e : g1.edges())
+					if (!g1.edgeSource(e).equals(g2.edgeSource(e)) || !g1.edgeTarget(e).equals(g2.edgeTarget(e)))
+						return false;
+			}
 		} else {
-			for (E e : g1.edges()) {
-				V s1 = g1.edgeSource(e), t1 = g1.edgeTarget(e);
-				V s2 = g2.edgeSource(e), t2 = g2.edgeTarget(e);
-				if (!(s1.equals(s2) && t1.equals(t2)) && !(s1.equals(t2) && t1.equals(s2)))
-					return false;
+			if (g1 instanceof IntGraph && g2 instanceof IntGraph) {
+				for (int e : ig1.edges()) {
+					int s1 = ig1.edgeSource(e), t1 = ig1.edgeTarget(e);
+					int s2 = ig2.edgeSource(e), t2 = ig2.edgeTarget(e);
+					if (!(s1 == s2 && t1 == t2) && !(s1 == t2 && t1 == s2))
+						return false;
+				}
+			} else {
+				for (E e : g1.edges()) {
+					V s1 = g1.edgeSource(e), t1 = g1.edgeTarget(e);
+					V s2 = g2.edgeSource(e), t2 = g2.edgeTarget(e);
+					if (!(s1.equals(s2) && t1.equals(t2)) && !(s1.equals(t2) && t1.equals(s2)))
+						return false;
+				}
 			}
 		}
 
@@ -772,44 +786,6 @@ public class Graphs {
 		return true;
 	}
 
-	private static boolean isEquals(IntGraph g1, IntGraph g2) {
-		if (g1.isDirected() != g2.isDirected())
-			return false;
-		if (!g1.vertices().equals(g2.vertices()))
-			return false;
-		if (!g1.edges().equals(g2.edges()))
-			return false;
-		if (g1.isDirected()) {
-			for (int e : g1.edges())
-				if (g1.edgeSource(e) != g2.edgeSource(e) || g1.edgeTarget(e) != g2.edgeTarget(e))
-					return false;
-		} else {
-			for (int e : g1.edges()) {
-				int s1 = g1.edgeSource(e), t1 = g1.edgeTarget(e);
-				int s2 = g2.edgeSource(e), t2 = g2.edgeTarget(e);
-				if (!(s1 == s2 && t1 == t2) && !(s1 == t2 && t1 == s2))
-					return false;
-			}
-		}
-
-		if (!g1.verticesWeightsKeys().equals(g2.verticesWeightsKeys()))
-			return false;
-		for (String key : g1.verticesWeightsKeys()) {
-			IWeights<?> w1 = (IWeights<?>) g1.verticesWeights(key), w2 = (IWeights<?>) g2.verticesWeights(key);
-			if (!WeightsImpl.isEqual(g1.vertices(), w1, w2))
-				return false;
-		}
-		if (!g1.edgesWeightsKeys().equals(g2.edgesWeightsKeys()))
-			return false;
-		for (String key : g1.edgesWeightsKeys()) {
-			IWeights<?> w1 = (IWeights<?>) g1.edgesWeights(key), w2 = (IWeights<?>) g2.edgesWeights(key);
-			if (!WeightsImpl.isEqual(g1.edges(), w1, w2))
-				return false;
-		}
-
-		return true;
-	}
-
 	static <V, E> int hashCode(Graph<V, E> g) {
 		if (g instanceof IntGraph)
 			return hashCode((IntGraph) g);
@@ -817,35 +793,31 @@ public class Graphs {
 		int h = Boolean.hashCode(g.isDirected());
 		h += g.vertices().hashCode();
 		h += g.edges().hashCode();
-		if (g.isDirected()) {
-			for (E e : g.edges())
-				h += g.edgeSource(e).hashCode() + 31 * g.edgeTarget(e).hashCode();
-		} else {
-			for (E e : g.edges())
-				h += g.edgeSource(e).hashCode() + g.edgeTarget(e).hashCode();
-		}
-		for (String key : g.verticesWeightsKeys())
-			h += WeightsImpl.hashCode(g.vertices(), g.verticesWeights(key));
-		for (String key : g.edgesWeightsKeys())
-			h += WeightsImpl.hashCode(g.edges(), g.edgesWeights(key));
-		return h;
-	}
 
-	private static int hashCode(IntGraph g) {
-		int h = Boolean.hashCode(g.isDirected());
-		h += g.vertices().hashCode();
-		h += g.edges().hashCode();
-		if (g.isDirected()) {
-			for (int e : g.edges())
-				h += g.edgeSource(e) + 31 * g.edgeTarget(e);
+		if (g instanceof IntGraph) {
+			IntGraph ig = (IntGraph) g;
+			if (ig.isDirected()) {
+				for (int e : ig.edges())
+					h += ig.edgeSource(e) + 31 * ig.edgeTarget(e);
+			} else {
+				for (int e : ig.edges())
+					h += ig.edgeSource(e) + ig.edgeTarget(e);
+			}
 		} else {
-			for (int e : g.edges())
-				h += g.edgeSource(e) + g.edgeTarget(e);
+			if (g.isDirected()) {
+				for (E e : g.edges())
+					h += g.edgeSource(e).hashCode() + 31 * g.edgeTarget(e).hashCode();
+			} else {
+				for (E e : g.edges())
+					h += g.edgeSource(e).hashCode() + g.edgeTarget(e).hashCode();
+			}
 		}
+
 		for (String key : g.verticesWeightsKeys())
 			h += WeightsImpl.hashCode(g.vertices(), g.verticesWeights(key));
 		for (String key : g.edgesWeightsKeys())
 			h += WeightsImpl.hashCode(g.edges(), g.edgesWeights(key));
+
 		return h;
 	}
 
@@ -987,7 +959,7 @@ public class Graphs {
 	}
 
 	/**
-	 * Get a view of all the self edges in a graph.
+	 * Create a view of all the self edges in a graph.
 	 *
 	 * <p>
 	 * The returned set is a view, namely it will be updated when the graph is updated.
