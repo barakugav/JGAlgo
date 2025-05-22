@@ -16,6 +16,7 @@
 package com.jgalgo.alg.traversal;
 
 import java.util.Iterator;
+
 import com.jgalgo.alg.common.RandomizedAlgorithm;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
@@ -26,6 +27,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
+
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -34,13 +36,15 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * <p>
  * A random walk iterator is an iterator that starts at a given vertex and randomly choose an edge to traverse at each
  * step. The iterator returns the vertices visited by the random walk in the order they were visited. The iterator may
- * return the same vertex multiple times. The iterator can keep advancing as long as there are out going edges (with non
+ * return the same vertex multiple times if the random walk returns to it, or if a vertex has a self edge and it is
+ * sampled. The iterator can keep advancing as long as there are out going edges (with non
  * zero weight in the weighted case) from the current vertex. Each out going edge can be chosen with equal probability,
  * or with probability proportional to a given edge weight function.
  *
  * <p>
  * To get a deterministic random walk, set the iterator seed using {@link RandomWalkIter#setSeed(long)}.
  *
+ * @see        NeighborSampler
  * @see        <a href="https://en.wikipedia.org/wiki/Random_walk">Wikipedia</a>
  * @param  <V> the vertices type
  * @param  <E> the edges type
@@ -120,6 +124,9 @@ public interface RandomWalkIter<V, E> extends Iterator<V>, RandomizedAlgorithm {
 	 * Create a new random walk iterator.
 	 *
 	 * <p>
+	 * See {@link NeighborSampler#edgeUniform(Graph)} for the sampling method used.
+	 *
+	 * <p>
 	 * If the graph is an {@link IntGraph}, the returned iterator will be an instance of {@link RandomWalkIter.Int}.
 	 *
 	 * @param  <V>                   the vertices type
@@ -133,13 +140,15 @@ public interface RandomWalkIter<V, E> extends Iterator<V>, RandomizedAlgorithm {
 	static <V, E> RandomWalkIter<V, E> newInstance(Graph<V, E> g, V source) {
 		if (g instanceof IndexGraph) {
 			int src = ((Integer) source).intValue();
-			return (RandomWalkIter<V, E>) new RandomWalkIters.UnweightedIndexIter((IndexGraph) g, src);
+			NeighborSampler.Int sampler = new NeighborSamplers.UniformNeighborSampler((IndexGraph) g);
+			return (RandomWalkIter<V, E>) new RandomWalkIters.IndexIter(sampler, src);
 
 		} else {
 			IndexGraph ig = g.indexGraph();
 			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 			int src = viMap.idToIndex(source);
-			RandomWalkIter.Int indexIter = new RandomWalkIters.UnweightedIndexIter(ig, src);
+			NeighborSampler.Int sampler = new NeighborSamplers.UniformNeighborSampler(ig);
+			RandomWalkIter.Int indexIter = new RandomWalkIters.IndexIter(sampler, src);
 			return RandomWalkIters.fromIndexIter(indexIter, g);
 		}
 	}
@@ -150,6 +159,9 @@ public interface RandomWalkIter<V, E> extends Iterator<V>, RandomizedAlgorithm {
 	 * <p>
 	 * The iterator will choose the next vertex to advance to with probability proportional to the weight of the edge
 	 * that led to it. The edges weights must be non negative.
+	 *
+	 * <p>
+	 * See {@link NeighborSampler#edgeWeighted(Graph, WeightFunction)} for the sampling method used.
 	 *
 	 * <p>
 	 * If the graph is an {@link IntGraph}, the returned iterator will be an instance of {@link RandomWalkIter.Int}.
@@ -170,7 +182,8 @@ public interface RandomWalkIter<V, E> extends Iterator<V>, RandomizedAlgorithm {
 		if (g instanceof IndexGraph) {
 			int src = ((Integer) source).intValue();
 			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) weights);
-			return (RandomWalkIter<V, E>) new RandomWalkIters.WeightedIndexIter((IndexGraph) g, src, w0);
+			NeighborSampler.Int sampler = new NeighborSamplers.WeightedNeighborSampler((IndexGraph) g, w0);
+			return (RandomWalkIter<V, E>) new RandomWalkIters.IndexIter(sampler, src);
 
 		} else {
 			IndexGraph ig = g.indexGraph();
@@ -178,7 +191,8 @@ public interface RandomWalkIter<V, E> extends Iterator<V>, RandomizedAlgorithm {
 			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 			int src = viMap.idToIndex(source);
 			IWeightFunction w0 = IndexIdMaps.idToIndexWeightFunc(weights, eiMap);
-			RandomWalkIter.Int indexIter = new RandomWalkIters.WeightedIndexIter(ig, src, w0);
+			NeighborSampler.Int sampler = new NeighborSamplers.WeightedNeighborSampler(ig, w0);
+			RandomWalkIter.Int indexIter = new RandomWalkIters.IndexIter(sampler, src);
 			return RandomWalkIters.fromIndexIter(indexIter, g);
 		}
 	}

@@ -15,42 +15,48 @@
  */
 package com.jgalgo.alg.traversal;
 
-import static com.jgalgo.internal.util.Range.range;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Random;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.Assertions;
 
 class RandomWalkIters {
 
 	private RandomWalkIters() {}
 
-	private abstract static class IndexIterBase implements RandomWalkIter.Int {
+	static class IndexIter implements RandomWalkIter.Int {
 
-		final IndexGraph g;
-		final int[] edgesOffset;
+		private final NeighborSampler.Int sampler;
 		int currentVertex;
+		int nextEdge;
 		int lastEdge = -1;
-		final Random rand = new Random();
 
-		IndexIterBase(IndexGraph g, int source) {
-			this.g = g;
-			final int n = g.vertices().size();
-			Assertions.checkVertex(source, n);
-			edgesOffset = new int[n + 1];
+		IndexIter(NeighborSampler.Int sampler, int source) {
+			this.sampler = Objects.requireNonNull(sampler);
 			currentVertex = source;
+			sampleNextEdge();
+		}
+
+		private void sampleNextEdge() {
+			nextEdge = sampler.sample(currentVertex);
 		}
 
 		@Override
 		public boolean hasNext() {
-			int uOutEdgesNum = edgesOffset[currentVertex + 1] - edgesOffset[currentVertex];
-			return uOutEdgesNum > 0;
+			return nextEdge >= 0;
+		}
+
+		@Override
+		public int nextInt() {
+			if (nextEdge < 0)
+				throw new NoSuchElementException();
+			lastEdge = nextEdge;
+			currentVertex = sampler.graph().edgeEndpoint(lastEdge, currentVertex);
+			sampleNextEdge();
+			return currentVertex;
 		}
 
 		@Override
@@ -60,111 +66,7 @@ class RandomWalkIters {
 
 		@Override
 		public void setSeed(long seed) {
-			rand.setSeed(seed);
-		}
-	}
-
-	static final class UnweightedIndexIter extends IndexIterBase {
-
-		private final int[] edges;
-
-		UnweightedIndexIter(IndexGraph g, int source) {
-			super(g, source);
-			final int n = g.vertices().size();
-
-			final int edgesArrSize;
-			if (g.isDirected()) {
-				edgesArrSize = g.edges().size();
-			} else {
-				edgesArrSize = range(n).map(u -> g.outEdges(u).size()).sum();
-			}
-
-			edges = new int[edgesArrSize];
-			int offset = 0;
-			for (int u : range(n)) {
-				edgesOffset[u] = offset;
-				for (int e : g.outEdges(u))
-					edges[offset++] = e;
-			}
-			assert offset == edgesArrSize;
-			edgesOffset[n] = offset;
-		}
-
-		@Override
-		public int nextInt() {
-			int uOutEdgesNum = edgesOffset[currentVertex + 1] - edgesOffset[currentVertex];
-			if (uOutEdgesNum <= 0)
-				throw new NoSuchElementException();
-			lastEdge = edges[edgesOffset[currentVertex] + rand.nextInt(uOutEdgesNum)];
-			return currentVertex = g.edgeEndpoint(lastEdge, currentVertex);
-		}
-	}
-
-	static final class WeightedIndexIter extends IndexIterBase {
-
-		private final int[] edges;
-		private final double[] edgesWeights;
-
-		WeightedIndexIter(IndexGraph g, int source, IWeightFunction weightFunc) {
-			super(g, source);
-			final int n = g.vertices().size();
-			Objects.requireNonNull(weightFunc);
-
-			int outEdgesSize = 0;
-			for (int u : range(n)) {
-				for (int e : g.outEdges(u)) {
-					double ew = weightFunc.weight(e);
-					if (ew < 0)
-						throw new IllegalArgumentException("only positive weights are supported: " + ew);
-					if (ew > 0) /* discard edges with weight 0 */
-						outEdgesSize++;
-				}
-			}
-
-			edges = new int[outEdgesSize];
-			edgesWeights = new double[outEdgesSize];
-			int offset = 0;
-			for (int u : range(n)) {
-				edgesOffset[u] = offset;
-				double weightSum = 0;
-				for (int e : g.outEdges(u)) {
-					double ew = weightFunc.weight(e);
-					if (ew == 0)
-						continue;
-					weightSum += ew;
-					edges[offset] = e;
-					edgesWeights[offset] = weightSum;
-					offset++;
-				}
-			}
-			assert offset == outEdgesSize;
-			edgesOffset[n] = offset;
-		}
-
-		@Override
-		public int nextInt() {
-			int uOutEdgesNum = edgesOffset[currentVertex + 1] - edgesOffset[currentVertex];
-			if (uOutEdgesNum <= 0)
-				throw new NoSuchElementException();
-
-			double maxWeight = edgesWeights[edgesOffset[currentVertex + 1] - 1];
-			double randWeight = rand.nextDouble() * maxWeight;
-
-			/* binary search */
-			int from = edgesOffset[currentVertex];
-			int to = edgesOffset[currentVertex + 1];
-			for (to--; from <= to;) {
-				final int mid = (from + to) >>> 1;
-				double midVal = edgesWeights[mid];
-				if (midVal < randWeight) {
-					from = mid + 1;
-				} else {
-					to = mid - 1;
-				}
-			}
-
-			lastEdge = edges[from];
-			return currentVertex = g.edgeEndpoint(lastEdge, currentVertex);
+			sampler.setSeed(seed);
 		}
 	}
 
