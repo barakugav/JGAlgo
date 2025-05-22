@@ -1065,7 +1065,7 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 	private static IntGraph randomNonPlanarGraph(int n, int m, long seed) {
 		final Random rand = new Random(seed);
 		IntGraph g = randomPlanarGraph(n, m, rand.nextLong() & 0x78946678L);
-		NeighborSampler.Int sampler = (NeighborSampler.Int) NeighborSampler.uniform(g.immutableCopy());
+		NeighborSampler.Int sampler = (NeighborSampler.Int) NeighborSampler.edgeUniform(g.immutableCopy());
 		sampler.setSeed(rand.nextLong() & 0x3252351);
 		IntSet used = new IntOpenHashSet();
 

@@ -46,13 +46,13 @@ public class LinkedListDoublyTest extends TestBase {
 		tester.addPhase().withArgs(64);
 		tester.addPhase().withArgs(238);
 		tester.run((len) -> {
-			LinkedListFixedSize.Doubly list = new LinkedListFixedSize.Doubly(len);
+			LinkedList.Doubly list = new LinkedList.Doubly(len);
 			assertEquals(len, list.size());
 			for (int i = 0; i < len; i++) {
-				assertEquals(LinkedListFixedSize.None, list.next(i));
-				assertTrue(LinkedListFixedSize.isNone(list.next(i)));
-				assertEquals(LinkedListFixedSize.None, list.prev(i));
-				assertTrue(LinkedListFixedSize.isNone(list.prev(i)));
+				assertEquals(LinkedList.None, list.next(i));
+				assertTrue(LinkedList.isNone(list.next(i)));
+				assertEquals(LinkedList.None, list.prev(i));
+				assertTrue(LinkedList.isNone(list.prev(i)));
 			}
 			assertThrows(IndexOutOfBoundsException.class, () -> list.next(-1));
 			assertThrows(IndexOutOfBoundsException.class, () -> list.next(len));
@@ -74,7 +74,7 @@ public class LinkedListDoublyTest extends TestBase {
 		tester.addPhase().withArgs(64);
 		tester.addPhase().withArgs(238);
 		tester.run((len) -> {
-			LinkedListFixedSize.Doubly list = new LinkedListFixedSize.Doubly(len);
+			LinkedList.Doubly list = new LinkedList.Doubly(len);
 			for (int m = rand.nextInt(Math.max(10, len)); m >= 0; m--) {
 				int u = rand.nextInt(len);
 				int v = rand.nextInt(len);
@@ -90,11 +90,11 @@ public class LinkedListDoublyTest extends TestBase {
 				assertEquals(u, list.prev(v));
 
 				assertEquals(uPrev, list.prev(u));
-				if (!LinkedListFixedSize.isNone(uPrev))
+				if (!LinkedList.isNone(uPrev))
 					assertEquals(u, list.next(uPrev));
 
 				assertEquals(vNext, list.next(v));
-				if (!LinkedListFixedSize.isNone(vNext))
+				if (!LinkedList.isNone(vNext))
 					assertEquals(v, list.prev(vNext));
 			}
 		});
@@ -113,7 +113,7 @@ public class LinkedListDoublyTest extends TestBase {
 		tester.addPhase().withArgs(64);
 		tester.addPhase().withArgs(238);
 		tester.run((len) -> {
-			LinkedListFixedSize.Doubly list = new LinkedListFixedSize.Doubly(len);
+			LinkedList.Doubly list = new LinkedList.Doubly(len);
 			for (int m = rand.nextInt(Math.max(10, len)); m >= 0; m--) {
 				int u = rand.nextInt(len);
 				int v = rand.nextInt(len);
@@ -132,9 +132,9 @@ public class LinkedListDoublyTest extends TestBase {
 				assertFalse(list.hasNext(v));
 				assertFalse(list.hasPrev(v));
 
-				if (!LinkedListFixedSize.isNone(prev))
+				if (!LinkedList.isNone(prev))
 					assertFalse(list.hasNext(prev));
-				if (!LinkedListFixedSize.isNone(next))
+				if (!LinkedList.isNone(next))
 					assertFalse(list.hasPrev(next));
 			}
 		});
@@ -153,7 +153,7 @@ public class LinkedListDoublyTest extends TestBase {
 		tester.addPhase().withArgs(64);
 		tester.addPhase().withArgs(238);
 		tester.run((len) -> {
-			LinkedListFixedSize.Doubly list = new LinkedListFixedSize.Doubly(len);
+			LinkedList.Doubly list = new LinkedList.Doubly(len);
 			for (int m = rand.nextInt(Math.max(10, len)); m >= 0; m--) {
 				int u = rand.nextInt(len);
 				int v = rand.nextInt(len);
@@ -168,7 +168,7 @@ public class LinkedListDoublyTest extends TestBase {
 				assertEquals(u, list.prev(v));
 
 				assertEquals(uNext, list.next(v));
-				if (!LinkedListFixedSize.isNone(uNext))
+				if (!LinkedList.isNone(uNext))
 					assertEquals(v, list.prev(uNext));
 			}
 		});
@@ -187,7 +187,7 @@ public class LinkedListDoublyTest extends TestBase {
 		tester.addPhase().withArgs(64);
 		tester.addPhase().withArgs(238);
 		tester.run((len) -> {
-			LinkedListFixedSize.Doubly list = new LinkedListFixedSize.Doubly(len);
+			LinkedList.Doubly list = new LinkedList.Doubly(len);
 			for (int m = rand.nextInt(Math.max(10, len)); m >= 0; m--) {
 				int u = rand.nextInt(len);
 				int v = rand.nextInt(len);
@@ -202,7 +202,7 @@ public class LinkedListDoublyTest extends TestBase {
 				assertEquals(u, list.next(v));
 
 				assertEquals(uPrev, list.prev(v));
-				if (!LinkedListFixedSize.isNone(uPrev))
+				if (!LinkedList.isNone(uPrev))
 					assertEquals(v, list.next(uPrev));
 			}
 		});
@@ -221,7 +221,7 @@ public class LinkedListDoublyTest extends TestBase {
 		tester.addPhase().withArgs(64);
 		tester.addPhase().withArgs(238);
 		tester.run((len) -> {
-			LinkedListFixedSize.Doubly list = new LinkedListFixedSize.Doubly(len);
+			LinkedList.Doubly list = new LinkedList.Doubly(len);
 			Int2IntMap nextMap = new Int2IntOpenHashMap();
 			Int2IntMap prevMap = new Int2IntOpenHashMap();
 			for (int m = rand.nextInt(Math.max(10, len)); m >= 0; m--) {
@@ -291,7 +291,7 @@ public class LinkedListDoublyTest extends TestBase {
 		tester.addPhase().withArgs(64);
 		tester.addPhase().withArgs(238);
 		tester.run((len) -> {
-			LinkedListFixedSize.Doubly list = new LinkedListFixedSize.Doubly(len);
+			LinkedList.Doubly list = new LinkedList.Doubly(len);
 			Int2IntMap v2head = new Int2IntOpenHashMap();
 			Int2IntMap v2tail = new Int2IntOpenHashMap();
 			for (int v : range(len)) {
@@ -335,7 +335,7 @@ public class LinkedListDoublyTest extends TestBase {
 						elements.intStream().filter(e -> !elementsToRemove.contains(e)).toArray();
 
 				var newHeadTail = list.removeIf(head, elementsToRemove::contains);
-				int newHead = LinkedListFixedSize.head(newHeadTail), newTail = LinkedListFixedSize.tail(newHeadTail);
+				int newHead = LinkedList.head(newHeadTail), newTail = LinkedList.tail(newHeadTail);
 
 				for (int v : elementsToRemove) {
 					assertFalse(list.hasNext(v));
@@ -349,12 +349,12 @@ public class LinkedListDoublyTest extends TestBase {
 				}
 
 				IntList elementsAfterRemove = new IntArrayList(list.iterMaybeNone(newHead));
-				if (LinkedListFixedSize.isNone(newHead)) {
+				if (LinkedList.isNone(newHead)) {
 					assertTrue(elementsAfterRemove.isEmpty());
 				} else {
 					assertEquals(newHead, elementsAfterRemove.getInt(0));
 				}
-				if (LinkedListFixedSize.isNone(newTail)) {
+				if (LinkedList.isNone(newTail)) {
 					assertTrue(elementsAfterRemove.isEmpty());
 				} else {
 					assertEquals(newTail, elementsAfterRemove.getInt(elementsAfterRemove.size() - 1));

@@ -22,9 +22,8 @@ import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntPair;
 import com.jgalgo.internal.util.IterTools;
 
-// TODO: Rename to LinkedList
-public class LinkedListFixedSize {
-	private LinkedListFixedSize() {}
+public class LinkedList {
+	private LinkedList() {}
 
 	public static final int None = -1;
 	public static final long HeadTailNone = headTail(None, None);
@@ -46,7 +45,6 @@ public class LinkedListFixedSize {
 		return IntPair.of(head, tail);
 	}
 
-	// TODO: rename to undirectional
 	public static class Singly {
 
 		private final int[] arr;
@@ -90,7 +88,7 @@ public class LinkedListFixedSize {
 				public int nextInt() {
 					Assertions.hasNext(this);
 					int ret = p;
-					p = LinkedListFixedSize.Singly.this.next(p);
+					p = LinkedList.Singly.this.next(p);
 					return ret;
 				}
 
@@ -105,7 +103,6 @@ public class LinkedListFixedSize {
 
 	}
 
-	// TODO: rename to bidirectional
 	public static class Doubly {
 
 		private final int[] arr;
@@ -374,7 +371,7 @@ public class LinkedListFixedSize {
 			public int nextInt() {
 				Assertions.hasNext(this);
 				int ret = p;
-				p = LinkedListFixedSize.Doubly.this.next(p);
+				p = LinkedList.Doubly.this.next(p);
 				return ret;
 			}
 
@@ -402,7 +399,7 @@ public class LinkedListFixedSize {
 			public int nextInt() {
 				Assertions.hasNext(this);
 				int ret = p;
-				p = LinkedListFixedSize.Doubly.this.prev(p);
+				p = LinkedList.Doubly.this.prev(p);
 				return ret;
 			}
 

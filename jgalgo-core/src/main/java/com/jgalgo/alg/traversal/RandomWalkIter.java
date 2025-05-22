@@ -34,13 +34,15 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * <p>
  * A random walk iterator is an iterator that starts at a given vertex and randomly choose an edge to traverse at each
  * step. The iterator returns the vertices visited by the random walk in the order they were visited. The iterator may
- * return the same vertex multiple times. The iterator can keep advancing as long as there are out going edges (with non
+ * return the same vertex multiple times if the random walk returns to it, or if a vertex has a self edge and it is
+ * sampled. The iterator can keep advancing as long as there are out going edges (with non
  * zero weight in the weighted case) from the current vertex. Each out going edge can be chosen with equal probability,
  * or with probability proportional to a given edge weight function.
  *
  * <p>
  * To get a deterministic random walk, set the iterator seed using {@link RandomWalkIter#setSeed(long)}.
  *
+ * @see        NeighborSampler
  * @see        <a href="https://en.wikipedia.org/wiki/Random_walk">Wikipedia</a>
  * @param  <V> the vertices type
  * @param  <E> the edges type
@@ -120,6 +122,9 @@ public interface RandomWalkIter<V, E> extends Iterator<V>, RandomizedAlgorithm {
 	 * Create a new random walk iterator.
 	 *
 	 * <p>
+	 * See {@link NeighborSampler#edgeUniform(Graph)} for the sampling method used.
+	 *
+	 * <p>
 	 * If the graph is an {@link IntGraph}, the returned iterator will be an instance of {@link RandomWalkIter.Int}.
 	 *
 	 * @param  <V>                   the vertices type
@@ -152,6 +157,9 @@ public interface RandomWalkIter<V, E> extends Iterator<V>, RandomizedAlgorithm {
 	 * <p>
 	 * The iterator will choose the next vertex to advance to with probability proportional to the weight of the edge
 	 * that led to it. The edges weights must be non negative.
+	 *
+	 * <p>
+	 * See {@link NeighborSampler#weighted(Graph)} for the sampling method used.
 	 *
 	 * <p>
 	 * If the graph is an {@link IntGraph}, the returned iterator will be an instance of {@link RandomWalkIter.Int}.

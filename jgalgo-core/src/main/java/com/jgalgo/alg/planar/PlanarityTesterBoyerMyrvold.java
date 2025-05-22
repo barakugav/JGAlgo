@@ -15,9 +15,9 @@
  */
 package com.jgalgo.alg.planar;
 
-import static com.jgalgo.internal.ds.LinkedListFixedSize.head;
-import static com.jgalgo.internal.ds.LinkedListFixedSize.isNone;
-import static com.jgalgo.internal.ds.LinkedListFixedSize.tail;
+import static com.jgalgo.internal.ds.LinkedList.head;
+import static com.jgalgo.internal.ds.LinkedList.isNone;
+import static com.jgalgo.internal.ds.LinkedList.tail;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -32,7 +32,7 @@ import com.jgalgo.graph.IWeightsLong;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Weights;
-import com.jgalgo.internal.ds.LinkedListFixedSize;
+import com.jgalgo.internal.ds.LinkedList;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntPair;
@@ -98,14 +98,14 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         // When two bi-comps are merged, the root of the child bi-comp is removed from the parent's list of children.
         //
         // Each node is stored by its Node::idx.
-        final LinkedListFixedSize.Doubly childrenLists;
+        final LinkedList.Doubly childrenLists;
 
         // A data structure representing multiple linked lists, each one of them is a list of pertinent roots of a node.
         // For each node, the list contains virtual nodes matching this node, which are the roots in the child bi-comps
         // of this node.
         //
         // Each node is stored by its Node::idx.
-        final LinkedListFixedSize.Doubly pertinentRootsLists;
+        final LinkedList.Doubly pertinentRootsLists;
 
         // A data structure representing multiple linked lists, each one of them is a list of embedded (ordered) edges
         // of a node.
@@ -115,7 +115,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
         // in the data structure and we 'allocate' a new index by incrementing the counter each time we add an edge to a
         // list. In addition, we keep a mapping from allocated indices to edge indices in the {@code embedded2edge}
         // array.
-        final LinkedListFixedSize.Doubly embeddedLists;
+        final LinkedList.Doubly embeddedLists;
         final int[] embedded2edge;
         int embedded2edgeSize;
 
@@ -141,12 +141,12 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             this.edges = new Edge[maxEdgesNum];
             this.edgesNum = 0;
 
-            this.childrenLists = new LinkedListFixedSize.Doubly(maxNodesNum);
-            this.pertinentRootsLists = new LinkedListFixedSize.Doubly(maxNodesNum);
+            this.childrenLists = new LinkedList.Doubly(maxNodesNum);
+            this.pertinentRootsLists = new LinkedList.Doubly(maxNodesNum);
 
             // each edge can be added in the lists of both of its endpoints
             final int embeddedListsMaxLen = maxEdgesNum * 2;
-            this.embeddedLists = new LinkedListFixedSize.Doubly(embeddedListsMaxLen);
+            this.embeddedLists = new LinkedList.Doubly(embeddedListsMaxLen);
             this.embedded2edge = new int[embeddedListsMaxLen];
             this.embedded2edgeSize = 0;
 
@@ -473,7 +473,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             } else {
                 parent.embeddedEdges = embeddedLists.concat(virtualRoot.embeddedEdges, parent.embeddedEdges);
             }
-            virtualRoot.embeddedEdges = LinkedListFixedSize.HeadTailNone;
+            virtualRoot.embeddedEdges = LinkedList.HeadTailNone;
 
             parent.replaceNeighborOpposite(merge.parentNext, merge.childPrev);
             merge.childPrev.replaceNeighbor(virtualRoot, parent);
@@ -554,7 +554,7 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 for (Node child : children(node)) {
                     Node virtualRoot = child.bicompRoot;
                     node.embeddedEdges = embeddedLists.concat(node.embeddedEdges, virtualRoot.embeddedEdges);
-                    virtualRoot.embeddedEdges = LinkedListFixedSize.HeadTailNone;
+                    virtualRoot.embeddedEdges = LinkedList.HeadTailNone;
                 }
 
                 int i = 0;
@@ -673,10 +673,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 this.dfsIdx = dfsIndex;
                 this.parentEdge = parentEdge;
                 this.bicompRoot = bicompRoot;
-                this.embeddedEdges = LinkedListFixedSize.HeadTailNone;
+                this.embeddedEdges = LinkedList.HeadTailNone;
                 this.visited = Integer.MAX_VALUE;
-                this.children = LinkedListFixedSize.HeadTailNone;
-                this.pertinentRoots = LinkedListFixedSize.HeadTailNone;
+                this.children = LinkedList.HeadTailNone;
+                this.pertinentRoots = LinkedList.HeadTailNone;
                 this.activeBackEdge = -1;
                 if (isRealNode()) {
                     treeEdges = new IntArrayList();

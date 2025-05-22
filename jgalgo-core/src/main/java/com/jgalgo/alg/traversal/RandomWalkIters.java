@@ -37,10 +37,10 @@ class RandomWalkIters {
 		IndexIter(NeighborSampler.Int sampler, int source) {
 			this.sampler = Objects.requireNonNull(sampler);
 			currentVertex = source;
-			advance();
+			sampleNextEdge();
 		}
 
-		private void advance() {
+		private void sampleNextEdge() {
 			nextEdge = sampler.sample(currentVertex);
 		}
 
@@ -55,7 +55,7 @@ class RandomWalkIters {
 				throw new NoSuchElementException();
 			lastEdge = nextEdge;
 			currentVertex = sampler.graph().edgeEndpoint(lastEdge, currentVertex);
-			advance();
+			sampleNextEdge();
 			return currentVertex;
 		}
 
