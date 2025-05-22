@@ -1434,8 +1434,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 
 				@Override
 				void afterRecomputeLabels() {
-					listIter =
-							!LinkedListFixedSize.isNone(listHead) ? vertices.iterator(listHead) : vertices.emptyIter();
+					listIter = vertices.iterMaybeNone(listHead);
 				}
 
 				@Override
