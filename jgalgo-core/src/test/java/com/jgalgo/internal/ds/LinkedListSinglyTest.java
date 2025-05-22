@@ -40,11 +40,11 @@ public class LinkedListSinglyTest extends TestBase {
 		tester.addPhase().withArgs(64);
 		tester.addPhase().withArgs(238);
 		tester.run((len) -> {
-			LinkedListFixedSize.Singly list = new LinkedListFixedSize.Singly(len);
+			LinkedList.Singly list = new LinkedList.Singly(len);
 			assertEquals(len, list.size());
 			for (int i = 0; i < len; i++) {
-				assertEquals(LinkedListFixedSize.None, list.next(i));
-				assertTrue(LinkedListFixedSize.isNone(list.next(i)));
+				assertEquals(LinkedList.None, list.next(i));
+				assertTrue(LinkedList.isNone(list.next(i)));
 			}
 			assertThrows(IndexOutOfBoundsException.class, () -> list.next(-1));
 			assertThrows(IndexOutOfBoundsException.class, () -> list.next(len));
@@ -64,7 +64,7 @@ public class LinkedListSinglyTest extends TestBase {
 		tester.addPhase().withArgs(64);
 		tester.addPhase().withArgs(238);
 		tester.run((len) -> {
-			LinkedListFixedSize.Singly list = new LinkedListFixedSize.Singly(len);
+			LinkedList.Singly list = new LinkedList.Singly(len);
 			Int2IntMap nextMap = new Int2IntOpenHashMap();
 			assertEquals(len, list.size());
 			for (int m = rand.nextInt(Math.max(10, len)); m >= 0; m--) {
@@ -76,7 +76,7 @@ public class LinkedListSinglyTest extends TestBase {
 				nextMap.put(u, v);
 			}
 			for (int i = 0; i < len; i++) {
-				assertEquals(nextMap.getOrDefault(i, LinkedListFixedSize.None), list.next(i));
+				assertEquals(nextMap.getOrDefault(i, LinkedList.None), list.next(i));
 				assertEqualsBool(nextMap.containsKey(i), list.hasNext(i));
 			}
 		});
@@ -95,7 +95,7 @@ public class LinkedListSinglyTest extends TestBase {
 		tester.addPhase().withArgs(64);
 		tester.addPhase().withArgs(238);
 		tester.run((len) -> {
-			LinkedListFixedSize.Singly list = new LinkedListFixedSize.Singly(len);
+			LinkedList.Singly list = new LinkedList.Singly(len);
 			assertEquals(len, list.size());
 			for (int m = rand.nextInt(Math.max(10, len)); m >= 0; m--) {
 				int u = rand.nextInt(len);
@@ -106,7 +106,7 @@ public class LinkedListSinglyTest extends TestBase {
 			}
 			list.clear();
 			for (int i = 0; i < len; i++)
-				assertEquals(LinkedListFixedSize.None, list.next(i));
+				assertEquals(LinkedList.None, list.next(i));
 		});
 	}
 
@@ -123,7 +123,7 @@ public class LinkedListSinglyTest extends TestBase {
 		tester.addPhase().withArgs(64);
 		tester.addPhase().withArgs(238);
 		tester.run((len) -> {
-			LinkedListFixedSize.Singly list = new LinkedListFixedSize.Singly(len);
+			LinkedList.Singly list = new LinkedList.Singly(len);
 			Int2IntMap nextMap = new Int2IntOpenHashMap();
 			assertEquals(len, list.size());
 			for (int m = rand.nextInt(Math.max(10, len)); m >= 0; m--) {

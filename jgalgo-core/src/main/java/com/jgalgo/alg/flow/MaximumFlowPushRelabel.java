@@ -25,7 +25,7 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.LinkedListFixedSize;
+import com.jgalgo.internal.ds.LinkedList;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.IterTools;
@@ -216,7 +216,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 		private int relabelsSinceLastLabelsRecompute;
 		private final int labelsReComputeThreshold;
 
-		private final LinkedListFixedSize.Doubly layers;
+		private final LinkedList.Doubly layers;
 		final int[] layersHeadActive;
 		private final int[] layersHeadInactive;
 		int maxLayerActive;
@@ -240,7 +240,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 			relabelQueue = new FIFOQueueIntNoReduce();
 			labelsReComputeThreshold = n;
 
-			layers = new LinkedListFixedSize.Doubly(n);
+			layers = new LinkedList.Doubly(n);
 			layersHeadActive = new int[n];
 			layersHeadInactive = new int[n];
 
@@ -256,8 +256,8 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 			activeOrderPolicy.beforeRecomputeLabels();
 
 			layers.clear();
-			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);
-			Arrays.fill(layersHeadInactive, LinkedListFixedSize.None);
+			Arrays.fill(layersHeadActive, LinkedList.None);
+			Arrays.fill(layersHeadInactive, LinkedList.None);
 			maxLayerActive = 0;
 			maxLayerInactive = 0;
 
@@ -383,7 +383,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 
 		void addToLayerActive(int u, int layer) {
 			assert u != source && u != sink;
-			if (!LinkedListFixedSize.isNone(layersHeadActive[layer]))
+			if (!LinkedList.isNone(layersHeadActive[layer]))
 				layers.connect(u, layersHeadActive[layer]);
 			layersHeadActive[layer] = u;
 
@@ -394,7 +394,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 
 		void addToLayerInactive(int u, int layer) {
 			assert u != source && u != sink;
-			if (!LinkedListFixedSize.isNone(layersHeadInactive[layer]))
+			if (!LinkedList.isNone(layersHeadInactive[layer]))
 				layers.connect(u, layersHeadInactive[layer]);
 			layersHeadInactive[layer] = u;
 
@@ -443,8 +443,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 			label[u] = newLabel;
 			touchLayer(oldLabel);
 
-			if (LinkedListFixedSize.isNone(layersHeadActive[oldLabel])
-					&& LinkedListFixedSize.isNone(layersHeadInactive[oldLabel])) {
+			if (LinkedList.isNone(layersHeadActive[oldLabel]) && LinkedList.isNone(layersHeadInactive[oldLabel])) {
 				emptyLayerGap(oldLabel);
 				label[u] = n;
 			}
@@ -459,27 +458,27 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 			// Set labels of all vertices in layers > emptyLayer to infinity (n)
 			for (int layer = emptyLayer + 1; layer <= maxLayerActive; layer++) {
 				int head = layersHeadActive[layer];
-				if (LinkedListFixedSize.isNone(head))
+				if (LinkedList.isNone(head))
 					continue;
 				for (IntIterator it = layers.iterator(head); it.hasNext();) {
 					int u = it.nextInt();
 					layers.disconnect(u);
 					label[u] = n;
 				}
-				layersHeadActive[layer] = LinkedListFixedSize.None;
+				layersHeadActive[layer] = LinkedList.None;
 			}
 			maxLayerActive = emptyLayer - 1;
 
 			for (int layer = emptyLayer + 1; layer <= maxLayerInactive; layer++) {
 				int head = layersHeadInactive[layer];
-				if (LinkedListFixedSize.isNone(head))
+				if (LinkedList.isNone(head))
 					continue;
 				for (IntIterator it = layers.iterator(head); it.hasNext();) {
 					int u = it.nextInt();
 					layers.disconnect(u);
 					label[u] = n;
 				}
-				layersHeadInactive[layer] = LinkedListFixedSize.None;
+				layersHeadInactive[layer] = LinkedList.None;
 			}
 			maxLayerInactive = emptyLayer - 1;
 		}
@@ -1359,7 +1358,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 				@Override
 				boolean hasMoreVerticesToDischarge() {
 					for (; worker.maxLayerActive > 0; worker.maxLayerActive--)
-						if (!LinkedListFixedSize.isNone(worker.layersHeadActive[worker.maxLayerActive]))
+						if (!LinkedList.isNone(worker.layersHeadActive[worker.maxLayerActive]))
 							return true;
 					return false;
 				}
@@ -1368,7 +1367,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 				int nextVertexToDischarge() {
 					for (;;) {
 						assert worker.maxLayerActive > 0 : "no active vertex to discharge";
-						if (!LinkedListFixedSize.isNone(worker.layersHeadActive[worker.maxLayerActive]))
+						if (!LinkedList.isNone(worker.layersHeadActive[worker.maxLayerActive]))
 							return worker.layersHeadActive[worker.maxLayerActive];
 						worker.maxLayerActive--;
 					}
@@ -1397,7 +1396,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 				@Override
 				boolean hasMoreVerticesToDischarge() {
 					for (; minLayerActive < worker.n; minLayerActive++)
-						if (!LinkedListFixedSize.isNone(worker.layersHeadActive[minLayerActive]))
+						if (!LinkedList.isNone(worker.layersHeadActive[minLayerActive]))
 							return true;
 					return false;
 				}
@@ -1406,7 +1405,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 				int nextVertexToDischarge() {
 					for (;;) {
 						assert minLayerActive < worker.n : "no active vertex to discharge";
-						if (!LinkedListFixedSize.isNone(worker.layersHeadActive[minLayerActive]))
+						if (!LinkedList.isNone(worker.layersHeadActive[minLayerActive]))
 							return worker.layersHeadActive[minLayerActive];
 						minLayerActive++;
 					}
@@ -1415,20 +1414,20 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 
 			private static class MoveToFront extends ActiveOrderPolicyImpl {
 
-				private final LinkedListFixedSize.Doubly vertices;
-				private int listHead = LinkedListFixedSize.None;
+				private final LinkedList.Doubly vertices;
+				private int listHead = LinkedList.None;
 				private IterTools.Peek.Int listIter;
 
 				MoveToFront(MaximumFlowPushRelabel.Worker worker) {
 					super(worker);
 					int n = worker.g.vertices().size();
-					vertices = new LinkedListFixedSize.Doubly(n);
+					vertices = new LinkedList.Doubly(n);
 				}
 
 				@Override
 				void beforeRecomputeLabels() {
 					vertices.clear();
-					listHead = LinkedListFixedSize.None;
+					listHead = LinkedList.None;
 					listIter = null;
 				}
 
@@ -1450,7 +1449,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 
 				@Override
 				void afterVertexLabelReCompute(int v) {
-					if (!LinkedListFixedSize.isNone(listHead))
+					if (!LinkedList.isNone(listHead))
 						vertices.connect(v, listHead);
 					listHead = v;
 				}
