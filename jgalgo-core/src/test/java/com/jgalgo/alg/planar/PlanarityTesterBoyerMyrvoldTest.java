@@ -49,7 +49,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 @SuppressWarnings("boxing")
@@ -809,10 +808,10 @@ public class PlanarityTesterBoyerMyrvoldTest extends TestBase {
 
 	private static boolean computePlanarity(int[][] edges) {
 		IntGraph g = IntGraph.newUndirected();
-		Random rand = new Random(0x3893298);
-		ObjectArrays.shuffle(edges, rand);
+		// Random rand = new Random(0x3893298);
+		// ObjectArrays.shuffle(edges, rand);
 		for (int[] edge : edges) {
-			IntArrays.shuffle(edge, rand);
+			// IntArrays.shuffle(edge, rand);
 			int u = edge[0], v = edge[1];
 			if (!g.vertices().contains(u))
 				g.addVertex(u);

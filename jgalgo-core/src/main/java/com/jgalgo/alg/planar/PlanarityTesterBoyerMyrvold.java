@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightsLong;
@@ -151,8 +152,20 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             this.biCompMergeStack = new ObjectArrayList<>();
         }
 
+        void checkMe() {
+            // for (Node node : nodes()) {
+            // boolean ok = (node.outerFaceNeighbor1 == null || node == node.outerFaceNeighbor1.outerFaceNeighbor1
+            // || node == node.outerFaceNeighbor1.outerFaceNeighbor2)
+            // && (node.outerFaceNeighbor2 == null || node == node.outerFaceNeighbor2.outerFaceNeighbor1
+            // || node == node.outerFaceNeighbor2.outerFaceNeighbor2);
+            // if (!ok)
+            // throw new IllegalStateException("Node " + node.idx + " has invalid outer face neighbors");
+            // }
+        }
+
         com.jgalgo.internal.util.Result<Void, Node> computePlanarity() {
             preprocess();
+            checkMe();
 
             final int n = g.vertices().size();
             int[] dfsIdxToNode = new int[n];
@@ -163,23 +176,30 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 Node v = nodes[dfsIdxToNode[currentDfsIdx]];
                 assert v.dfsIdx == currentDfsIdx;
 
+                checkMe();
                 if (v.downEdges.isEmpty())
                     continue;
                 for (int downEdge : v.downEdges)
                     walkUp(edges[downEdge]);
+                checkMe();
 
                 int embeddedEdgesNum = 0;
                 for (int treeEdgeIdx : v.treeEdges) {
                     Edge treeEdge = edges[treeEdgeIdx];
                     assert treeEdge.target.bicompRoot.dfsIdx == currentDfsIdx;
+                    checkMe();
                     embeddedEdgesNum += walkDown(treeEdge.target.bicompRoot);
                     if (!biCompMergeStack.isEmpty())
                         break;
+                    checkMe();
                 }
+                checkMe();
                 if (embeddedEdgesNum != v.downEdges.size())
                     // Some edges were not embedded successfully
                     return com.jgalgo.internal.util.Result.error(v);
+                checkMe();
             }
+            checkMe();
             return com.jgalgo.internal.util.Result.ok(null);
         }
 
@@ -359,23 +379,39 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 boolean side = initialDirection;
                 OuterFaceIter outerFace = outerFace(bicompRoot, side);
                 outFaceLoop: for (Node current = outerFace.next(); current != bicompRoot;) {
+                    checkMe();
                     if (current.activeBackEdge >= 0) {
                         // At this point we walked down from the top vertex along the bi-comps util we reached a vertex
                         // with an edge to the top vertex, which we should embed. When we add the back edge, all the
                         // vertices along the path we walked down become inner vertices, and the separated bi-comps
                         // are merged into one.
                         // The prev vertex on the outer face will be an inner vertex after we embed the edge
-                        Node innerNeighbor = outerFace.prev();
+                        Node innerNeighbor;
+                        boolean innerDirection;
+                        // = current.otherOuterFaceNeighbor(outerFace.peekNext());
 
+                        if (current.outerFaceNeighbor1 == outerFace.peekNext()) {
+                            innerNeighbor = current.outerFaceNeighbor2;
+                            innerDirection = Side2;
+                        } else {
+                            assert current.outerFaceNeighbor2 == outerFace.peekNext();
+                            innerNeighbor = current.outerFaceNeighbor1;
+                            innerDirection = Side1;
+                        }
+
+                        checkMe();
                         while (!biCompMergeStack.isEmpty())
                             mergeBicomps(biCompMergeStack.pop());
 
-                        embedEdge(bicompRoot, initialDirection, edges[current.activeBackEdge], innerNeighbor);
+                        embedEdge(bicompRoot, initialDirection, edges[current.activeBackEdge], innerNeighbor,
+                                innerDirection);
+                        checkMe();
                         current.activeBackEdge = -1;
                         embeddedEdgesNum++;
 
                         outerFace = new OuterFaceIter(current.otherOuterFaceNeighbor(bicompRoot), current);
                     }
+                    checkMe();
 
                     // Continue down the tree to a child bi-comp if its pertinent (has a back edge in its sub-tree)
                     if (!isNone(head(current.pertinentRoots))) {
@@ -429,8 +465,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                         }
                         if (!otherActiveNode.hasRootNeighbor())
                             addShortCircuitEdge(otherActiveNode, childRoot, !side, otherOuterFace.prev());
+                        checkMe();
                         continue outFaceLoop;
                     }
+                    checkMe();
 
                     if (isActive(current)) {
                         // current vertex is externally active, cant continue in this side.
@@ -438,8 +476,10 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                             break sideLoop; // abort
                         if (!current.hasRootNeighbor())
                             addShortCircuitEdge(current, bicompRoot, initialDirection, outerFace.prev());
+                        checkMe();
                         continue sideLoop;
                     }
+                    checkMe();
 
                     // continue in the current side
                     current = outerFace.next();
@@ -473,12 +513,17 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
             virtualRoot.embeddedEdges = LinkedList.HeadTailNone;
 
+            // checkMe();
             parent.replaceNeighborOpposite(merge.parentNext, merge.childPrev);
-            merge.childPrev.replaceNeighbor(virtualRoot, parent);
+            if (merge.childPrev.outerFaceNeighbor1 == virtualRoot)
+                merge.childPrev.outerFaceNeighbor1 = parent;
+            if (merge.childPrev.outerFaceNeighbor2 == virtualRoot)
+                merge.childPrev.outerFaceNeighbor2 = parent;
             virtualRoot.outerFaceNeighbor1 = virtualRoot.outerFaceNeighbor2 = null;
+            // checkMe();
         }
 
-        private void embedEdge(Node root, boolean direction, Edge edge, Node innerNeighbor) {
+        private void embedEdge(Node root, boolean direction, Edge edge, Node innerNeighbor, boolean innerDirection) {
             assert root.isBicompRoot();
             Node source = edge.source;
             if (direction == Side1) {
@@ -490,18 +535,25 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
             }
 
             Edge firstEdge = edges[embedded2edge[head(source.embeddedEdges)]];
-            if (firstEdge.otherEndpoint(source) == innerNeighbor.realNode()) {
+            if (firstEdge.otherEndpoint(source).dfsIdx == innerNeighbor.dfsIdx) {
                 addToEmbeddedFirst(source, edge);
             } else {
                 addToEmbeddedLast(source, edge);
             }
 
-            source.replaceNeighbor(innerNeighbor, root);
+            if (innerDirection == Side1) {
+                source.outerFaceNeighbor1 = root;
+            } else {
+                assert innerDirection == Side2;
+                source.outerFaceNeighbor2 = root;
+            }
+            checkMe();
         }
 
         private void addShortCircuitEdge(Node source, Node targetBicompRoot, boolean direction, Node innerNeighbor) {
             Edge shortCircuit = newShortCircuitEdge(source, targetBicompRoot.parent());
-            embedEdge(targetBicompRoot, direction, shortCircuit, innerNeighbor);
+            boolean innerDirection = innerNeighbor == source.outerFaceNeighbor1 ? Side1 : Side2;
+            embedEdge(targetBicompRoot, direction, shortCircuit, innerNeighbor, innerDirection);
         }
 
         Node node(int idx) {
@@ -711,17 +763,9 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
                 return activeBackEdge >= 0 || !isNone(head(pertinentRoots));
             }
 
-            void replaceNeighbor(Node oldNeighbor, Node newNeighbor) {
-                if (outerFaceNeighbor1 == oldNeighbor) {
-                    outerFaceNeighbor1 = newNeighbor;
-                } else {
-                    assert outerFaceNeighbor2 == oldNeighbor;
-                    outerFaceNeighbor2 = newNeighbor;
-                }
-            }
-
             void replaceNeighborOpposite(Node oppositeNeighbor, Node newNeighbor) {
                 if (outerFaceNeighbor1 == oppositeNeighbor) {
+                    // assert outerFaceNeighbor2 != oppositeNeighbor; // TODO
                     outerFaceNeighbor2 = newNeighbor;
                 } else {
                     assert outerFaceNeighbor2 == oppositeNeighbor;
@@ -731,11 +775,6 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
 
             boolean hasRootNeighbor() {
                 return outerFaceNeighbor1.isBicompRoot() || outerFaceNeighbor2.isBicompRoot();
-            }
-
-            // This node or the real node in the parent bi-comp if this node is a virtual bicomp root
-            private Node realNode() {
-                return isRealNode() ? this : realNodeInParentBiComp();
             }
 
             private Node realNodeInParentBiComp() {
@@ -1701,9 +1740,13 @@ public class PlanarityTesterBoyerMyrvold extends PlanarityTesterAbstract {
          */
         // The edge connecting the last node returned by next() and the next node.
         Edge nextEdge(OuterFaceIter iter) {
+
+            // // This node or the real node in the parent bi-comp if this node is a virtual bicomp root
+            Function<Node, Node> realNode = n -> n.isRealNode() ? n : n.realNodeInParentBiComp();
+
             Edge edge = edges[embedded2edge[head(iter.current.embeddedEdges)]];
-            Node target = iter.next.realNode();
-            Node source = iter.current.realNode();
+            Node target = realNode.apply(iter.next);
+            Node source = realNode.apply(iter.current);
             if (edge.otherEndpoint(source) == target) {
                 return edge;
             } else {
