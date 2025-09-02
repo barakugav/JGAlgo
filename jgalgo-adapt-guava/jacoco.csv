@@ -6,32 +6,32 @@ JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.InEdges,0,13,
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaValueGraphAdapter,0,136,0,6,0,30,0,22,0,19
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaMutableNetworkAdapter,0,126,0,8,0,27,0,11,0,7
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.IndexIdMapImpl,8,149,2,18,0,39,2,17,0,9
+JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.OutEdges,0,13,0,0,0,4,0,2,0,2
+JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.IndexGraphImpl.SourceTargetEdgeSet.new GuavaNetworkWrapper.IndexGraphImpl.EdgeSetBase.IterBase() {...},0,29,0,4,0,7,0,5,0,3
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.IndexGraphImpl.IndicesSet,0,68,0,4,0,12,0,12,0,10
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.IndexGraphImpl.OutEdges.new GuavaNetworkWrapper.IndexGraphImpl.EdgeSetBase.IterBase() {...},0,44,0,4,0,8,0,5,0,3
-JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.IndexGraphImpl.SourceTargetEdgeSet.new GuavaNetworkWrapper.IndexGraphImpl.EdgeSetBase.IterBase() {...},0,29,0,4,0,7,0,5,0,3
-JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.OutEdges,0,13,0,0,0,4,0,2,0,2
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaAdapters.new AbstractSet() {...},0,42,0,4,0,5,0,6,0,4
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaAdapters.new AbstractSet() {...},0,42,0,4,0,5,0,6,0,4
-JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.IndexGraphImpl,0,341,1,5,0,71,1,46,0,44
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaAdapters.new AbstractSet() {...},0,88,0,6,0,11,0,9,0,6
+JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.IndexGraphImpl,0,341,1,5,0,71,1,46,0,44
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaAdapters.new AbstractSet() {...},0,42,0,4,0,5,0,6,0,4
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaAdapters.new AbstractSet() {...},2,185,1,23,0,31,1,19,0,8
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaAdapters.new AbstractSet() {...},0,99,0,10,0,19,0,10,0,5
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.OutEdges.new GuavaNetworkWrapper.EdgeSetBase.IterBase() {...},0,36,0,4,0,7,0,5,0,3
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaMutableValueGraphAdapter,0,110,0,8,0,25,0,11,0,7
-JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.IndexGraphImpl.EdgeSetBase.IterBase,0,71,0,8,0,17,0,9,0,5
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.SourceTargetEdgeSet,0,16,0,0,0,5,0,2,0,2
+JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.IndexGraphImpl.EdgeSetBase.IterBase,0,71,0,8,0,17,0,9,0,5
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.IndexGraphImpl.InEdges.new GuavaNetworkWrapper.IndexGraphImpl.EdgeSetBase.IterBase() {...},0,44,0,4,0,8,0,5,0,3
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.IndexGraphImpl.OutEdges,0,19,0,0,0,6,0,2,0,2
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.IndexGraphImpl.SourceTargetEdgeSet,0,19,0,0,0,6,0,2,0,2
-JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.IndexGraphImpl.EdgeSetBase,0,24,0,0,0,5,0,3,0,3
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaGraphAdapter,0,90,0,2,0,22,0,17,0,16
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.InEdges.new GuavaNetworkWrapper.EdgeSetBase.IterBase() {...},0,36,0,4,0,7,0,5,0,3
-JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaAdapters.4.new Iterator() {...},0,28,0,0,0,5,0,3,0,3
+JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.IndexGraphImpl.EdgeSetBase,0,24,0,0,0,5,0,3,0,3
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.IndexGraphImpl.InEdges,0,19,0,0,0,6,0,2,0,2
+JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaAdapters.4.new Iterator() {...},0,28,0,0,0,5,0,3,0,3
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaAdapters.2.new Iterator() {...},0,28,0,0,0,5,0,3,0,3
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaAdapters.1.new Iterator() {...},0,28,0,0,0,5,0,3,0,3
+JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkAdapter,4,204,1,9,0,44,1,25,0,21
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.EdgeSetBase.IterBase,0,68,0,10,0,13,0,9,0,4
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkWrapper.SourceTargetEdgeSet.new GuavaNetworkWrapper.EdgeSetBase.IterBase() {...},0,29,0,4,0,7,0,5,0,3
-JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaNetworkAdapter,4,204,1,9,0,44,1,25,0,21
 JGAlgo - Guava Adapters,com.jgalgo.adapt.guava,GuavaMutableGraphAdapter,0,90,0,8,0,22,0,11,0,7
