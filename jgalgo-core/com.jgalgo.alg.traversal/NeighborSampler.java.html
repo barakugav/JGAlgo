@@ -30,9 +30,9 @@ import com.jgalgo.graph.WeightFunctions;
  *
  * &lt;p&gt;
  * A neighbor sampler is a generic interface that implements a single method {@link #sample(Object)} that samples a
- * neighbor of a given vertex. Different implementations of the interface can sample neighbors uniformly or with a
- * given weight function. The {@link RandomWalkIter} iterator is implemented using a neighbor sampler and use it in
- * a specific way by sampling the neighbor of the last returned vertex.
+ * neighbor of a given vertex. Different implementations of the interface can sample neighbors uniformly or with a given
+ * weight function. The {@link RandomWalkIter} iterator is implemented using a neighbor sampler and use it in a specific
+ * way by sampling the neighbor of the last returned vertex.
  *
  * @see        RandomWalkIter
  * @param  &lt;V&gt; the vertices type
@@ -46,9 +46,8 @@ public interface NeighborSampler&lt;V, E&gt; extends RandomizedAlgorithm {
      *
      * @param  vertex                the vertex to sample from
      * @return                       the sampled neighbor, maybe be {@code null} if there are no neighbors or some other
-     *                               reason the
-     *                               implementation decides to return {@code null} (for example if some vertices are
-     *                               filtered out).
+     *                               reason the implementation decides to return {@code null} (for example if some
+     *                               vertices are filtered out).
      * @throws NoSuchVertexException if the vertex is not in the graph
      */
     E sample(V vertex);
@@ -80,11 +79,11 @@ public interface NeighborSampler&lt;V, E&gt; extends RandomizedAlgorithm {
      */
     @SuppressWarnings(&quot;unchecked&quot;)
     static &lt;V, E&gt; NeighborSampler&lt;V, E&gt; edgeUniform(Graph&lt;V, E&gt; g) {
-<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L84">            return (NeighborSampler&lt;V, E&gt;) new NeighborSamplers.UniformNeighborSampler((IndexGraph) g);</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L83">            return (NeighborSampler&lt;V, E&gt;) new NeighborSamplers.UniformNeighborSampler((IndexGraph) g);</span>
         } else {
-<span class="nc" id="L86">            NeighborSampler.Int indexSampler = new NeighborSamplers.UniformNeighborSampler(g.indexGraph());</span>
-<span class="nc" id="L87">            return NeighborSamplers.fromIndexSampler(indexSampler, g);</span>
+<span class="nc" id="L85">            NeighborSampler.Int indexSampler = new NeighborSamplers.UniformNeighborSampler(g.indexGraph());</span>
+<span class="nc" id="L86">            return NeighborSamplers.fromIndexSampler(indexSampler, g);</span>
         }
     }
 
@@ -101,19 +100,18 @@ public interface NeighborSampler&lt;V, E&gt; extends RandomizedAlgorithm {
      * @param  g                        the graph to sample from
      * @param  weights                  the edge weight function
      * @return                          a new sampler that samples neighbors according to a weighted distribution of the
-     *                                  out edges of a
-     *                                  vertex
+     *                                  out edges of a vertex
      * @throws IllegalArgumentException if any edge weight is negative
      */
     @SuppressWarnings(&quot;unchecked&quot;)
     static &lt;V, E&gt; NeighborSampler&lt;V, E&gt; edgeWeighted(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; weights) {
-<span class="nc bnc" id="L110" title="All 2 branches missed.">        if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L111">            IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) weights);</span>
-<span class="nc" id="L112">            return (NeighborSampler&lt;V, E&gt;) new NeighborSamplers.WeightedNeighborSampler((IndexGraph) g, w0);</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L109">            IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) weights);</span>
+<span class="nc" id="L110">            return (NeighborSampler&lt;V, E&gt;) new NeighborSamplers.WeightedNeighborSampler((IndexGraph) g, w0);</span>
         } else {
-<span class="nc" id="L114">            IWeightFunction w0 = IndexIdMaps.idToIndexWeightFunc(weights, g.indexGraphEdgesMap());</span>
-<span class="nc" id="L115">            NeighborSampler.Int indexSampler = new NeighborSamplers.WeightedNeighborSampler(g.indexGraph(), w0);</span>
-<span class="nc" id="L116">            return NeighborSamplers.fromIndexSampler(indexSampler, g);</span>
+<span class="nc" id="L112">            IWeightFunction w0 = IndexIdMaps.idToIndexWeightFunc(weights, g.indexGraphEdgesMap());</span>
+<span class="nc" id="L113">            NeighborSampler.Int indexSampler = new NeighborSamplers.WeightedNeighborSampler(g.indexGraph(), w0);</span>
+<span class="nc" id="L114">            return NeighborSamplers.fromIndexSampler(indexSampler, g);</span>
         }
     }
 
@@ -143,8 +141,8 @@ public interface NeighborSampler&lt;V, E&gt; extends RandomizedAlgorithm {
         @Deprecated
         @Override
         default Integer sample(Integer vertex) {
-<span class="nc" id="L146">            int e = sample(vertex.intValue());</span>
-<span class="nc bnc" id="L147" title="All 2 branches missed.">            return e &lt; 0 ? null : Integer.valueOf(e);</span>
+<span class="nc" id="L144">            int e = sample(vertex.intValue());</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">            return e &lt; 0 ? null : Integer.valueOf(e);</span>
         }
 
         @Override

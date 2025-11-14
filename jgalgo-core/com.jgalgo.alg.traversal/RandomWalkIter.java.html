@@ -16,7 +16,6 @@
 package com.jgalgo.alg.traversal;
 
 import java.util.Iterator;
-
 import com.jgalgo.alg.common.RandomizedAlgorithm;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
@@ -27,7 +26,6 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -37,9 +35,9 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * A random walk iterator is an iterator that starts at a given vertex and randomly choose an edge to traverse at each
  * step. The iterator returns the vertices visited by the random walk in the order they were visited. The iterator may
  * return the same vertex multiple times if the random walk returns to it, or if a vertex has a self edge and it is
- * sampled. The iterator can keep advancing as long as there are out going edges (with non
- * zero weight in the weighted case) from the current vertex. Each out going edge can be chosen with equal probability,
- * or with probability proportional to a given edge weight function.
+ * sampled. The iterator can keep advancing as long as there are out going edges (with non zero weight in the weighted
+ * case) from the current vertex. Each out going edge can be chosen with equal probability, or with probability
+ * proportional to a given edge weight function.
  *
  * &lt;p&gt;
  * To get a deterministic random walk, set the iterator seed using {@link RandomWalkIter#setSeed(long)}.
@@ -95,7 +93,7 @@ public interface RandomWalkIter&lt;V, E&gt; extends Iterator&lt;V&gt;, Randomize
 		@Deprecated
 		@Override
 		default Integer next() {
-<span class="fc" id="L98">			return IntIterator.super.next();</span>
+<span class="fc" id="L96">			return IntIterator.super.next();</span>
 		}
 
 		/**
@@ -116,7 +114,7 @@ public interface RandomWalkIter&lt;V, E&gt; extends Iterator&lt;V&gt;, Randomize
 		@Deprecated
 		@Override
 		default Integer lastEdge() {
-<span class="fc" id="L119">			return Integer.valueOf(lastEdgeInt());</span>
+<span class="fc" id="L117">			return Integer.valueOf(lastEdgeInt());</span>
 		}
 	}
 
@@ -138,18 +136,18 @@ public interface RandomWalkIter&lt;V, E&gt; extends Iterator&lt;V&gt;, Randomize
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; RandomWalkIter&lt;V, E&gt; newInstance(Graph&lt;V, E&gt; g, V source) {
-<span class="fc bfc" id="L141" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L142">			int src = ((Integer) source).intValue();</span>
-<span class="fc" id="L143">			NeighborSampler.Int sampler = new NeighborSamplers.UniformNeighborSampler((IndexGraph) g);</span>
-<span class="fc" id="L144">			return (RandomWalkIter&lt;V, E&gt;) new RandomWalkIters.IndexIter(sampler, src);</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L140">			int src = ((Integer) source).intValue();</span>
+<span class="fc" id="L141">			NeighborSampler.Int sampler = new NeighborSamplers.UniformNeighborSampler((IndexGraph) g);</span>
+<span class="fc" id="L142">			return (RandomWalkIter&lt;V, E&gt;) new RandomWalkIters.IndexIter(sampler, src);</span>
 
 		} else {
-<span class="fc" id="L147">			IndexGraph ig = g.indexGraph();</span>
-<span class="fc" id="L148">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L149">			int src = viMap.idToIndex(source);</span>
-<span class="fc" id="L150">			NeighborSampler.Int sampler = new NeighborSamplers.UniformNeighborSampler(ig);</span>
-<span class="fc" id="L151">			RandomWalkIter.Int indexIter = new RandomWalkIters.IndexIter(sampler, src);</span>
-<span class="fc" id="L152">			return RandomWalkIters.fromIndexIter(indexIter, g);</span>
+<span class="fc" id="L145">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L146">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L147">			int src = viMap.idToIndex(source);</span>
+<span class="fc" id="L148">			NeighborSampler.Int sampler = new NeighborSamplers.UniformNeighborSampler(ig);</span>
+<span class="fc" id="L149">			RandomWalkIter.Int indexIter = new RandomWalkIters.IndexIter(sampler, src);</span>
+<span class="fc" id="L150">			return RandomWalkIters.fromIndexIter(indexIter, g);</span>
 		}
 	}
 
@@ -176,24 +174,24 @@ public interface RandomWalkIter&lt;V, E&gt; extends Iterator&lt;V&gt;, Randomize
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; RandomWalkIter&lt;V, E&gt; newInstance(Graph&lt;V, E&gt; g, V source, WeightFunction&lt;E&gt; weights) {
-<span class="fc bfc" id="L179" title="All 2 branches covered.">		if (WeightFunction.isCardinality(weights))</span>
-<span class="fc" id="L180">			return RandomWalkIter.newInstance(g, source);</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">		if (WeightFunction.isCardinality(weights))</span>
+<span class="fc" id="L178">			return RandomWalkIter.newInstance(g, source);</span>
 
-<span class="fc bfc" id="L182" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L183">			int src = ((Integer) source).intValue();</span>
-<span class="fc" id="L184">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) weights);</span>
-<span class="fc" id="L185">			NeighborSampler.Int sampler = new NeighborSamplers.WeightedNeighborSampler((IndexGraph) g, w0);</span>
-<span class="fc" id="L186">			return (RandomWalkIter&lt;V, E&gt;) new RandomWalkIters.IndexIter(sampler, src);</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L181">			int src = ((Integer) source).intValue();</span>
+<span class="fc" id="L182">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) weights);</span>
+<span class="fc" id="L183">			NeighborSampler.Int sampler = new NeighborSamplers.WeightedNeighborSampler((IndexGraph) g, w0);</span>
+<span class="fc" id="L184">			return (RandomWalkIter&lt;V, E&gt;) new RandomWalkIters.IndexIter(sampler, src);</span>
 
 		} else {
-<span class="fc" id="L189">			IndexGraph ig = g.indexGraph();</span>
-<span class="fc" id="L190">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L191">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L192">			int src = viMap.idToIndex(source);</span>
-<span class="fc" id="L193">			IWeightFunction w0 = IndexIdMaps.idToIndexWeightFunc(weights, eiMap);</span>
-<span class="fc" id="L194">			NeighborSampler.Int sampler = new NeighborSamplers.WeightedNeighborSampler(ig, w0);</span>
-<span class="fc" id="L195">			RandomWalkIter.Int indexIter = new RandomWalkIters.IndexIter(sampler, src);</span>
-<span class="fc" id="L196">			return RandomWalkIters.fromIndexIter(indexIter, g);</span>
+<span class="fc" id="L187">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L188">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L189">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L190">			int src = viMap.idToIndex(source);</span>
+<span class="fc" id="L191">			IWeightFunction w0 = IndexIdMaps.idToIndexWeightFunc(weights, eiMap);</span>
+<span class="fc" id="L192">			NeighborSampler.Int sampler = new NeighborSamplers.WeightedNeighborSampler(ig, w0);</span>
+<span class="fc" id="L193">			RandomWalkIter.Int indexIter = new RandomWalkIters.IndexIter(sampler, src);</span>
+<span class="fc" id="L194">			return RandomWalkIters.fromIndexIter(indexIter, g);</span>
 		}
 	}
 
