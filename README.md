@@ -10,7 +10,7 @@
 The <b>*J*</b>ava <b>*G*</b>raph <b>*Algo*</b>rithm library is a high-performance library for graph algorithms written in Java.
 It contains a wide collection of optimized algorithms and data structures for a range of problems on graphs.
 From calculating shortest paths and maximum flows to computing minimum spanning trees, maximum matchings, vertex covers, and minimum coloring.
-The library runs on Java 11 or higher, and it is installed using [Maven](https://central.sonatype.com/artifact/com.jgalgo/jgalgo).
+The library runs on Java 17 or higher, and it is installed using [Maven](https://central.sonatype.com/artifact/com.jgalgo/jgalgo).
 
 JGAlgo offer [unparalleled speed](https://github.com/barakugav/JGAlgo/actions/workflows/benchmarks.yaml) and efficiency by implementing algorithms with theoretically guaranteed running times using the most efficient underlying building blocks and data-structures.
 A few concrete reasons for the library performance are:
