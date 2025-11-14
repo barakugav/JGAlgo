@@ -68,12 +68,12 @@ public final class Range extends AbstractIntSortedSet {
 	}
 
 	@Override
-	public IntBidirectionalIterator iterator() {
+	public Iter iterator() {
 		return new Iter(from, to);
 	}
 
 	@Override
-	public IntBidirectionalIterator iterator(int fromElement) {
+	public Iter iterator(int fromElement) {
 		int begin;
 		if (fromElement < from) {
 			begin = from;
@@ -193,7 +193,7 @@ public final class Range extends AbstractIntSortedSet {
 		return new SplitIter(from, to);
 	}
 
-	private static class Iter implements IntBidirectionalIterator {
+	public static class Iter implements IntBidirectionalIterator, IterTools.IntIter {
 
 		final int from, to;
 		int x;

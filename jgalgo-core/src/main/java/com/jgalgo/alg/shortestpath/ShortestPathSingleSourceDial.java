@@ -24,7 +24,7 @@ import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.LinkedListFixedSize;
+import com.jgalgo.internal.ds.LinkedList;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
@@ -132,7 +132,7 @@ public class ShortestPathSingleSourceDial extends ShortestPathSingleSourceAbstra
 
 	private static class DialHeap {
 
-		private final LinkedListFixedSize.Doubly bucketsNodes;
+		private final LinkedList.Doubly bucketsNodes;
 		private int[] bucketsHead;
 		final int[] distances;
 		private int scanIdx;
@@ -140,8 +140,8 @@ public class ShortestPathSingleSourceDial extends ShortestPathSingleSourceAbstra
 
 		DialHeap(int n, int initialSize) {
 			bucketsHead = initialSize <= 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[initialSize];
-			Arrays.fill(bucketsHead, LinkedListFixedSize.None);
-			bucketsNodes = new LinkedListFixedSize.Doubly(n);
+			Arrays.fill(bucketsHead, LinkedList.None);
+			bucketsNodes = new LinkedList.Doubly(n);
 			distances = new int[n];
 			Arrays.fill(distances, 0, n, Integer.MAX_VALUE);
 
@@ -155,7 +155,7 @@ public class ShortestPathSingleSourceDial extends ShortestPathSingleSourceAbstra
 				int oldLength = bucketsHead.length;
 				int newLength = Math.max(distance + 1, oldLength * 2);
 				bucketsHead = Arrays.copyOf(bucketsHead, newLength);
-				Arrays.fill(bucketsHead, oldLength, newLength, LinkedListFixedSize.None);
+				Arrays.fill(bucketsHead, oldLength, newLength, LinkedList.None);
 				maxDistance = distance;
 			} else if (distance > maxDistance) {
 				maxDistance = distance;
@@ -163,7 +163,7 @@ public class ShortestPathSingleSourceDial extends ShortestPathSingleSourceAbstra
 
 			int h = bucketsHead[distance];
 			bucketsHead[distance] = v;
-			if (h != LinkedListFixedSize.None)
+			if (!LinkedList.isNone(h))
 				bucketsNodes.connect(v, h);
 		}
 
@@ -180,7 +180,7 @@ public class ShortestPathSingleSourceDial extends ShortestPathSingleSourceAbstra
 		int extractMin() {
 			for (int distance = scanIdx; distance <= maxDistance; distance++) {
 				int v = bucketsHead[distance];
-				if (v != LinkedListFixedSize.None) {
+				if (!LinkedList.isNone(v)) {
 					bucketsHead[distance] = bucketsNodes.next(v);
 					bucketsNodes.disconnect(v);
 					scanIdx = distance;

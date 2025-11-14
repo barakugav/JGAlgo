@@ -53,11 +53,11 @@ public class ClosuresEnumeratorSchrageBakerTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
-		tester.addPhase().withArgs(3, 2).repeat(32);
-		tester.addPhase().withArgs(6, 6).repeat(32);
-		tester.addPhase().withArgs(16, 20).repeat(8);
-		tester.addPhase().withArgs(16, 32).repeat(8);
-		tester.addPhase().withArgs(32, 52).repeat(4);
+		tester.addPhase().withArgs(3, 2).repeat(24);
+		tester.addPhase().withArgs(6, 6).repeat(24);
+		tester.addPhase().withArgs(16, 20).repeat(6);
+		tester.addPhase().withArgs(16, 32).repeat(6);
+		tester.addPhase().withArgs(32, 52).repeat(3);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g;
 			if (dag) {

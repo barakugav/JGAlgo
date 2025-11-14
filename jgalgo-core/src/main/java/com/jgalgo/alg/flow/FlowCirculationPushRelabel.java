@@ -22,7 +22,7 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.LinkedListFixedSize;
+import com.jgalgo.internal.ds.LinkedList;
 import com.jgalgo.internal.util.Assertions;
 
 class FlowCirculationPushRelabel extends FlowCirculationAbstract {
@@ -42,7 +42,7 @@ class FlowCirculationPushRelabel extends FlowCirculationAbstract {
 		final IWeightFunction capacityOrig;
 
 		final int[] label;
-		final LinkedListFixedSize.Doubly layersActive;
+		final LinkedList.Doubly layersActive;
 		final int[] layersHeadActive;
 		int maxLayerActive;
 
@@ -53,13 +53,13 @@ class FlowCirculationPushRelabel extends FlowCirculationAbstract {
 			final int n = g.vertices().size();
 
 			label = new int[n];
-			layersActive = new LinkedListFixedSize.Doubly(n);
+			layersActive = new LinkedList.Doubly(n);
 			layersHeadActive = new int[n + 1];
 		}
 
 		void activate(int v) {
 			int layer = label[v];
-			if (layersHeadActive[layer] != LinkedListFixedSize.None)
+			if (!LinkedList.isNone(layersHeadActive[layer]))
 				layersActive.connect(v, layersHeadActive[layer]);
 			layersHeadActive[layer] = v;
 			if (maxLayerActive < layer)
@@ -77,7 +77,7 @@ class FlowCirculationPushRelabel extends FlowCirculationAbstract {
 			for (;; maxLayerActive--) {
 				if (maxLayerActive < 0)
 					return -1;
-				if (layersHeadActive[maxLayerActive] != LinkedListFixedSize.None)
+				if (!LinkedList.isNone(layersHeadActive[maxLayerActive]))
 					return layersHeadActive[maxLayerActive];
 			}
 		}
@@ -131,7 +131,7 @@ class FlowCirculationPushRelabel extends FlowCirculationAbstract {
 			}
 
 			/* init labels */
-			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);
+			Arrays.fill(layersHeadActive, LinkedList.None);
 			for (int v : range(n)) {
 				if (excess[v] > eps) {
 					label[v] = 1;
@@ -270,7 +270,7 @@ class FlowCirculationPushRelabel extends FlowCirculationAbstract {
 			}
 
 			/* init labels */
-			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);
+			Arrays.fill(layersHeadActive, LinkedList.None);
 			for (int v : range(n)) {
 				if (excess[v] > 0) {
 					label[v] = 1;

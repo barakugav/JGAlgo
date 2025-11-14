@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg.closure;
 
+import static com.jgalgo.internal.util.IterTools.foreach;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Iterator;
 import com.jgalgo.alg.common.IVertexPartition;
@@ -104,7 +105,7 @@ public class ClosuresEnumeratorSchrageBaker extends ClosuresEnumeratorAbstract {
 		/* Find all closures in the DAG condensation graph and map the sets to the original vertices */
 		return IterTools.map(closuresIterDag(sccGraph), blkIter -> {
 			Bitmap closure = new Bitmap(n);
-			for (int blk : IterTools.foreach(blkIter))
+			for (int blk : foreach(blkIter))
 				for (int v : sccs.blockVertices(blk))
 					closure.set(v);
 			return ImmutableIntArraySet.withBitmap(closure);

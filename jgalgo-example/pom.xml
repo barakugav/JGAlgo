@@ -19,6 +19,12 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>it.unimi.dsi</groupId>
+      <artifactId>fastutil-core</artifactId>
+      <version>${fastutil.version}</version>
+    </dependency>
+
     <!-- JUnit5 tests -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>

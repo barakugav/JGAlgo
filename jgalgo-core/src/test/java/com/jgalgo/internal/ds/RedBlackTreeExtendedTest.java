@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.IterTools.foreach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -50,7 +51,7 @@ public class RedBlackTreeExtendedTest extends TestBase {
 							false, compare, seedGen.nextSeed());
 
 			for (ObjObjReferenceableHeap.Ref<Integer, Void> node : tree) {
-				int expectedSize = (int) ObjectIterables.size(IterTools.foreach(tree.subTreeIterator(node)));
+				int expectedSize = (int) ObjectIterables.size(foreach(tree.subTreeIterator(node)));
 				int actualSize = sizeExt.getSubTreeSize(node);
 				assertEquals(expectedSize, actualSize, "Size extension reported wrong value");
 			}
@@ -78,8 +79,7 @@ public class RedBlackTreeExtendedTest extends TestBase {
 
 			for (ObjObjReferenceableHeap.Ref<Integer, Void> node : tree) {
 				int expectedMin = Integer.MAX_VALUE;
-				for (ObjObjReferenceableHeap.Ref<Integer, Void> descendant : IterTools
-						.foreach(tree.subTreeIterator(node)))
+				for (ObjObjReferenceableHeap.Ref<Integer, Void> descendant : foreach(tree.subTreeIterator(node)))
 					expectedMin = Math.min(expectedMin, descendant.key());
 
 				int actualMin = minExt.getSubTreeMin(node).key();
@@ -108,8 +108,7 @@ public class RedBlackTreeExtendedTest extends TestBase {
 							false, compare, seedGen.nextSeed());
 			for (ObjObjReferenceableHeap.Ref<Integer, Void> node : tree) {
 				int expectedMax = Integer.MIN_VALUE;
-				for (ObjObjReferenceableHeap.Ref<Integer, Void> descendant : IterTools
-						.foreach(tree.subTreeIterator(node)))
+				for (ObjObjReferenceableHeap.Ref<Integer, Void> descendant : foreach(tree.subTreeIterator(node)))
 					expectedMax = Math.max(expectedMax, descendant.key());
 
 				int actualMax = maxExt.getSubTreeMax(node).key();

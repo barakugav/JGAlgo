@@ -26,7 +26,7 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.DynamicTree;
 import com.jgalgo.internal.ds.DynamicTree.MinEdge;
 import com.jgalgo.internal.ds.DynamicTreeExtension;
-import com.jgalgo.internal.ds.LinkedListFixedSize;
+import com.jgalgo.internal.ds.LinkedList;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.Stack;
@@ -94,7 +94,7 @@ public class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstractWithR
 		final Vertex[] vertexData;
 
 		/* Data structure maintaining the children of each vertex in the DT */
-		final LinkedListFixedSize.Doubly children;
+		final LinkedList.Doubly children;
 		final IntPriorityQueue toCut = new FIFOQueueIntNoReduce();
 
 		AbstractWorker(IndexGraph gOrig, IWeightFunction capacity, int source, int sink) {
@@ -120,7 +120,7 @@ public class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstractWithR
 			vertexData[source].isActive = true;
 			vertexData[sink].isActive = true;
 
-			children = new LinkedListFixedSize.Doubly(n);
+			children = new LinkedList.Doubly(n);
 
 			/* Init all vertices iterators */
 			for (int u : range(n))
@@ -264,7 +264,7 @@ public class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstractWithR
 			/* cut all vertices pointing into u */
 			assert U.dtVertex.getParent() == null;
 			if (U.firstDtChild >= 0) {
-				for (IntIterator childIt = children.iterator(U.firstDtChild); childIt.hasNext();) {
+				for (IntIterator childIt = children.iter(U.firstDtChild); childIt.hasNext();) {
 					int child = childIt.nextInt();
 					Vertex childData = vertexData(child);
 					assert childData.dtVertex.getParent() == U.dtVertex;

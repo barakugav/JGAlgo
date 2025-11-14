@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg.cycle;
 
+import static com.jgalgo.internal.util.IterTools.foreach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -29,7 +30,6 @@ import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.WeightsDouble;
-import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 
@@ -117,7 +117,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 				}
 			}
 
-			for (Path<V, E> c : IterTools.foreach(cycles)) {
+			for (Path<V, E> c : foreach(cycles)) {
 				double cMeanWeight = getMeanWeight(c, w);
 				final double EPS = 1e-4;
 				assertTrue(cMeanWeight + EPS >= cycleMeanWeight, "found a cycle with smaller mean weight: " + c);
