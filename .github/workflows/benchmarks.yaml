@@ -34,7 +34,7 @@ jobs:
         tar -czf bench_results.tar.gz bench_results
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: jmh-benchmarks-results
         path: bench_results.tar.gz
