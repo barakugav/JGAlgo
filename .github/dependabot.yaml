@@ -18,10 +18,10 @@ updates:
     directory: /
     schedule:
       interval: monthly
-  # - package-ecosystem: pip
-  #   directory: /scripts/
-  #   schedule:
-  #     interval: monthly
+    groups:
+      rust-patch-updates:
+        update-types:
+          - patch
   - package-ecosystem: github-actions
     directory: /
     schedule:

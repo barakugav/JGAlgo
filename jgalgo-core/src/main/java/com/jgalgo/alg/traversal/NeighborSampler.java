@@ -30,9 +30,9 @@ import com.jgalgo.graph.WeightFunctions;
  *
  * <p>
  * A neighbor sampler is a generic interface that implements a single method {@link #sample(Object)} that samples a
- * neighbor of a given vertex. Different implementations of the interface can sample neighbors uniformly or with a
- * given weight function. The {@link RandomWalkIter} iterator is implemented using a neighbor sampler and use it in
- * a specific way by sampling the neighbor of the last returned vertex.
+ * neighbor of a given vertex. Different implementations of the interface can sample neighbors uniformly or with a given
+ * weight function. The {@link RandomWalkIter} iterator is implemented using a neighbor sampler and use it in a specific
+ * way by sampling the neighbor of the last returned vertex.
  *
  * @see        RandomWalkIter
  * @param  <V> the vertices type
@@ -46,9 +46,8 @@ public interface NeighborSampler<V, E> extends RandomizedAlgorithm {
      *
      * @param  vertex                the vertex to sample from
      * @return                       the sampled neighbor, maybe be {@code null} if there are no neighbors or some other
-     *                               reason the
-     *                               implementation decides to return {@code null} (for example if some vertices are
-     *                               filtered out).
+     *                               reason the implementation decides to return {@code null} (for example if some
+     *                               vertices are filtered out).
      * @throws NoSuchVertexException if the vertex is not in the graph
      */
     E sample(V vertex);
@@ -101,8 +100,7 @@ public interface NeighborSampler<V, E> extends RandomizedAlgorithm {
      * @param  g                        the graph to sample from
      * @param  weights                  the edge weight function
      * @return                          a new sampler that samples neighbors according to a weighted distribution of the
-     *                                  out edges of a
-     *                                  vertex
+     *                                  out edges of a vertex
      * @throws IllegalArgumentException if any edge weight is negative
      */
     @SuppressWarnings("unchecked")

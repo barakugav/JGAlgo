@@ -16,7 +16,6 @@
 package com.jgalgo.gen;
 
 import static com.jgalgo.internal.util.Range.range;
-
 import java.util.Arrays;
 import java.util.Objects;
 import com.jgalgo.graph.Graph;
