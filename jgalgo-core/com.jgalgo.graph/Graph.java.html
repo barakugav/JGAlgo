@@ -1166,10 +1166,10 @@ public interface Graph&lt;V, E&gt; {
 	 * copy.
 	 *
 	 * @param  verticesMask             the vertices to mask
-	 * @param  edgesMask                the edges to mask. In addition, any edge adjacent * to a masked vertex will be
+	 * @param  edgesMask                the edges to mask. In addition, any edge adjacent to a masked vertex will be
 	 *                                      masked as well.
 	 * @return                          a new graph view of this graph, without the masked vertices and edges
-	 * @throws IllegalArgumentException if there are duplicates in the vertices or edges mask
+	 * @throws IllegalArgumentException if there are duplicates in the vertices or edges masks
 	 * @throws NoSuchVertexException    if there are vertices in the mask that are not in the graph
 	 * @throws NoSuchEdgeException      if there are edges in the mask that are not in the graph
 	 */

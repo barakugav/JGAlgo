@@ -23,7 +23,7 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.LinkedListFixedSize;
+import com.jgalgo.internal.ds.LinkedList;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -108,7 +108,7 @@ public class MinimumCostFlowCostScaling extends MinimumCostFlowAbstractBasedSupp
 		private final IntStack topologicalOrder;
 		private final int[] rank;
 		private final int rankUpperBound;
-		private final LinkedListFixedSize.Doubly buckets;
+		private final LinkedList.Doubly buckets;
 		private final int[] bucketsHeads;
 		/* Potential refinement doesn't seems to be worth it in the early rounds, skip them */
 		private static final int POTENTIAL_REFINEMENT_ITERATION_SKIP = 2;
@@ -170,7 +170,7 @@ public class MinimumCostFlowCostScaling extends MinimumCostFlowAbstractBasedSupp
 <span class="fc" id="L170">			topologicalOrder = new IntArrayList(n);</span>
 <span class="fc" id="L171">			rank = new int[n];</span>
 <span class="fc" id="L172">			rankUpperBound = alpha * n;</span>
-<span class="fc" id="L173">			buckets = new LinkedListFixedSize.Doubly(n + 2);</span>
+<span class="fc" id="L173">			buckets = new LinkedList.Doubly(n + 2);</span>
 <span class="fc" id="L174">			bucketsHeads = new int[rankUpperBound];</span>
 <span class="fc" id="L175">		}</span>
 

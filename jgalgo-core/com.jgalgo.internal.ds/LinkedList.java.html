@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LinkedList.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.ds</a> &gt; <span class="el_source">LinkedList.java</span></div><h1>LinkedList.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.ds;
+
+import java.util.Arrays;
+import java.util.function.IntPredicate;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.IntPair;
+import com.jgalgo.internal.util.IterTools;
+
+public class LinkedList {
+	private LinkedList() {}
+
+	public static final int None = -1;
+<span class="fc" id="L29">	public static final long HeadTailNone = headTail(None, None);</span>
+
+	public static boolean isNone(int entry) {
+<span class="pc bpc" id="L32" title="1 of 4 branches missed.">		assert entry &gt;= 0 || entry == None;</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		return entry &lt; 0;</span>
+	}
+
+	public static int head(long headTail) {
+<span class="fc" id="L37">		return IntPair.first(headTail);</span>
+	}
+
+	public static int tail(long headTail) {
+<span class="fc" id="L41">		return IntPair.second(headTail);</span>
+	}
+
+	public static long headTail(int head, int tail) {
+<span class="fc" id="L45">		return IntPair.of(head, tail);</span>
+	}
+
+	public static class Singly {
+
+		private final int[] arr;
+
+<span class="fc" id="L52">		public Singly(int n) {</span>
+<span class="fc" id="L53">			arr = new int[n];</span>
+<span class="fc" id="L54">			Arrays.fill(arr, None);</span>
+<span class="fc" id="L55">		}</span>
+
+		public int size() {
+<span class="fc" id="L58">			return arr.length;</span>
+		}
+
+		public int next(int id) {
+<span class="fc" id="L62">			return arr[id];</span>
+		}
+
+		public void setNext(int id, int next) {
+<span class="fc" id="L66">			arr[id] = next;</span>
+<span class="fc" id="L67">		}</span>
+
+		public boolean hasNext(int id) {
+<span class="fc bfc" id="L70" title="All 2 branches covered.">			return !isNone(next(id));</span>
+		}
+
+		public void clear() {
+<span class="fc" id="L74">			Arrays.fill(arr, None);</span>
+<span class="fc" id="L75">		}</span>
+
+		public IterTools.Peek.Int iterator(int id) {
+<span class="fc" id="L78">			Assertions.checkArrayIndex(id, 0, size());</span>
+<span class="fc" id="L79">			return new IterTools.Peek.Int() {</span>
+<span class="fc" id="L80">				int p = id;</span>
+
+				@Override
+				public boolean hasNext() {
+<span class="fc bfc" id="L84" title="All 2 branches covered.">					return !isNone(p);</span>
+				}
+
+				@Override
+				public int nextInt() {
+<span class="fc" id="L89">					Assertions.hasNext(this);</span>
+<span class="fc" id="L90">					int ret = p;</span>
+<span class="fc" id="L91">					p = LinkedList.Singly.this.next(p);</span>
+<span class="fc" id="L92">					return ret;</span>
+				}
+
+				@Override
+				public int peekNextInt() {
+<span class="nc" id="L97">					Assertions.hasNext(this);</span>
+<span class="nc" id="L98">					return p;</span>
+				}
+
+			};
+		}
+
+	}
+
+<span class="fc" id="L106">	public static class Doubly {</span>
+
+		private final int[] arr;
+
+<span class="fc" id="L110">		public Doubly(int n) {</span>
+<span class="fc" id="L111">			arr = new int[n * 2];</span>
+<span class="fc" id="L112">			Arrays.fill(arr, None);</span>
+<span class="fc" id="L113">		}</span>
+
+		private static int idxOfNext(int id) {
+<span class="fc" id="L116">			return (id &lt;&lt; 1) + 0;</span>
+		}
+
+		private static int idxOfPrev(int id) {
+<span class="fc" id="L120">			return (id &lt;&lt; 1) + 1;</span>
+		}
+
+		public int size() {
+<span class="fc" id="L124">			return arr.length / 2;</span>
+		}
+
+		public int next(int id) {
+<span class="fc" id="L128">			return arr[idxOfNext(id)];</span>
+		}
+
+		public void setNext(int id, int next) {
+<span class="fc" id="L132">			arr[idxOfNext(id)] = next;</span>
+<span class="fc" id="L133">		}</span>
+
+		public boolean hasNext(int id) {
+<span class="fc bfc" id="L136" title="All 2 branches covered.">			return !isNone(next(id));</span>
+		}
+
+		public int prev(int id) {
+<span class="fc" id="L140">			return arr[idxOfPrev(id)];</span>
+		}
+
+		public void setPrev(int id, int prev) {
+<span class="fc" id="L144">			arr[idxOfPrev(id)] = prev;</span>
+<span class="fc" id="L145">		}</span>
+
+		public boolean hasPrev(int id) {
+<span class="fc bfc" id="L148" title="All 2 branches covered.">			return !isNone(prev(id));</span>
+		}
+
+		public void insertAfter(int prev, int id) {
+			// if (hasNext(id) || hasPrev(id))
+			// throw new IllegalArgumentException();
+<span class="fc" id="L154">			int next = next(prev);</span>
+<span class="fc" id="L155">			setNext(prev, id);</span>
+<span class="fc" id="L156">			setPrev(id, prev);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">			if (!isNone(next)) {</span>
+<span class="fc" id="L158">				setNext(id, next);</span>
+<span class="fc" id="L159">				setPrev(next, id);</span>
+			}
+<span class="fc" id="L161">		}</span>
+
+		public void insertBefore(int next, int id) {
+<span class="fc" id="L164">			int prev = prev(next);</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">			if (!isNone(prev)) {</span>
+<span class="fc" id="L166">				setNext(prev, id);</span>
+<span class="fc" id="L167">				setPrev(id, prev);</span>
+			}
+<span class="fc" id="L169">			setNext(id, next);</span>
+<span class="fc" id="L170">			setPrev(next, id);</span>
+<span class="fc" id="L171">		}</span>
+
+		public void connect(int prev, int next) {
+			// if (hasNext(prev) || hasPrev(next))
+			// throw new IllegalArgumentException();
+<span class="fc" id="L176">			setNext(prev, next);</span>
+<span class="fc" id="L177">			setPrev(next, prev);</span>
+<span class="fc" id="L178">		}</span>
+
+		public void disconnect(int id) {
+<span class="fc" id="L181">			int prev = prev(id), next = next(id);</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">			if (!isNone(prev)) {</span>
+<span class="fc" id="L183">				setNext(prev, next);</span>
+<span class="fc" id="L184">				setPrev(id, None);</span>
+			}
+<span class="fc bfc" id="L186" title="All 2 branches covered.">			if (!isNone(next)) {</span>
+<span class="fc" id="L187">				setPrev(next, prev);</span>
+<span class="fc" id="L188">				setNext(id, None);</span>
+			}
+<span class="fc" id="L190">		}</span>
+
+		public long addFirst(long list, int id) {
+<span class="nc" id="L193">			int head = head(list), tail = tail(list);</span>
+<span class="nc bnc" id="L194" title="All 4 branches missed.">			assert !hasNext(id) &amp;&amp; !hasPrev(id);</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">			if (isNone(head)) {</span>
+<span class="nc" id="L196">				head = tail = id;</span>
+			} else {
+<span class="nc" id="L198">				connect(id, head);</span>
+<span class="nc" id="L199">				head = id;</span>
+			}
+<span class="nc bnc" id="L201" title="All 2 branches missed.">			assert !hasPrev(head);</span>
+<span class="nc" id="L202">			return headTail(head, tail);</span>
+		}
+
+		public long addLast(long list, int id) {
+<span class="nc" id="L206">			int head = head(list), tail = tail(list);</span>
+<span class="nc bnc" id="L207" title="All 4 branches missed.">			assert !hasNext(id) &amp;&amp; !hasPrev(id);</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">			if (isNone(tail)) {</span>
+<span class="nc" id="L209">				head = tail = id;</span>
+			} else {
+<span class="nc" id="L211">				connect(tail, id);</span>
+<span class="nc" id="L212">				tail = id;</span>
+			}
+<span class="nc bnc" id="L214" title="All 2 branches missed.">			assert !hasPrev(head);</span>
+<span class="nc" id="L215">			return headTail(head, tail);</span>
+		}
+
+		public long concat(long list1, long list2) {
+<span class="nc" id="L219">			int head1 = head(list1), tail1 = tail(list1);</span>
+<span class="nc" id="L220">			int head2 = head(list2), tail2 = tail(list2);</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">			assert isNone(head2) == isNone(tail2);</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">			assert isNone(head1) == isNone(tail1);</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">			if (isNone(head2))</span>
+<span class="nc" id="L224">				return list1;</span>
+
+<span class="nc bnc" id="L226" title="All 2 branches missed.">			if (isNone(tail1)) {</span>
+<span class="nc" id="L227">				head1 = head2;</span>
+<span class="nc" id="L228">				tail1 = tail2;</span>
+			} else {
+<span class="nc bnc" id="L230" title="All 2 branches missed.">				assert !hasNext(tail1);</span>
+<span class="nc" id="L231">				connect(tail1, head2);</span>
+<span class="nc" id="L232">				tail1 = tail2;</span>
+			}
+<span class="nc bnc" id="L234" title="All 2 branches missed.">			assert !hasPrev(head1);</span>
+<span class="nc" id="L235">			return headTail(head1, tail1);</span>
+		}
+
+		public long remove(long list, int id) {
+<span class="nc" id="L239">			int head = head(list), tail = tail(list);</span>
+<span class="nc" id="L240">			int prev = prev(id), next = next(id);</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">			if (isNone(prev)) {</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">				assert head == id;</span>
+<span class="nc" id="L243">				head = next;</span>
+			} else {
+<span class="nc" id="L245">				setNext(prev, next);</span>
+<span class="nc" id="L246">				setPrev(id, None);</span>
+			}
+<span class="nc bnc" id="L248" title="All 2 branches missed.">			if (!isNone(next)) {</span>
+<span class="nc" id="L249">				setPrev(next, prev);</span>
+<span class="nc" id="L250">				setNext(id, None);</span>
+			} else {
+<span class="nc bnc" id="L252" title="All 2 branches missed.">				assert tail == id;</span>
+<span class="nc" id="L253">				tail = prev;</span>
+			}
+<span class="nc" id="L255">			return headTail(head, tail);</span>
+		}
+
+		public long removeIf(long list, IntPredicate pred) {
+<span class="nc" id="L259">			return removeIf(head(list), pred);</span>
+		}
+
+		public long removeIf(int head, IntPredicate pred) {
+<span class="fc" id="L263">			var x = removeIf0(head, pred);</span>
+<span class="fc" id="L264">			int newHead = head(x), newTail = tail(x);</span>
+<span class="pc bpc" id="L265" title="1 of 6 branches missed.">			assert newHead &lt; 0 == newTail &lt; 0;</span>
+<span class="pc bpc" id="L266" title="1 of 4 branches missed.">			if (newHead &gt;= 0 &amp;&amp; newTail &gt;= 0) {</span>
+<span class="pc bpc" id="L267" title="1 of 2 branches missed.">				assert !hasPrev(newHead);</span>
+<span class="pc bpc" id="L268" title="1 of 2 branches missed.">				assert !hasNext(newTail);</span>
+			}
+<span class="fc" id="L270">			return x;</span>
+		}
+
+		private long removeIf0(int head, IntPredicate pred) {
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">			if (isNone(head))</span>
+<span class="nc" id="L275">				return headTail(None, None);</span>
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">			if (hasPrev(head))</span>
+<span class="nc" id="L277">				throw new IllegalArgumentException(&quot;head must not have a previous element&quot;);</span>
+<span class="fc" id="L278">			for (int prev = None, curr = head;;) {</span>
+<span class="fc" id="L279">				int next = next(curr);</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">				if (pred.test(curr)) {</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">					if (isNone(prev)) {</span>
+<span class="fc" id="L282">						head = next;</span>
+					} else {
+<span class="fc" id="L284">						setPrev(curr, None);</span>
+<span class="fc" id="L285">						setNext(prev, next);</span>
+					}
+<span class="fc bfc" id="L287" title="All 2 branches covered.">					if (!isNone(next)) {</span>
+<span class="fc" id="L288">						setNext(curr, None);</span>
+<span class="fc" id="L289">						setPrev(next, prev);</span>
+					} else {
+<span class="fc" id="L291">						int tail = prev;</span>
+<span class="fc" id="L292">						return headTail(head, tail);</span>
+					}
+				} else {
+<span class="fc bfc" id="L295" title="All 2 branches covered.">					if (isNone(next)) {</span>
+<span class="fc" id="L296">						int tail = curr;</span>
+<span class="fc" id="L297">						return headTail(head, tail);</span>
+					}
+<span class="fc" id="L299">					prev = curr;</span>
+				}
+<span class="fc" id="L301">				curr = next;</span>
+<span class="fc" id="L302">			}</span>
+		}
+
+		public long reverse(long list) {
+<span class="nc" id="L306">			int head = head(list), tail = tail(list);</span>
+<span class="nc" id="L307">			int newHead = reverse(head);</span>
+<span class="nc bnc" id="L308" title="All 2 branches missed.">			assert newHead == tail;</span>
+<span class="nc" id="L309">			return headTail(tail, head);</span>
+		}
+
+		// returns new head
+		public int reverse(final int head) {
+<span class="nc" id="L314">			final int origPrev = prev(head);</span>
+<span class="nc" id="L315">			for (int curr = head;;) {</span>
+<span class="nc" id="L316">				int prev = prev(curr), next = next(curr);</span>
+<span class="nc" id="L317">				setNext(curr, prev);</span>
+<span class="nc" id="L318">				setPrev(curr, next);</span>
+<span class="nc bnc" id="L319" title="All 2 branches missed.">				if (isNone(next)) {</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">					if (!isNone(origPrev))</span>
+<span class="nc" id="L321">						throw new IllegalArgumentException(&quot;Given start vertex is not a head of a list&quot;);</span>
+<span class="nc" id="L322">					return curr;</span>
+				}
+<span class="nc bnc" id="L324" title="All 2 branches missed.">				if (next == head)</span>
+<span class="nc" id="L325">					return head;</span>
+<span class="nc" id="L326">				curr = next;</span>
+<span class="nc" id="L327">			}</span>
+		}
+
+		public void clear() {
+<span class="fc" id="L331">			Arrays.fill(arr, None);</span>
+<span class="fc" id="L332">		}</span>
+
+		public IterTools.Peek.Int iter(long list) {
+<span class="nc" id="L335">			return iterMaybeNone(head(list));</span>
+		}
+
+		public IterTools.Peek.Int iter(int id) {
+<span class="fc" id="L339">			Assertions.checkArrayIndex(id, 0, size());</span>
+<span class="fc" id="L340">			return iterMaybeNone(id);</span>
+		}
+
+		public IterTools.Peek.Int iterMaybeNone(int idMaybeNone) {
+<span class="pc bpc" id="L344" title="1 of 4 branches missed.">			assert idMaybeNone &gt;= 0 || idMaybeNone == None;</span>
+<span class="fc" id="L345">			return new Iter(idMaybeNone);</span>
+		}
+
+		public IterTools.Peek.Int iterRev(long list) {
+<span class="nc" id="L349">			return iterRev(tail(list));</span>
+		}
+
+		public IterTools.Peek.Int iterRev(int id) {
+<span class="fc" id="L353">			Assertions.checkArrayIndex(id, 0, size());</span>
+<span class="fc" id="L354">			return new IterRev(id);</span>
+		}
+
+		private class Iter implements IterTools.Peek.Int {
+
+			int p;
+
+<span class="fc" id="L361">			Iter(int start) {</span>
+<span class="fc" id="L362">				p = start;</span>
+<span class="fc" id="L363">			}</span>
+
+			@Override
+			public boolean hasNext() {
+<span class="fc bfc" id="L367" title="All 2 branches covered.">				return !isNone(p);</span>
+			}
+
+			@Override
+			public int nextInt() {
+<span class="fc" id="L372">				Assertions.hasNext(this);</span>
+<span class="fc" id="L373">				int ret = p;</span>
+<span class="fc" id="L374">				p = LinkedList.Doubly.this.next(p);</span>
+<span class="fc" id="L375">				return ret;</span>
+			}
+
+			@Override
+			public int peekNextInt() {
+<span class="fc" id="L380">				Assertions.hasNext(this);</span>
+<span class="fc" id="L381">				return p;</span>
+			}
+		}
+
+		private class IterRev implements IterTools.Peek.Int {
+
+			int p;
+
+<span class="fc" id="L389">			IterRev(int start) {</span>
+<span class="fc" id="L390">				p = start;</span>
+<span class="fc" id="L391">			}</span>
+
+			@Override
+			public boolean hasNext() {
+<span class="fc bfc" id="L395" title="All 2 branches covered.">				return !isNone(p);</span>
+			}
+
+			@Override
+			public int nextInt() {
+<span class="fc" id="L400">				Assertions.hasNext(this);</span>
+<span class="fc" id="L401">				int ret = p;</span>
+<span class="fc" id="L402">				p = LinkedList.Doubly.this.prev(p);</span>
+<span class="fc" id="L403">				return ret;</span>
+			}
+
+			@Override
+			public int peekNextInt() {
+<span class="nc" id="L408">				Assertions.hasNext(this);</span>
+<span class="nc" id="L409">				return p;</span>
+			}
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

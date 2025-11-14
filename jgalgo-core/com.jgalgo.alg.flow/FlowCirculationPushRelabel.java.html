@@ -22,7 +22,7 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.LinkedListFixedSize;
+import com.jgalgo.internal.ds.LinkedList;
 import com.jgalgo.internal.util.Assertions;
 
 <span class="fc" id="L28">class FlowCirculationPushRelabel extends FlowCirculationAbstract {</span>
@@ -42,7 +42,7 @@ import com.jgalgo.internal.util.Assertions;
 		final IWeightFunction capacityOrig;
 
 		final int[] label;
-		final LinkedListFixedSize.Doubly layersActive;
+		final LinkedList.Doubly layersActive;
 		final int[] layersHeadActive;
 		int maxLayerActive;
 
@@ -53,13 +53,13 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L53">			final int n = g.vertices().size();</span>
 
 <span class="fc" id="L55">			label = new int[n];</span>
-<span class="fc" id="L56">			layersActive = new LinkedListFixedSize.Doubly(n);</span>
+<span class="fc" id="L56">			layersActive = new LinkedList.Doubly(n);</span>
 <span class="fc" id="L57">			layersHeadActive = new int[n + 1];</span>
 <span class="fc" id="L58">		}</span>
 
 		void activate(int v) {
 <span class="fc" id="L61">			int layer = label[v];</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">			if (layersHeadActive[layer] != LinkedListFixedSize.None)</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">			if (!LinkedList.isNone(layersHeadActive[layer]))</span>
 <span class="fc" id="L63">				layersActive.connect(v, layersHeadActive[layer]);</span>
 <span class="fc" id="L64">			layersHeadActive[layer] = v;</span>
 <span class="fc bfc" id="L65" title="All 2 branches covered.">			if (maxLayerActive &lt; layer)</span>
@@ -77,7 +77,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L77">			for (;; maxLayerActive--) {</span>
 <span class="fc bfc" id="L78" title="All 2 branches covered.">				if (maxLayerActive &lt; 0)</span>
 <span class="fc" id="L79">					return -1;</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">				if (layersHeadActive[maxLayerActive] != LinkedListFixedSize.None)</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">				if (!LinkedList.isNone(layersHeadActive[maxLayerActive]))</span>
 <span class="fc" id="L81">					return layersHeadActive[maxLayerActive];</span>
 			}
 		}
@@ -131,7 +131,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L131">			}</span>
 
 			/* init labels */
-<span class="fc" id="L134">			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);</span>
+<span class="fc" id="L134">			Arrays.fill(layersHeadActive, LinkedList.None);</span>
 <span class="fc bfc" id="L135" title="All 2 branches covered.">			for (int v : range(n)) {</span>
 <span class="fc bfc" id="L136" title="All 2 branches covered.">				if (excess[v] &gt; eps) {</span>
 <span class="fc" id="L137">					label[v] = 1;</span>
@@ -270,7 +270,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L270">			}</span>
 
 			/* init labels */
-<span class="fc" id="L273">			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);</span>
+<span class="fc" id="L273">			Arrays.fill(layersHeadActive, LinkedList.None);</span>
 <span class="fc bfc" id="L274" title="All 2 branches covered.">			for (int v : range(n)) {</span>
 <span class="fc bfc" id="L275" title="All 2 branches covered.">				if (excess[v] &gt; 0) {</span>
 <span class="fc" id="L276">					label[v] = 1;</span>

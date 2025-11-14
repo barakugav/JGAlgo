@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NeighborSampler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.traversal</a> &gt; <span class="el_source">NeighborSampler.java</span></div><h1>NeighborSampler.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.traversal;
+
+import com.jgalgo.alg.common.RandomizedAlgorithm;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchVertexException;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
+
+/**
+ * Random neighbor sampler.
+ *
+ * &lt;p&gt;
+ * A neighbor sampler is a generic interface that implements a single method {@link #sample(Object)} that samples a
+ * neighbor of a given vertex. Different implementations of the interface can sample neighbors uniformly or with a
+ * given weight function. The {@link RandomWalkIter} iterator is implemented using a neighbor sampler and use it in
+ * a specific way by sampling the neighbor of the last returned vertex.
+ *
+ * @see        RandomWalkIter
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
+ */
+public interface NeighborSampler&lt;V, E&gt; extends RandomizedAlgorithm {
+
+    /**
+     * Sample a neighbor of the given vertex.
+     *
+     * @param  vertex                the vertex to sample from
+     * @return                       the sampled neighbor, maybe be {@code null} if there are no neighbors or some other
+     *                               reason the
+     *                               implementation decides to return {@code null} (for example if some vertices are
+     *                               filtered out).
+     * @throws NoSuchVertexException if the vertex is not in the graph
+     */
+    E sample(V vertex);
+
+    /**
+     * Get the graph this sampler is sampling from.
+     *
+     * @return the graph this sampler is sampling from
+     */
+    Graph&lt;V, E&gt; graph();
+
+    /**
+     * Create a new sampler that samples neighbors according to a uniform distribution of the out edges of a vertex.
+     *
+     * &lt;p&gt;
+     * Given a vertex in the graph, a random out-edge is sampled uniformly from the set of all out edges, and the other
+     * endpoint of the edge is returned. This has some implications:
+     * &lt;ul&gt;
+     * &lt;li&gt;If the graph contains parallel edges, the distribution will be different from a uniform distribution over the
+     * neighbors, as a neighbor with two edges will be sampled twice as often as a neighbor with only one edge.&lt;/li&gt;
+     * &lt;li&gt;If the graph contains self edges, the sampling can return the vertex itself.&lt;/li&gt;
+     * &lt;li&gt;If the graph is directed, neighbors connected with in-edges will not be sampled.&lt;/li&gt;
+     * &lt;/ul&gt;
+     *
+     * @param  &lt;V&gt; the vertices type
+     * @param  &lt;E&gt; the edges type
+     * @param  g   the graph to sample from
+     * @return     a new sampler that samples neighbors according to a uniform distribution of the out edges of a vertex
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    static &lt;V, E&gt; NeighborSampler&lt;V, E&gt; edgeUniform(Graph&lt;V, E&gt; g) {
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L84">            return (NeighborSampler&lt;V, E&gt;) new NeighborSamplers.UniformNeighborSampler((IndexGraph) g);</span>
+        } else {
+<span class="nc" id="L86">            NeighborSampler.Int indexSampler = new NeighborSamplers.UniformNeighborSampler(g.indexGraph());</span>
+<span class="nc" id="L87">            return NeighborSamplers.fromIndexSampler(indexSampler, g);</span>
+        }
+    }
+
+    /**
+     * Create a new sampler that samples neighbors according to a weighted distribution of the out edges of a vertex.
+     *
+     * &lt;p&gt;
+     * Given a vertex in the graph, a random out-edge is sampled according to the weights of the edges, and the other
+     * endpoint of the edge is returned. Self edges are also considered in the sampling, along with parallel edges.
+     * Neighbors connected with in-edges will not be sampled.
+     *
+     * @param  &lt;V&gt;                      the vertices type
+     * @param  &lt;E&gt;                      the edges type
+     * @param  g                        the graph to sample from
+     * @param  weights                  the edge weight function
+     * @return                          a new sampler that samples neighbors according to a weighted distribution of the
+     *                                  out edges of a
+     *                                  vertex
+     * @throws IllegalArgumentException if any edge weight is negative
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    static &lt;V, E&gt; NeighborSampler&lt;V, E&gt; edgeWeighted(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; weights) {
+<span class="nc bnc" id="L110" title="All 2 branches missed.">        if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L111">            IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) weights);</span>
+<span class="nc" id="L112">            return (NeighborSampler&lt;V, E&gt;) new NeighborSamplers.WeightedNeighborSampler((IndexGraph) g, w0);</span>
+        } else {
+<span class="nc" id="L114">            IWeightFunction w0 = IndexIdMaps.idToIndexWeightFunc(weights, g.indexGraphEdgesMap());</span>
+<span class="nc" id="L115">            NeighborSampler.Int indexSampler = new NeighborSamplers.WeightedNeighborSampler(g.indexGraph(), w0);</span>
+<span class="nc" id="L116">            return NeighborSamplers.fromIndexSampler(indexSampler, g);</span>
+        }
+    }
+
+    /**
+     * Random neighbor sampler for {@link IntGraph}.
+     *
+     * @author Barak Ugav
+     */
+    static interface Int extends NeighborSampler&lt;Integer, Integer&gt; {
+
+        /**
+         * Sample a neighbor of the given vertex.
+         *
+         * @param  vertex                the vertex to sample from
+         * @return                       the sampled neighbor, maybe be {@code -1} if there are no neighbors or some
+         *                               other reason the implementation decides to return {@code -1} (for example if
+         *                               some vertices are filtered out).
+         * @throws NoSuchVertexException if the vertex is not in the graph
+         */
+        int sample(int vertex);
+
+        /**
+         * {@inheritDoc}
+         *
+         * @deprecated Please use {@link #sample(int)} instead to avoid un/boxing.
+         */
+        @Deprecated
+        @Override
+        default Integer sample(Integer vertex) {
+<span class="nc" id="L146">            int e = sample(vertex.intValue());</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">            return e &lt; 0 ? null : Integer.valueOf(e);</span>
+        }
+
+        @Override
+        IntGraph graph();
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

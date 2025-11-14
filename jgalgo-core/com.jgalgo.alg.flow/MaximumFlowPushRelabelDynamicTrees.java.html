@@ -26,7 +26,7 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.DynamicTree;
 import com.jgalgo.internal.ds.DynamicTree.MinEdge;
 import com.jgalgo.internal.ds.DynamicTreeExtension;
-import com.jgalgo.internal.ds.LinkedListFixedSize;
+import com.jgalgo.internal.ds.LinkedList;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.Stack;
@@ -94,7 +94,7 @@ public class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstractWithR
 		final Vertex[] vertexData;
 
 		/* Data structure maintaining the children of each vertex in the DT */
-		final LinkedListFixedSize.Doubly children;
+		final LinkedList.Doubly children;
 <span class="fc" id="L98">		final IntPriorityQueue toCut = new FIFOQueueIntNoReduce();</span>
 
 		AbstractWorker(IndexGraph gOrig, IWeightFunction capacity, int source, int sink) {
@@ -120,7 +120,7 @@ public class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstractWithR
 <span class="fc" id="L120">			vertexData[source].isActive = true;</span>
 <span class="fc" id="L121">			vertexData[sink].isActive = true;</span>
 
-<span class="fc" id="L123">			children = new LinkedListFixedSize.Doubly(n);</span>
+<span class="fc" id="L123">			children = new LinkedList.Doubly(n);</span>
 
 			/* Init all vertices iterators */
 <span class="fc bfc" id="L126" title="All 2 branches covered.">			for (int u : range(n))</span>
@@ -264,7 +264,7 @@ public class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstractWithR
 			/* cut all vertices pointing into u */
 <span class="pc bpc" id="L265" title="1 of 2 branches missed.">			assert U.dtVertex.getParent() == null;</span>
 <span class="fc bfc" id="L266" title="All 2 branches covered.">			if (U.firstDtChild &gt;= 0) {</span>
-<span class="fc bfc" id="L267" title="All 2 branches covered.">				for (IntIterator childIt = children.iterator(U.firstDtChild); childIt.hasNext();) {</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">				for (IntIterator childIt = children.iter(U.firstDtChild); childIt.hasNext();) {</span>
 <span class="fc" id="L268">					int child = childIt.nextInt();</span>
 <span class="fc" id="L269">					Vertex childData = vertexData(child);</span>
 <span class="pc bpc" id="L270" title="1 of 2 branches missed.">					assert childData.dtVertex.getParent() == U.dtVertex;</span>

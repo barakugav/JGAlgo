@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg.closure;
 
+import static com.jgalgo.internal.util.IterTools.foreach;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Iterator;
 import com.jgalgo.alg.common.IVertexPartition;
@@ -44,8 +45,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public class ClosuresEnumeratorSchrageBaker extends ClosuresEnumeratorAbstract {
 
-<span class="fc" id="L47">	private final StronglyConnectedComponentsAlgo sccAlgo = StronglyConnectedComponentsAlgo.newInstance();</span>
-<span class="fc" id="L48">	private final TopologicalOrderAlgo topoAlgo = TopologicalOrderAlgo.newInstance();</span>
+<span class="fc" id="L48">	private final StronglyConnectedComponentsAlgo sccAlgo = StronglyConnectedComponentsAlgo.newInstance();</span>
+<span class="fc" id="L49">	private final TopologicalOrderAlgo topoAlgo = TopologicalOrderAlgo.newInstance();</span>
 
 	/**
 	 * Constructs a new instance of the algorithm.
@@ -54,111 +55,111 @@ public class ClosuresEnumeratorSchrageBaker extends ClosuresEnumeratorAbstract {
 	 * Please prefer using {@link ClosuresEnumerator#newInstance()} to get a default implementation for the
 	 * {@link ClosuresEnumerator} interface.
 	 */
-<span class="fc" id="L57">	public ClosuresEnumeratorSchrageBaker() {}</span>
+<span class="fc" id="L58">	public ClosuresEnumeratorSchrageBaker() {}</span>
 
 	@Override
 	protected Iterator&lt;IntSet&gt; closuresIter(IndexGraph g) {
-<span class="fc" id="L61">		Assertions.onlyDirected(g);</span>
-<span class="fc" id="L62">		final int n = g.vertices().size();</span>
+<span class="fc" id="L62">		Assertions.onlyDirected(g);</span>
+<span class="fc" id="L63">		final int n = g.vertices().size();</span>
 
-<span class="fc" id="L64">		IVertexPartition sccs = (IVertexPartition) sccAlgo.findStronglyConnectedComponents(g);</span>
-<span class="fc" id="L65">		final int sccNum = sccs.numberOfBlocks();</span>
+<span class="fc" id="L65">		IVertexPartition sccs = (IVertexPartition) sccAlgo.findStronglyConnectedComponents(g);</span>
+<span class="fc" id="L66">		final int sccNum = sccs.numberOfBlocks();</span>
 
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (sccNum == n) {</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (sccNum == n) {</span>
 			/* The strongly connected components of the graphs are the trivial vertices, no cycles exists */
 			/* Self edges still might exists */
-<span class="fc bfc" id="L70" title="All 2 branches covered.">			if (g.isAllowSelfEdges()) {</span>
-<span class="fc" id="L71">				int selfEdges = Graphs.selfEdges(g).size();</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">				if (selfEdges &gt; 0) {</span>
-<span class="fc" id="L73">					IndexGraphBuilder g0 = IndexGraphBuilder.directed();</span>
-<span class="fc" id="L74">					g0.ensureEdgeCapacity(g.edges().size() - selfEdges);</span>
-<span class="fc" id="L75">					g0.addVertices(g.vertices());</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">					for (int e : range(g.edges().size()))</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">						if (g.edgeSource(e) != g.edgeTarget(e))</span>
-<span class="fc" id="L78">							g0.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L79">					g = g0.build();</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">			if (g.isAllowSelfEdges()) {</span>
+<span class="fc" id="L72">				int selfEdges = Graphs.selfEdges(g).size();</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">				if (selfEdges &gt; 0) {</span>
+<span class="fc" id="L74">					IndexGraphBuilder g0 = IndexGraphBuilder.directed();</span>
+<span class="fc" id="L75">					g0.ensureEdgeCapacity(g.edges().size() - selfEdges);</span>
+<span class="fc" id="L76">					g0.addVertices(g.vertices());</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">					for (int e : range(g.edges().size()))</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">						if (g.edgeSource(e) != g.edgeTarget(e))</span>
+<span class="fc" id="L79">							g0.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L80">					g = g0.build();</span>
 				}
 			}
 			/* Graph is DAG, no need to operate over the condensation graph */
-<span class="fc" id="L83">			return IterTools.map(closuresIterDag(g), iter -&gt; ImmutableIntArraySet.withBitmap(Bitmap.fromOnes(n, iter)));</span>
+<span class="fc" id="L84">			return IterTools.map(closuresIterDag(g), iter -&gt; ImmutableIntArraySet.withBitmap(Bitmap.fromOnes(n, iter)));</span>
 		}
 
 		/* Build the condensation graph */
-<span class="fc" id="L87">		IndexGraphBuilder sccGraph0 = IndexGraphBuilder.directed();</span>
-<span class="fc" id="L88">		sccGraph0.addVertices(range(sccNum));</span>
-<span class="fc" id="L89">		BitmapSet seenBlocks = new BitmapSet(sccNum);</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">		for (int b1 : range(sccNum)) {</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">			for (int u : sccs.blockVertices(b1)) {</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L93">					eit.nextInt();</span>
-<span class="fc" id="L94">					int b2 = sccs.vertexBlock(eit.targetInt());</span>
-<span class="fc bfc" id="L95" title="All 4 branches covered.">					if (b1 == b2 || !seenBlocks.set(b2))</span>
-<span class="fc" id="L96">						continue;</span>
-<span class="fc" id="L97">					sccGraph0.addEdge(b1, b2);</span>
-<span class="fc" id="L98">				}</span>
-<span class="fc" id="L99">			}</span>
-<span class="fc" id="L100">			seenBlocks.clear();</span>
-<span class="fc" id="L101">		}</span>
-<span class="fc" id="L102">		IndexGraph sccGraph = sccGraph0.build();</span>
+<span class="fc" id="L88">		IndexGraphBuilder sccGraph0 = IndexGraphBuilder.directed();</span>
+<span class="fc" id="L89">		sccGraph0.addVertices(range(sccNum));</span>
+<span class="fc" id="L90">		BitmapSet seenBlocks = new BitmapSet(sccNum);</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (int b1 : range(sccNum)) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">			for (int u : sccs.blockVertices(b1)) {</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L94">					eit.nextInt();</span>
+<span class="fc" id="L95">					int b2 = sccs.vertexBlock(eit.targetInt());</span>
+<span class="fc bfc" id="L96" title="All 4 branches covered.">					if (b1 == b2 || !seenBlocks.set(b2))</span>
+<span class="fc" id="L97">						continue;</span>
+<span class="fc" id="L98">					sccGraph0.addEdge(b1, b2);</span>
+<span class="fc" id="L99">				}</span>
+<span class="fc" id="L100">			}</span>
+<span class="fc" id="L101">			seenBlocks.clear();</span>
+<span class="fc" id="L102">		}</span>
+<span class="fc" id="L103">		IndexGraph sccGraph = sccGraph0.build();</span>
 
 		/* Find all closures in the DAG condensation graph and map the sets to the original vertices */
-<span class="fc" id="L105">		return IterTools.map(closuresIterDag(sccGraph), blkIter -&gt; {</span>
-<span class="fc" id="L106">			Bitmap closure = new Bitmap(n);</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">			for (int blk : IterTools.foreach(blkIter))</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">				for (int v : sccs.blockVertices(blk))</span>
-<span class="fc" id="L109">					closure.set(v);</span>
-<span class="fc" id="L110">			return ImmutableIntArraySet.withBitmap(closure);</span>
+<span class="fc" id="L106">		return IterTools.map(closuresIterDag(sccGraph), blkIter -&gt; {</span>
+<span class="fc" id="L107">			Bitmap closure = new Bitmap(n);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			for (int blk : foreach(blkIter))</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">				for (int v : sccs.blockVertices(blk))</span>
+<span class="fc" id="L110">					closure.set(v);</span>
+<span class="fc" id="L111">			return ImmutableIntArraySet.withBitmap(closure);</span>
 		});
 	}
 
 	private Iterator&lt;IntIterator&gt; closuresIterDag(IndexGraph g) {
-<span class="fc" id="L115">		final int n = g.vertices().size();</span>
+<span class="fc" id="L116">		final int n = g.vertices().size();</span>
 
-<span class="fc" id="L117">		int[] topoIdxToV =</span>
-<span class="fc" id="L118">				((TopologicalOrderAlgo.IResult) topoAlgo.computeTopologicalSorting(g)).orderedVertices().toIntArray();</span>
-<span class="fc" id="L119">		IntArrays.reverse(topoIdxToV);</span>
-<span class="fc" id="L120">		int[] vToTopoIndex = new int[n];</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		for (int topoIdx : range(n))</span>
-<span class="fc" id="L122">			vToTopoIndex[topoIdxToV[topoIdx]] = topoIdx;</span>
+<span class="fc" id="L118">		int[] topoIdxToV =</span>
+<span class="fc" id="L119">				((TopologicalOrderAlgo.IResult) topoAlgo.computeTopologicalSorting(g)).orderedVertices().toIntArray();</span>
+<span class="fc" id="L120">		IntArrays.reverse(topoIdxToV);</span>
+<span class="fc" id="L121">		int[] vToTopoIndex = new int[n];</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		for (int topoIdx : range(n))</span>
+<span class="fc" id="L123">			vToTopoIndex[topoIdxToV[topoIdx]] = topoIdx;</span>
 
-<span class="fc" id="L124">		Bitmap m = new Bitmap(n);</span>
-<span class="fc" id="L125">		return new Iterator&lt;&gt;() {</span>
-<span class="fc" id="L126">			int nextClearBit = 0;</span>
+<span class="fc" id="L125">		Bitmap m = new Bitmap(n);</span>
+<span class="fc" id="L126">		return new Iterator&lt;&gt;() {</span>
+<span class="fc" id="L127">			int nextClearBit = 0;</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc bfc" id="L130" title="All 2 branches covered.">				return nextClearBit &lt; n;</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">				return nextClearBit &lt; n;</span>
 			}
 
 			@Override
 			public IntIterator next() {
 				/* Find the smallest positive integer j for which m(j)=0; call it i */
-<span class="fc" id="L136">				int i = nextClearBit;</span>
+<span class="fc" id="L137">				int i = nextClearBit;</span>
 
 				/* (if m(j)=1 for j=1,...,n then all subsets have been enumerated) */
-<span class="fc" id="L139">				Assertions.hasNext(this);</span>
+<span class="fc" id="L140">				Assertions.hasNext(this);</span>
 
 				/* Set m(i)=1 */
-<span class="fc" id="L142">				m.set(i);</span>
+<span class="fc" id="L143">				m.set(i);</span>
 
 				/* For j=i-1 to 1 step -1 */
-<span class="fc bfc" id="L145" title="All 2 branches covered.">				cleanLoop: for (int j = i - 1; j &gt;= 0; j--) {</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">				cleanLoop: for (int j = i - 1; j &gt;= 0; j--) {</span>
 					/* If m(j)=1 and j is in R(j) */
 					/* m(j) is always 1, i is the smallest index for which m(i)=0 // if (!m.get(j)) continue; */
-<span class="fc bfc" id="L148" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(topoIdxToV[j]).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L149">						eit.nextInt();</span>
-<span class="fc" id="L150">						int predecessor = eit.sourceInt();</span>
-<span class="pc bpc" id="L151" title="1 of 2 branches missed.">						assert j &lt; vToTopoIndex[predecessor];</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">						if (m.get(vToTopoIndex[predecessor]))</span>
-<span class="fc" id="L153">							continue cleanLoop;</span>
-<span class="fc" id="L154">					}</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(topoIdxToV[j]).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L150">						eit.nextInt();</span>
+<span class="fc" id="L151">						int predecessor = eit.sourceInt();</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">						assert j &lt; vToTopoIndex[predecessor];</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">						if (m.get(vToTopoIndex[predecessor]))</span>
+<span class="fc" id="L154">							continue cleanLoop;</span>
+<span class="fc" id="L155">					}</span>
 					/* Let m(j)=0 */
-<span class="fc" id="L156">					m.clear(j);</span>
+<span class="fc" id="L157">					m.clear(j);</span>
 				}
 
-<span class="fc" id="L159">				nextClearBit = m.nextClearBit(0);</span>
+<span class="fc" id="L160">				nextClearBit = m.nextClearBit(0);</span>
 
-<span class="fc" id="L161">				return IterTools.mapInt(m.iterator(), topoIdx -&gt; topoIdxToV[topoIdx]);</span>
+<span class="fc" id="L162">				return IterTools.mapInt(m.iterator(), topoIdx -&gt; topoIdxToV[topoIdx]);</span>
 			}
 		};
 	}

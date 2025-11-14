@@ -17,7 +17,7 @@ package com.jgalgo.alg.connect;
 
 import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.internal.ds.LinkedListFixedSize;
+import com.jgalgo.internal.ds.LinkedList;
 import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -27,7 +27,7 @@ class ContractableGraph {
 	private final IndexGraph g;
 	private final UnionFind uf;
 	private final int[] findToSuperV;
-	private final LinkedListFixedSize.Singly vs;
+	private final LinkedList.Singly vs;
 	private final int[] head;
 	private final int[] tail;
 	private int numV;
@@ -38,7 +38,7 @@ class ContractableGraph {
 <span class="fc" id="L38">		final int n = g.vertices().size();</span>
 <span class="fc" id="L39">		uf = UnionFind.newInstance();</span>
 <span class="fc" id="L40">		uf.makeMany(n);</span>
-<span class="fc" id="L41">		vs = new LinkedListFixedSize.Singly(n);</span>
+<span class="fc" id="L41">		vs = new LinkedList.Singly(n);</span>
 <span class="fc" id="L42">		findToSuperV = range(n).toIntArray();</span>
 <span class="fc" id="L43">		head = range(n).toIntArray();</span>
 <span class="fc" id="L44">		tail = range(n).toIntArray();</span>

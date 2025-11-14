@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NeighborSamplers.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg.traversal</a> &gt; <span class="el_source">NeighborSamplers.java</span></div><h1>NeighborSamplers.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg.traversal;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Objects;
+import java.util.Random;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Assertions;
+
+<span class="fc" id="L30">class NeighborSamplers {</span>
+
+    private NeighborSamplers() {}
+
+    private abstract static class SamplerBase implements NeighborSampler.Int {
+
+        final IndexGraph g;
+<span class="fc" id="L37">        final Random rand = new Random();</span>
+        final int n;
+
+<span class="fc" id="L40">        SamplerBase(IndexGraph g) {</span>
+<span class="fc" id="L41">            this.g = g;</span>
+<span class="fc" id="L42">            this.n = g.vertices().size();</span>
+<span class="fc" id="L43">        }</span>
+
+        @Override
+        public void setSeed(long seed) {
+<span class="fc" id="L47">            rand.setSeed(seed);</span>
+<span class="fc" id="L48">        }</span>
+
+        @Override
+        public IntGraph graph() {
+<span class="fc" id="L52">            return g;</span>
+        }
+    }
+
+<span class="fc" id="L56">    static final class UniformNeighborSampler extends SamplerBase {</span>
+
+        private final int[] edges;
+        private final int[] edgesOffset;
+
+        UniformNeighborSampler(IndexGraph g) {
+<span class="fc" id="L62">            super(g);</span>
+
+            final int edgesArrSize;
+<span class="fc bfc" id="L65" title="All 2 branches covered.">            if (g.isDirected()) {</span>
+<span class="fc" id="L66">                edgesArrSize = g.edges().size();</span>
+            } else {
+<span class="fc" id="L68">                edgesArrSize = 2 * g.edges().size() - Graphs.selfEdges(g).size();</span>
+            }
+
+<span class="fc" id="L71">            edges = new int[edgesArrSize];</span>
+<span class="fc" id="L72">            edgesOffset = new int[n + 1];</span>
+<span class="fc" id="L73">            int offset = 0;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">            for (int u : range(n)) {</span>
+<span class="fc" id="L75">                edgesOffset[u] = offset;</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">                for (int e : g.outEdges(u))</span>
+<span class="fc" id="L77">                    edges[offset++] = e;</span>
+<span class="fc" id="L78">            }</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">            assert offset == edgesArrSize;</span>
+<span class="fc" id="L80">            edgesOffset[n] = offset;</span>
+<span class="fc" id="L81">        }</span>
+
+        @Override
+        public int sample(int vertex) {
+<span class="fc" id="L85">            Assertions.checkVertex(vertex, n);</span>
+<span class="fc" id="L86">            int vOutEdgesNum = edgesOffset[vertex + 1] - edgesOffset[vertex];</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">            if (vOutEdgesNum &lt;= 0)</span>
+<span class="fc" id="L88">                return -1;</span>
+<span class="fc" id="L89">            return edges[edgesOffset[vertex] + rand.nextInt(vOutEdgesNum)];</span>
+        }
+    }
+
+<span class="fc" id="L93">    static final class WeightedNeighborSampler extends SamplerBase {</span>
+
+        private final int[] edges;
+        private final int[] edgesOffset;
+        private final double[] edgesWeights;
+
+        WeightedNeighborSampler(IndexGraph g, IWeightFunction weightFunc) {
+<span class="fc" id="L100">            super(g);</span>
+<span class="fc" id="L101">            Objects.requireNonNull(weightFunc);</span>
+
+<span class="fc" id="L103">            int outEdgesSize = 0;</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">            for (int u : range(n)) {</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">                for (int e : g.outEdges(u)) {</span>
+<span class="fc" id="L106">                    double ew = weightFunc.weight(e);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">                    if (ew &lt; 0)</span>
+<span class="fc" id="L108">                        throw new IllegalArgumentException(&quot;only positive weights are supported: &quot; + ew);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">                    if (ew &gt; 0) /* discard edges with weight 0 */</span>
+<span class="fc" id="L110">                        outEdgesSize++;</span>
+<span class="fc" id="L111">                }</span>
+<span class="fc" id="L112">            }</span>
+
+<span class="fc" id="L114">            edges = new int[outEdgesSize];</span>
+<span class="fc" id="L115">            edgesOffset = new int[n + 1];</span>
+<span class="fc" id="L116">            edgesWeights = new double[outEdgesSize];</span>
+<span class="fc" id="L117">            int offset = 0;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">            for (int u : range(n)) {</span>
+<span class="fc" id="L119">                edgesOffset[u] = offset;</span>
+<span class="fc" id="L120">                double weightSum = 0;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">                for (int e : g.outEdges(u)) {</span>
+<span class="fc" id="L122">                    double ew = weightFunc.weight(e);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">                    if (ew == 0)</span>
+<span class="fc" id="L124">                        continue;</span>
+<span class="fc" id="L125">                    weightSum += ew;</span>
+<span class="fc" id="L126">                    edges[offset] = e;</span>
+<span class="fc" id="L127">                    edgesWeights[offset] = weightSum;</span>
+<span class="fc" id="L128">                    offset++;</span>
+<span class="fc" id="L129">                }</span>
+<span class="fc" id="L130">            }</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">            assert offset == outEdgesSize;</span>
+<span class="fc" id="L132">            edgesOffset[n] = offset;</span>
+<span class="fc" id="L133">        }</span>
+
+        @Override
+        public int sample(int vertex) {
+<span class="fc" id="L137">            Assertions.checkVertex(vertex, n);</span>
+<span class="fc" id="L138">            int from = edgesOffset[vertex];</span>
+<span class="fc" id="L139">            int to = edgesOffset[vertex + 1];</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            if (from &gt;= to)</span>
+<span class="fc" id="L141">                return -1;</span>
+
+<span class="fc" id="L143">            final double maxWeight = edgesWeights[edgesOffset[vertex + 1] - 1];</span>
+<span class="fc" id="L144">            final double randWeight = rand.nextDouble() * maxWeight;</span>
+
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">            if (to - from &lt;= 64) {</span>
+                /* linear search */
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">                for (; from &lt; to; from++)</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">                    if (edgesWeights[from] &gt;= randWeight)</span>
+<span class="fc" id="L150">                        break;</span>
+            } else {
+                /* binary search */
+<span class="nc bnc" id="L153" title="All 2 branches missed.">                for (to--; from &lt;= to;) {</span>
+<span class="nc" id="L154">                    final int mid = (from + to) &gt;&gt;&gt; 1;</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">                    if (edgesWeights[mid] &lt; randWeight) {</span>
+<span class="nc" id="L156">                        from = mid + 1;</span>
+                    } else {
+<span class="nc" id="L158">                        to = mid - 1;</span>
+                    }
+<span class="nc" id="L160">                }</span>
+            }
+
+<span class="fc" id="L163">            return edges[from];</span>
+        }
+    }
+
+    private static class IntImpl implements NeighborSampler.Int {
+
+        private final IntGraph g;
+        private final NeighborSampler.Int indexSampler;
+        private final IndexIntIdMap vIdMap;
+        private final IndexIntIdMap eIdMap;
+
+<span class="nc" id="L174">        IntImpl(NeighborSampler.Int indexSampler, IntGraph g) {</span>
+<span class="nc" id="L175">            this.g = g;</span>
+<span class="nc" id="L176">            this.indexSampler = Objects.requireNonNull(indexSampler);</span>
+<span class="nc" id="L177">            this.vIdMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L178">            this.eIdMap = g.indexGraphEdgesMap();</span>
+<span class="nc" id="L179">        }</span>
+
+        @Override
+        public void setSeed(long seed) {
+<span class="nc" id="L183">            indexSampler.setSeed(seed);</span>
+<span class="nc" id="L184">        }</span>
+
+        @Override
+        public int sample(int vertex) {
+<span class="nc" id="L188">            int vId = vIdMap.idToIndex(vertex);</span>
+<span class="nc" id="L189">            int eId = indexSampler.sample(vId);</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">            return eId &lt; 0 ? -1 : eIdMap.indexToIdInt(eId);</span>
+        }
+
+        @Override
+        public IntGraph graph() {
+<span class="nc" id="L195">            return g;</span>
+        }
+    }
+
+    private static class ObjImpl&lt;V, E&gt; implements NeighborSampler&lt;V, E&gt; {
+
+        private final Graph&lt;V, E&gt; g;
+        private final NeighborSampler.Int indexSampler;
+        private final IndexIdMap&lt;V&gt; vIdMap;
+        private final IndexIdMap&lt;E&gt; eIdMap;
+
+<span class="nc" id="L206">        ObjImpl(NeighborSampler.Int indexSampler, Graph&lt;V, E&gt; g) {</span>
+<span class="nc" id="L207">            this.g = g;</span>
+<span class="nc" id="L208">            this.indexSampler = Objects.requireNonNull(indexSampler);</span>
+<span class="nc" id="L209">            this.vIdMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L210">            this.eIdMap = g.indexGraphEdgesMap();</span>
+<span class="nc" id="L211">        }</span>
+
+        @Override
+        public void setSeed(long seed) {
+<span class="nc" id="L215">            indexSampler.setSeed(seed);</span>
+<span class="nc" id="L216">        }</span>
+
+        @Override
+        public E sample(V vertex) {
+<span class="nc" id="L220">            int vId = vIdMap.idToIndex(vertex);</span>
+<span class="nc" id="L221">            int eId = indexSampler.sample(vId);</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">            return eId &lt; 0 ? null : eIdMap.indexToId(eId);</span>
+        }
+
+        @Override
+        public Graph&lt;V, E&gt; graph() {
+<span class="nc" id="L227">            return g;</span>
+        }
+    }
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+    static &lt;V, E&gt; NeighborSampler&lt;V, E&gt; fromIndexSampler(NeighborSampler.Int indexSampler, Graph&lt;V, E&gt; graph) {
+<span class="nc bnc" id="L233" title="All 2 branches missed.">        assert !(graph instanceof IndexGraph);</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">        if (graph instanceof IntGraph) {</span>
+<span class="nc" id="L235">            return (NeighborSampler&lt;V, E&gt;) new IntImpl(indexSampler, (IntGraph) graph);</span>
+        } else {
+<span class="nc" id="L237">            return new ObjImpl&lt;&gt;(indexSampler, graph);</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -25,7 +25,7 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.LinkedListFixedSize;
+import com.jgalgo.internal.ds.LinkedList;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.IterTools;
@@ -216,7 +216,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 		private int relabelsSinceLastLabelsRecompute;
 		private final int labelsReComputeThreshold;
 
-		private final LinkedListFixedSize.Doubly layers;
+		private final LinkedList.Doubly layers;
 		final int[] layersHeadActive;
 		private final int[] layersHeadInactive;
 		int maxLayerActive;
@@ -240,7 +240,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 <span class="fc" id="L240">			relabelQueue = new FIFOQueueIntNoReduce();</span>
 <span class="fc" id="L241">			labelsReComputeThreshold = n;</span>
 
-<span class="fc" id="L243">			layers = new LinkedListFixedSize.Doubly(n);</span>
+<span class="fc" id="L243">			layers = new LinkedList.Doubly(n);</span>
 <span class="fc" id="L244">			layersHeadActive = new int[n];</span>
 <span class="fc" id="L245">			layersHeadInactive = new int[n];</span>
 
@@ -256,8 +256,8 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 <span class="fc" id="L256">			activeOrderPolicy.beforeRecomputeLabels();</span>
 
 <span class="fc" id="L258">			layers.clear();</span>
-<span class="fc" id="L259">			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);</span>
-<span class="fc" id="L260">			Arrays.fill(layersHeadInactive, LinkedListFixedSize.None);</span>
+<span class="fc" id="L259">			Arrays.fill(layersHeadActive, LinkedList.None);</span>
+<span class="fc" id="L260">			Arrays.fill(layersHeadInactive, LinkedList.None);</span>
 <span class="fc" id="L261">			maxLayerActive = 0;</span>
 <span class="fc" id="L262">			maxLayerInactive = 0;</span>
 
@@ -383,7 +383,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 
 		void addToLayerActive(int u, int layer) {
 <span class="pc bpc" id="L385" title="2 of 4 branches missed.">			assert u != source &amp;&amp; u != sink;</span>
-<span class="fc bfc" id="L386" title="All 2 branches covered.">			if (layersHeadActive[layer] != LinkedListFixedSize.None)</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">			if (!LinkedList.isNone(layersHeadActive[layer]))</span>
 <span class="fc" id="L387">				layers.connect(u, layersHeadActive[layer]);</span>
 <span class="fc" id="L388">			layersHeadActive[layer] = u;</span>
 
@@ -394,7 +394,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 
 		void addToLayerInactive(int u, int layer) {
 <span class="pc bpc" id="L396" title="2 of 4 branches missed.">			assert u != source &amp;&amp; u != sink;</span>
-<span class="fc bfc" id="L397" title="All 2 branches covered.">			if (layersHeadInactive[layer] != LinkedListFixedSize.None)</span>
+<span class="fc bfc" id="L397" title="All 2 branches covered.">			if (!LinkedList.isNone(layersHeadInactive[layer]))</span>
 <span class="fc" id="L398">				layers.connect(u, layersHeadInactive[layer]);</span>
 <span class="fc" id="L399">			layersHeadInactive[layer] = u;</span>
 
@@ -443,565 +443,564 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 <span class="fc" id="L443">			label[u] = newLabel;</span>
 <span class="fc" id="L444">			touchLayer(oldLabel);</span>
 
-<span class="fc bfc" id="L446" title="All 4 branches covered.">			if (layersHeadActive[oldLabel] == LinkedListFixedSize.None</span>
-					&amp;&amp; layersHeadInactive[oldLabel] == LinkedListFixedSize.None) {
-<span class="fc" id="L448">				emptyLayerGap(oldLabel);</span>
-<span class="fc" id="L449">				label[u] = n;</span>
+<span class="fc bfc" id="L446" title="All 4 branches covered.">			if (LinkedList.isNone(layersHeadActive[oldLabel]) &amp;&amp; LinkedList.isNone(layersHeadInactive[oldLabel])) {</span>
+<span class="fc" id="L447">				emptyLayerGap(oldLabel);</span>
+<span class="fc" id="L448">				label[u] = n;</span>
 			}
 
-<span class="fc" id="L452">			relabelsSinceLastLabelsRecompute++;</span>
+<span class="fc" id="L451">			relabelsSinceLastLabelsRecompute++;</span>
 
-<span class="fc" id="L454">			activeOrderPolicy.afterRelabel(u);</span>
-<span class="fc" id="L455">		}</span>
+<span class="fc" id="L453">			activeOrderPolicy.afterRelabel(u);</span>
+<span class="fc" id="L454">		}</span>
 
 		void emptyLayerGap(int emptyLayer) {
 			// Gap heuristic
 			// Set labels of all vertices in layers &gt; emptyLayer to infinity (n)
-<span class="fc bfc" id="L460" title="All 2 branches covered.">			for (int layer = emptyLayer + 1; layer &lt;= maxLayerActive; layer++) {</span>
-<span class="fc" id="L461">				int head = layersHeadActive[layer];</span>
-<span class="fc bfc" id="L462" title="All 2 branches covered.">				if (head == LinkedListFixedSize.None)</span>
-<span class="fc" id="L463">					continue;</span>
-<span class="fc bfc" id="L464" title="All 2 branches covered.">				for (IntIterator it = layers.iterator(head); it.hasNext();) {</span>
-<span class="fc" id="L465">					int u = it.nextInt();</span>
-<span class="fc" id="L466">					layers.disconnect(u);</span>
-<span class="fc" id="L467">					label[u] = n;</span>
-<span class="fc" id="L468">				}</span>
-<span class="fc" id="L469">				layersHeadActive[layer] = LinkedListFixedSize.None;</span>
+<span class="fc bfc" id="L459" title="All 2 branches covered.">			for (int layer = emptyLayer + 1; layer &lt;= maxLayerActive; layer++) {</span>
+<span class="fc" id="L460">				int head = layersHeadActive[layer];</span>
+<span class="fc bfc" id="L461" title="All 2 branches covered.">				if (LinkedList.isNone(head))</span>
+<span class="fc" id="L462">					continue;</span>
+<span class="fc bfc" id="L463" title="All 2 branches covered.">				for (IntIterator it = layers.iter(head); it.hasNext();) {</span>
+<span class="fc" id="L464">					int u = it.nextInt();</span>
+<span class="fc" id="L465">					layers.disconnect(u);</span>
+<span class="fc" id="L466">					label[u] = n;</span>
+<span class="fc" id="L467">				}</span>
+<span class="fc" id="L468">				layersHeadActive[layer] = LinkedList.None;</span>
 			}
-<span class="fc" id="L471">			maxLayerActive = emptyLayer - 1;</span>
+<span class="fc" id="L470">			maxLayerActive = emptyLayer - 1;</span>
 
-<span class="fc bfc" id="L473" title="All 2 branches covered.">			for (int layer = emptyLayer + 1; layer &lt;= maxLayerInactive; layer++) {</span>
-<span class="fc" id="L474">				int head = layersHeadInactive[layer];</span>
-<span class="fc bfc" id="L475" title="All 2 branches covered.">				if (head == LinkedListFixedSize.None)</span>
-<span class="fc" id="L476">					continue;</span>
-<span class="fc bfc" id="L477" title="All 2 branches covered.">				for (IntIterator it = layers.iterator(head); it.hasNext();) {</span>
-<span class="fc" id="L478">					int u = it.nextInt();</span>
-<span class="fc" id="L479">					layers.disconnect(u);</span>
-<span class="fc" id="L480">					label[u] = n;</span>
-<span class="fc" id="L481">				}</span>
-<span class="fc" id="L482">				layersHeadInactive[layer] = LinkedListFixedSize.None;</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">			for (int layer = emptyLayer + 1; layer &lt;= maxLayerInactive; layer++) {</span>
+<span class="fc" id="L473">				int head = layersHeadInactive[layer];</span>
+<span class="fc bfc" id="L474" title="All 2 branches covered.">				if (LinkedList.isNone(head))</span>
+<span class="fc" id="L475">					continue;</span>
+<span class="fc bfc" id="L476" title="All 2 branches covered.">				for (IntIterator it = layers.iter(head); it.hasNext();) {</span>
+<span class="fc" id="L477">					int u = it.nextInt();</span>
+<span class="fc" id="L478">					layers.disconnect(u);</span>
+<span class="fc" id="L479">					label[u] = n;</span>
+<span class="fc" id="L480">				}</span>
+<span class="fc" id="L481">				layersHeadInactive[layer] = LinkedList.None;</span>
 			}
-<span class="fc" id="L484">			maxLayerInactive = emptyLayer - 1;</span>
-<span class="fc" id="L485">		}</span>
+<span class="fc" id="L483">			maxLayerInactive = emptyLayer - 1;</span>
+<span class="fc" id="L484">		}</span>
 
-<span class="fc" id="L487">		private abstract static class DischargePolicyImpl {</span>
+<span class="fc" id="L486">		private abstract static class DischargePolicyImpl {</span>
 
 			abstract void dischargeDirected(int u);
 
 			abstract void dischargeUndirected(int u);
 
 			static DischargePolicyImpl newInstance(MaximumFlowPushRelabel.Worker worker, DischargePolicy policy) {
-<span class="pc bpc" id="L494" title="1 of 4 branches missed.">				assert worker instanceof MaximumFlowPushRelabel.WorkerInt</span>
+<span class="pc bpc" id="L493" title="1 of 4 branches missed.">				assert worker instanceof MaximumFlowPushRelabel.WorkerInt</span>
 						|| worker instanceof MaximumFlowPushRelabel.WorkerDouble;
-<span class="fc" id="L496">				boolean isInt = worker instanceof MaximumFlowPushRelabel.WorkerInt;</span>
-<span class="pc bpc" id="L497" title="1 of 3 branches missed.">				switch (policy) {</span>
+<span class="fc" id="L495">				boolean isInt = worker instanceof MaximumFlowPushRelabel.WorkerInt;</span>
+<span class="pc bpc" id="L496" title="1 of 3 branches missed.">				switch (policy) {</span>
 					case SingleStep:
-<span class="fc bfc" id="L499" title="All 2 branches covered.">						if (isInt) {</span>
-<span class="fc" id="L500">							return new DischargePolicyImpl.SingleStepInt((MaximumFlowPushRelabel.WorkerInt) worker);</span>
+<span class="fc bfc" id="L498" title="All 2 branches covered.">						if (isInt) {</span>
+<span class="fc" id="L499">							return new DischargePolicyImpl.SingleStepInt((MaximumFlowPushRelabel.WorkerInt) worker);</span>
 						} else {
-<span class="fc" id="L502">							return new DischargePolicyImpl.SingleStepDouble(</span>
+<span class="fc" id="L501">							return new DischargePolicyImpl.SingleStepDouble(</span>
 									(MaximumFlowPushRelabel.WorkerDouble) worker);
 						}
 					case PartialAugment:
-<span class="fc bfc" id="L506" title="All 2 branches covered.">						if (isInt) {</span>
-<span class="fc" id="L507">							return new DischargePolicyImpl.PartialAugmentInt((MaximumFlowPushRelabel.WorkerInt) worker);</span>
+<span class="fc bfc" id="L505" title="All 2 branches covered.">						if (isInt) {</span>
+<span class="fc" id="L506">							return new DischargePolicyImpl.PartialAugmentInt((MaximumFlowPushRelabel.WorkerInt) worker);</span>
 						} else {
-<span class="fc" id="L509">							return new DischargePolicyImpl.PartialAugmentDouble(</span>
+<span class="fc" id="L508">							return new DischargePolicyImpl.PartialAugmentDouble(</span>
 									(MaximumFlowPushRelabel.WorkerDouble) worker);
 						}
 					default:
-<span class="nc" id="L513">						throw new IllegalArgumentException(&quot;unknown active policy: &quot; + policy);</span>
+<span class="nc" id="L512">						throw new IllegalArgumentException(&quot;unknown active policy: &quot; + policy);</span>
 				}
 			}
 
 			final MaximumFlowPushRelabel.Worker worker;
 
-<span class="fc" id="L519">			DischargePolicyImpl(MaximumFlowPushRelabel.Worker worker) {</span>
-<span class="fc" id="L520">				this.worker = Objects.requireNonNull(worker);</span>
-<span class="fc" id="L521">			}</span>
+<span class="fc" id="L518">			DischargePolicyImpl(MaximumFlowPushRelabel.Worker worker) {</span>
+<span class="fc" id="L519">				this.worker = Objects.requireNonNull(worker);</span>
+<span class="fc" id="L520">			}</span>
 
-<span class="fc" id="L523">			private static class SingleStepInt extends DischargePolicyImpl {</span>
+<span class="fc" id="L522">			private static class SingleStepInt extends DischargePolicyImpl {</span>
 
 				SingleStepInt(MaximumFlowPushRelabel.WorkerInt worker) {
-<span class="fc" id="L526">					super(worker);</span>
-<span class="fc" id="L527">				}</span>
+<span class="fc" id="L525">					super(worker);</span>
+<span class="fc" id="L526">				}</span>
 
 				MaximumFlowPushRelabel.WorkerInt worker() {
-<span class="fc" id="L530">					return (MaximumFlowPushRelabel.WorkerInt) worker;</span>
+<span class="fc" id="L529">					return (MaximumFlowPushRelabel.WorkerInt) worker;</span>
 				}
 
 				@Override
 				void dischargeDirected(int u) {
 					for (;;) {
-<span class="fc bfc" id="L536" title="All 2 branches covered.">						for (IEdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
-<span class="fc" id="L537">							int e = it.peekNextInt();</span>
-<span class="fc" id="L538">							int v = worker.g.edgeTarget(e);</span>
-<span class="fc" id="L539">							int eAccess = worker().getResidualCapacity(e);</span>
-<span class="fc bfc" id="L540" title="All 4 branches covered.">							if (eAccess &gt; 0 &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
-<span class="fc bfc" id="L541" title="All 4 branches covered.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
-<span class="fc" id="L542">									worker.activate(v);</span>
+<span class="fc bfc" id="L535" title="All 2 branches covered.">						for (IEdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
+<span class="fc" id="L536">							int e = it.peekNextInt();</span>
+<span class="fc" id="L537">							int v = worker.g.edgeTarget(e);</span>
+<span class="fc" id="L538">							int eAccess = worker().getResidualCapacity(e);</span>
+<span class="fc bfc" id="L539" title="All 4 branches covered.">							if (eAccess &gt; 0 &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
+<span class="fc bfc" id="L540" title="All 4 branches covered.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
+<span class="fc" id="L541">									worker.activate(v);</span>
 
 								// e is admissible, push
-<span class="fc bfc" id="L545" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
+<span class="fc bfc" id="L544" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
 									// saturating push
-<span class="fc" id="L547">									worker().push(e, eAccess);</span>
+<span class="fc" id="L546">									worker().push(e, eAccess);</span>
 								} else {
 									// non-saturating push
-<span class="fc" id="L550">									worker().push(e, worker().excess[u]);</span>
-<span class="pc bpc" id="L551" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
-<span class="fc" id="L552">									return;</span>
+<span class="fc" id="L549">									worker().push(e, worker().excess[u]);</span>
+<span class="pc bpc" id="L550" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="fc" id="L551">									return;</span>
 								}
 							}
 						}
-<span class="fc bfc" id="L556" title="All 2 branches covered.">						for (IEdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
-<span class="fc" id="L557">							int e = it.peekNextInt();</span>
-<span class="fc" id="L558">							int v = worker.g.edgeSource(e);</span>
-<span class="fc" id="L559">							int eAccess = worker().flow(e);</span>
-<span class="fc bfc" id="L560" title="All 4 branches covered.">							if (eAccess &gt; 0 &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
-<span class="pc bpc" id="L561" title="1 of 4 branches missed.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
-<span class="fc" id="L562">									worker.activate(v);</span>
+<span class="fc bfc" id="L555" title="All 2 branches covered.">						for (IEdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
+<span class="fc" id="L556">							int e = it.peekNextInt();</span>
+<span class="fc" id="L557">							int v = worker.g.edgeSource(e);</span>
+<span class="fc" id="L558">							int eAccess = worker().flow(e);</span>
+<span class="fc bfc" id="L559" title="All 4 branches covered.">							if (eAccess &gt; 0 &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
+<span class="pc bpc" id="L560" title="1 of 4 branches missed.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
+<span class="fc" id="L561">									worker.activate(v);</span>
 
 								// e is admissible, push
-<span class="fc bfc" id="L565" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
+<span class="fc bfc" id="L564" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
 									// saturating push
-<span class="fc" id="L567">									worker().push(e, -eAccess);</span>
+<span class="fc" id="L566">									worker().push(e, -eAccess);</span>
 								} else {
 									// non-saturating push
-<span class="fc" id="L570">									worker().push(e, -worker().excess[u]);</span>
-<span class="pc bpc" id="L571" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
-<span class="fc" id="L572">									return;</span>
+<span class="fc" id="L569">									worker().push(e, -worker().excess[u]);</span>
+<span class="pc bpc" id="L570" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="fc" id="L571">									return;</span>
 								}
 							}
 						}
 						// Finished iterating over all vertex edges.
 						// relabel and Reset iterator
-<span class="fc" id="L578">						worker.relabel(u, worker.label[u] + 1);</span>
-<span class="fc bfc" id="L579" title="All 2 branches covered.">						if (worker.label[u] &gt;= worker.n)</span>
-<span class="fc" id="L580">							break;</span>
-<span class="fc" id="L581">						worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
-<span class="fc" id="L582">						worker.inEdgeIters[u] = worker.g.inEdges(u).iterator();</span>
+<span class="fc" id="L577">						worker.relabel(u, worker.label[u] + 1);</span>
+<span class="fc bfc" id="L578" title="All 2 branches covered.">						if (worker.label[u] &gt;= worker.n)</span>
+<span class="fc" id="L579">							break;</span>
+<span class="fc" id="L580">						worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
+<span class="fc" id="L581">						worker.inEdgeIters[u] = worker.g.inEdges(u).iterator();</span>
 					}
-<span class="fc" id="L584">				}</span>
+<span class="fc" id="L583">				}</span>
 
 				@Override
 				void dischargeUndirected(int u) {
-<span class="fc" id="L588">					for (IEdgeIter it = worker.outEdgeIters[u];;) {</span>
-<span class="fc" id="L589">						int e = it.peekNextInt();</span>
-<span class="fc bfc" id="L590" title="All 2 branches covered.">						if (u == worker.g.edgeSource(e)) {</span>
-<span class="fc" id="L591">							int v = worker.g.edgeTarget(e);</span>
-<span class="fc" id="L592">							int eAccess = worker().getResidualCapacity(e);</span>
-<span class="fc bfc" id="L593" title="All 4 branches covered.">							if (eAccess &gt; 0 &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
-<span class="fc bfc" id="L594" title="All 4 branches covered.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
-<span class="fc" id="L595">									worker.activate(v);</span>
+<span class="fc" id="L587">					for (IEdgeIter it = worker.outEdgeIters[u];;) {</span>
+<span class="fc" id="L588">						int e = it.peekNextInt();</span>
+<span class="fc bfc" id="L589" title="All 2 branches covered.">						if (u == worker.g.edgeSource(e)) {</span>
+<span class="fc" id="L590">							int v = worker.g.edgeTarget(e);</span>
+<span class="fc" id="L591">							int eAccess = worker().getResidualCapacity(e);</span>
+<span class="fc bfc" id="L592" title="All 4 branches covered.">							if (eAccess &gt; 0 &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
+<span class="fc bfc" id="L593" title="All 4 branches covered.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
+<span class="fc" id="L594">									worker.activate(v);</span>
 
 								// e is admissible, push
-<span class="fc bfc" id="L598" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
+<span class="fc bfc" id="L597" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
 									// saturating push
-<span class="fc" id="L600">									worker().push(e, eAccess);</span>
+<span class="fc" id="L599">									worker().push(e, eAccess);</span>
 								} else {
 									// non-saturating push
-<span class="fc" id="L603">									worker().push(e, worker().excess[u]);</span>
-<span class="pc bpc" id="L604" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
-<span class="fc" id="L605">									return;</span>
+<span class="fc" id="L602">									worker().push(e, worker().excess[u]);</span>
+<span class="pc bpc" id="L603" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="fc" id="L604">									return;</span>
 								}
 							}
-<span class="fc" id="L608">						} else {</span>
-<span class="pc bpc" id="L609" title="1 of 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
-<span class="fc" id="L610">							int v = worker.g.edgeSource(e);</span>
-<span class="fc" id="L611">							int eAccess = worker().getTwinResidualCapacity(e);</span>
-<span class="pc bpc" id="L612" title="1 of 2 branches missed.">							assert eAccess &gt;= 0;</span>
-<span class="fc bfc" id="L613" title="All 4 branches covered.">							if (eAccess &gt; 0 &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
-<span class="fc bfc" id="L614" title="All 4 branches covered.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
-<span class="fc" id="L615">									worker.activate(v);</span>
+<span class="fc" id="L607">						} else {</span>
+<span class="pc bpc" id="L608" title="1 of 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
+<span class="fc" id="L609">							int v = worker.g.edgeSource(e);</span>
+<span class="fc" id="L610">							int eAccess = worker().getTwinResidualCapacity(e);</span>
+<span class="pc bpc" id="L611" title="1 of 2 branches missed.">							assert eAccess &gt;= 0;</span>
+<span class="fc bfc" id="L612" title="All 4 branches covered.">							if (eAccess &gt; 0 &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
+<span class="fc bfc" id="L613" title="All 4 branches covered.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
+<span class="fc" id="L614">									worker.activate(v);</span>
 
 								// e is admissible, push
-<span class="fc bfc" id="L618" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
+<span class="fc bfc" id="L617" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
 									// saturating push
-<span class="fc" id="L620">									worker().push(e, -eAccess);</span>
+<span class="fc" id="L619">									worker().push(e, -eAccess);</span>
 								} else {
 									// non-saturating push
-<span class="fc" id="L623">									worker().push(e, -worker().excess[u]);</span>
-<span class="pc bpc" id="L624" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
-<span class="fc" id="L625">									return;</span>
+<span class="fc" id="L622">									worker().push(e, -worker().excess[u]);</span>
+<span class="pc bpc" id="L623" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="fc" id="L624">									return;</span>
 								}
 							}
 						}
-<span class="fc" id="L629">						it.nextInt();</span>
-<span class="fc bfc" id="L630" title="All 2 branches covered.">						if (!it.hasNext()) {</span>
+<span class="fc" id="L628">						it.nextInt();</span>
+<span class="fc bfc" id="L629" title="All 2 branches covered.">						if (!it.hasNext()) {</span>
 							// Finished iterating over all vertex edges.
 							// relabel and Reset iterator
-<span class="fc" id="L633">							worker.relabel(u, worker.label[u] + 1);</span>
-<span class="fc bfc" id="L634" title="All 2 branches covered.">							if (worker.label[u] &gt;= worker.n)</span>
-<span class="fc" id="L635">								break;</span>
-<span class="fc" id="L636">							it = worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
-<span class="pc bpc" id="L637" title="1 of 2 branches missed.">							assert it.hasNext();</span>
+<span class="fc" id="L632">							worker.relabel(u, worker.label[u] + 1);</span>
+<span class="fc bfc" id="L633" title="All 2 branches covered.">							if (worker.label[u] &gt;= worker.n)</span>
+<span class="fc" id="L634">								break;</span>
+<span class="fc" id="L635">							it = worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
+<span class="pc bpc" id="L636" title="1 of 2 branches missed.">							assert it.hasNext();</span>
 						}
-<span class="fc" id="L639">					}</span>
-<span class="fc" id="L640">				}</span>
+<span class="fc" id="L638">					}</span>
+<span class="fc" id="L639">				}</span>
 
 			}
 
-<span class="fc" id="L644">			private static class SingleStepDouble extends DischargePolicyImpl {</span>
+<span class="fc" id="L643">			private static class SingleStepDouble extends DischargePolicyImpl {</span>
 
 				SingleStepDouble(MaximumFlowPushRelabel.WorkerDouble worker) {
-<span class="fc" id="L647">					super(worker);</span>
-<span class="fc" id="L648">				}</span>
+<span class="fc" id="L646">					super(worker);</span>
+<span class="fc" id="L647">				}</span>
 
 				MaximumFlowPushRelabel.WorkerDouble worker() {
-<span class="fc" id="L651">					return (MaximumFlowPushRelabel.WorkerDouble) worker;</span>
+<span class="fc" id="L650">					return (MaximumFlowPushRelabel.WorkerDouble) worker;</span>
 				}
 
 				@Override
 				void dischargeDirected(int u) {
 					for (;;) {
-<span class="fc bfc" id="L657" title="All 2 branches covered.">						for (IEdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
-<span class="fc" id="L658">							int e = it.peekNextInt();</span>
-<span class="fc" id="L659">							int v = worker.g.edgeTarget(e);</span>
-<span class="fc" id="L660">							double eAccess = worker().getResidualCapacity(e);</span>
-<span class="fc bfc" id="L661" title="All 4 branches covered.">							if (eAccess &gt; worker().eps &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
-<span class="fc bfc" id="L662" title="All 4 branches covered.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
-<span class="fc" id="L663">									worker.activate(v);</span>
+<span class="fc bfc" id="L656" title="All 2 branches covered.">						for (IEdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
+<span class="fc" id="L657">							int e = it.peekNextInt();</span>
+<span class="fc" id="L658">							int v = worker.g.edgeTarget(e);</span>
+<span class="fc" id="L659">							double eAccess = worker().getResidualCapacity(e);</span>
+<span class="fc bfc" id="L660" title="All 4 branches covered.">							if (eAccess &gt; worker().eps &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
+<span class="fc bfc" id="L661" title="All 4 branches covered.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
+<span class="fc" id="L662">									worker.activate(v);</span>
 
 								// e is admissible, push
-<span class="fc bfc" id="L666" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
+<span class="fc bfc" id="L665" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
 									// saturating push
-<span class="fc" id="L668">									worker().push(e, eAccess);</span>
+<span class="fc" id="L667">									worker().push(e, eAccess);</span>
 									// Due to floating points, need to check again we have something to push
-<span class="fc bfc" id="L670" title="All 2 branches covered.">									if (!worker.hasExcess(u))</span>
-<span class="fc" id="L671">										return;</span>
+<span class="fc bfc" id="L669" title="All 2 branches covered.">									if (!worker.hasExcess(u))</span>
+<span class="fc" id="L670">										return;</span>
 								} else {
 									// non-saturating push
-<span class="fc" id="L674">									worker().push(e, worker().excess[u]);</span>
-<span class="pc bpc" id="L675" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
-<span class="fc" id="L676">									return;</span>
+<span class="fc" id="L673">									worker().push(e, worker().excess[u]);</span>
+<span class="pc bpc" id="L674" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="fc" id="L675">									return;</span>
 								}
 							}
 						}
-<span class="fc bfc" id="L680" title="All 2 branches covered.">						for (IEdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
-<span class="fc" id="L681">							int e = it.peekNextInt();</span>
-<span class="fc" id="L682">							int v = worker.g.edgeSource(e);</span>
-<span class="fc" id="L683">							double eAccess = worker().flow(e);</span>
-<span class="fc bfc" id="L684" title="All 4 branches covered.">							if (eAccess &gt; worker().eps &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
-<span class="pc bpc" id="L685" title="1 of 4 branches missed.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
-<span class="fc" id="L686">									worker.activate(v);</span>
+<span class="fc bfc" id="L679" title="All 2 branches covered.">						for (IEdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
+<span class="fc" id="L680">							int e = it.peekNextInt();</span>
+<span class="fc" id="L681">							int v = worker.g.edgeSource(e);</span>
+<span class="fc" id="L682">							double eAccess = worker().flow(e);</span>
+<span class="fc bfc" id="L683" title="All 4 branches covered.">							if (eAccess &gt; worker().eps &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
+<span class="pc bpc" id="L684" title="1 of 4 branches missed.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
+<span class="fc" id="L685">									worker.activate(v);</span>
 
 								// e is admissible, push
-<span class="fc bfc" id="L689" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
+<span class="fc bfc" id="L688" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
 									// saturating push
-<span class="fc" id="L691">									worker().push(e, -eAccess);</span>
+<span class="fc" id="L690">									worker().push(e, -eAccess);</span>
 									// Due to floating points, need to check again we have something to push
-<span class="fc bfc" id="L693" title="All 2 branches covered.">									if (!worker.hasExcess(u))</span>
-<span class="fc" id="L694">										return;</span>
+<span class="fc bfc" id="L692" title="All 2 branches covered.">									if (!worker.hasExcess(u))</span>
+<span class="fc" id="L693">										return;</span>
 								} else {
 									// non-saturating push
-<span class="fc" id="L697">									worker().push(e, -worker().excess[u]);</span>
-<span class="pc bpc" id="L698" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
-<span class="fc" id="L699">									return;</span>
+<span class="fc" id="L696">									worker().push(e, -worker().excess[u]);</span>
+<span class="pc bpc" id="L697" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="fc" id="L698">									return;</span>
 								}
 							}
 						}
 						// Finished iterating over all vertex edges.
 						// relabel and Reset iterator
-<span class="fc" id="L705">						worker.relabel(u, worker.label[u] + 1);</span>
-<span class="fc bfc" id="L706" title="All 2 branches covered.">						if (worker.label[u] &gt;= worker.n)</span>
-<span class="fc" id="L707">							break;</span>
-<span class="fc" id="L708">						worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
-<span class="fc" id="L709">						worker.inEdgeIters[u] = worker.g.inEdges(u).iterator();</span>
+<span class="fc" id="L704">						worker.relabel(u, worker.label[u] + 1);</span>
+<span class="fc bfc" id="L705" title="All 2 branches covered.">						if (worker.label[u] &gt;= worker.n)</span>
+<span class="fc" id="L706">							break;</span>
+<span class="fc" id="L707">						worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
+<span class="fc" id="L708">						worker.inEdgeIters[u] = worker.g.inEdges(u).iterator();</span>
 					}
-<span class="fc" id="L711">				}</span>
+<span class="fc" id="L710">				}</span>
 
 				@Override
 				void dischargeUndirected(int u) {
-<span class="fc" id="L715">					for (IEdgeIter it = worker.outEdgeIters[u];;) {</span>
-<span class="fc" id="L716">						int e = it.peekNextInt();</span>
-<span class="fc bfc" id="L717" title="All 2 branches covered.">						if (u == worker.g.edgeSource(e)) {</span>
-<span class="fc" id="L718">							int v = worker.g.edgeTarget(e);</span>
-<span class="fc" id="L719">							double eAccess = worker().getResidualCapacity(e);</span>
-<span class="fc bfc" id="L720" title="All 4 branches covered.">							if (eAccess &gt; worker().eps &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
-<span class="fc bfc" id="L721" title="All 4 branches covered.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
-<span class="fc" id="L722">									worker.activate(v);</span>
+<span class="fc" id="L714">					for (IEdgeIter it = worker.outEdgeIters[u];;) {</span>
+<span class="fc" id="L715">						int e = it.peekNextInt();</span>
+<span class="fc bfc" id="L716" title="All 2 branches covered.">						if (u == worker.g.edgeSource(e)) {</span>
+<span class="fc" id="L717">							int v = worker.g.edgeTarget(e);</span>
+<span class="fc" id="L718">							double eAccess = worker().getResidualCapacity(e);</span>
+<span class="fc bfc" id="L719" title="All 4 branches covered.">							if (eAccess &gt; worker().eps &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
+<span class="fc bfc" id="L720" title="All 4 branches covered.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
+<span class="fc" id="L721">									worker.activate(v);</span>
 
 								// e is admissible, push
-<span class="fc bfc" id="L725" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
+<span class="fc bfc" id="L724" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
 									// saturating push
-<span class="fc" id="L727">									worker().push(e, eAccess);</span>
+<span class="fc" id="L726">									worker().push(e, eAccess);</span>
 									// Due to floating points, need to check again we have something to push
-<span class="fc bfc" id="L729" title="All 2 branches covered.">									if (!worker.hasExcess(u))</span>
-<span class="fc" id="L730">										return;</span>
+<span class="fc bfc" id="L728" title="All 2 branches covered.">									if (!worker.hasExcess(u))</span>
+<span class="fc" id="L729">										return;</span>
 								} else {
 									// non-saturating push
-<span class="fc" id="L733">									worker().push(e, worker().excess[u]);</span>
-<span class="pc bpc" id="L734" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
-<span class="fc" id="L735">									return;</span>
+<span class="fc" id="L732">									worker().push(e, worker().excess[u]);</span>
+<span class="pc bpc" id="L733" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="fc" id="L734">									return;</span>
 								}
 							}
-<span class="fc" id="L738">						} else {</span>
-<span class="fc" id="L739">							int v = worker.g.edgeSource(e);</span>
-<span class="fc" id="L740">							double eAccess = worker().capacity[e] + worker().flow(e);</span>
-<span class="fc bfc" id="L741" title="All 4 branches covered.">							if (eAccess &gt; worker().eps &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
-<span class="fc bfc" id="L742" title="All 4 branches covered.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
-<span class="fc" id="L743">									worker.activate(v);</span>
+<span class="fc" id="L737">						} else {</span>
+<span class="fc" id="L738">							int v = worker.g.edgeSource(e);</span>
+<span class="fc" id="L739">							double eAccess = worker().capacity[e] + worker().flow(e);</span>
+<span class="fc bfc" id="L740" title="All 4 branches covered.">							if (eAccess &gt; worker().eps &amp;&amp; worker.label[u] == worker.label[v] + 1) {</span>
+<span class="fc bfc" id="L741" title="All 4 branches covered.">								if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
+<span class="fc" id="L742">									worker.activate(v);</span>
 
 								// e is admissible, push
-<span class="fc bfc" id="L746" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
+<span class="fc bfc" id="L745" title="All 2 branches covered.">								if (worker().excess[u] &gt; eAccess) {</span>
 									// saturating push
-<span class="fc" id="L748">									worker().push(e, -eAccess);</span>
+<span class="fc" id="L747">									worker().push(e, -eAccess);</span>
 									// Due to floating points, need to check again we have something to push
-<span class="fc bfc" id="L750" title="All 2 branches covered.">									if (!worker.hasExcess(u))</span>
-<span class="fc" id="L751">										return;</span>
+<span class="fc bfc" id="L749" title="All 2 branches covered.">									if (!worker.hasExcess(u))</span>
+<span class="fc" id="L750">										return;</span>
 								} else {
 									// non-saturating push
-<span class="fc" id="L754">									worker().push(e, -worker().excess[u]);</span>
-<span class="pc bpc" id="L755" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
-<span class="fc" id="L756">									return;</span>
+<span class="fc" id="L753">									worker().push(e, -worker().excess[u]);</span>
+<span class="pc bpc" id="L754" title="1 of 2 branches missed.">									assert !worker.hasExcess(u);</span>
+<span class="fc" id="L755">									return;</span>
 								}
 							}
 						}
-<span class="fc" id="L760">						it.nextInt();</span>
-<span class="fc bfc" id="L761" title="All 2 branches covered.">						if (!it.hasNext()) {</span>
+<span class="fc" id="L759">						it.nextInt();</span>
+<span class="fc bfc" id="L760" title="All 2 branches covered.">						if (!it.hasNext()) {</span>
 							// Finished iterating over all vertex edges.
 							// relabel and Reset iterator
-<span class="fc" id="L764">							worker.relabel(u, worker.label[u] + 1);</span>
-<span class="fc bfc" id="L765" title="All 2 branches covered.">							if (worker.label[u] &gt;= worker.n)</span>
-<span class="fc" id="L766">								break;</span>
-<span class="fc" id="L767">							it = worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
-<span class="pc bpc" id="L768" title="1 of 2 branches missed.">							assert it.hasNext();</span>
+<span class="fc" id="L763">							worker.relabel(u, worker.label[u] + 1);</span>
+<span class="fc bfc" id="L764" title="All 2 branches covered.">							if (worker.label[u] &gt;= worker.n)</span>
+<span class="fc" id="L765">								break;</span>
+<span class="fc" id="L766">							it = worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
+<span class="pc bpc" id="L767" title="1 of 2 branches missed.">							assert it.hasNext();</span>
 						}
-<span class="fc" id="L770">					}</span>
-<span class="fc" id="L771">				}</span>
+<span class="fc" id="L769">					}</span>
+<span class="fc" id="L770">				}</span>
 			}
 
-<span class="fc" id="L774">			private abstract static class PartialAugmentBase extends DischargePolicyImpl {</span>
+<span class="fc" id="L773">			private abstract static class PartialAugmentBase extends DischargePolicyImpl {</span>
 
 				static final int MAX_AUGMENT_PATH_LENGTH = 4;
-<span class="fc" id="L777">				final IntArrayList path = new IntArrayList(MAX_AUGMENT_PATH_LENGTH);</span>
+<span class="fc" id="L776">				final IntArrayList path = new IntArrayList(MAX_AUGMENT_PATH_LENGTH);</span>
 
 				PartialAugmentBase(MaximumFlowPushRelabel.Worker worker) {
-<span class="fc" id="L780">					super(worker);</span>
-<span class="fc" id="L781">				}</span>
+<span class="fc" id="L779">					super(worker);</span>
+<span class="fc" id="L780">				}</span>
 
 				@Override
 				void dischargeDirected(int searchSource) {
-<span class="pc bpc" id="L785" title="1 of 2 branches missed.">					assert worker.hasExcess(searchSource);</span>
-<span class="pc bpc" id="L786" title="1 of 2 branches missed.">					assert path.isEmpty();</span>
+<span class="pc bpc" id="L784" title="1 of 2 branches missed.">					assert worker.hasExcess(searchSource);</span>
+<span class="pc bpc" id="L785" title="1 of 2 branches missed.">					assert path.isEmpty();</span>
 
-<span class="fc" id="L788">					dfs: for (int u = searchSource;;) {</span>
-<span class="fc" id="L789">						int uLabel = worker.label[u];</span>
+<span class="fc" id="L787">					dfs: for (int u = searchSource;;) {</span>
+<span class="fc" id="L788">						int uLabel = worker.label[u];</span>
 
-<span class="fc bfc" id="L791" title="All 2 branches covered.">						for (IEdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
-<span class="fc" id="L792">							int e = it.peekNextInt();</span>
-<span class="fc" id="L793">							int v = worker.g.edgeTarget(e);</span>
-<span class="fc bfc" id="L794" title="All 4 branches covered.">							boolean isAdmissible = worker.isResidual(e) &amp;&amp; uLabel == worker.label[v] + 1;</span>
-<span class="fc bfc" id="L795" title="All 2 branches covered.">							if (isAdmissible) {</span>
-<span class="fc" id="L796">								path.add(e);</span>
-<span class="fc bfc" id="L797" title="All 4 branches covered.">								if (path.size() == MAX_AUGMENT_PATH_LENGTH || v == worker.sink) {</span>
-<span class="fc bfc" id="L798" title="All 4 branches covered.">									if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
-<span class="fc" id="L799">										worker.activate(v);</span>
+<span class="fc bfc" id="L790" title="All 2 branches covered.">						for (IEdgeIter it = worker.outEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
+<span class="fc" id="L791">							int e = it.peekNextInt();</span>
+<span class="fc" id="L792">							int v = worker.g.edgeTarget(e);</span>
+<span class="fc bfc" id="L793" title="All 4 branches covered.">							boolean isAdmissible = worker.isResidual(e) &amp;&amp; uLabel == worker.label[v] + 1;</span>
+<span class="fc bfc" id="L794" title="All 2 branches covered.">							if (isAdmissible) {</span>
+<span class="fc" id="L795">								path.add(e);</span>
+<span class="fc bfc" id="L796" title="All 4 branches covered.">								if (path.size() == MAX_AUGMENT_PATH_LENGTH || v == worker.sink) {</span>
+<span class="fc bfc" id="L797" title="All 4 branches covered.">									if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
+<span class="fc" id="L798">										worker.activate(v);</span>
 
 									/* push along the admissible path */
-<span class="pc bpc" id="L802" title="1 of 2 branches missed.">									assert !path.isEmpty();</span>
-<span class="fc" id="L803">									int firstNonResidual = pushOnPathDirected(searchSource);</span>
+<span class="pc bpc" id="L801" title="1 of 2 branches missed.">									assert !path.isEmpty();</span>
+<span class="fc" id="L802">									int firstNonResidual = pushOnPathDirected(searchSource);</span>
 
 									/* If the 'source' does not have any excess, we are done */
-<span class="fc bfc" id="L806" title="All 2 branches covered.">									if (!worker.hasExcess(searchSource)) {</span>
-<span class="fc" id="L807">										path.clear();</span>
-<span class="fc" id="L808">										return;</span>
+<span class="fc bfc" id="L805" title="All 2 branches covered.">									if (!worker.hasExcess(searchSource)) {</span>
+<span class="fc" id="L806">										path.clear();</span>
+<span class="fc" id="L807">										return;</span>
 									}
 
 									/* back up in the DFS tree until all edges in the path are admissible */
-<span class="fc" id="L812">									path.removeElements(firstNonResidual, path.size());</span>
+<span class="fc" id="L811">									path.removeElements(firstNonResidual, path.size());</span>
 									// assert path.intStream().allMatch(worker::isResidual);
-<span class="pc bpc" id="L814" title="1 of 2 branches missed.">									if (path.isEmpty()) {</span>
-<span class="fc" id="L815">										u = searchSource;</span>
+<span class="pc bpc" id="L813" title="1 of 2 branches missed.">									if (path.isEmpty()) {</span>
+<span class="fc" id="L814">										u = searchSource;</span>
 									} else {
-<span class="nc" id="L817">										int lastEdge = path.getInt(path.size() - 1);</span>
-<span class="nc" id="L818">										int u1 = worker.g.edgeSource(lastEdge);</span>
-<span class="nc" id="L819">										int u2 = worker.g.edgeTarget(lastEdge);</span>
-<span class="nc bnc" id="L820" title="All 2 branches missed.">										u = worker.label[u1] &lt; worker.label[u2] ? u1 : u2;</span>
+<span class="nc" id="L816">										int lastEdge = path.getInt(path.size() - 1);</span>
+<span class="nc" id="L817">										int u1 = worker.g.edgeSource(lastEdge);</span>
+<span class="nc" id="L818">										int u2 = worker.g.edgeTarget(lastEdge);</span>
+<span class="nc bnc" id="L819" title="All 2 branches missed.">										u = worker.label[u1] &lt; worker.label[u2] ? u1 : u2;</span>
 									}
-<span class="fc" id="L822">								} else {</span>
+<span class="fc" id="L821">								} else {</span>
 									/* advance in the DFS */
-<span class="fc" id="L824">									u = v;</span>
+<span class="fc" id="L823">									u = v;</span>
 								}
-<span class="fc" id="L826">								continue dfs;</span>
+<span class="fc" id="L825">								continue dfs;</span>
 							}
 						}
-<span class="fc bfc" id="L829" title="All 2 branches covered.">						for (IEdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
-<span class="fc" id="L830">							int e = it.peekNextInt();</span>
-<span class="fc" id="L831">							int v = worker.g.edgeSource(e);</span>
-<span class="fc bfc" id="L832" title="All 4 branches covered.">							boolean isAdmissible = worker.hasFlow(e) &amp;&amp; uLabel == worker.label[v] + 1;</span>
-<span class="fc bfc" id="L833" title="All 2 branches covered.">							if (isAdmissible) {</span>
-<span class="fc" id="L834">								path.add(e);</span>
-<span class="pc bpc" id="L835" title="1 of 4 branches missed.">								if (path.size() == MAX_AUGMENT_PATH_LENGTH || v == worker.sink) {</span>
-<span class="pc bpc" id="L836" title="1 of 4 branches missed.">									if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
-<span class="fc" id="L837">										worker.activate(v);</span>
+<span class="fc bfc" id="L828" title="All 2 branches covered.">						for (IEdgeIter it = worker.inEdgeIters[u]; it.hasNext(); it.nextInt()) {</span>
+<span class="fc" id="L829">							int e = it.peekNextInt();</span>
+<span class="fc" id="L830">							int v = worker.g.edgeSource(e);</span>
+<span class="fc bfc" id="L831" title="All 4 branches covered.">							boolean isAdmissible = worker.hasFlow(e) &amp;&amp; uLabel == worker.label[v] + 1;</span>
+<span class="fc bfc" id="L832" title="All 2 branches covered.">							if (isAdmissible) {</span>
+<span class="fc" id="L833">								path.add(e);</span>
+<span class="pc bpc" id="L834" title="1 of 4 branches missed.">								if (path.size() == MAX_AUGMENT_PATH_LENGTH || v == worker.sink) {</span>
+<span class="pc bpc" id="L835" title="1 of 4 branches missed.">									if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
+<span class="fc" id="L836">										worker.activate(v);</span>
 
 									/* push along the admissible path */
-<span class="pc bpc" id="L840" title="1 of 2 branches missed.">									assert !path.isEmpty();</span>
-<span class="fc" id="L841">									int firstNonResidual = pushOnPathDirected(searchSource);</span>
+<span class="pc bpc" id="L839" title="1 of 2 branches missed.">									assert !path.isEmpty();</span>
+<span class="fc" id="L840">									int firstNonResidual = pushOnPathDirected(searchSource);</span>
 
 									/* If the 'source' does not have any excess, we are done */
-<span class="fc bfc" id="L844" title="All 2 branches covered.">									if (!worker.hasExcess(searchSource)) {</span>
-<span class="fc" id="L845">										path.clear();</span>
-<span class="fc" id="L846">										return;</span>
+<span class="fc bfc" id="L843" title="All 2 branches covered.">									if (!worker.hasExcess(searchSource)) {</span>
+<span class="fc" id="L844">										path.clear();</span>
+<span class="fc" id="L845">										return;</span>
 									}
 
 									/* back up in the DFS tree until all edges in the path are admissible */
-<span class="fc" id="L850">									path.removeElements(firstNonResidual, path.size());</span>
+<span class="fc" id="L849">									path.removeElements(firstNonResidual, path.size());</span>
 									// assert path.intStream().allMatch(worker::isResidual);
-<span class="pc bpc" id="L852" title="1 of 2 branches missed.">									if (path.isEmpty()) {</span>
-<span class="fc" id="L853">										u = searchSource;</span>
+<span class="pc bpc" id="L851" title="1 of 2 branches missed.">									if (path.isEmpty()) {</span>
+<span class="fc" id="L852">										u = searchSource;</span>
 									} else {
-<span class="nc" id="L855">										int lastEdge = path.getInt(path.size() - 1);</span>
-<span class="nc" id="L856">										int u1 = worker.g.edgeSource(lastEdge);</span>
-<span class="nc" id="L857">										int u2 = worker.g.edgeTarget(lastEdge);</span>
-<span class="nc bnc" id="L858" title="All 2 branches missed.">										u = worker.label[u1] &lt; worker.label[u2] ? u1 : u2;</span>
+<span class="nc" id="L854">										int lastEdge = path.getInt(path.size() - 1);</span>
+<span class="nc" id="L855">										int u1 = worker.g.edgeSource(lastEdge);</span>
+<span class="nc" id="L856">										int u2 = worker.g.edgeTarget(lastEdge);</span>
+<span class="nc bnc" id="L857" title="All 2 branches missed.">										u = worker.label[u1] &lt; worker.label[u2] ? u1 : u2;</span>
 									}
-<span class="fc" id="L860">								} else {</span>
+<span class="fc" id="L859">								} else {</span>
 									/* advance in the DFS */
-<span class="fc" id="L862">									u = v;</span>
+<span class="fc" id="L861">									u = v;</span>
 								}
-<span class="fc" id="L864">								continue dfs;</span>
+<span class="fc" id="L863">								continue dfs;</span>
 							}
 						}
 
 						// Finished iterating over all vertex edges.
 						// relabel and Reset iterator
-<span class="fc bfc" id="L870" title="All 2 branches covered.">						boolean isSearchSource = u == searchSource, hasExcess = true;</span>
-<span class="fc bfc" id="L871" title="All 2 branches covered.">						if (!isSearchSource) {</span>
-<span class="fc" id="L872">							hasExcess = worker.hasExcess(u);</span>
-<span class="fc bfc" id="L873" title="All 2 branches covered.">							if (hasExcess) {</span>
-<span class="fc" id="L874">								worker.removeFromLayerActive(u, uLabel);</span>
+<span class="fc bfc" id="L869" title="All 2 branches covered.">						boolean isSearchSource = u == searchSource, hasExcess = true;</span>
+<span class="fc bfc" id="L870" title="All 2 branches covered.">						if (!isSearchSource) {</span>
+<span class="fc" id="L871">							hasExcess = worker.hasExcess(u);</span>
+<span class="fc bfc" id="L872" title="All 2 branches covered.">							if (hasExcess) {</span>
+<span class="fc" id="L873">								worker.removeFromLayerActive(u, uLabel);</span>
 							} else {
-<span class="fc" id="L876">								worker.removeFromLayerInactive(u, uLabel);</span>
+<span class="fc" id="L875">								worker.removeFromLayerInactive(u, uLabel);</span>
 							}
 						}
 
-<span class="fc" id="L880">						worker.relabel(u, uLabel + 1);</span>
-<span class="fc bfc" id="L881" title="All 2 branches covered.">						if ((uLabel = worker.label[u]) &gt;= worker.n) {</span>
+<span class="fc" id="L879">						worker.relabel(u, uLabel + 1);</span>
+<span class="fc bfc" id="L880" title="All 2 branches covered.">						if ((uLabel = worker.label[u]) &gt;= worker.n) {</span>
 							/*
 							 * empty layer gap heuristic was activated, all vertices on the path have greater or equal
 							 * label as u, all are unreachable from sink
 							 */
-<span class="fc" id="L886">							path.clear();</span>
-<span class="fc" id="L887">							return;</span>
+<span class="fc" id="L885">							path.clear();</span>
+<span class="fc" id="L886">							return;</span>
 						}
 
-<span class="fc bfc" id="L890" title="All 2 branches covered.">						if (!isSearchSource) {</span>
-<span class="fc bfc" id="L891" title="All 2 branches covered.">							if (hasExcess) {</span>
-<span class="fc" id="L892">								worker.addToLayerActive(u, uLabel);</span>
+<span class="fc bfc" id="L889" title="All 2 branches covered.">						if (!isSearchSource) {</span>
+<span class="fc bfc" id="L890" title="All 2 branches covered.">							if (hasExcess) {</span>
+<span class="fc" id="L891">								worker.addToLayerActive(u, uLabel);</span>
 							} else {
-<span class="fc" id="L894">								worker.addToLayerInactive(u, uLabel);</span>
+<span class="fc" id="L893">								worker.addToLayerInactive(u, uLabel);</span>
 							}
 						}
 
-<span class="fc" id="L898">						worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
-<span class="fc" id="L899">						worker.inEdgeIters[u] = worker.g.inEdges(u).iterator();</span>
-<span class="pc bpc" id="L900" title="1 of 2 branches missed.">						assert worker.outEdgeIters[u].hasNext();</span>
-<span class="pc bpc" id="L901" title="1 of 2 branches missed.">						assert worker.inEdgeIters[u].hasNext();</span>
-<span class="fc bfc" id="L902" title="All 2 branches covered.">						if (!isSearchSource) {</span>
-<span class="pc bpc" id="L903" title="1 of 2 branches missed.">							assert !path.isEmpty();</span>
-<span class="fc" id="L904">							int lastEdge = path.popInt();</span>
-<span class="fc" id="L905">							u = worker.g.edgeEndpoint(lastEdge, u);</span>
+<span class="fc" id="L897">						worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
+<span class="fc" id="L898">						worker.inEdgeIters[u] = worker.g.inEdges(u).iterator();</span>
+<span class="pc bpc" id="L899" title="1 of 2 branches missed.">						assert worker.outEdgeIters[u].hasNext();</span>
+<span class="pc bpc" id="L900" title="1 of 2 branches missed.">						assert worker.inEdgeIters[u].hasNext();</span>
+<span class="fc bfc" id="L901" title="All 2 branches covered.">						if (!isSearchSource) {</span>
+<span class="pc bpc" id="L902" title="1 of 2 branches missed.">							assert !path.isEmpty();</span>
+<span class="fc" id="L903">							int lastEdge = path.popInt();</span>
+<span class="fc" id="L904">							u = worker.g.edgeEndpoint(lastEdge, u);</span>
 						}
-<span class="fc" id="L907">					}</span>
+<span class="fc" id="L906">					}</span>
 				}
 
 				@Override
 				void dischargeUndirected(int searchSource) {
-<span class="pc bpc" id="L912" title="1 of 2 branches missed.">					assert worker.hasExcess(searchSource);</span>
-<span class="pc bpc" id="L913" title="1 of 2 branches missed.">					assert path.isEmpty();</span>
+<span class="pc bpc" id="L911" title="1 of 2 branches missed.">					assert worker.hasExcess(searchSource);</span>
+<span class="pc bpc" id="L912" title="1 of 2 branches missed.">					assert path.isEmpty();</span>
 
-<span class="fc" id="L915">					dfs: for (int u = searchSource;;) {</span>
-<span class="fc" id="L916">						int uLabel = worker.label[u];</span>
-<span class="fc" id="L917">						for (IEdgeIter it = worker.outEdgeIters[u];;) {</span>
-<span class="fc" id="L918">							int e = it.peekNextInt();</span>
+<span class="fc" id="L914">					dfs: for (int u = searchSource;;) {</span>
+<span class="fc" id="L915">						int uLabel = worker.label[u];</span>
+<span class="fc" id="L916">						for (IEdgeIter it = worker.outEdgeIters[u];;) {</span>
+<span class="fc" id="L917">							int e = it.peekNextInt();</span>
 							int v;
 							boolean isAdmissible;
-<span class="fc bfc" id="L921" title="All 2 branches covered.">							if (u == worker.g.edgeSource(e)) {</span>
-<span class="fc" id="L922">								v = worker.g.edgeTarget(e);</span>
-<span class="fc bfc" id="L923" title="All 4 branches covered.">								isAdmissible = worker.isResidual(e) &amp;&amp; uLabel == worker.label[v] + 1;</span>
+<span class="fc bfc" id="L920" title="All 2 branches covered.">							if (u == worker.g.edgeSource(e)) {</span>
+<span class="fc" id="L921">								v = worker.g.edgeTarget(e);</span>
+<span class="fc bfc" id="L922" title="All 4 branches covered.">								isAdmissible = worker.isResidual(e) &amp;&amp; uLabel == worker.label[v] + 1;</span>
 							} else {
-<span class="pc bpc" id="L925" title="1 of 2 branches missed.">								assert u == worker.g.edgeTarget(e);</span>
-<span class="fc" id="L926">								v = worker.g.edgeSource(e);</span>
-<span class="fc bfc" id="L927" title="All 4 branches covered.">								isAdmissible = worker.isTwinResidualUndirected(e) &amp;&amp; uLabel == worker.label[v] + 1;</span>
+<span class="pc bpc" id="L924" title="1 of 2 branches missed.">								assert u == worker.g.edgeTarget(e);</span>
+<span class="fc" id="L925">								v = worker.g.edgeSource(e);</span>
+<span class="fc bfc" id="L926" title="All 4 branches covered.">								isAdmissible = worker.isTwinResidualUndirected(e) &amp;&amp; uLabel == worker.label[v] + 1;</span>
 							}
-<span class="fc bfc" id="L929" title="All 2 branches covered.">							if (isAdmissible) {</span>
-<span class="fc" id="L930">								path.add(e);</span>
-<span class="fc bfc" id="L931" title="All 4 branches covered.">								if (path.size() == MAX_AUGMENT_PATH_LENGTH || v == worker.sink) {</span>
-<span class="fc bfc" id="L932" title="All 4 branches covered.">									if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
-<span class="fc" id="L933">										worker.activate(v);</span>
+<span class="fc bfc" id="L928" title="All 2 branches covered.">							if (isAdmissible) {</span>
+<span class="fc" id="L929">								path.add(e);</span>
+<span class="fc bfc" id="L930" title="All 4 branches covered.">								if (path.size() == MAX_AUGMENT_PATH_LENGTH || v == worker.sink) {</span>
+<span class="fc bfc" id="L931" title="All 4 branches covered.">									if (v != worker.sink &amp;&amp; !worker.hasExcess(v))</span>
+<span class="fc" id="L932">										worker.activate(v);</span>
 
 									/* push along the admissible path */
-<span class="pc bpc" id="L936" title="1 of 2 branches missed.">									assert !path.isEmpty();</span>
-<span class="fc" id="L937">									int firstNonResidual = pushOnPathUndirected(searchSource);</span>
+<span class="pc bpc" id="L935" title="1 of 2 branches missed.">									assert !path.isEmpty();</span>
+<span class="fc" id="L936">									int firstNonResidual = pushOnPathUndirected(searchSource);</span>
 
 									/* If the 'source' does not have any excess, we are done */
-<span class="fc bfc" id="L940" title="All 2 branches covered.">									if (!worker.hasExcess(searchSource)) {</span>
-<span class="fc" id="L941">										path.clear();</span>
-<span class="fc" id="L942">										return;</span>
+<span class="fc bfc" id="L939" title="All 2 branches covered.">									if (!worker.hasExcess(searchSource)) {</span>
+<span class="fc" id="L940">										path.clear();</span>
+<span class="fc" id="L941">										return;</span>
 									}
 
 									/* back up in the DFS tree until all edges in the path are admissible */
-<span class="fc" id="L946">									path.removeElements(firstNonResidual, path.size());</span>
+<span class="fc" id="L945">									path.removeElements(firstNonResidual, path.size());</span>
 									// assert path.intStream().allMatch(worker::isResidual);
-<span class="pc bpc" id="L948" title="1 of 2 branches missed.">									if (path.isEmpty()) {</span>
-<span class="fc" id="L949">										u = searchSource;</span>
+<span class="pc bpc" id="L947" title="1 of 2 branches missed.">									if (path.isEmpty()) {</span>
+<span class="fc" id="L948">										u = searchSource;</span>
 									} else {
-<span class="nc" id="L951">										int lastEdge = path.getInt(path.size() - 1);</span>
-<span class="nc" id="L952">										int u1 = worker.g.edgeSource(lastEdge);</span>
-<span class="nc" id="L953">										int u2 = worker.g.edgeTarget(lastEdge);</span>
-<span class="nc bnc" id="L954" title="All 2 branches missed.">										u = worker.label[u1] &lt; worker.label[u2] ? u1 : u2;</span>
+<span class="nc" id="L950">										int lastEdge = path.getInt(path.size() - 1);</span>
+<span class="nc" id="L951">										int u1 = worker.g.edgeSource(lastEdge);</span>
+<span class="nc" id="L952">										int u2 = worker.g.edgeTarget(lastEdge);</span>
+<span class="nc bnc" id="L953" title="All 2 branches missed.">										u = worker.label[u1] &lt; worker.label[u2] ? u1 : u2;</span>
 									}
-<span class="fc" id="L956">								} else {</span>
+<span class="fc" id="L955">								} else {</span>
 									/* advance in the DFS */
-<span class="fc" id="L958">									u = v;</span>
+<span class="fc" id="L957">									u = v;</span>
 								}
-<span class="fc" id="L960">								continue dfs;</span>
+<span class="fc" id="L959">								continue dfs;</span>
 							}
-<span class="fc" id="L962">							it.nextInt();</span>
-<span class="fc bfc" id="L963" title="All 2 branches covered.">							if (!it.hasNext()) {</span>
+<span class="fc" id="L961">							it.nextInt();</span>
+<span class="fc bfc" id="L962" title="All 2 branches covered.">							if (!it.hasNext()) {</span>
 								// Finished iterating over all vertex edges.
 								// relabel and Reset iterator
 
-<span class="fc bfc" id="L967" title="All 2 branches covered.">								boolean isSearchSource = u == searchSource, hasExcess = true;</span>
-<span class="fc bfc" id="L968" title="All 2 branches covered.">								if (!isSearchSource) {</span>
-<span class="fc" id="L969">									hasExcess = worker.hasExcess(u);</span>
-<span class="fc bfc" id="L970" title="All 2 branches covered.">									if (hasExcess) {</span>
-<span class="fc" id="L971">										worker.removeFromLayerActive(u, uLabel);</span>
+<span class="fc bfc" id="L966" title="All 2 branches covered.">								boolean isSearchSource = u == searchSource, hasExcess = true;</span>
+<span class="fc bfc" id="L967" title="All 2 branches covered.">								if (!isSearchSource) {</span>
+<span class="fc" id="L968">									hasExcess = worker.hasExcess(u);</span>
+<span class="fc bfc" id="L969" title="All 2 branches covered.">									if (hasExcess) {</span>
+<span class="fc" id="L970">										worker.removeFromLayerActive(u, uLabel);</span>
 									} else {
-<span class="fc" id="L973">										worker.removeFromLayerInactive(u, uLabel);</span>
+<span class="fc" id="L972">										worker.removeFromLayerInactive(u, uLabel);</span>
 									}
 								}
 
-<span class="fc" id="L977">								worker.relabel(u, uLabel + 1);</span>
-<span class="fc bfc" id="L978" title="All 2 branches covered.">								if ((uLabel = worker.label[u]) &gt;= worker.n) {</span>
+<span class="fc" id="L976">								worker.relabel(u, uLabel + 1);</span>
+<span class="fc bfc" id="L977" title="All 2 branches covered.">								if ((uLabel = worker.label[u]) &gt;= worker.n) {</span>
 									/*
 									 * empty layer gap heuristic was activated, all vertices on the path have greater or
 									 * equal label as u, all are unreachable from sink
 									 */
-<span class="fc" id="L983">									path.clear();</span>
-<span class="fc" id="L984">									return;</span>
+<span class="fc" id="L982">									path.clear();</span>
+<span class="fc" id="L983">									return;</span>
 								}
 
-<span class="fc bfc" id="L987" title="All 2 branches covered.">								if (!isSearchSource) {</span>
-<span class="fc bfc" id="L988" title="All 2 branches covered.">									if (hasExcess) {</span>
-<span class="fc" id="L989">										worker.addToLayerActive(u, uLabel);</span>
+<span class="fc bfc" id="L986" title="All 2 branches covered.">								if (!isSearchSource) {</span>
+<span class="fc bfc" id="L987" title="All 2 branches covered.">									if (hasExcess) {</span>
+<span class="fc" id="L988">										worker.addToLayerActive(u, uLabel);</span>
 									} else {
-<span class="fc" id="L991">										worker.addToLayerInactive(u, uLabel);</span>
+<span class="fc" id="L990">										worker.addToLayerInactive(u, uLabel);</span>
 									}
 								}
 
-<span class="fc" id="L995">								it = worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
-<span class="pc bpc" id="L996" title="1 of 2 branches missed.">								assert it.hasNext();</span>
-<span class="fc bfc" id="L997" title="All 2 branches covered.">								if (!isSearchSource) {</span>
-<span class="pc bpc" id="L998" title="1 of 2 branches missed.">									assert !path.isEmpty();</span>
-<span class="fc" id="L999">									int lastEdge = path.popInt();</span>
-<span class="fc" id="L1000">									u = worker.g.edgeEndpoint(lastEdge, u);</span>
-<span class="fc" id="L1001">								}</span>
+<span class="fc" id="L994">								it = worker.outEdgeIters[u] = worker.g.outEdges(u).iterator();</span>
+<span class="pc bpc" id="L995" title="1 of 2 branches missed.">								assert it.hasNext();</span>
+<span class="fc bfc" id="L996" title="All 2 branches covered.">								if (!isSearchSource) {</span>
+<span class="pc bpc" id="L997" title="1 of 2 branches missed.">									assert !path.isEmpty();</span>
+<span class="fc" id="L998">									int lastEdge = path.popInt();</span>
+<span class="fc" id="L999">									u = worker.g.edgeEndpoint(lastEdge, u);</span>
+<span class="fc" id="L1000">								}</span>
 								continue dfs;
 							}
-<span class="fc" id="L1004">						}</span>
+<span class="fc" id="L1003">						}</span>
 					}
 				}
 
@@ -1012,241 +1011,241 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 				abstract int pushOnPathUndirected(int pathSource);
 			}
 
-<span class="fc" id="L1015">			private static class PartialAugmentDouble extends PartialAugmentBase {</span>
+<span class="fc" id="L1014">			private static class PartialAugmentDouble extends PartialAugmentBase {</span>
 
 				PartialAugmentDouble(MaximumFlowPushRelabel.WorkerDouble worker) {
-<span class="fc" id="L1018">					super(worker);</span>
-<span class="fc" id="L1019">				}</span>
+<span class="fc" id="L1017">					super(worker);</span>
+<span class="fc" id="L1018">				}</span>
 
 				MaximumFlowPushRelabel.WorkerDouble worker() {
-<span class="fc" id="L1022">					return (MaximumFlowPushRelabel.WorkerDouble) worker;</span>
+<span class="fc" id="L1021">					return (MaximumFlowPushRelabel.WorkerDouble) worker;</span>
 				}
 
 				@Override
 				int pushOnPathDirected(int pathSource) {
-<span class="pc bpc" id="L1027" title="1 of 2 branches missed.">					assert !path.isEmpty();</span>
-<span class="fc" id="L1028">					int u, v = pathSource;</span>
-<span class="fc" id="L1029">					final byte Inactive = 0;</span>
-<span class="fc" id="L1030">					final byte Active = 1;</span>
-<span class="fc" id="L1031">					final byte SOURCE = 2;</span>
-<span class="fc" id="L1032">					byte uMark = SOURCE;</span>
-<span class="fc" id="L1033">					int firstNonResidual = -1;</span>
-<span class="fc bfc" id="L1034" title="All 2 branches covered.">					for (int i : range(path.size())) {</span>
-<span class="fc" id="L1035">						int e = path.getInt(i);</span>
-<span class="fc" id="L1036">						u = v;</span>
+<span class="pc bpc" id="L1026" title="1 of 2 branches missed.">					assert !path.isEmpty();</span>
+<span class="fc" id="L1027">					int u, v = pathSource;</span>
+<span class="fc" id="L1028">					final byte Inactive = 0;</span>
+<span class="fc" id="L1029">					final byte Active = 1;</span>
+<span class="fc" id="L1030">					final byte SOURCE = 2;</span>
+<span class="fc" id="L1031">					byte uMark = SOURCE;</span>
+<span class="fc" id="L1032">					int firstNonResidual = -1;</span>
+<span class="fc bfc" id="L1033" title="All 2 branches covered.">					for (int i : range(path.size())) {</span>
+<span class="fc" id="L1034">						int e = path.getInt(i);</span>
+<span class="fc" id="L1035">						u = v;</span>
 						double f;
 						boolean vWasActive;
-<span class="fc bfc" id="L1039" title="All 2 branches covered.">						if (u == worker.g.edgeSource(e)) {</span>
-<span class="fc" id="L1040">							v = worker.g.edgeTarget(e);</span>
-<span class="fc" id="L1041">							vWasActive = worker.hasExcess(v);</span>
-<span class="fc" id="L1042">							f = Math.min(worker().excess[u], worker().residualCapacity[e]);</span>
-<span class="pc bpc" id="L1043" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
-<span class="fc" id="L1044">							worker().residualCapacity[e] -= f;</span>
-<span class="pc bpc" id="L1045" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
+<span class="fc bfc" id="L1038" title="All 2 branches covered.">						if (u == worker.g.edgeSource(e)) {</span>
+<span class="fc" id="L1039">							v = worker.g.edgeTarget(e);</span>
+<span class="fc" id="L1040">							vWasActive = worker.hasExcess(v);</span>
+<span class="fc" id="L1041">							f = Math.min(worker().excess[u], worker().residualCapacity[e]);</span>
+<span class="pc bpc" id="L1042" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="fc" id="L1043">							worker().residualCapacity[e] -= f;</span>
+<span class="pc bpc" id="L1044" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
 
-<span class="fc bfc" id="L1047" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.isResidual(e))</span>
-<span class="fc" id="L1048">								firstNonResidual = i;</span>
+<span class="fc bfc" id="L1046" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.isResidual(e))</span>
+<span class="fc" id="L1047">								firstNonResidual = i;</span>
 						} else {
-<span class="pc bpc" id="L1050" title="1 of 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
-<span class="fc" id="L1051">							v = worker.g.edgeSource(e);</span>
-<span class="fc" id="L1052">							vWasActive = worker.hasExcess(v);</span>
-<span class="fc" id="L1053">							f = Math.min(worker().excess[u], worker().flow(e));</span>
-<span class="pc bpc" id="L1054" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
-<span class="fc" id="L1055">							worker().residualCapacity[e] += f;</span>
-<span class="pc bpc" id="L1056" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &lt;= worker().capacity[e] + worker().eps;</span>
+<span class="pc bpc" id="L1049" title="1 of 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
+<span class="fc" id="L1050">							v = worker.g.edgeSource(e);</span>
+<span class="fc" id="L1051">							vWasActive = worker.hasExcess(v);</span>
+<span class="fc" id="L1052">							f = Math.min(worker().excess[u], worker().flow(e));</span>
+<span class="pc bpc" id="L1053" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="fc" id="L1054">							worker().residualCapacity[e] += f;</span>
+<span class="pc bpc" id="L1055" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &lt;= worker().capacity[e] + worker().eps;</span>
 
-<span class="fc bfc" id="L1058" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.hasFlow(e))</span>
-<span class="fc" id="L1059">								firstNonResidual = i;</span>
+<span class="fc bfc" id="L1057" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.hasFlow(e))</span>
+<span class="fc" id="L1058">								firstNonResidual = i;</span>
 						}
 
-<span class="fc" id="L1062">						worker().excess[u] -= f;</span>
-<span class="fc" id="L1063">						worker().excess[v] += f;</span>
-<span class="pc bpc" id="L1064" title="1 of 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
-<span class="pc bpc" id="L1065" title="1 of 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
+<span class="fc" id="L1061">						worker().excess[u] -= f;</span>
+<span class="fc" id="L1062">						worker().excess[v] += f;</span>
+<span class="pc bpc" id="L1063" title="1 of 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
+<span class="pc bpc" id="L1064" title="1 of 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
 
-<span class="fc bfc" id="L1067" title="All 2 branches covered.">						if (uMark == Active) {</span>
-<span class="fc bfc" id="L1068" title="All 2 branches covered.">							if (!worker.hasExcess(u))</span>
-<span class="fc" id="L1069">								worker.deactivate(u);</span>
-<span class="fc bfc" id="L1070" title="All 2 branches covered.">						} else if (uMark == Inactive) {</span>
-<span class="fc bfc" id="L1071" title="All 2 branches covered.">							if (worker.hasExcess(u))</span>
-<span class="fc" id="L1072">								worker.activate(u);</span>
+<span class="fc bfc" id="L1066" title="All 2 branches covered.">						if (uMark == Active) {</span>
+<span class="fc bfc" id="L1067" title="All 2 branches covered.">							if (!worker.hasExcess(u))</span>
+<span class="fc" id="L1068">								worker.deactivate(u);</span>
+<span class="fc bfc" id="L1069" title="All 2 branches covered.">						} else if (uMark == Inactive) {</span>
+<span class="fc bfc" id="L1070" title="All 2 branches covered.">							if (worker.hasExcess(u))</span>
+<span class="fc" id="L1071">								worker.activate(u);</span>
 						}
-<span class="fc bfc" id="L1074" title="All 2 branches covered.">						uMark = vWasActive ? Active : Inactive;</span>
-<span class="fc" id="L1075">					}</span>
-<span class="fc" id="L1076">					return firstNonResidual;</span>
+<span class="fc bfc" id="L1073" title="All 2 branches covered.">						uMark = vWasActive ? Active : Inactive;</span>
+<span class="fc" id="L1074">					}</span>
+<span class="fc" id="L1075">					return firstNonResidual;</span>
 				}
 
 				@Override
 				int pushOnPathUndirected(int pathSource) {
-<span class="pc bpc" id="L1081" title="1 of 2 branches missed.">					assert !path.isEmpty();</span>
-<span class="fc" id="L1082">					int u, v = pathSource;</span>
-<span class="fc" id="L1083">					final byte Inactive = 0;</span>
-<span class="fc" id="L1084">					final byte Active = 1;</span>
-<span class="fc" id="L1085">					final byte SOURCE = 2;</span>
-<span class="fc" id="L1086">					byte uMark = SOURCE;</span>
-<span class="fc" id="L1087">					int firstNonResidual = -1;</span>
-<span class="fc bfc" id="L1088" title="All 2 branches covered.">					for (int i : range(path.size())) {</span>
-<span class="fc" id="L1089">						int e = path.getInt(i);</span>
-<span class="fc" id="L1090">						u = v;</span>
+<span class="pc bpc" id="L1080" title="1 of 2 branches missed.">					assert !path.isEmpty();</span>
+<span class="fc" id="L1081">					int u, v = pathSource;</span>
+<span class="fc" id="L1082">					final byte Inactive = 0;</span>
+<span class="fc" id="L1083">					final byte Active = 1;</span>
+<span class="fc" id="L1084">					final byte SOURCE = 2;</span>
+<span class="fc" id="L1085">					byte uMark = SOURCE;</span>
+<span class="fc" id="L1086">					int firstNonResidual = -1;</span>
+<span class="fc bfc" id="L1087" title="All 2 branches covered.">					for (int i : range(path.size())) {</span>
+<span class="fc" id="L1088">						int e = path.getInt(i);</span>
+<span class="fc" id="L1089">						u = v;</span>
 						double f;
 						boolean vWasActive;
-<span class="fc bfc" id="L1093" title="All 2 branches covered.">						if (u == worker.g.edgeSource(e)) {</span>
-<span class="fc" id="L1094">							v = worker.g.edgeTarget(e);</span>
-<span class="fc" id="L1095">							vWasActive = worker.hasExcess(v);</span>
-<span class="fc" id="L1096">							f = Math.min(worker().excess[u], worker().residualCapacity[e]);</span>
-<span class="pc bpc" id="L1097" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
-<span class="fc" id="L1098">							worker().residualCapacity[e] -= f;</span>
-<span class="pc bpc" id="L1099" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
+<span class="fc bfc" id="L1092" title="All 2 branches covered.">						if (u == worker.g.edgeSource(e)) {</span>
+<span class="fc" id="L1093">							v = worker.g.edgeTarget(e);</span>
+<span class="fc" id="L1094">							vWasActive = worker.hasExcess(v);</span>
+<span class="fc" id="L1095">							f = Math.min(worker().excess[u], worker().residualCapacity[e]);</span>
+<span class="pc bpc" id="L1096" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="fc" id="L1097">							worker().residualCapacity[e] -= f;</span>
+<span class="pc bpc" id="L1098" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
 
-<span class="fc bfc" id="L1101" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.isResidual(e))</span>
-<span class="fc" id="L1102">								firstNonResidual = i;</span>
+<span class="fc bfc" id="L1100" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.isResidual(e))</span>
+<span class="fc" id="L1101">								firstNonResidual = i;</span>
 						} else {
-<span class="pc bpc" id="L1104" title="1 of 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
-<span class="fc" id="L1105">							v = worker.g.edgeSource(e);</span>
-<span class="fc" id="L1106">							vWasActive = worker.hasExcess(v);</span>
-<span class="fc" id="L1107">							double twinResidualCapacity = 2 * worker().capacity[e] - worker().residualCapacity[e];</span>
-<span class="fc" id="L1108">							f = Math.min(worker().excess[u], twinResidualCapacity);</span>
-<span class="pc bpc" id="L1109" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
-<span class="fc" id="L1110">							worker().residualCapacity[e] += f;</span>
+<span class="pc bpc" id="L1103" title="1 of 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
+<span class="fc" id="L1104">							v = worker.g.edgeSource(e);</span>
+<span class="fc" id="L1105">							vWasActive = worker.hasExcess(v);</span>
+<span class="fc" id="L1106">							double twinResidualCapacity = 2 * worker().capacity[e] - worker().residualCapacity[e];</span>
+<span class="fc" id="L1107">							f = Math.min(worker().excess[u], twinResidualCapacity);</span>
+<span class="pc bpc" id="L1108" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="fc" id="L1109">							worker().residualCapacity[e] += f;</span>
 
-<span class="fc bfc" id="L1112" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.isTwinResidualUndirected(e))</span>
-<span class="fc" id="L1113">								firstNonResidual = i;</span>
+<span class="fc bfc" id="L1111" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.isTwinResidualUndirected(e))</span>
+<span class="fc" id="L1112">								firstNonResidual = i;</span>
 						}
 
-<span class="fc" id="L1116">						worker().excess[u] -= f;</span>
-<span class="fc" id="L1117">						worker().excess[v] += f;</span>
-<span class="pc bpc" id="L1118" title="1 of 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
-<span class="pc bpc" id="L1119" title="1 of 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
+<span class="fc" id="L1115">						worker().excess[u] -= f;</span>
+<span class="fc" id="L1116">						worker().excess[v] += f;</span>
+<span class="pc bpc" id="L1117" title="1 of 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
+<span class="pc bpc" id="L1118" title="1 of 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
 
-<span class="fc bfc" id="L1121" title="All 2 branches covered.">						if (uMark == Active) {</span>
-<span class="fc bfc" id="L1122" title="All 2 branches covered.">							if (!worker.hasExcess(u))</span>
-<span class="fc" id="L1123">								worker.deactivate(u);</span>
-<span class="fc bfc" id="L1124" title="All 2 branches covered.">						} else if (uMark == Inactive) {</span>
-<span class="fc bfc" id="L1125" title="All 2 branches covered.">							if (worker.hasExcess(u))</span>
-<span class="fc" id="L1126">								worker.activate(u);</span>
+<span class="fc bfc" id="L1120" title="All 2 branches covered.">						if (uMark == Active) {</span>
+<span class="fc bfc" id="L1121" title="All 2 branches covered.">							if (!worker.hasExcess(u))</span>
+<span class="fc" id="L1122">								worker.deactivate(u);</span>
+<span class="fc bfc" id="L1123" title="All 2 branches covered.">						} else if (uMark == Inactive) {</span>
+<span class="fc bfc" id="L1124" title="All 2 branches covered.">							if (worker.hasExcess(u))</span>
+<span class="fc" id="L1125">								worker.activate(u);</span>
 						}
-<span class="fc bfc" id="L1128" title="All 2 branches covered.">						uMark = vWasActive ? Active : Inactive;</span>
-<span class="fc" id="L1129">					}</span>
-<span class="fc" id="L1130">					return firstNonResidual;</span>
+<span class="fc bfc" id="L1127" title="All 2 branches covered.">						uMark = vWasActive ? Active : Inactive;</span>
+<span class="fc" id="L1128">					}</span>
+<span class="fc" id="L1129">					return firstNonResidual;</span>
 				}
 			}
 
-<span class="fc" id="L1134">			private static class PartialAugmentInt extends PartialAugmentBase {</span>
+<span class="fc" id="L1133">			private static class PartialAugmentInt extends PartialAugmentBase {</span>
 
 				PartialAugmentInt(MaximumFlowPushRelabel.WorkerInt worker) {
-<span class="fc" id="L1137">					super(worker);</span>
-<span class="fc" id="L1138">				}</span>
+<span class="fc" id="L1136">					super(worker);</span>
+<span class="fc" id="L1137">				}</span>
 
 				MaximumFlowPushRelabel.WorkerInt worker() {
-<span class="fc" id="L1141">					return (MaximumFlowPushRelabel.WorkerInt) worker;</span>
+<span class="fc" id="L1140">					return (MaximumFlowPushRelabel.WorkerInt) worker;</span>
 				}
 
 				@Override
 				int pushOnPathDirected(int pathSource) {
-<span class="pc bpc" id="L1146" title="1 of 2 branches missed.">					assert !path.isEmpty();</span>
-<span class="fc" id="L1147">					int u, v = pathSource;</span>
-<span class="fc" id="L1148">					final byte Inactive = 0;</span>
-<span class="fc" id="L1149">					final byte Active = 1;</span>
-<span class="fc" id="L1150">					final byte SOURCE = 2;</span>
-<span class="fc" id="L1151">					byte uMark = SOURCE;</span>
-<span class="fc" id="L1152">					int firstNonResidual = -1;</span>
-<span class="fc bfc" id="L1153" title="All 2 branches covered.">					for (int i : range(path.size())) {</span>
-<span class="fc" id="L1154">						int e = path.getInt(i);</span>
-<span class="fc" id="L1155">						u = v;</span>
+<span class="pc bpc" id="L1145" title="1 of 2 branches missed.">					assert !path.isEmpty();</span>
+<span class="fc" id="L1146">					int u, v = pathSource;</span>
+<span class="fc" id="L1147">					final byte Inactive = 0;</span>
+<span class="fc" id="L1148">					final byte Active = 1;</span>
+<span class="fc" id="L1149">					final byte SOURCE = 2;</span>
+<span class="fc" id="L1150">					byte uMark = SOURCE;</span>
+<span class="fc" id="L1151">					int firstNonResidual = -1;</span>
+<span class="fc bfc" id="L1152" title="All 2 branches covered.">					for (int i : range(path.size())) {</span>
+<span class="fc" id="L1153">						int e = path.getInt(i);</span>
+<span class="fc" id="L1154">						u = v;</span>
 						int f;
 						boolean vWasActive;
-<span class="fc bfc" id="L1158" title="All 2 branches covered.">						if (u == worker.g.edgeSource(e)) {</span>
-<span class="fc" id="L1159">							v = worker.g.edgeTarget(e);</span>
-<span class="fc" id="L1160">							vWasActive = worker.hasExcess(v);</span>
-<span class="fc" id="L1161">							f = Math.min(worker().excess[u], worker().residualCapacity[e]);</span>
-<span class="pc bpc" id="L1162" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
-<span class="fc" id="L1163">							worker().residualCapacity[e] -= f;</span>
-<span class="pc bpc" id="L1164" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
+<span class="fc bfc" id="L1157" title="All 2 branches covered.">						if (u == worker.g.edgeSource(e)) {</span>
+<span class="fc" id="L1158">							v = worker.g.edgeTarget(e);</span>
+<span class="fc" id="L1159">							vWasActive = worker.hasExcess(v);</span>
+<span class="fc" id="L1160">							f = Math.min(worker().excess[u], worker().residualCapacity[e]);</span>
+<span class="pc bpc" id="L1161" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="fc" id="L1162">							worker().residualCapacity[e] -= f;</span>
+<span class="pc bpc" id="L1163" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
 
-<span class="fc bfc" id="L1166" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.isResidual(e))</span>
-<span class="fc" id="L1167">								firstNonResidual = i;</span>
+<span class="fc bfc" id="L1165" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.isResidual(e))</span>
+<span class="fc" id="L1166">								firstNonResidual = i;</span>
 						} else {
-<span class="pc bpc" id="L1169" title="1 of 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
-<span class="fc" id="L1170">							v = worker.g.edgeSource(e);</span>
-<span class="fc" id="L1171">							vWasActive = worker.hasExcess(v);</span>
-<span class="fc" id="L1172">							f = Math.min(worker().excess[u], worker().flow(e));</span>
-<span class="pc bpc" id="L1173" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
-<span class="fc" id="L1174">							worker().residualCapacity[e] += f;</span>
-<span class="pc bpc" id="L1175" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &lt;= worker().capacity[e];</span>
+<span class="pc bpc" id="L1168" title="1 of 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
+<span class="fc" id="L1169">							v = worker.g.edgeSource(e);</span>
+<span class="fc" id="L1170">							vWasActive = worker.hasExcess(v);</span>
+<span class="fc" id="L1171">							f = Math.min(worker().excess[u], worker().flow(e));</span>
+<span class="pc bpc" id="L1172" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="fc" id="L1173">							worker().residualCapacity[e] += f;</span>
+<span class="pc bpc" id="L1174" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &lt;= worker().capacity[e];</span>
 
-<span class="fc bfc" id="L1177" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.hasFlow(e))</span>
-<span class="fc" id="L1178">								firstNonResidual = i;</span>
+<span class="fc bfc" id="L1176" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.hasFlow(e))</span>
+<span class="fc" id="L1177">								firstNonResidual = i;</span>
 						}
 
-<span class="fc" id="L1181">						worker().excess[u] -= f;</span>
-<span class="fc" id="L1182">						worker().excess[v] += f;</span>
-<span class="pc bpc" id="L1183" title="1 of 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
-<span class="pc bpc" id="L1184" title="1 of 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
+<span class="fc" id="L1180">						worker().excess[u] -= f;</span>
+<span class="fc" id="L1181">						worker().excess[v] += f;</span>
+<span class="pc bpc" id="L1182" title="1 of 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
+<span class="pc bpc" id="L1183" title="1 of 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
 
-<span class="fc bfc" id="L1186" title="All 2 branches covered.">						if (uMark == Active) {</span>
-<span class="fc bfc" id="L1187" title="All 2 branches covered.">							if (!worker.hasExcess(u))</span>
-<span class="fc" id="L1188">								worker.deactivate(u);</span>
-<span class="fc bfc" id="L1189" title="All 2 branches covered.">						} else if (uMark == Inactive) {</span>
-<span class="fc bfc" id="L1190" title="All 2 branches covered.">							if (worker.hasExcess(u))</span>
-<span class="fc" id="L1191">								worker.activate(u);</span>
+<span class="fc bfc" id="L1185" title="All 2 branches covered.">						if (uMark == Active) {</span>
+<span class="fc bfc" id="L1186" title="All 2 branches covered.">							if (!worker.hasExcess(u))</span>
+<span class="fc" id="L1187">								worker.deactivate(u);</span>
+<span class="fc bfc" id="L1188" title="All 2 branches covered.">						} else if (uMark == Inactive) {</span>
+<span class="fc bfc" id="L1189" title="All 2 branches covered.">							if (worker.hasExcess(u))</span>
+<span class="fc" id="L1190">								worker.activate(u);</span>
 						}
-<span class="fc bfc" id="L1193" title="All 2 branches covered.">						uMark = vWasActive ? Active : Inactive;</span>
-<span class="fc" id="L1194">					}</span>
-<span class="fc" id="L1195">					return firstNonResidual;</span>
+<span class="fc bfc" id="L1192" title="All 2 branches covered.">						uMark = vWasActive ? Active : Inactive;</span>
+<span class="fc" id="L1193">					}</span>
+<span class="fc" id="L1194">					return firstNonResidual;</span>
 				}
 
 				@Override
 				int pushOnPathUndirected(int pathSource) {
-<span class="pc bpc" id="L1200" title="1 of 2 branches missed.">					assert !path.isEmpty();</span>
-<span class="fc" id="L1201">					int u, v = pathSource;</span>
-<span class="fc" id="L1202">					final byte Inactive = 0;</span>
-<span class="fc" id="L1203">					final byte Active = 1;</span>
-<span class="fc" id="L1204">					final byte SOURCE = 2;</span>
-<span class="fc" id="L1205">					byte uMark = SOURCE;</span>
-<span class="fc" id="L1206">					int firstNonResidual = -1;</span>
-<span class="fc bfc" id="L1207" title="All 2 branches covered.">					for (int i : range(path.size())) {</span>
-<span class="fc" id="L1208">						int e = path.getInt(i);</span>
-<span class="fc" id="L1209">						u = v;</span>
+<span class="pc bpc" id="L1199" title="1 of 2 branches missed.">					assert !path.isEmpty();</span>
+<span class="fc" id="L1200">					int u, v = pathSource;</span>
+<span class="fc" id="L1201">					final byte Inactive = 0;</span>
+<span class="fc" id="L1202">					final byte Active = 1;</span>
+<span class="fc" id="L1203">					final byte SOURCE = 2;</span>
+<span class="fc" id="L1204">					byte uMark = SOURCE;</span>
+<span class="fc" id="L1205">					int firstNonResidual = -1;</span>
+<span class="fc bfc" id="L1206" title="All 2 branches covered.">					for (int i : range(path.size())) {</span>
+<span class="fc" id="L1207">						int e = path.getInt(i);</span>
+<span class="fc" id="L1208">						u = v;</span>
 						int f;
 						boolean vWasActive;
-<span class="fc bfc" id="L1212" title="All 2 branches covered.">						if (u == worker.g.edgeSource(e)) {</span>
-<span class="fc" id="L1213">							v = worker.g.edgeTarget(e);</span>
-<span class="fc" id="L1214">							vWasActive = worker.hasExcess(v);</span>
-<span class="fc" id="L1215">							f = Math.min(worker().excess[u], worker().residualCapacity[e]);</span>
-<span class="pc bpc" id="L1216" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
-<span class="fc" id="L1217">							worker().residualCapacity[e] -= f;</span>
-<span class="pc bpc" id="L1218" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
+<span class="fc bfc" id="L1211" title="All 2 branches covered.">						if (u == worker.g.edgeSource(e)) {</span>
+<span class="fc" id="L1212">							v = worker.g.edgeTarget(e);</span>
+<span class="fc" id="L1213">							vWasActive = worker.hasExcess(v);</span>
+<span class="fc" id="L1214">							f = Math.min(worker().excess[u], worker().residualCapacity[e]);</span>
+<span class="pc bpc" id="L1215" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="fc" id="L1216">							worker().residualCapacity[e] -= f;</span>
+<span class="pc bpc" id="L1217" title="1 of 2 branches missed.">							assert worker().residualCapacity[e] &gt;= 0;</span>
 
-<span class="fc bfc" id="L1220" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.isResidual(e))</span>
-<span class="fc" id="L1221">								firstNonResidual = i;</span>
+<span class="fc bfc" id="L1219" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.isResidual(e))</span>
+<span class="fc" id="L1220">								firstNonResidual = i;</span>
 						} else {
-<span class="pc bpc" id="L1223" title="1 of 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
-<span class="fc" id="L1224">							v = worker.g.edgeSource(e);</span>
-<span class="fc" id="L1225">							vWasActive = worker.hasExcess(v);</span>
-<span class="fc" id="L1226">							int twinResidualCapacity = 2 * worker().capacity[e] - worker().residualCapacity[e];</span>
-<span class="fc" id="L1227">							f = Math.min(worker().excess[u], twinResidualCapacity);</span>
-<span class="pc bpc" id="L1228" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
-<span class="fc" id="L1229">							worker().residualCapacity[e] += f;</span>
+<span class="pc bpc" id="L1222" title="1 of 2 branches missed.">							assert u == worker.g.edgeTarget(e);</span>
+<span class="fc" id="L1223">							v = worker.g.edgeSource(e);</span>
+<span class="fc" id="L1224">							vWasActive = worker.hasExcess(v);</span>
+<span class="fc" id="L1225">							int twinResidualCapacity = 2 * worker().capacity[e] - worker().residualCapacity[e];</span>
+<span class="fc" id="L1226">							f = Math.min(worker().excess[u], twinResidualCapacity);</span>
+<span class="pc bpc" id="L1227" title="1 of 2 branches missed.">							assert f &gt;= 0;</span>
+<span class="fc" id="L1228">							worker().residualCapacity[e] += f;</span>
 
-<span class="fc bfc" id="L1231" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.isTwinResidualUndirected(e))</span>
-<span class="fc" id="L1232">								firstNonResidual = i;</span>
+<span class="fc bfc" id="L1230" title="All 4 branches covered.">							if (firstNonResidual &lt; 0 &amp;&amp; !worker.isTwinResidualUndirected(e))</span>
+<span class="fc" id="L1231">								firstNonResidual = i;</span>
 						}
 
-<span class="fc" id="L1235">						worker().excess[u] -= f;</span>
-<span class="fc" id="L1236">						worker().excess[v] += f;</span>
-<span class="pc bpc" id="L1237" title="1 of 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
-<span class="pc bpc" id="L1238" title="1 of 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
+<span class="fc" id="L1234">						worker().excess[u] -= f;</span>
+<span class="fc" id="L1235">						worker().excess[v] += f;</span>
+<span class="pc bpc" id="L1236" title="1 of 2 branches missed.">						assert worker().excess[u] &gt;= 0;</span>
+<span class="pc bpc" id="L1237" title="1 of 2 branches missed.">						assert worker().excess[v] &gt;= 0;</span>
 
-<span class="fc bfc" id="L1240" title="All 2 branches covered.">						if (uMark == Active) {</span>
-<span class="fc bfc" id="L1241" title="All 2 branches covered.">							if (!worker.hasExcess(u))</span>
-<span class="fc" id="L1242">								worker.deactivate(u);</span>
-<span class="fc bfc" id="L1243" title="All 2 branches covered.">						} else if (uMark == Inactive) {</span>
-<span class="fc bfc" id="L1244" title="All 2 branches covered.">							if (worker.hasExcess(u))</span>
-<span class="fc" id="L1245">								worker.activate(u);</span>
+<span class="fc bfc" id="L1239" title="All 2 branches covered.">						if (uMark == Active) {</span>
+<span class="fc bfc" id="L1240" title="All 2 branches covered.">							if (!worker.hasExcess(u))</span>
+<span class="fc" id="L1241">								worker.deactivate(u);</span>
+<span class="fc bfc" id="L1242" title="All 2 branches covered.">						} else if (uMark == Inactive) {</span>
+<span class="fc bfc" id="L1243" title="All 2 branches covered.">							if (worker.hasExcess(u))</span>
+<span class="fc" id="L1244">								worker.activate(u);</span>
 						}
-<span class="fc bfc" id="L1247" title="All 2 branches covered.">						uMark = vWasActive ? Active : Inactive;</span>
-<span class="fc" id="L1248">					}</span>
-<span class="fc" id="L1249">					return firstNonResidual;</span>
+<span class="fc bfc" id="L1246" title="All 2 branches covered.">						uMark = vWasActive ? Active : Inactive;</span>
+<span class="fc" id="L1247">					}</span>
+<span class="fc" id="L1248">					return firstNonResidual;</span>
 				}
 			}
 		}
@@ -1254,40 +1253,40 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 		abstract IFlow constructResult();
 
 		private void calcMaxPreflow() {
-<span class="fc" id="L1257">			recomputeLabels();</span>
-<span class="fc" id="L1258">			pushAsMuchFromSource();</span>
-<span class="fc bfc" id="L1259" title="All 2 branches covered.">			if (directed) {</span>
-<span class="fc bfc" id="L1260" title="All 2 branches covered.">				while (activeOrderPolicy.hasMoreVerticesToDischarge()) {</span>
-<span class="fc" id="L1261">					int u = activeOrderPolicy.nextVertexToDischarge();</span>
-<span class="fc bfc" id="L1262" title="All 2 branches covered.">					if (label[u] &gt;= n)</span>
-<span class="fc" id="L1263">						continue;</span>
-<span class="pc bpc" id="L1264" title="1 of 2 branches missed.">					assert hasExcess(u);</span>
+<span class="fc" id="L1256">			recomputeLabels();</span>
+<span class="fc" id="L1257">			pushAsMuchFromSource();</span>
+<span class="fc bfc" id="L1258" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc bfc" id="L1259" title="All 2 branches covered.">				while (activeOrderPolicy.hasMoreVerticesToDischarge()) {</span>
+<span class="fc" id="L1260">					int u = activeOrderPolicy.nextVertexToDischarge();</span>
+<span class="fc bfc" id="L1261" title="All 2 branches covered.">					if (label[u] &gt;= n)</span>
+<span class="fc" id="L1262">						continue;</span>
+<span class="pc bpc" id="L1263" title="1 of 2 branches missed.">					assert hasExcess(u);</span>
 
-<span class="fc" id="L1266">					removeFromLayerActive(u, label[u]);</span>
-<span class="fc" id="L1267">					dischargePolicy.dischargeDirected(u);</span>
-<span class="fc bfc" id="L1268" title="All 2 branches covered.">					if (label[u] &lt; n)</span>
-<span class="fc" id="L1269">						addToLayerInactive(u, label[u]);</span>
+<span class="fc" id="L1265">					removeFromLayerActive(u, label[u]);</span>
+<span class="fc" id="L1266">					dischargePolicy.dischargeDirected(u);</span>
+<span class="fc bfc" id="L1267" title="All 2 branches covered.">					if (label[u] &lt; n)</span>
+<span class="fc" id="L1268">						addToLayerInactive(u, label[u]);</span>
 
-<span class="fc bfc" id="L1271" title="All 2 branches covered.">					if (relabelsSinceLastLabelsRecompute &gt;= labelsReComputeThreshold)</span>
-<span class="fc" id="L1272">						recomputeLabels();</span>
-<span class="fc" id="L1273">				}</span>
+<span class="fc bfc" id="L1270" title="All 2 branches covered.">					if (relabelsSinceLastLabelsRecompute &gt;= labelsReComputeThreshold)</span>
+<span class="fc" id="L1271">						recomputeLabels();</span>
+<span class="fc" id="L1272">				}</span>
 			} else {
-<span class="fc bfc" id="L1275" title="All 2 branches covered.">				while (activeOrderPolicy.hasMoreVerticesToDischarge()) {</span>
-<span class="fc" id="L1276">					int u = activeOrderPolicy.nextVertexToDischarge();</span>
-<span class="fc bfc" id="L1277" title="All 2 branches covered.">					if (label[u] &gt;= n)</span>
-<span class="fc" id="L1278">						continue;</span>
-<span class="pc bpc" id="L1279" title="1 of 2 branches missed.">					assert hasExcess(u);</span>
+<span class="fc bfc" id="L1274" title="All 2 branches covered.">				while (activeOrderPolicy.hasMoreVerticesToDischarge()) {</span>
+<span class="fc" id="L1275">					int u = activeOrderPolicy.nextVertexToDischarge();</span>
+<span class="fc bfc" id="L1276" title="All 2 branches covered.">					if (label[u] &gt;= n)</span>
+<span class="fc" id="L1277">						continue;</span>
+<span class="pc bpc" id="L1278" title="1 of 2 branches missed.">					assert hasExcess(u);</span>
 
-<span class="fc" id="L1281">					removeFromLayerActive(u, label[u]);</span>
-<span class="fc" id="L1282">					dischargePolicy.dischargeUndirected(u);</span>
-<span class="fc bfc" id="L1283" title="All 2 branches covered.">					if (label[u] &lt; n)</span>
-<span class="fc" id="L1284">						addToLayerInactive(u, label[u]);</span>
+<span class="fc" id="L1280">					removeFromLayerActive(u, label[u]);</span>
+<span class="fc" id="L1281">					dischargePolicy.dischargeUndirected(u);</span>
+<span class="fc bfc" id="L1282" title="All 2 branches covered.">					if (label[u] &lt; n)</span>
+<span class="fc" id="L1283">						addToLayerInactive(u, label[u]);</span>
 
-<span class="fc bfc" id="L1286" title="All 2 branches covered.">					if (relabelsSinceLastLabelsRecompute &gt;= labelsReComputeThreshold)</span>
-<span class="fc" id="L1287">						recomputeLabels();</span>
-<span class="fc" id="L1288">				}</span>
+<span class="fc bfc" id="L1285" title="All 2 branches covered.">					if (relabelsSinceLastLabelsRecompute &gt;= labelsReComputeThreshold)</span>
+<span class="fc" id="L1286">						recomputeLabels();</span>
+<span class="fc" id="L1287">				}</span>
 			}
-<span class="fc" id="L1290">		}</span>
+<span class="fc" id="L1289">		}</span>
 
 		private abstract static class ActiveOrderPolicyImpl {
 
@@ -1295,356 +1294,355 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 
 			abstract int nextVertexToDischarge();
 
-<span class="fc" id="L1298">			void afterActivate(int v) {}</span>
+<span class="fc" id="L1297">			void afterActivate(int v) {}</span>
 
-<span class="fc" id="L1300">			void beforeRecomputeLabels() {}</span>
+<span class="fc" id="L1299">			void beforeRecomputeLabels() {}</span>
 
-<span class="fc" id="L1302">			void afterRecomputeLabels() {}</span>
+<span class="fc" id="L1301">			void afterRecomputeLabels() {}</span>
 
-<span class="fc" id="L1304">			void afterRelabel(int v) {}</span>
+<span class="fc" id="L1303">			void afterRelabel(int v) {}</span>
 
-<span class="fc" id="L1306">			void afterVertexLabelReCompute(int v) {}</span>
+<span class="fc" id="L1305">			void afterVertexLabelReCompute(int v) {}</span>
 
 			static ActiveOrderPolicyImpl newInstance(MaximumFlowPushRelabel.Worker worker, ActiveOrderPolicy policy) {
-<span class="pc bpc" id="L1309" title="1 of 5 branches missed.">				switch (policy) {</span>
+<span class="pc bpc" id="L1308" title="1 of 5 branches missed.">				switch (policy) {</span>
 					case FIFO:
-<span class="fc" id="L1311">						return new ActiveOrderPolicyImpl.FIFO(worker);</span>
+<span class="fc" id="L1310">						return new ActiveOrderPolicyImpl.FIFO(worker);</span>
 					case HighestFirst:
-<span class="fc" id="L1313">						return new ActiveOrderPolicyImpl.HighestFirst(worker);</span>
+<span class="fc" id="L1312">						return new ActiveOrderPolicyImpl.HighestFirst(worker);</span>
 					case LowestFirst:
-<span class="fc" id="L1315">						return new ActiveOrderPolicyImpl.LowestFirst(worker);</span>
+<span class="fc" id="L1314">						return new ActiveOrderPolicyImpl.LowestFirst(worker);</span>
 					case MoveToFront:
-<span class="fc" id="L1317">						return new ActiveOrderPolicyImpl.MoveToFront(worker);</span>
+<span class="fc" id="L1316">						return new ActiveOrderPolicyImpl.MoveToFront(worker);</span>
 					default:
-<span class="nc" id="L1319">						throw new IllegalArgumentException(&quot;unknown active policy: &quot; + policy);</span>
+<span class="nc" id="L1318">						throw new IllegalArgumentException(&quot;unknown active policy: &quot; + policy);</span>
 				}
 			}
 
 			final MaximumFlowPushRelabel.Worker worker;
 
-<span class="fc" id="L1325">			ActiveOrderPolicyImpl(MaximumFlowPushRelabel.Worker worker) {</span>
-<span class="fc" id="L1326">				this.worker = Objects.requireNonNull(worker);</span>
-<span class="fc" id="L1327">			}</span>
+<span class="fc" id="L1324">			ActiveOrderPolicyImpl(MaximumFlowPushRelabel.Worker worker) {</span>
+<span class="fc" id="L1325">				this.worker = Objects.requireNonNull(worker);</span>
+<span class="fc" id="L1326">			}</span>
 
 			private static class FIFO extends ActiveOrderPolicyImpl {
 
-<span class="fc" id="L1331">				private final IntPriorityQueue activeQueue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L1330">				private final IntPriorityQueue activeQueue = new FIFOQueueIntNoReduce();</span>
 
 				FIFO(MaximumFlowPushRelabel.Worker worker) {
-<span class="fc" id="L1334">					super(worker);</span>
-<span class="fc" id="L1335">				}</span>
+<span class="fc" id="L1333">					super(worker);</span>
+<span class="fc" id="L1334">				}</span>
 
 				@Override
 				boolean hasMoreVerticesToDischarge() {
-<span class="fc bfc" id="L1339" title="All 2 branches covered.">					return !activeQueue.isEmpty();</span>
+<span class="fc bfc" id="L1338" title="All 2 branches covered.">					return !activeQueue.isEmpty();</span>
 				}
 
 				@Override
 				int nextVertexToDischarge() {
-<span class="fc" id="L1344">					return activeQueue.dequeueInt();</span>
+<span class="fc" id="L1343">					return activeQueue.dequeueInt();</span>
 				}
 
 				@Override
 				void afterActivate(int v) {
-<span class="fc" id="L1349">					activeQueue.enqueue(v);</span>
-<span class="fc" id="L1350">				}</span>
+<span class="fc" id="L1348">					activeQueue.enqueue(v);</span>
+<span class="fc" id="L1349">				}</span>
 			}
 
-<span class="fc" id="L1353">			private static class HighestFirst extends ActiveOrderPolicyImpl {</span>
+<span class="fc" id="L1352">			private static class HighestFirst extends ActiveOrderPolicyImpl {</span>
 
 				HighestFirst(MaximumFlowPushRelabel.Worker worker) {
-<span class="fc" id="L1356">					super(worker);</span>
-<span class="fc" id="L1357">				}</span>
+<span class="fc" id="L1355">					super(worker);</span>
+<span class="fc" id="L1356">				}</span>
 
 				@Override
 				boolean hasMoreVerticesToDischarge() {
-<span class="fc bfc" id="L1361" title="All 2 branches covered.">					for (; worker.maxLayerActive &gt; 0; worker.maxLayerActive--)</span>
-<span class="fc bfc" id="L1362" title="All 2 branches covered.">						if (worker.layersHeadActive[worker.maxLayerActive] != LinkedListFixedSize.None)</span>
-<span class="fc" id="L1363">							return true;</span>
-<span class="fc" id="L1364">					return false;</span>
+<span class="fc bfc" id="L1360" title="All 2 branches covered.">					for (; worker.maxLayerActive &gt; 0; worker.maxLayerActive--)</span>
+<span class="fc bfc" id="L1361" title="All 2 branches covered.">						if (!LinkedList.isNone(worker.layersHeadActive[worker.maxLayerActive]))</span>
+<span class="fc" id="L1362">							return true;</span>
+<span class="fc" id="L1363">					return false;</span>
 				}
 
 				@Override
 				int nextVertexToDischarge() {
 					for (;;) {
-<span class="pc bpc" id="L1370" title="1 of 2 branches missed.">						assert worker.maxLayerActive &gt; 0 : &quot;no active vertex to discharge&quot;;</span>
-<span class="pc bpc" id="L1371" title="1 of 2 branches missed.">						if (worker.layersHeadActive[worker.maxLayerActive] != LinkedListFixedSize.None)</span>
-<span class="fc" id="L1372">							return worker.layersHeadActive[worker.maxLayerActive];</span>
-<span class="nc" id="L1373">						worker.maxLayerActive--;</span>
+<span class="pc bpc" id="L1369" title="1 of 2 branches missed.">						assert worker.maxLayerActive &gt; 0 : &quot;no active vertex to discharge&quot;;</span>
+<span class="pc bpc" id="L1370" title="1 of 2 branches missed.">						if (!LinkedList.isNone(worker.layersHeadActive[worker.maxLayerActive]))</span>
+<span class="fc" id="L1371">							return worker.layersHeadActive[worker.maxLayerActive];</span>
+<span class="nc" id="L1372">						worker.maxLayerActive--;</span>
 					}
 				}
 			}
 
-<span class="fc" id="L1378">			private static class LowestFirst extends ActiveOrderPolicyImpl {</span>
+<span class="fc" id="L1377">			private static class LowestFirst extends ActiveOrderPolicyImpl {</span>
 
 				int minLayerActive;
 
 				LowestFirst(MaximumFlowPushRelabel.Worker worker) {
-<span class="fc" id="L1383">					super(worker);</span>
-<span class="fc" id="L1384">				}</span>
+<span class="fc" id="L1382">					super(worker);</span>
+<span class="fc" id="L1383">				}</span>
 
 				@Override
 				void beforeRecomputeLabels() {
-<span class="fc" id="L1388">					minLayerActive = 0;</span>
-<span class="fc" id="L1389">				}</span>
+<span class="fc" id="L1387">					minLayerActive = 0;</span>
+<span class="fc" id="L1388">				}</span>
 
 				@Override
 				void afterActivate(int v) {
-<span class="fc bfc" id="L1393" title="All 2 branches covered.">					if (minLayerActive &gt; worker.label[v])</span>
-<span class="fc" id="L1394">						minLayerActive = worker.label[v];</span>
-<span class="fc" id="L1395">				}</span>
+<span class="fc bfc" id="L1392" title="All 2 branches covered.">					if (minLayerActive &gt; worker.label[v])</span>
+<span class="fc" id="L1393">						minLayerActive = worker.label[v];</span>
+<span class="fc" id="L1394">				}</span>
 
 				@Override
 				boolean hasMoreVerticesToDischarge() {
-<span class="fc bfc" id="L1399" title="All 2 branches covered.">					for (; minLayerActive &lt; worker.n; minLayerActive++)</span>
-<span class="fc bfc" id="L1400" title="All 2 branches covered.">						if (worker.layersHeadActive[minLayerActive] != LinkedListFixedSize.None)</span>
-<span class="fc" id="L1401">							return true;</span>
-<span class="fc" id="L1402">					return false;</span>
+<span class="fc bfc" id="L1398" title="All 2 branches covered.">					for (; minLayerActive &lt; worker.n; minLayerActive++)</span>
+<span class="fc bfc" id="L1399" title="All 2 branches covered.">						if (!LinkedList.isNone(worker.layersHeadActive[minLayerActive]))</span>
+<span class="fc" id="L1400">							return true;</span>
+<span class="fc" id="L1401">					return false;</span>
 				}
 
 				@Override
 				int nextVertexToDischarge() {
 					for (;;) {
-<span class="pc bpc" id="L1408" title="1 of 2 branches missed.">						assert minLayerActive &lt; worker.n : &quot;no active vertex to discharge&quot;;</span>
-<span class="pc bpc" id="L1409" title="1 of 2 branches missed.">						if (worker.layersHeadActive[minLayerActive] != LinkedListFixedSize.None)</span>
-<span class="fc" id="L1410">							return worker.layersHeadActive[minLayerActive];</span>
-<span class="nc" id="L1411">						minLayerActive++;</span>
+<span class="pc bpc" id="L1407" title="1 of 2 branches missed.">						assert minLayerActive &lt; worker.n : &quot;no active vertex to discharge&quot;;</span>
+<span class="pc bpc" id="L1408" title="1 of 2 branches missed.">						if (!LinkedList.isNone(worker.layersHeadActive[minLayerActive]))</span>
+<span class="fc" id="L1409">							return worker.layersHeadActive[minLayerActive];</span>
+<span class="nc" id="L1410">						minLayerActive++;</span>
 					}
 				}
 			}
 
-<span class="fc" id="L1416">			private static class MoveToFront extends ActiveOrderPolicyImpl {</span>
+<span class="fc" id="L1415">			private static class MoveToFront extends ActiveOrderPolicyImpl {</span>
 
-				private final LinkedListFixedSize.Doubly vertices;
-<span class="fc" id="L1419">				private int listHead = LinkedListFixedSize.None;</span>
+				private final LinkedList.Doubly vertices;
+<span class="fc" id="L1418">				private int listHead = LinkedList.None;</span>
 				private IterTools.Peek.Int listIter;
 
 				MoveToFront(MaximumFlowPushRelabel.Worker worker) {
-<span class="fc" id="L1423">					super(worker);</span>
-<span class="fc" id="L1424">					int n = worker.g.vertices().size();</span>
-<span class="fc" id="L1425">					vertices = new LinkedListFixedSize.Doubly(n);</span>
-<span class="fc" id="L1426">				}</span>
+<span class="fc" id="L1422">					super(worker);</span>
+<span class="fc" id="L1423">					int n = worker.g.vertices().size();</span>
+<span class="fc" id="L1424">					vertices = new LinkedList.Doubly(n);</span>
+<span class="fc" id="L1425">				}</span>
 
 				@Override
 				void beforeRecomputeLabels() {
-<span class="fc" id="L1430">					vertices.clear();</span>
-<span class="fc" id="L1431">					listHead = LinkedListFixedSize.None;</span>
-<span class="fc" id="L1432">					listIter = null;</span>
-<span class="fc" id="L1433">				}</span>
+<span class="fc" id="L1429">					vertices.clear();</span>
+<span class="fc" id="L1430">					listHead = LinkedList.None;</span>
+<span class="fc" id="L1431">					listIter = null;</span>
+<span class="fc" id="L1432">				}</span>
 
 				@Override
 				void afterRecomputeLabels() {
-<span class="fc" id="L1437">					listIter =</span>
-<span class="fc bfc" id="L1438" title="All 2 branches covered.">							listHead != LinkedListFixedSize.None ? vertices.iterator(listHead) : vertices.emptyIter();</span>
-<span class="fc" id="L1439">				}</span>
+<span class="fc" id="L1436">					listIter = vertices.iterMaybeNone(listHead);</span>
+<span class="fc" id="L1437">				}</span>
 
 				@Override
 				void afterRelabel(int v) {
 					// move to front
-<span class="fc bfc" id="L1444" title="All 2 branches covered.">					if (v != listHead) {</span>
-<span class="fc" id="L1445">						vertices.disconnect(v);</span>
-<span class="fc" id="L1446">						vertices.connect(v, listHead);</span>
-<span class="fc" id="L1447">						listHead = v;</span>
+<span class="fc bfc" id="L1442" title="All 2 branches covered.">					if (v != listHead) {</span>
+<span class="fc" id="L1443">						vertices.disconnect(v);</span>
+<span class="fc" id="L1444">						vertices.connect(v, listHead);</span>
+<span class="fc" id="L1445">						listHead = v;</span>
 					}
-<span class="fc" id="L1449">					listIter = vertices.iterator(listHead);</span>
-<span class="fc" id="L1450">				}</span>
+<span class="fc" id="L1447">					listIter = vertices.iter(listHead);</span>
+<span class="fc" id="L1448">				}</span>
 
 				@Override
 				void afterVertexLabelReCompute(int v) {
-<span class="fc bfc" id="L1454" title="All 2 branches covered.">					if (listHead != LinkedListFixedSize.None)</span>
-<span class="fc" id="L1455">						vertices.connect(v, listHead);</span>
-<span class="fc" id="L1456">					listHead = v;</span>
-<span class="fc" id="L1457">				}</span>
+<span class="fc bfc" id="L1452" title="All 2 branches covered.">					if (!LinkedList.isNone(listHead))</span>
+<span class="fc" id="L1453">						vertices.connect(v, listHead);</span>
+<span class="fc" id="L1454">					listHead = v;</span>
+<span class="fc" id="L1455">				}</span>
 
 				@Override
 				boolean hasMoreVerticesToDischarge() {
-<span class="fc bfc" id="L1461" title="All 2 branches covered.">					for (; listIter.hasNext(); listIter.nextInt())</span>
-<span class="fc bfc" id="L1462" title="All 2 branches covered.">						if (worker.hasExcess(listIter.peekNextInt()))</span>
-<span class="fc" id="L1463">							return true;</span>
-<span class="fc" id="L1464">					return false;</span>
+<span class="fc bfc" id="L1459" title="All 2 branches covered.">					for (; listIter.hasNext(); listIter.nextInt())</span>
+<span class="fc bfc" id="L1460" title="All 2 branches covered.">						if (worker.hasExcess(listIter.peekNextInt()))</span>
+<span class="fc" id="L1461">							return true;</span>
+<span class="fc" id="L1462">					return false;</span>
 				}
 
 				@Override
 				int nextVertexToDischarge() {
 					for (;;) {
-<span class="pc bpc" id="L1470" title="1 of 2 branches missed.">						assert listIter.hasNext();</span>
-<span class="fc" id="L1471">						int v = listIter.nextInt();</span>
-<span class="pc bpc" id="L1472" title="1 of 2 branches missed.">						if (worker.hasExcess(v))</span>
-<span class="fc" id="L1473">							return v;</span>
-<span class="nc" id="L1474">						listIter.nextInt();</span>
-<span class="nc" id="L1475">					}</span>
+<span class="pc bpc" id="L1468" title="1 of 2 branches missed.">						assert listIter.hasNext();</span>
+<span class="fc" id="L1469">						int v = listIter.nextInt();</span>
+<span class="pc bpc" id="L1470" title="1 of 2 branches missed.">						if (worker.hasExcess(v))</span>
+<span class="fc" id="L1471">							return v;</span>
+<span class="nc" id="L1472">						listIter.nextInt();</span>
+<span class="nc" id="L1473">					}</span>
 				}
 			}
 		}
 
 		void convertPreflowToFlow() {
-<span class="fc" id="L1481">			final byte Unvisited = 0;</span>
-<span class="fc" id="L1482">			final byte OnPath = 1;</span>
-<span class="fc" id="L1483">			final byte Visited = 2;</span>
-<span class="fc" id="L1484">			byte[] vState = new byte[n];</span>
+<span class="fc" id="L1479">			final byte Unvisited = 0;</span>
+<span class="fc" id="L1480">			final byte OnPath = 1;</span>
+<span class="fc" id="L1481">			final byte Visited = 2;</span>
+<span class="fc" id="L1482">			byte[] vState = new byte[n];</span>
 
 			// int[] parent = new int[n];
-<span class="fc" id="L1487">			int[] parent = label; // reuse array</span>
+<span class="fc" id="L1485">			int[] parent = label; // reuse array</span>
 
 			// int[] topoNext = new int[n];
-<span class="fc" id="L1490">			int[] topoNext = layersHeadActive; // reuse array</span>
-<span class="fc" id="L1491">			int topoEnd = -1, topoBegin = -1;</span>
+<span class="fc" id="L1488">			int[] topoNext = layersHeadActive; // reuse array</span>
+<span class="fc" id="L1489">			int topoEnd = -1, topoBegin = -1;</span>
 
-<span class="fc bfc" id="L1493" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc bfc" id="L1491" title="All 2 branches covered.">			if (directed) {</span>
 				// reuse inEdgeIters array
-<span class="fc bfc" id="L1495" title="All 2 branches covered.">				for (int u : range(n))</span>
-<span class="fc" id="L1496">					inEdgeIters[u] = g.inEdges(u).iterator();</span>
+<span class="fc bfc" id="L1493" title="All 2 branches covered.">				for (int u : range(n))</span>
+<span class="fc" id="L1494">					inEdgeIters[u] = g.inEdges(u).iterator();</span>
 
-<span class="fc bfc" id="L1498" title="All 2 branches covered.">				for (int root : range(n)) {</span>
-<span class="pc bpc" id="L1499" title="1 of 8 branches missed.">					if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == sink)</span>
-<span class="fc" id="L1500">						continue;</span>
-<span class="fc" id="L1501">					vState[root] = OnPath;</span>
-<span class="fc" id="L1502">					dfs: for (int u = root;;) {</span>
-<span class="fc bfc" id="L1503" title="All 2 branches covered.">						edgeIteration: for (; inEdgeIters[u].hasNext(); inEdgeIters[u].nextInt()) {</span>
-<span class="fc" id="L1504">							int e = inEdgeIters[u].peekNextInt();</span>
-<span class="fc bfc" id="L1505" title="All 2 branches covered.">							if (!hasFlow(e))</span>
-<span class="fc" id="L1506">								continue;</span>
-<span class="fc" id="L1507">							int v = g.edgeSource(e);</span>
-<span class="fc bfc" id="L1508" title="All 2 branches covered.">							if (vState[v] == Unvisited) {</span>
-<span class="fc" id="L1509">								vState[v] = OnPath;</span>
-<span class="fc" id="L1510">								parent[v] = u;</span>
-<span class="fc" id="L1511">								u = v;</span>
-<span class="fc" id="L1512">								continue dfs;</span>
+<span class="fc bfc" id="L1496" title="All 2 branches covered.">				for (int root : range(n)) {</span>
+<span class="pc bpc" id="L1497" title="1 of 8 branches missed.">					if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == sink)</span>
+<span class="fc" id="L1498">						continue;</span>
+<span class="fc" id="L1499">					vState[root] = OnPath;</span>
+<span class="fc" id="L1500">					dfs: for (int u = root;;) {</span>
+<span class="fc bfc" id="L1501" title="All 2 branches covered.">						edgeIteration: for (; inEdgeIters[u].hasNext(); inEdgeIters[u].nextInt()) {</span>
+<span class="fc" id="L1502">							int e = inEdgeIters[u].peekNextInt();</span>
+<span class="fc bfc" id="L1503" title="All 2 branches covered.">							if (!hasFlow(e))</span>
+<span class="fc" id="L1504">								continue;</span>
+<span class="fc" id="L1505">							int v = g.edgeSource(e);</span>
+<span class="fc bfc" id="L1506" title="All 2 branches covered.">							if (vState[v] == Unvisited) {</span>
+<span class="fc" id="L1507">								vState[v] = OnPath;</span>
+<span class="fc" id="L1508">								parent[v] = u;</span>
+<span class="fc" id="L1509">								u = v;</span>
+<span class="fc" id="L1510">								continue dfs;</span>
 							}
-<span class="fc bfc" id="L1514" title="All 2 branches covered.">							if (vState[v] == OnPath) {</span>
+<span class="fc bfc" id="L1512" title="All 2 branches covered.">							if (vState[v] == OnPath) {</span>
 								// cycle found, find the minimum flow on it
 								// remove delta from all edges of the cycle
-<span class="fc" id="L1517">								eliminateCycleDirected(e);</span>
+<span class="fc" id="L1515">								eliminateCycleDirected(e);</span>
 
 								// back out the DFS up to the first saturated edge
-<span class="fc" id="L1520">								int backOutTo = u;</span>
-<span class="fc bfc" id="L1521" title="All 2 branches covered.">								for (int vw, w; v != u; v = w) {</span>
-<span class="fc" id="L1522">									vw = inEdgeIters[v].peekNextInt();</span>
-<span class="fc" id="L1523">									w = g.edgeSource(vw);</span>
-<span class="fc bfc" id="L1524" title="All 4 branches covered.">									if (vState[v] != Unvisited &amp;&amp; hasFlow(vw))</span>
-<span class="fc" id="L1525">										continue;</span>
-<span class="fc" id="L1526">									vState[w] = Unvisited;</span>
-<span class="fc bfc" id="L1527" title="All 2 branches covered.">									if (vState[v] != Unvisited)</span>
-<span class="fc" id="L1528">										backOutTo = v;</span>
+<span class="fc" id="L1518">								int backOutTo = u;</span>
+<span class="fc bfc" id="L1519" title="All 2 branches covered.">								for (int vw, w; v != u; v = w) {</span>
+<span class="fc" id="L1520">									vw = inEdgeIters[v].peekNextInt();</span>
+<span class="fc" id="L1521">									w = g.edgeSource(vw);</span>
+<span class="fc bfc" id="L1522" title="All 4 branches covered.">									if (vState[v] != Unvisited &amp;&amp; hasFlow(vw))</span>
+<span class="fc" id="L1523">										continue;</span>
+<span class="fc" id="L1524">									vState[w] = Unvisited;</span>
+<span class="fc bfc" id="L1525" title="All 2 branches covered.">									if (vState[v] != Unvisited)</span>
+<span class="fc" id="L1526">										backOutTo = v;</span>
 								}
-<span class="fc bfc" id="L1530" title="All 2 branches covered.">								if (backOutTo != u) {</span>
-<span class="fc" id="L1531">									u = backOutTo;</span>
-<span class="fc" id="L1532">									inEdgeIters[u].nextInt();</span>
-<span class="fc" id="L1533">									break edgeIteration;</span>
+<span class="fc bfc" id="L1528" title="All 2 branches covered.">								if (backOutTo != u) {</span>
+<span class="fc" id="L1529">									u = backOutTo;</span>
+<span class="fc" id="L1530">									inEdgeIters[u].nextInt();</span>
+<span class="fc" id="L1531">									break edgeIteration;</span>
 								}
 							}
 						} /* edgeIteration */
 
-<span class="fc bfc" id="L1538" title="All 2 branches covered.">						if (!inEdgeIters[u].hasNext()) {</span>
+<span class="fc bfc" id="L1536" title="All 2 branches covered.">						if (!inEdgeIters[u].hasNext()) {</span>
 							// scan of u is complete
-<span class="fc" id="L1540">							vState[u] = Visited;</span>
-<span class="fc bfc" id="L1541" title="All 2 branches covered.">							if (u != source) {</span>
-<span class="fc bfc" id="L1542" title="All 2 branches covered.">								if (topoBegin &lt; 0) {</span>
-<span class="pc bpc" id="L1543" title="1 of 2 branches missed.">									assert topoEnd &lt; 0;</span>
-<span class="fc" id="L1544">									topoBegin = topoEnd = u;</span>
+<span class="fc" id="L1538">							vState[u] = Visited;</span>
+<span class="fc bfc" id="L1539" title="All 2 branches covered.">							if (u != source) {</span>
+<span class="fc bfc" id="L1540" title="All 2 branches covered.">								if (topoBegin &lt; 0) {</span>
+<span class="pc bpc" id="L1541" title="1 of 2 branches missed.">									assert topoEnd &lt; 0;</span>
+<span class="fc" id="L1542">									topoBegin = topoEnd = u;</span>
 								} else {
-<span class="fc" id="L1546">									topoNext[u] = topoBegin;</span>
-<span class="fc" id="L1547">									topoBegin = u;</span>
+<span class="fc" id="L1544">									topoNext[u] = topoBegin;</span>
+<span class="fc" id="L1545">									topoBegin = u;</span>
 								}
 							}
-<span class="fc bfc" id="L1550" title="All 2 branches covered.">							if (u == root)</span>
-<span class="fc" id="L1551">								break dfs;</span>
-<span class="fc" id="L1552">							u = parent[u];</span>
-<span class="fc" id="L1553">							inEdgeIters[u].nextInt();</span>
+<span class="fc bfc" id="L1548" title="All 2 branches covered.">							if (u == root)</span>
+<span class="fc" id="L1549">								break dfs;</span>
+<span class="fc" id="L1550">							u = parent[u];</span>
+<span class="fc" id="L1551">							inEdgeIters[u].nextInt();</span>
 						}
 					} /* DFS */
-<span class="fc" id="L1556">				} /* DFS roots */</span>
+<span class="fc" id="L1554">				} /* DFS roots */</span>
 
 			} else {
 				// reuse outEdgeIters array
-<span class="fc bfc" id="L1560" title="All 2 branches covered.">				for (int u : range(n))</span>
-<span class="fc" id="L1561">					outEdgeIters[u] = g.outEdges(u).iterator();</span>
+<span class="fc bfc" id="L1558" title="All 2 branches covered.">				for (int u : range(n))</span>
+<span class="fc" id="L1559">					outEdgeIters[u] = g.outEdges(u).iterator();</span>
 
-<span class="fc bfc" id="L1563" title="All 2 branches covered.">				for (int root : range(n)) {</span>
-<span class="pc bpc" id="L1564" title="1 of 8 branches missed.">					if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == sink)</span>
-<span class="fc" id="L1565">						continue;</span>
-<span class="fc" id="L1566">					vState[root] = OnPath;</span>
-<span class="fc" id="L1567">					dfs: for (int u = root;;) {</span>
-<span class="fc bfc" id="L1568" title="All 2 branches covered.">						edgeIteration: for (; outEdgeIters[u].hasNext(); outEdgeIters[u].nextInt()) {</span>
-<span class="fc" id="L1569">							int e = outEdgeIters[u].peekNextInt();</span>
+<span class="fc bfc" id="L1561" title="All 2 branches covered.">				for (int root : range(n)) {</span>
+<span class="pc bpc" id="L1562" title="1 of 8 branches missed.">					if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == sink)</span>
+<span class="fc" id="L1563">						continue;</span>
+<span class="fc" id="L1564">					vState[root] = OnPath;</span>
+<span class="fc" id="L1565">					dfs: for (int u = root;;) {</span>
+<span class="fc bfc" id="L1566" title="All 2 branches covered.">						edgeIteration: for (; outEdgeIters[u].hasNext(); outEdgeIters[u].nextInt()) {</span>
+<span class="fc" id="L1567">							int e = outEdgeIters[u].peekNextInt();</span>
 							int v;
-<span class="fc bfc" id="L1571" title="All 2 branches covered.">							if (u == g.edgeSource(e)) {</span>
-<span class="fc bfc" id="L1572" title="All 2 branches covered.">								if (!hasNegativeFlow(e))</span>
-<span class="fc" id="L1573">									continue;</span>
-<span class="fc" id="L1574">								v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L1569" title="All 2 branches covered.">							if (u == g.edgeSource(e)) {</span>
+<span class="fc bfc" id="L1570" title="All 2 branches covered.">								if (!hasNegativeFlow(e))</span>
+<span class="fc" id="L1571">									continue;</span>
+<span class="fc" id="L1572">								v = g.edgeTarget(e);</span>
 							} else {
-<span class="pc bpc" id="L1576" title="1 of 2 branches missed.">								assert u == g.edgeTarget(e);</span>
-<span class="fc bfc" id="L1577" title="All 2 branches covered.">								if (!hasFlow(e))</span>
-<span class="fc" id="L1578">									continue;</span>
-<span class="fc" id="L1579">								v = g.edgeSource(e);</span>
+<span class="pc bpc" id="L1574" title="1 of 2 branches missed.">								assert u == g.edgeTarget(e);</span>
+<span class="fc bfc" id="L1575" title="All 2 branches covered.">								if (!hasFlow(e))</span>
+<span class="fc" id="L1576">									continue;</span>
+<span class="fc" id="L1577">								v = g.edgeSource(e);</span>
 							}
-<span class="fc bfc" id="L1581" title="All 2 branches covered.">							if (vState[v] == Unvisited) {</span>
-<span class="fc" id="L1582">								vState[v] = OnPath;</span>
-<span class="fc" id="L1583">								parent[v] = u;</span>
-<span class="fc" id="L1584">								u = v;</span>
-<span class="fc" id="L1585">								continue dfs;</span>
+<span class="fc bfc" id="L1579" title="All 2 branches covered.">							if (vState[v] == Unvisited) {</span>
+<span class="fc" id="L1580">								vState[v] = OnPath;</span>
+<span class="fc" id="L1581">								parent[v] = u;</span>
+<span class="fc" id="L1582">								u = v;</span>
+<span class="fc" id="L1583">								continue dfs;</span>
 							}
-<span class="fc bfc" id="L1587" title="All 2 branches covered.">							if (vState[v] == OnPath) {</span>
+<span class="fc bfc" id="L1585" title="All 2 branches covered.">							if (vState[v] == OnPath) {</span>
 								// cycle found, find the minimum flow on it
 								// remove delta from all edges of the cycle
-<span class="fc" id="L1590">								eliminateCycleUndirected(u, e);</span>
+<span class="fc" id="L1588">								eliminateCycleUndirected(u, e);</span>
 
 								// back out the DFS up to the first saturated edge
-<span class="fc" id="L1593">								int backOutTo = u;</span>
-<span class="fc bfc" id="L1594" title="All 2 branches covered.">								for (int vw, w; v != u; v = w) {</span>
-<span class="fc" id="L1595">									vw = outEdgeIters[v].peekNextInt();</span>
-<span class="fc bfc" id="L1596" title="All 2 branches covered.">									if (v == g.edgeSource(vw)) {</span>
-<span class="fc" id="L1597">										w = g.edgeTarget(vw);</span>
-<span class="fc bfc" id="L1598" title="All 4 branches covered.">										if (vState[v] != Unvisited &amp;&amp; hasNegativeFlow(vw))</span>
-<span class="fc" id="L1599">											continue;</span>
+<span class="fc" id="L1591">								int backOutTo = u;</span>
+<span class="fc bfc" id="L1592" title="All 2 branches covered.">								for (int vw, w; v != u; v = w) {</span>
+<span class="fc" id="L1593">									vw = outEdgeIters[v].peekNextInt();</span>
+<span class="fc bfc" id="L1594" title="All 2 branches covered.">									if (v == g.edgeSource(vw)) {</span>
+<span class="fc" id="L1595">										w = g.edgeTarget(vw);</span>
+<span class="fc bfc" id="L1596" title="All 4 branches covered.">										if (vState[v] != Unvisited &amp;&amp; hasNegativeFlow(vw))</span>
+<span class="fc" id="L1597">											continue;</span>
 									} else {
-<span class="pc bpc" id="L1601" title="1 of 2 branches missed.">										assert v == g.edgeTarget(vw);</span>
-<span class="fc" id="L1602">										w = g.edgeSource(vw);</span>
-<span class="fc bfc" id="L1603" title="All 4 branches covered.">										if (vState[v] != Unvisited &amp;&amp; hasFlow(vw))</span>
-<span class="fc" id="L1604">											continue;</span>
+<span class="pc bpc" id="L1599" title="1 of 2 branches missed.">										assert v == g.edgeTarget(vw);</span>
+<span class="fc" id="L1600">										w = g.edgeSource(vw);</span>
+<span class="fc bfc" id="L1601" title="All 4 branches covered.">										if (vState[v] != Unvisited &amp;&amp; hasFlow(vw))</span>
+<span class="fc" id="L1602">											continue;</span>
 									}
-<span class="fc" id="L1606">									vState[w] = Unvisited;</span>
-<span class="fc bfc" id="L1607" title="All 2 branches covered.">									if (vState[v] != Unvisited)</span>
-<span class="fc" id="L1608">										backOutTo = v;</span>
+<span class="fc" id="L1604">									vState[w] = Unvisited;</span>
+<span class="fc bfc" id="L1605" title="All 2 branches covered.">									if (vState[v] != Unvisited)</span>
+<span class="fc" id="L1606">										backOutTo = v;</span>
 								}
-<span class="fc bfc" id="L1610" title="All 2 branches covered.">								if (backOutTo != u) {</span>
-<span class="fc" id="L1611">									u = backOutTo;</span>
-<span class="fc" id="L1612">									outEdgeIters[u].nextInt();</span>
-<span class="fc" id="L1613">									break edgeIteration;</span>
+<span class="fc bfc" id="L1608" title="All 2 branches covered.">								if (backOutTo != u) {</span>
+<span class="fc" id="L1609">									u = backOutTo;</span>
+<span class="fc" id="L1610">									outEdgeIters[u].nextInt();</span>
+<span class="fc" id="L1611">									break edgeIteration;</span>
 								}
 							}
 						} /* edgeIteration */
 
-<span class="fc bfc" id="L1618" title="All 2 branches covered.">						if (!outEdgeIters[u].hasNext()) {</span>
+<span class="fc bfc" id="L1616" title="All 2 branches covered.">						if (!outEdgeIters[u].hasNext()) {</span>
 							// scan of u is complete
-<span class="fc" id="L1620">							vState[u] = Visited;</span>
-<span class="fc bfc" id="L1621" title="All 2 branches covered.">							if (u != source) {</span>
-<span class="fc bfc" id="L1622" title="All 2 branches covered.">								if (topoBegin &lt; 0) {</span>
-<span class="pc bpc" id="L1623" title="1 of 2 branches missed.">									assert topoEnd &lt; 0;</span>
-<span class="fc" id="L1624">									topoBegin = topoEnd = u;</span>
+<span class="fc" id="L1618">							vState[u] = Visited;</span>
+<span class="fc bfc" id="L1619" title="All 2 branches covered.">							if (u != source) {</span>
+<span class="fc bfc" id="L1620" title="All 2 branches covered.">								if (topoBegin &lt; 0) {</span>
+<span class="pc bpc" id="L1621" title="1 of 2 branches missed.">									assert topoEnd &lt; 0;</span>
+<span class="fc" id="L1622">									topoBegin = topoEnd = u;</span>
 								} else {
-<span class="fc" id="L1626">									topoNext[u] = topoBegin;</span>
-<span class="fc" id="L1627">									topoBegin = u;</span>
+<span class="fc" id="L1624">									topoNext[u] = topoBegin;</span>
+<span class="fc" id="L1625">									topoBegin = u;</span>
 								}
 							}
-<span class="fc bfc" id="L1630" title="All 2 branches covered.">							if (u == root)</span>
-<span class="fc" id="L1631">								break dfs;</span>
-<span class="fc" id="L1632">							u = parent[u];</span>
-<span class="fc" id="L1633">							outEdgeIters[u].nextInt();</span>
+<span class="fc bfc" id="L1628" title="All 2 branches covered.">							if (u == root)</span>
+<span class="fc" id="L1629">								break dfs;</span>
+<span class="fc" id="L1630">							u = parent[u];</span>
+<span class="fc" id="L1631">							outEdgeIters[u].nextInt();</span>
 						}
 					} /* DFS */
-<span class="fc" id="L1636">				} /* DFS roots */</span>
+<span class="fc" id="L1634">				} /* DFS roots */</span>
 			}
 
 			// All cycles were eliminated, and we calculated a topological order of the
 			// vertices. Iterate over them using this order and return all excess flow to
 			// source.
-<span class="fc bfc" id="L1642" title="All 2 branches covered.">			if (topoBegin &gt;= 0)</span>
-<span class="fc" id="L1643">				eliminateExcessWithTopologicalOrder(topoBegin, topoEnd, topoNext);</span>
+<span class="fc bfc" id="L1640" title="All 2 branches covered.">			if (topoBegin &gt;= 0)</span>
+<span class="fc" id="L1641">				eliminateExcessWithTopologicalOrder(topoBegin, topoEnd, topoNext);</span>
 			// for (int u : range(n))
 			// if (u != source &amp;&amp; u != sink)
 			// assert !hasExcess(u);
-<span class="fc" id="L1647">		}</span>
+<span class="fc" id="L1645">		}</span>
 
 		/* eliminated a cycle found during the DFS of convertPreflowToFlow */
 		/* the cycle can be found by following e and edgeIters[u].peekNext() */
@@ -1656,76 +1654,76 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 
 		IFlow computeMaxFlow() {
 			// first phase
-<span class="fc" id="L1659">			calcMaxPreflow();</span>
+<span class="fc" id="L1657">			calcMaxPreflow();</span>
 			// second phase
-<span class="fc" id="L1661">			convertPreflowToFlow();</span>
-<span class="fc" id="L1662">			return constructResult();</span>
+<span class="fc" id="L1659">			convertPreflowToFlow();</span>
+<span class="fc" id="L1660">			return constructResult();</span>
 		}
 
 		IVertexBiPartition computeMinimumCut() {
 			// first phase
-<span class="fc" id="L1667">			calcMaxPreflow();</span>
+<span class="fc" id="L1665">			calcMaxPreflow();</span>
 			// no need for second phase
 			// find the unreachable vertices from sink
 
-<span class="fc" id="L1671">			Bitmap visited = relabelVisited;</span>
-<span class="fc" id="L1672">			IntPriorityQueue queue = relabelQueue;</span>
-<span class="pc bpc" id="L1673" title="1 of 2 branches missed.">			assert visited.isEmpty();</span>
-<span class="pc bpc" id="L1674" title="1 of 2 branches missed.">			assert queue.isEmpty();</span>
+<span class="fc" id="L1669">			Bitmap visited = relabelVisited;</span>
+<span class="fc" id="L1670">			IntPriorityQueue queue = relabelQueue;</span>
+<span class="pc bpc" id="L1671" title="1 of 2 branches missed.">			assert visited.isEmpty();</span>
+<span class="pc bpc" id="L1672" title="1 of 2 branches missed.">			assert queue.isEmpty();</span>
 
-<span class="fc" id="L1676">			visited.set(sink);</span>
-<span class="fc" id="L1677">			queue.enqueue(sink);</span>
-<span class="fc bfc" id="L1678" title="All 2 branches covered.">			if (directed) {</span>
-<span class="fc bfc" id="L1679" title="All 2 branches covered.">				while (!queue.isEmpty()) {</span>
-<span class="fc" id="L1680">					int v = queue.dequeueInt();</span>
-<span class="fc bfc" id="L1681" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L1682">						int e = eit.nextInt();</span>
-<span class="fc bfc" id="L1683" title="All 2 branches covered.">						if (!isResidual(e))</span>
-<span class="fc" id="L1684">							continue;</span>
-<span class="fc" id="L1685">						int u = eit.sourceInt();</span>
-<span class="fc bfc" id="L1686" title="All 2 branches covered.">						if (visited.get(u))</span>
-<span class="fc" id="L1687">							continue;</span>
-<span class="fc" id="L1688">						visited.set(u);</span>
-<span class="fc" id="L1689">						queue.enqueue(u);</span>
-<span class="fc" id="L1690">					}</span>
-<span class="fc bfc" id="L1691" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L1692">						int e = eit.nextInt();</span>
-<span class="fc bfc" id="L1693" title="All 2 branches covered.">						if (!hasFlow(e))</span>
-<span class="fc" id="L1694">							continue;</span>
-<span class="fc" id="L1695">						int u = eit.targetInt();</span>
-<span class="fc bfc" id="L1696" title="All 2 branches covered.">						if (visited.get(u))</span>
-<span class="fc" id="L1697">							continue;</span>
-<span class="fc" id="L1698">						visited.set(u);</span>
-<span class="fc" id="L1699">						queue.enqueue(u);</span>
-<span class="fc" id="L1700">					}</span>
-<span class="fc" id="L1701">				}</span>
+<span class="fc" id="L1674">			visited.set(sink);</span>
+<span class="fc" id="L1675">			queue.enqueue(sink);</span>
+<span class="fc bfc" id="L1676" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc bfc" id="L1677" title="All 2 branches covered.">				while (!queue.isEmpty()) {</span>
+<span class="fc" id="L1678">					int v = queue.dequeueInt();</span>
+<span class="fc bfc" id="L1679" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L1680">						int e = eit.nextInt();</span>
+<span class="fc bfc" id="L1681" title="All 2 branches covered.">						if (!isResidual(e))</span>
+<span class="fc" id="L1682">							continue;</span>
+<span class="fc" id="L1683">						int u = eit.sourceInt();</span>
+<span class="fc bfc" id="L1684" title="All 2 branches covered.">						if (visited.get(u))</span>
+<span class="fc" id="L1685">							continue;</span>
+<span class="fc" id="L1686">						visited.set(u);</span>
+<span class="fc" id="L1687">						queue.enqueue(u);</span>
+<span class="fc" id="L1688">					}</span>
+<span class="fc bfc" id="L1689" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L1690">						int e = eit.nextInt();</span>
+<span class="fc bfc" id="L1691" title="All 2 branches covered.">						if (!hasFlow(e))</span>
+<span class="fc" id="L1692">							continue;</span>
+<span class="fc" id="L1693">						int u = eit.targetInt();</span>
+<span class="fc bfc" id="L1694" title="All 2 branches covered.">						if (visited.get(u))</span>
+<span class="fc" id="L1695">							continue;</span>
+<span class="fc" id="L1696">						visited.set(u);</span>
+<span class="fc" id="L1697">						queue.enqueue(u);</span>
+<span class="fc" id="L1698">					}</span>
+<span class="fc" id="L1699">				}</span>
 			} else {
-<span class="fc bfc" id="L1703" title="All 2 branches covered.">				while (!queue.isEmpty()) {</span>
-<span class="fc" id="L1704">					int v = queue.dequeueInt();</span>
-<span class="fc bfc" id="L1705" title="All 2 branches covered.">					for (int e : g.outEdges(v)) {</span>
+<span class="fc bfc" id="L1701" title="All 2 branches covered.">				while (!queue.isEmpty()) {</span>
+<span class="fc" id="L1702">					int v = queue.dequeueInt();</span>
+<span class="fc bfc" id="L1703" title="All 2 branches covered.">					for (int e : g.outEdges(v)) {</span>
 						int u;
-<span class="fc bfc" id="L1707" title="All 2 branches covered.">						if (v == g.edgeSource(e)) {</span>
-<span class="fc bfc" id="L1708" title="All 2 branches covered.">							if (!isTwinResidualUndirected(e))</span>
-<span class="fc" id="L1709">								continue;</span>
-<span class="fc" id="L1710">							u = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L1705" title="All 2 branches covered.">						if (v == g.edgeSource(e)) {</span>
+<span class="fc bfc" id="L1706" title="All 2 branches covered.">							if (!isTwinResidualUndirected(e))</span>
+<span class="fc" id="L1707">								continue;</span>
+<span class="fc" id="L1708">							u = g.edgeTarget(e);</span>
 						} else {
-<span class="pc bpc" id="L1712" title="1 of 2 branches missed.">							assert v == g.edgeTarget(e);</span>
-<span class="fc bfc" id="L1713" title="All 2 branches covered.">							if (!isResidual(e))</span>
-<span class="fc" id="L1714">								continue;</span>
-<span class="fc" id="L1715">							u = g.edgeSource(e);</span>
+<span class="pc bpc" id="L1710" title="1 of 2 branches missed.">							assert v == g.edgeTarget(e);</span>
+<span class="fc bfc" id="L1711" title="All 2 branches covered.">							if (!isResidual(e))</span>
+<span class="fc" id="L1712">								continue;</span>
+<span class="fc" id="L1713">							u = g.edgeSource(e);</span>
 						}
-<span class="fc bfc" id="L1717" title="All 2 branches covered.">						if (visited.get(u))</span>
-<span class="fc" id="L1718">							continue;</span>
-<span class="fc" id="L1719">						visited.set(u);</span>
-<span class="fc" id="L1720">						queue.enqueue(u);</span>
-<span class="fc" id="L1721">					}</span>
-<span class="fc" id="L1722">				}</span>
+<span class="fc bfc" id="L1715" title="All 2 branches covered.">						if (visited.get(u))</span>
+<span class="fc" id="L1716">							continue;</span>
+<span class="fc" id="L1717">						visited.set(u);</span>
+<span class="fc" id="L1718">						queue.enqueue(u);</span>
+<span class="fc" id="L1719">					}</span>
+<span class="fc" id="L1720">				}</span>
 			}
-<span class="pc bpc" id="L1724" title="1 of 2 branches missed.">			assert !visited.get(source);</span>
-<span class="fc" id="L1725">			Bitmap cut = visited.copy();</span>
-<span class="fc" id="L1726">			cut.not();</span>
-<span class="fc" id="L1727">			visited.clear();</span>
-<span class="fc" id="L1728">			return IVertexBiPartition.fromBitmap(g, cut);</span>
+<span class="pc bpc" id="L1722" title="1 of 2 branches missed.">			assert !visited.get(source);</span>
+<span class="fc" id="L1723">			Bitmap cut = visited.copy();</span>
+<span class="fc" id="L1724">			cut.not();</span>
+<span class="fc" id="L1725">			visited.clear();</span>
+<span class="fc" id="L1726">			return IVertexBiPartition.fromBitmap(g, cut);</span>
 		}
 
 		abstract boolean hasExcess(int u);
@@ -1740,7 +1738,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 
 	}
 
-<span class="fc" id="L1743">	static class WorkerDouble extends Worker {</span>
+<span class="fc" id="L1741">	static class WorkerDouble extends Worker {</span>
 		final double[] capacity;
 		final double[] residualCapacity;
 
@@ -1750,219 +1748,219 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 
 		WorkerDouble(IndexGraph gOrig, IWeightFunction capacityOrig, int source, int sink,
 				ActiveOrderPolicy activeOrderPolicy, DischargePolicy dischargePolicy) {
-<span class="fc" id="L1753">			super(gOrig, capacityOrig, source, sink, activeOrderPolicy, dischargePolicy);</span>
+<span class="fc" id="L1751">			super(gOrig, capacityOrig, source, sink, activeOrderPolicy, dischargePolicy);</span>
 
-<span class="fc" id="L1755">			capacity = new double[g.edges().size()];</span>
-<span class="fc" id="L1756">			initCapacities(capacity);</span>
-<span class="fc" id="L1757">			residualCapacity = capacity.clone();</span>
+<span class="fc" id="L1753">			capacity = new double[g.edges().size()];</span>
+<span class="fc" id="L1754">			initCapacities(capacity);</span>
+<span class="fc" id="L1755">			residualCapacity = capacity.clone();</span>
 
-<span class="fc" id="L1759">			excess = new double[n];</span>
-<span class="fc bfc" id="L1760" title="All 2 branches covered.">			eps = Arrays.stream(capacity).filter(c -&gt; c &gt; 0).min().orElse(0) * 1e-8;</span>
-<span class="fc" id="L1761">		}</span>
+<span class="fc" id="L1757">			excess = new double[n];</span>
+<span class="fc bfc" id="L1758" title="All 2 branches covered.">			eps = Arrays.stream(capacity).filter(c -&gt; c &gt; 0).min().orElse(0) * 1e-8;</span>
+<span class="fc" id="L1759">		}</span>
 
 		@Override
 		void pushAsMuchFromSource() {
-<span class="fc bfc" id="L1765" title="All 2 branches covered.">			if (directed) {</span>
-<span class="fc bfc" id="L1766" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L1767">					int e = eit.nextInt(), v;</span>
-<span class="fc" id="L1768">					double f = getResidualCapacity(e);</span>
-<span class="fc bfc" id="L1769" title="All 4 branches covered.">					if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = eit.targetInt()]) {</span>
-<span class="fc bfc" id="L1770" title="All 4 branches covered.">						if (v != sink &amp;&amp; !hasExcess(v))</span>
-<span class="fc" id="L1771">							activate(v);</span>
-<span class="fc" id="L1772">						push(e, f);</span>
+<span class="fc bfc" id="L1763" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc bfc" id="L1764" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L1765">					int e = eit.nextInt(), v;</span>
+<span class="fc" id="L1766">					double f = getResidualCapacity(e);</span>
+<span class="fc bfc" id="L1767" title="All 4 branches covered.">					if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = eit.targetInt()]) {</span>
+<span class="fc bfc" id="L1768" title="All 4 branches covered.">						if (v != sink &amp;&amp; !hasExcess(v))</span>
+<span class="fc" id="L1769">							activate(v);</span>
+<span class="fc" id="L1770">						push(e, f);</span>
 					}
-<span class="fc" id="L1774">				}</span>
+<span class="fc" id="L1772">				}</span>
 			} else {
-<span class="fc bfc" id="L1776" title="All 2 branches covered.">				for (int e : g.outEdges(source)) {</span>
+<span class="fc bfc" id="L1774" title="All 2 branches covered.">				for (int e : g.outEdges(source)) {</span>
 					int v;
-<span class="fc bfc" id="L1778" title="All 2 branches covered.">					if (source == g.edgeSource(e)) {</span>
-<span class="fc" id="L1779">						double f = getResidualCapacity(e);</span>
-<span class="fc bfc" id="L1780" title="All 4 branches covered.">						if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = g.edgeTarget(e)]) {</span>
-<span class="pc bpc" id="L1781" title="1 of 4 branches missed.">							if (v != sink &amp;&amp; !hasExcess(v))</span>
-<span class="fc" id="L1782">								activate(v);</span>
-<span class="fc" id="L1783">							push(e, f);</span>
+<span class="fc bfc" id="L1776" title="All 2 branches covered.">					if (source == g.edgeSource(e)) {</span>
+<span class="fc" id="L1777">						double f = getResidualCapacity(e);</span>
+<span class="fc bfc" id="L1778" title="All 4 branches covered.">						if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = g.edgeTarget(e)]) {</span>
+<span class="pc bpc" id="L1779" title="1 of 4 branches missed.">							if (v != sink &amp;&amp; !hasExcess(v))</span>
+<span class="fc" id="L1780">								activate(v);</span>
+<span class="fc" id="L1781">							push(e, f);</span>
 						}
-<span class="fc" id="L1785">					} else {</span>
-<span class="pc bpc" id="L1786" title="1 of 2 branches missed.">						assert source == g.edgeTarget(e);</span>
-<span class="fc" id="L1787">						double f = getTwinResidualCapacity(e);</span>
-<span class="pc bpc" id="L1788" title="1 of 4 branches missed.">						if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = g.edgeSource(e)]) {</span>
-<span class="pc bpc" id="L1789" title="1 of 4 branches missed.">							if (v != sink &amp;&amp; !hasExcess(v))</span>
-<span class="fc" id="L1790">								activate(v);</span>
-<span class="fc" id="L1791">							push(e, -f);</span>
+<span class="fc" id="L1783">					} else {</span>
+<span class="pc bpc" id="L1784" title="1 of 2 branches missed.">						assert source == g.edgeTarget(e);</span>
+<span class="fc" id="L1785">						double f = getTwinResidualCapacity(e);</span>
+<span class="pc bpc" id="L1786" title="1 of 4 branches missed.">						if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = g.edgeSource(e)]) {</span>
+<span class="pc bpc" id="L1787" title="1 of 4 branches missed.">							if (v != sink &amp;&amp; !hasExcess(v))</span>
+<span class="fc" id="L1788">								activate(v);</span>
+<span class="fc" id="L1789">							push(e, -f);</span>
 						}
 					}
-<span class="fc" id="L1794">				}</span>
+<span class="fc" id="L1792">				}</span>
 			}
-<span class="fc" id="L1796">		}</span>
+<span class="fc" id="L1794">		}</span>
 
 		private void push(int e, double f) {
-<span class="fc" id="L1799">			residualCapacity[e] -= f;</span>
-<span class="pc bpc" id="L1800" title="1 of 2 branches missed.">			assert residualCapacity[e] &gt;= -eps;</span>
+<span class="fc" id="L1797">			residualCapacity[e] -= f;</span>
+<span class="pc bpc" id="L1798" title="1 of 2 branches missed.">			assert residualCapacity[e] &gt;= -eps;</span>
 
-<span class="fc" id="L1802">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L1803">			excess[u] -= f;</span>
-<span class="fc" id="L1804">			excess[v] += f;</span>
-<span class="fc" id="L1805">		}</span>
+<span class="fc" id="L1800">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L1801">			excess[u] -= f;</span>
+<span class="fc" id="L1802">			excess[v] += f;</span>
+<span class="fc" id="L1803">		}</span>
 
 		@Override
 		void eliminateCycleDirected(int e) {
-<span class="pc bpc" id="L1809" title="1 of 2 branches missed.">			assert directed;</span>
-<span class="fc" id="L1810">			int u = g.edgeTarget(e);</span>
-<span class="fc" id="L1811">			int v = g.edgeSource(e);</span>
-<span class="pc bpc" id="L1812" title="1 of 2 branches missed.">			assert hasFlow(e);</span>
-<span class="fc" id="L1813">			double f = flow(e);</span>
+<span class="pc bpc" id="L1807" title="1 of 2 branches missed.">			assert directed;</span>
+<span class="fc" id="L1808">			int u = g.edgeTarget(e);</span>
+<span class="fc" id="L1809">			int v = g.edgeSource(e);</span>
+<span class="pc bpc" id="L1810" title="1 of 2 branches missed.">			assert hasFlow(e);</span>
+<span class="fc" id="L1811">			double f = flow(e);</span>
 			for (;;) {
-<span class="fc" id="L1815">				e = inEdgeIters[v].peekNextInt();</span>
-<span class="pc bpc" id="L1816" title="1 of 2 branches missed.">				assert hasFlow(e);</span>
-<span class="fc" id="L1817">				f = Math.min(f, flow(e));</span>
-<span class="fc bfc" id="L1818" title="All 2 branches covered.">				if (v == u)</span>
-<span class="fc" id="L1819">					break;</span>
-<span class="fc" id="L1820">				v = g.edgeSource(e);</span>
+<span class="fc" id="L1813">				e = inEdgeIters[v].peekNextInt();</span>
+<span class="pc bpc" id="L1814" title="1 of 2 branches missed.">				assert hasFlow(e);</span>
+<span class="fc" id="L1815">				f = Math.min(f, flow(e));</span>
+<span class="fc bfc" id="L1816" title="All 2 branches covered.">				if (v == u)</span>
+<span class="fc" id="L1817">					break;</span>
+<span class="fc" id="L1818">				v = g.edgeSource(e);</span>
 			}
-<span class="pc bpc" id="L1822" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
+<span class="pc bpc" id="L1820" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
 
 			// remove delta from all edges of the cycle
-<span class="fc" id="L1825">			for (v = u;;) {</span>
-<span class="fc" id="L1826">				e = inEdgeIters[v].peekNextInt();</span>
-<span class="fc" id="L1827">				residualCapacity[e] += f;</span>
-<span class="fc" id="L1828">				v = g.edgeSource(e);</span>
-<span class="fc bfc" id="L1829" title="All 2 branches covered.">				if (v == u)</span>
-<span class="fc" id="L1830">					break;</span>
+<span class="fc" id="L1823">			for (v = u;;) {</span>
+<span class="fc" id="L1824">				e = inEdgeIters[v].peekNextInt();</span>
+<span class="fc" id="L1825">				residualCapacity[e] += f;</span>
+<span class="fc" id="L1826">				v = g.edgeSource(e);</span>
+<span class="fc bfc" id="L1827" title="All 2 branches covered.">				if (v == u)</span>
+<span class="fc" id="L1828">					break;</span>
 			}
-<span class="fc" id="L1832">		}</span>
+<span class="fc" id="L1830">		}</span>
 
 		@Override
 		void eliminateCycleUndirected(int cycleSource, int e) {
-<span class="fc" id="L1836">			int u = cycleSource;</span>
+<span class="fc" id="L1834">			int u = cycleSource;</span>
 			int v;
 			double f;
-<span class="fc bfc" id="L1839" title="All 2 branches covered.">			if (u == g.edgeSource(e)) {</span>
-<span class="fc" id="L1840">				v = g.edgeTarget(e);</span>
-<span class="pc bpc" id="L1841" title="1 of 2 branches missed.">				assert hasNegativeFlow(e);</span>
-<span class="fc" id="L1842">				f = -flow(e);</span>
+<span class="fc bfc" id="L1837" title="All 2 branches covered.">			if (u == g.edgeSource(e)) {</span>
+<span class="fc" id="L1838">				v = g.edgeTarget(e);</span>
+<span class="pc bpc" id="L1839" title="1 of 2 branches missed.">				assert hasNegativeFlow(e);</span>
+<span class="fc" id="L1840">				f = -flow(e);</span>
 			} else {
-<span class="pc bpc" id="L1844" title="1 of 2 branches missed.">				assert u == g.edgeTarget(e);</span>
-<span class="fc" id="L1845">				v = g.edgeSource(e);</span>
-<span class="pc bpc" id="L1846" title="1 of 2 branches missed.">				assert hasFlow(e);</span>
-<span class="fc" id="L1847">				f = flow(e);</span>
+<span class="pc bpc" id="L1842" title="1 of 2 branches missed.">				assert u == g.edgeTarget(e);</span>
+<span class="fc" id="L1843">				v = g.edgeSource(e);</span>
+<span class="pc bpc" id="L1844" title="1 of 2 branches missed.">				assert hasFlow(e);</span>
+<span class="fc" id="L1845">				f = flow(e);</span>
 			}
 			for (int w;;) {
-<span class="fc" id="L1850">				e = outEdgeIters[v].peekNextInt();</span>
-<span class="fc" id="L1851">				double ef = flow(e);</span>
-<span class="fc bfc" id="L1852" title="All 2 branches covered.">				if (v == g.edgeSource(e)) {</span>
-<span class="pc bpc" id="L1853" title="1 of 2 branches missed.">					assert ef &lt; 0;</span>
-<span class="fc" id="L1854">					ef = -ef;</span>
-<span class="fc" id="L1855">					w = g.edgeTarget(e);</span>
+<span class="fc" id="L1848">				e = outEdgeIters[v].peekNextInt();</span>
+<span class="fc" id="L1849">				double ef = flow(e);</span>
+<span class="fc bfc" id="L1850" title="All 2 branches covered.">				if (v == g.edgeSource(e)) {</span>
+<span class="pc bpc" id="L1851" title="1 of 2 branches missed.">					assert ef &lt; 0;</span>
+<span class="fc" id="L1852">					ef = -ef;</span>
+<span class="fc" id="L1853">					w = g.edgeTarget(e);</span>
 				} else {
-<span class="pc bpc" id="L1857" title="1 of 2 branches missed.">					assert v == g.edgeTarget(e);</span>
-<span class="pc bpc" id="L1858" title="1 of 2 branches missed.">					assert ef &gt; 0;</span>
-<span class="fc" id="L1859">					w = g.edgeSource(e);</span>
+<span class="pc bpc" id="L1855" title="1 of 2 branches missed.">					assert v == g.edgeTarget(e);</span>
+<span class="pc bpc" id="L1856" title="1 of 2 branches missed.">					assert ef &gt; 0;</span>
+<span class="fc" id="L1857">					w = g.edgeSource(e);</span>
 				}
-<span class="fc" id="L1861">				f = Math.min(f, ef);</span>
-<span class="fc bfc" id="L1862" title="All 2 branches covered.">				if (v == u)</span>
-<span class="fc" id="L1863">					break;</span>
-<span class="fc" id="L1864">				v = w;</span>
-<span class="fc" id="L1865">			}</span>
-<span class="pc bpc" id="L1866" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
+<span class="fc" id="L1859">				f = Math.min(f, ef);</span>
+<span class="fc bfc" id="L1860" title="All 2 branches covered.">				if (v == u)</span>
+<span class="fc" id="L1861">					break;</span>
+<span class="fc" id="L1862">				v = w;</span>
+<span class="fc" id="L1863">			}</span>
+<span class="pc bpc" id="L1864" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
 
 			// remove delta from all edges of the cycle
-<span class="fc" id="L1869">			for (v = u;;) {</span>
-<span class="fc" id="L1870">				e = outEdgeIters[v].peekNextInt();</span>
-<span class="fc bfc" id="L1871" title="All 2 branches covered.">				if (v == g.edgeSource(e)) {</span>
-<span class="fc" id="L1872">					residualCapacity[e] -= f;</span>
-<span class="fc" id="L1873">					v = g.edgeTarget(e);</span>
+<span class="fc" id="L1867">			for (v = u;;) {</span>
+<span class="fc" id="L1868">				e = outEdgeIters[v].peekNextInt();</span>
+<span class="fc bfc" id="L1869" title="All 2 branches covered.">				if (v == g.edgeSource(e)) {</span>
+<span class="fc" id="L1870">					residualCapacity[e] -= f;</span>
+<span class="fc" id="L1871">					v = g.edgeTarget(e);</span>
 				} else {
-<span class="pc bpc" id="L1875" title="1 of 2 branches missed.">					assert v == g.edgeTarget(e);</span>
-<span class="fc" id="L1876">					residualCapacity[e] += f;</span>
-<span class="fc" id="L1877">					v = g.edgeSource(e);</span>
+<span class="pc bpc" id="L1873" title="1 of 2 branches missed.">					assert v == g.edgeTarget(e);</span>
+<span class="fc" id="L1874">					residualCapacity[e] += f;</span>
+<span class="fc" id="L1875">					v = g.edgeSource(e);</span>
 				}
-<span class="fc bfc" id="L1879" title="All 2 branches covered.">				if (v == u)</span>
-<span class="fc" id="L1880">					break;</span>
+<span class="fc bfc" id="L1877" title="All 2 branches covered.">				if (v == u)</span>
+<span class="fc" id="L1878">					break;</span>
 			}
-<span class="fc" id="L1882">		}</span>
+<span class="fc" id="L1880">		}</span>
 
 		@Override
 		void eliminateExcessWithTopologicalOrder(int topoBegin, int topoEnd, int[] topoNext) {
-<span class="fc bfc" id="L1886" title="All 2 branches covered.">			if (directed) {</span>
-<span class="fc" id="L1887">				for (int u = topoBegin;; u = topoNext[u]) {</span>
-<span class="fc bfc" id="L1888" title="All 2 branches covered.">					for (int e : g.inEdges(u)) {</span>
-<span class="fc bfc" id="L1889" title="All 2 branches covered.">						if (!hasExcess(u))</span>
-<span class="fc" id="L1890">							break;</span>
-<span class="fc" id="L1891">						double f = flow(e);</span>
-<span class="fc bfc" id="L1892" title="All 2 branches covered.">						if (f &gt; 0)</span>
-<span class="fc" id="L1893">							push(e, -Math.min(excess[u], f));</span>
-<span class="fc" id="L1894">					}</span>
-<span class="fc bfc" id="L1895" title="All 2 branches covered.">					if (u == topoEnd)</span>
-<span class="fc" id="L1896">						break;</span>
+<span class="fc bfc" id="L1884" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc" id="L1885">				for (int u = topoBegin;; u = topoNext[u]) {</span>
+<span class="fc bfc" id="L1886" title="All 2 branches covered.">					for (int e : g.inEdges(u)) {</span>
+<span class="fc bfc" id="L1887" title="All 2 branches covered.">						if (!hasExcess(u))</span>
+<span class="fc" id="L1888">							break;</span>
+<span class="fc" id="L1889">						double f = flow(e);</span>
+<span class="fc bfc" id="L1890" title="All 2 branches covered.">						if (f &gt; 0)</span>
+<span class="fc" id="L1891">							push(e, -Math.min(excess[u], f));</span>
+<span class="fc" id="L1892">					}</span>
+<span class="fc bfc" id="L1893" title="All 2 branches covered.">					if (u == topoEnd)</span>
+<span class="fc" id="L1894">						break;</span>
 				}
 			} else {
-<span class="fc" id="L1899">				for (int u = topoBegin;; u = topoNext[u]) {</span>
-<span class="fc bfc" id="L1900" title="All 2 branches covered.">					for (int e : g.outEdges(u)) {</span>
-<span class="fc bfc" id="L1901" title="All 2 branches covered.">						if (!hasExcess(u))</span>
-<span class="fc" id="L1902">							break;</span>
-<span class="fc" id="L1903">						double f = flow(e);</span>
-<span class="fc bfc" id="L1904" title="All 2 branches covered.">						if (u == g.edgeSource(e)) {</span>
-<span class="fc bfc" id="L1905" title="All 2 branches covered.">							if (f &lt; 0)</span>
-<span class="fc" id="L1906">								push(e, Math.min(excess[u], -f));</span>
+<span class="fc" id="L1897">				for (int u = topoBegin;; u = topoNext[u]) {</span>
+<span class="fc bfc" id="L1898" title="All 2 branches covered.">					for (int e : g.outEdges(u)) {</span>
+<span class="fc bfc" id="L1899" title="All 2 branches covered.">						if (!hasExcess(u))</span>
+<span class="fc" id="L1900">							break;</span>
+<span class="fc" id="L1901">						double f = flow(e);</span>
+<span class="fc bfc" id="L1902" title="All 2 branches covered.">						if (u == g.edgeSource(e)) {</span>
+<span class="fc bfc" id="L1903" title="All 2 branches covered.">							if (f &lt; 0)</span>
+<span class="fc" id="L1904">								push(e, Math.min(excess[u], -f));</span>
 						} else {
-<span class="pc bpc" id="L1908" title="1 of 2 branches missed.">							assert u == g.edgeTarget(e);</span>
-<span class="fc bfc" id="L1909" title="All 2 branches covered.">							if (f &gt; 0)</span>
-<span class="fc" id="L1910">								push(e, -Math.min(excess[u], f));</span>
+<span class="pc bpc" id="L1906" title="1 of 2 branches missed.">							assert u == g.edgeTarget(e);</span>
+<span class="fc bfc" id="L1907" title="All 2 branches covered.">							if (f &gt; 0)</span>
+<span class="fc" id="L1908">								push(e, -Math.min(excess[u], f));</span>
 						}
-<span class="fc" id="L1912">					}</span>
-<span class="fc bfc" id="L1913" title="All 2 branches covered.">					if (u == topoEnd)</span>
-<span class="fc" id="L1914">						break;</span>
+<span class="fc" id="L1910">					}</span>
+<span class="fc bfc" id="L1911" title="All 2 branches covered.">					if (u == topoEnd)</span>
+<span class="fc" id="L1912">						break;</span>
 				}
 			}
-<span class="fc" id="L1917">		}</span>
+<span class="fc" id="L1915">		}</span>
 
 		@Override
 		IFlow constructResult() {
-<span class="fc" id="L1921">			return constructResult(capacity, residualCapacity);</span>
+<span class="fc" id="L1919">			return constructResult(capacity, residualCapacity);</span>
 		}
 
 		@Override
 		boolean hasExcess(int u) {
-<span class="fc bfc" id="L1926" title="All 2 branches covered.">			return excess[u] &gt; eps;</span>
+<span class="fc bfc" id="L1924" title="All 2 branches covered.">			return excess[u] &gt; eps;</span>
 		}
 
 		double getResidualCapacity(int e) {
-<span class="fc" id="L1930">			return residualCapacity[e];</span>
+<span class="fc" id="L1928">			return residualCapacity[e];</span>
 		}
 
 		double flow(int e) {
-<span class="fc" id="L1934">			return capacity[e] - residualCapacity[e];</span>
+<span class="fc" id="L1932">			return capacity[e] - residualCapacity[e];</span>
 		}
 
 		@Override
 		boolean isResidual(int e) {
-<span class="fc bfc" id="L1939" title="All 2 branches covered.">			return getResidualCapacity(e) &gt; eps;</span>
+<span class="fc bfc" id="L1937" title="All 2 branches covered.">			return getResidualCapacity(e) &gt; eps;</span>
 		}
 
 		@Override
 		boolean isTwinResidualUndirected(int e) {
-<span class="fc bfc" id="L1944" title="All 2 branches covered.">			return getTwinResidualCapacity(e) &gt; eps;</span>
+<span class="fc bfc" id="L1942" title="All 2 branches covered.">			return getTwinResidualCapacity(e) &gt; eps;</span>
 		}
 
 		double getTwinResidualCapacity(int e) {
-<span class="pc bpc" id="L1948" title="1 of 2 branches missed.">			assert !directed;</span>
-<span class="fc" id="L1949">			return 2 * capacity[e] - residualCapacity[e];</span>
+<span class="pc bpc" id="L1946" title="1 of 2 branches missed.">			assert !directed;</span>
+<span class="fc" id="L1947">			return 2 * capacity[e] - residualCapacity[e];</span>
 		}
 
 		@Override
 		boolean hasNegativeFlow(int e) {
-<span class="pc bpc" id="L1954" title="1 of 2 branches missed.">			assert !directed;</span>
-<span class="fc bfc" id="L1955" title="All 2 branches covered.">			return flow(e) &lt; -eps;</span>
+<span class="pc bpc" id="L1952" title="1 of 2 branches missed.">			assert !directed;</span>
+<span class="fc bfc" id="L1953" title="All 2 branches covered.">			return flow(e) &lt; -eps;</span>
 		}
 
 		@Override
 		boolean hasFlow(int e) {
-<span class="fc bfc" id="L1960" title="All 2 branches covered.">			return flow(e) &gt; eps;</span>
+<span class="fc bfc" id="L1958" title="All 2 branches covered.">			return flow(e) &gt; eps;</span>
 		}
 
 	}
 
-<span class="fc" id="L1965">	static class WorkerInt extends Worker {</span>
+<span class="fc" id="L1963">	static class WorkerInt extends Worker {</span>
 		final int[] residualCapacity;
 		final int[] capacity;
 
@@ -1970,213 +1968,213 @@ public class MaximumFlowPushRelabel extends MaximumFlowAbstractWithoutResidualNe
 
 		WorkerInt(IndexGraph gOrig, IWeightFunctionInt capacityOrig, int source, int sink,
 				ActiveOrderPolicy activeOrderPolicy, DischargePolicy dischargePolicy) {
-<span class="fc" id="L1973">			super(gOrig, capacityOrig, source, sink, activeOrderPolicy, dischargePolicy);</span>
+<span class="fc" id="L1971">			super(gOrig, capacityOrig, source, sink, activeOrderPolicy, dischargePolicy);</span>
 
-<span class="fc" id="L1975">			capacity = new int[g.edges().size()];</span>
-<span class="fc" id="L1976">			initCapacities(capacity);</span>
-<span class="fc" id="L1977">			residualCapacity = capacity.clone();</span>
+<span class="fc" id="L1973">			capacity = new int[g.edges().size()];</span>
+<span class="fc" id="L1974">			initCapacities(capacity);</span>
+<span class="fc" id="L1975">			residualCapacity = capacity.clone();</span>
 
-<span class="fc" id="L1979">			excess = new int[n];</span>
-<span class="fc" id="L1980">		}</span>
+<span class="fc" id="L1977">			excess = new int[n];</span>
+<span class="fc" id="L1978">		}</span>
 
 		@Override
 		void pushAsMuchFromSource() {
-<span class="fc bfc" id="L1984" title="All 2 branches covered.">			if (directed) {</span>
-<span class="fc bfc" id="L1985" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L1986">					int e = eit.nextInt(), v;</span>
-<span class="fc" id="L1987">					int f = getResidualCapacity(e);</span>
-<span class="fc bfc" id="L1988" title="All 4 branches covered.">					if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = eit.targetInt()]) {</span>
-<span class="fc bfc" id="L1989" title="All 4 branches covered.">						if (v != sink &amp;&amp; !hasExcess(v))</span>
-<span class="fc" id="L1990">							activate(v);</span>
-<span class="fc" id="L1991">						push(e, f);</span>
+<span class="fc bfc" id="L1982" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc bfc" id="L1983" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L1984">					int e = eit.nextInt(), v;</span>
+<span class="fc" id="L1985">					int f = getResidualCapacity(e);</span>
+<span class="fc bfc" id="L1986" title="All 4 branches covered.">					if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = eit.targetInt()]) {</span>
+<span class="fc bfc" id="L1987" title="All 4 branches covered.">						if (v != sink &amp;&amp; !hasExcess(v))</span>
+<span class="fc" id="L1988">							activate(v);</span>
+<span class="fc" id="L1989">						push(e, f);</span>
 					}
-<span class="fc" id="L1993">				}</span>
+<span class="fc" id="L1991">				}</span>
 			} else {
-<span class="fc bfc" id="L1995" title="All 2 branches covered.">				for (int e : g.outEdges(source)) {</span>
+<span class="fc bfc" id="L1993" title="All 2 branches covered.">				for (int e : g.outEdges(source)) {</span>
 					int v;
-<span class="fc bfc" id="L1997" title="All 2 branches covered.">					if (source == g.edgeSource(e)) {</span>
-<span class="fc" id="L1998">						int f = getResidualCapacity(e);</span>
-<span class="fc bfc" id="L1999" title="All 4 branches covered.">						if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = g.edgeTarget(e)]) {</span>
-<span class="fc bfc" id="L2000" title="All 4 branches covered.">							if (v != sink &amp;&amp; !hasExcess(v))</span>
-<span class="fc" id="L2001">								activate(v);</span>
-<span class="fc" id="L2002">							push(e, f);</span>
+<span class="fc bfc" id="L1995" title="All 2 branches covered.">					if (source == g.edgeSource(e)) {</span>
+<span class="fc" id="L1996">						int f = getResidualCapacity(e);</span>
+<span class="fc bfc" id="L1997" title="All 4 branches covered.">						if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = g.edgeTarget(e)]) {</span>
+<span class="fc bfc" id="L1998" title="All 4 branches covered.">							if (v != sink &amp;&amp; !hasExcess(v))</span>
+<span class="fc" id="L1999">								activate(v);</span>
+<span class="fc" id="L2000">							push(e, f);</span>
 						}
-<span class="fc" id="L2004">					} else {</span>
-<span class="pc bpc" id="L2005" title="1 of 2 branches missed.">						assert source == g.edgeTarget(e);</span>
-<span class="fc" id="L2006">						int f = getTwinResidualCapacity(e);</span>
-<span class="fc bfc" id="L2007" title="All 4 branches covered.">						if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = g.edgeSource(e)]) {</span>
-<span class="fc bfc" id="L2008" title="All 4 branches covered.">							if (v != sink &amp;&amp; !hasExcess(v))</span>
-<span class="fc" id="L2009">								activate(v);</span>
-<span class="fc" id="L2010">							push(e, -f);</span>
+<span class="fc" id="L2002">					} else {</span>
+<span class="pc bpc" id="L2003" title="1 of 2 branches missed.">						assert source == g.edgeTarget(e);</span>
+<span class="fc" id="L2004">						int f = getTwinResidualCapacity(e);</span>
+<span class="fc bfc" id="L2005" title="All 4 branches covered.">						if (f &gt; 0 &amp;&amp; label[source] &gt; label[v = g.edgeSource(e)]) {</span>
+<span class="fc bfc" id="L2006" title="All 4 branches covered.">							if (v != sink &amp;&amp; !hasExcess(v))</span>
+<span class="fc" id="L2007">								activate(v);</span>
+<span class="fc" id="L2008">							push(e, -f);</span>
 						}
 					}
-<span class="fc" id="L2013">				}</span>
+<span class="fc" id="L2011">				}</span>
 			}
-<span class="fc" id="L2015">		}</span>
+<span class="fc" id="L2013">		}</span>
 
 		private void push(int e, int f) {
-<span class="fc" id="L2018">			residualCapacity[e] -= f;</span>
-<span class="pc bpc" id="L2019" title="1 of 2 branches missed.">			assert residualCapacity[e] &gt;= 0;</span>
+<span class="fc" id="L2016">			residualCapacity[e] -= f;</span>
+<span class="pc bpc" id="L2017" title="1 of 2 branches missed.">			assert residualCapacity[e] &gt;= 0;</span>
 
-<span class="fc" id="L2021">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L2022">			excess[u] -= f;</span>
-<span class="fc" id="L2023">			excess[v] += f;</span>
-<span class="fc" id="L2024">		}</span>
+<span class="fc" id="L2019">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L2020">			excess[u] -= f;</span>
+<span class="fc" id="L2021">			excess[v] += f;</span>
+<span class="fc" id="L2022">		}</span>
 
 		@Override
 		void eliminateCycleDirected(int e) {
-<span class="pc bpc" id="L2028" title="1 of 2 branches missed.">			assert directed;</span>
-<span class="fc" id="L2029">			int u = g.edgeTarget(e);</span>
-<span class="fc" id="L2030">			int v = g.edgeSource(e);</span>
-<span class="pc bpc" id="L2031" title="1 of 2 branches missed.">			assert hasFlow(e);</span>
-<span class="fc" id="L2032">			int f = flow(e);</span>
+<span class="pc bpc" id="L2026" title="1 of 2 branches missed.">			assert directed;</span>
+<span class="fc" id="L2027">			int u = g.edgeTarget(e);</span>
+<span class="fc" id="L2028">			int v = g.edgeSource(e);</span>
+<span class="pc bpc" id="L2029" title="1 of 2 branches missed.">			assert hasFlow(e);</span>
+<span class="fc" id="L2030">			int f = flow(e);</span>
 			for (;;) {
-<span class="fc" id="L2034">				e = inEdgeIters[v].peekNextInt();</span>
-<span class="pc bpc" id="L2035" title="1 of 2 branches missed.">				assert hasFlow(e);</span>
-<span class="fc" id="L2036">				f = Math.min(f, flow(e));</span>
-<span class="fc bfc" id="L2037" title="All 2 branches covered.">				if (v == u)</span>
-<span class="fc" id="L2038">					break;</span>
-<span class="fc" id="L2039">				v = g.edgeSource(e);</span>
+<span class="fc" id="L2032">				e = inEdgeIters[v].peekNextInt();</span>
+<span class="pc bpc" id="L2033" title="1 of 2 branches missed.">				assert hasFlow(e);</span>
+<span class="fc" id="L2034">				f = Math.min(f, flow(e));</span>
+<span class="fc bfc" id="L2035" title="All 2 branches covered.">				if (v == u)</span>
+<span class="fc" id="L2036">					break;</span>
+<span class="fc" id="L2037">				v = g.edgeSource(e);</span>
 			}
-<span class="pc bpc" id="L2041" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
+<span class="pc bpc" id="L2039" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
 
 			// remove delta from all edges of the cycle
-<span class="fc" id="L2044">			for (v = u;;) {</span>
-<span class="fc" id="L2045">				e = inEdgeIters[v].peekNextInt();</span>
-<span class="fc" id="L2046">				residualCapacity[e] += f;</span>
-<span class="fc" id="L2047">				v = g.edgeSource(e);</span>
-<span class="fc bfc" id="L2048" title="All 2 branches covered.">				if (v == u)</span>
-<span class="fc" id="L2049">					break;</span>
+<span class="fc" id="L2042">			for (v = u;;) {</span>
+<span class="fc" id="L2043">				e = inEdgeIters[v].peekNextInt();</span>
+<span class="fc" id="L2044">				residualCapacity[e] += f;</span>
+<span class="fc" id="L2045">				v = g.edgeSource(e);</span>
+<span class="fc bfc" id="L2046" title="All 2 branches covered.">				if (v == u)</span>
+<span class="fc" id="L2047">					break;</span>
 			}
-<span class="fc" id="L2051">		}</span>
+<span class="fc" id="L2049">		}</span>
 
 		@Override
 		void eliminateCycleUndirected(int cycleSource, int e) {
-<span class="fc" id="L2055">			int u = cycleSource;</span>
+<span class="fc" id="L2053">			int u = cycleSource;</span>
 			int v;
 			int f;
-<span class="fc bfc" id="L2058" title="All 2 branches covered.">			if (u == g.edgeSource(e)) {</span>
-<span class="fc" id="L2059">				v = g.edgeTarget(e);</span>
-<span class="pc bpc" id="L2060" title="1 of 2 branches missed.">				assert hasNegativeFlow(e);</span>
-<span class="fc" id="L2061">				f = -flow(e);</span>
+<span class="fc bfc" id="L2056" title="All 2 branches covered.">			if (u == g.edgeSource(e)) {</span>
+<span class="fc" id="L2057">				v = g.edgeTarget(e);</span>
+<span class="pc bpc" id="L2058" title="1 of 2 branches missed.">				assert hasNegativeFlow(e);</span>
+<span class="fc" id="L2059">				f = -flow(e);</span>
 			} else {
-<span class="pc bpc" id="L2063" title="1 of 2 branches missed.">				assert u == g.edgeTarget(e);</span>
-<span class="fc" id="L2064">				v = g.edgeSource(e);</span>
-<span class="pc bpc" id="L2065" title="1 of 2 branches missed.">				assert hasFlow(e);</span>
-<span class="fc" id="L2066">				f = flow(e);</span>
+<span class="pc bpc" id="L2061" title="1 of 2 branches missed.">				assert u == g.edgeTarget(e);</span>
+<span class="fc" id="L2062">				v = g.edgeSource(e);</span>
+<span class="pc bpc" id="L2063" title="1 of 2 branches missed.">				assert hasFlow(e);</span>
+<span class="fc" id="L2064">				f = flow(e);</span>
 			}
 			for (int w;;) {
-<span class="fc" id="L2069">				e = outEdgeIters[v].peekNextInt();</span>
-<span class="fc" id="L2070">				int ef = flow(e);</span>
-<span class="fc bfc" id="L2071" title="All 2 branches covered.">				if (v == g.edgeSource(e)) {</span>
-<span class="pc bpc" id="L2072" title="1 of 2 branches missed.">					assert ef &lt; 0;</span>
-<span class="fc" id="L2073">					ef = -ef;</span>
-<span class="fc" id="L2074">					w = g.edgeTarget(e);</span>
+<span class="fc" id="L2067">				e = outEdgeIters[v].peekNextInt();</span>
+<span class="fc" id="L2068">				int ef = flow(e);</span>
+<span class="fc bfc" id="L2069" title="All 2 branches covered.">				if (v == g.edgeSource(e)) {</span>
+<span class="pc bpc" id="L2070" title="1 of 2 branches missed.">					assert ef &lt; 0;</span>
+<span class="fc" id="L2071">					ef = -ef;</span>
+<span class="fc" id="L2072">					w = g.edgeTarget(e);</span>
 				} else {
-<span class="pc bpc" id="L2076" title="1 of 2 branches missed.">					assert v == g.edgeTarget(e);</span>
-<span class="pc bpc" id="L2077" title="1 of 2 branches missed.">					assert ef &gt; 0;</span>
-<span class="fc" id="L2078">					w = g.edgeSource(e);</span>
+<span class="pc bpc" id="L2074" title="1 of 2 branches missed.">					assert v == g.edgeTarget(e);</span>
+<span class="pc bpc" id="L2075" title="1 of 2 branches missed.">					assert ef &gt; 0;</span>
+<span class="fc" id="L2076">					w = g.edgeSource(e);</span>
 				}
-<span class="fc" id="L2080">				f = Math.min(f, ef);</span>
-<span class="fc bfc" id="L2081" title="All 2 branches covered.">				if (v == u)</span>
-<span class="fc" id="L2082">					break;</span>
-<span class="fc" id="L2083">				v = w;</span>
-<span class="fc" id="L2084">			}</span>
-<span class="pc bpc" id="L2085" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
+<span class="fc" id="L2078">				f = Math.min(f, ef);</span>
+<span class="fc bfc" id="L2079" title="All 2 branches covered.">				if (v == u)</span>
+<span class="fc" id="L2080">					break;</span>
+<span class="fc" id="L2081">				v = w;</span>
+<span class="fc" id="L2082">			}</span>
+<span class="pc bpc" id="L2083" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
 
 			// remove delta from all edges of the cycle
-<span class="fc" id="L2088">			for (v = u;;) {</span>
-<span class="fc" id="L2089">				e = outEdgeIters[v].peekNextInt();</span>
-<span class="fc bfc" id="L2090" title="All 2 branches covered.">				if (v == g.edgeSource(e)) {</span>
-<span class="fc" id="L2091">					residualCapacity[e] -= f;</span>
-<span class="fc" id="L2092">					v = g.edgeTarget(e);</span>
+<span class="fc" id="L2086">			for (v = u;;) {</span>
+<span class="fc" id="L2087">				e = outEdgeIters[v].peekNextInt();</span>
+<span class="fc bfc" id="L2088" title="All 2 branches covered.">				if (v == g.edgeSource(e)) {</span>
+<span class="fc" id="L2089">					residualCapacity[e] -= f;</span>
+<span class="fc" id="L2090">					v = g.edgeTarget(e);</span>
 				} else {
-<span class="pc bpc" id="L2094" title="1 of 2 branches missed.">					assert v == g.edgeTarget(e);</span>
-<span class="fc" id="L2095">					residualCapacity[e] += f;</span>
-<span class="fc" id="L2096">					v = g.edgeSource(e);</span>
+<span class="pc bpc" id="L2092" title="1 of 2 branches missed.">					assert v == g.edgeTarget(e);</span>
+<span class="fc" id="L2093">					residualCapacity[e] += f;</span>
+<span class="fc" id="L2094">					v = g.edgeSource(e);</span>
 				}
-<span class="fc bfc" id="L2098" title="All 2 branches covered.">				if (v == u)</span>
-<span class="fc" id="L2099">					break;</span>
+<span class="fc bfc" id="L2096" title="All 2 branches covered.">				if (v == u)</span>
+<span class="fc" id="L2097">					break;</span>
 			}
-<span class="fc" id="L2101">		}</span>
+<span class="fc" id="L2099">		}</span>
 
 		@Override
 		void eliminateExcessWithTopologicalOrder(int topoBegin, int topoEnd, int[] topoNext) {
-<span class="fc bfc" id="L2105" title="All 2 branches covered.">			if (directed) {</span>
-<span class="fc" id="L2106">				for (int u = topoBegin;; u = topoNext[u]) {</span>
-<span class="fc bfc" id="L2107" title="All 2 branches covered.">					for (int e : g.inEdges(u)) {</span>
-<span class="fc bfc" id="L2108" title="All 2 branches covered.">						if (!hasExcess(u))</span>
-<span class="fc" id="L2109">							break;</span>
-<span class="fc" id="L2110">						int f = flow(e);</span>
-<span class="fc bfc" id="L2111" title="All 2 branches covered.">						if (f &gt; 0)</span>
-<span class="fc" id="L2112">							push(e, -Math.min(excess[u], f));</span>
-<span class="fc" id="L2113">					}</span>
-<span class="fc bfc" id="L2114" title="All 2 branches covered.">					if (u == topoEnd)</span>
-<span class="fc" id="L2115">						break;</span>
+<span class="fc bfc" id="L2103" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc" id="L2104">				for (int u = topoBegin;; u = topoNext[u]) {</span>
+<span class="fc bfc" id="L2105" title="All 2 branches covered.">					for (int e : g.inEdges(u)) {</span>
+<span class="fc bfc" id="L2106" title="All 2 branches covered.">						if (!hasExcess(u))</span>
+<span class="fc" id="L2107">							break;</span>
+<span class="fc" id="L2108">						int f = flow(e);</span>
+<span class="fc bfc" id="L2109" title="All 2 branches covered.">						if (f &gt; 0)</span>
+<span class="fc" id="L2110">							push(e, -Math.min(excess[u], f));</span>
+<span class="fc" id="L2111">					}</span>
+<span class="fc bfc" id="L2112" title="All 2 branches covered.">					if (u == topoEnd)</span>
+<span class="fc" id="L2113">						break;</span>
 				}
 			} else {
-<span class="fc" id="L2118">				for (int u = topoBegin;; u = topoNext[u]) {</span>
-<span class="fc bfc" id="L2119" title="All 2 branches covered.">					for (int e : g.outEdges(u)) {</span>
-<span class="fc bfc" id="L2120" title="All 2 branches covered.">						if (!hasExcess(u))</span>
-<span class="fc" id="L2121">							break;</span>
-<span class="fc" id="L2122">						int f = flow(e);</span>
-<span class="fc bfc" id="L2123" title="All 2 branches covered.">						if (u == g.edgeSource(e)) {</span>
-<span class="fc bfc" id="L2124" title="All 2 branches covered.">							if (f &lt; 0)</span>
-<span class="fc" id="L2125">								push(e, Math.min(excess[u], -f));</span>
+<span class="fc" id="L2116">				for (int u = topoBegin;; u = topoNext[u]) {</span>
+<span class="fc bfc" id="L2117" title="All 2 branches covered.">					for (int e : g.outEdges(u)) {</span>
+<span class="fc bfc" id="L2118" title="All 2 branches covered.">						if (!hasExcess(u))</span>
+<span class="fc" id="L2119">							break;</span>
+<span class="fc" id="L2120">						int f = flow(e);</span>
+<span class="fc bfc" id="L2121" title="All 2 branches covered.">						if (u == g.edgeSource(e)) {</span>
+<span class="fc bfc" id="L2122" title="All 2 branches covered.">							if (f &lt; 0)</span>
+<span class="fc" id="L2123">								push(e, Math.min(excess[u], -f));</span>
 						} else {
-<span class="pc bpc" id="L2127" title="1 of 2 branches missed.">							assert u == g.edgeTarget(e);</span>
-<span class="fc bfc" id="L2128" title="All 2 branches covered.">							if (f &gt; 0)</span>
-<span class="fc" id="L2129">								push(e, -Math.min(excess[u], f));</span>
+<span class="pc bpc" id="L2125" title="1 of 2 branches missed.">							assert u == g.edgeTarget(e);</span>
+<span class="fc bfc" id="L2126" title="All 2 branches covered.">							if (f &gt; 0)</span>
+<span class="fc" id="L2127">								push(e, -Math.min(excess[u], f));</span>
 						}
-<span class="fc" id="L2131">					}</span>
-<span class="fc bfc" id="L2132" title="All 2 branches covered.">					if (u == topoEnd)</span>
-<span class="fc" id="L2133">						break;</span>
+<span class="fc" id="L2129">					}</span>
+<span class="fc bfc" id="L2130" title="All 2 branches covered.">					if (u == topoEnd)</span>
+<span class="fc" id="L2131">						break;</span>
 				}
 			}
-<span class="fc" id="L2136">		}</span>
+<span class="fc" id="L2134">		}</span>
 
 		@Override
 		IFlow constructResult() {
-<span class="fc" id="L2140">			return constructResult(capacity, residualCapacity);</span>
+<span class="fc" id="L2138">			return constructResult(capacity, residualCapacity);</span>
 		}
 
 		@Override
 		boolean hasExcess(int u) {
-<span class="fc bfc" id="L2145" title="All 2 branches covered.">			return excess[u] &gt; 0;</span>
+<span class="fc bfc" id="L2143" title="All 2 branches covered.">			return excess[u] &gt; 0;</span>
 		}
 
 		int getResidualCapacity(int e) {
-<span class="fc" id="L2149">			return residualCapacity[e];</span>
+<span class="fc" id="L2147">			return residualCapacity[e];</span>
 		}
 
 		int flow(int e) {
-<span class="fc" id="L2153">			return capacity[e] - residualCapacity[e];</span>
+<span class="fc" id="L2151">			return capacity[e] - residualCapacity[e];</span>
 		}
 
 		@Override
 		boolean isResidual(int e) {
-<span class="fc bfc" id="L2158" title="All 2 branches covered.">			return getResidualCapacity(e) &gt; 0;</span>
+<span class="fc bfc" id="L2156" title="All 2 branches covered.">			return getResidualCapacity(e) &gt; 0;</span>
 		}
 
 		@Override
 		boolean isTwinResidualUndirected(int e) {
-<span class="fc bfc" id="L2163" title="All 2 branches covered.">			return getTwinResidualCapacity(e) &gt; 0;</span>
+<span class="fc bfc" id="L2161" title="All 2 branches covered.">			return getTwinResidualCapacity(e) &gt; 0;</span>
 		}
 
 		int getTwinResidualCapacity(int e) {
-<span class="pc bpc" id="L2167" title="1 of 2 branches missed.">			assert !directed;</span>
-<span class="fc" id="L2168">			return 2 * capacity[e] - residualCapacity[e];</span>
+<span class="pc bpc" id="L2165" title="1 of 2 branches missed.">			assert !directed;</span>
+<span class="fc" id="L2166">			return 2 * capacity[e] - residualCapacity[e];</span>
 		}
 
 		@Override
 		boolean hasNegativeFlow(int e) {
-<span class="pc bpc" id="L2173" title="1 of 2 branches missed.">			assert !directed;</span>
-<span class="fc bfc" id="L2174" title="All 2 branches covered.">			return flow(e) &lt; 0;</span>
+<span class="pc bpc" id="L2171" title="1 of 2 branches missed.">			assert !directed;</span>
+<span class="fc bfc" id="L2172" title="All 2 branches covered.">			return flow(e) &lt; 0;</span>
 		}
 
 		@Override
 		boolean hasFlow(int e) {
-<span class="fc bfc" id="L2179" title="All 2 branches covered.">			return flow(e) &gt; 0;</span>
+<span class="fc bfc" id="L2177" title="All 2 branches covered.">			return flow(e) &gt; 0;</span>
 		}
 
 	}

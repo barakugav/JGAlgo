@@ -24,7 +24,7 @@ import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.LinkedListFixedSize;
+import com.jgalgo.internal.ds.LinkedList;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
@@ -132,7 +132,7 @@ public class ShortestPathSingleSourceDial extends ShortestPathSingleSourceAbstra
 
 <span class="fc" id="L133">	private static class DialHeap {</span>
 
-		private final LinkedListFixedSize.Doubly bucketsNodes;
+		private final LinkedList.Doubly bucketsNodes;
 		private int[] bucketsHead;
 		final int[] distances;
 		private int scanIdx;
@@ -140,8 +140,8 @@ public class ShortestPathSingleSourceDial extends ShortestPathSingleSourceAbstra
 
 <span class="fc" id="L141">		DialHeap(int n, int initialSize) {</span>
 <span class="fc bfc" id="L142" title="All 2 branches covered.">			bucketsHead = initialSize &lt;= 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[initialSize];</span>
-<span class="fc" id="L143">			Arrays.fill(bucketsHead, LinkedListFixedSize.None);</span>
-<span class="fc" id="L144">			bucketsNodes = new LinkedListFixedSize.Doubly(n);</span>
+<span class="fc" id="L143">			Arrays.fill(bucketsHead, LinkedList.None);</span>
+<span class="fc" id="L144">			bucketsNodes = new LinkedList.Doubly(n);</span>
 <span class="fc" id="L145">			distances = new int[n];</span>
 <span class="fc" id="L146">			Arrays.fill(distances, 0, n, Integer.MAX_VALUE);</span>
 
@@ -155,7 +155,7 @@ public class ShortestPathSingleSourceDial extends ShortestPathSingleSourceAbstra
 <span class="fc" id="L155">				int oldLength = bucketsHead.length;</span>
 <span class="fc" id="L156">				int newLength = Math.max(distance + 1, oldLength * 2);</span>
 <span class="fc" id="L157">				bucketsHead = Arrays.copyOf(bucketsHead, newLength);</span>
-<span class="fc" id="L158">				Arrays.fill(bucketsHead, oldLength, newLength, LinkedListFixedSize.None);</span>
+<span class="fc" id="L158">				Arrays.fill(bucketsHead, oldLength, newLength, LinkedList.None);</span>
 <span class="fc" id="L159">				maxDistance = distance;</span>
 <span class="fc bfc" id="L160" title="All 2 branches covered.">			} else if (distance &gt; maxDistance) {</span>
 <span class="fc" id="L161">				maxDistance = distance;</span>
@@ -163,7 +163,7 @@ public class ShortestPathSingleSourceDial extends ShortestPathSingleSourceAbstra
 
 <span class="fc" id="L164">			int h = bucketsHead[distance];</span>
 <span class="fc" id="L165">			bucketsHead[distance] = v;</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">			if (h != LinkedListFixedSize.None)</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">			if (!LinkedList.isNone(h))</span>
 <span class="fc" id="L167">				bucketsNodes.connect(v, h);</span>
 <span class="fc" id="L168">		}</span>
 
@@ -180,7 +180,7 @@ public class ShortestPathSingleSourceDial extends ShortestPathSingleSourceAbstra
 		int extractMin() {
 <span class="fc bfc" id="L181" title="All 2 branches covered.">			for (int distance = scanIdx; distance &lt;= maxDistance; distance++) {</span>
 <span class="fc" id="L182">				int v = bucketsHead[distance];</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">				if (v != LinkedListFixedSize.None) {</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">				if (!LinkedList.isNone(v)) {</span>
 <span class="fc" id="L184">					bucketsHead[distance] = bucketsNodes.next(v);</span>
 <span class="fc" id="L185">					bucketsNodes.disconnect(v);</span>
 <span class="fc" id="L186">					scanIdx = distance;</span>

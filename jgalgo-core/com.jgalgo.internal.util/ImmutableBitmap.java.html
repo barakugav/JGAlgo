@@ -15,6 +15,7 @@
  */
 package com.jgalgo.internal.util;
 
+import static com.jgalgo.internal.util.IterTools.foreach;
 import java.util.Arrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -31,39 +32,39 @@ public final class ImmutableBitmap extends BitmapBase {
 	private int hashCode;
 
 	ImmutableBitmap(int size, long[] words) {
-<span class="fc" id="L34">		super(size, words);</span>
-<span class="fc" id="L35">	}</span>
+<span class="fc" id="L35">		super(size, words);</span>
+<span class="fc" id="L36">	}</span>
 
 	public static ImmutableBitmap of(Bitmap bitmap) {
-<span class="fc" id="L38">		long[] words = bitmap.words.clone();</span>
-<span class="fc" id="L39">		return new ImmutableBitmap(bitmap.size, words);</span>
+<span class="fc" id="L39">		long[] words = bitmap.words.clone();</span>
+<span class="fc" id="L40">		return new ImmutableBitmap(bitmap.size, words);</span>
 	}
 
 	public static ImmutableBitmap fromOnes(int size, IntIterator ones) {
-<span class="fc" id="L43">		checkSize(size);</span>
-<span class="fc" id="L44">		long[] words = new long[wordsNum(size)];</span>
-<span class="fc bfc" id="L45" title="All 2 branches covered.">		for (int i : IterTools.foreach(ones)) {</span>
-<span class="fc" id="L46">			checkIdx(i, size);</span>
-<span class="fc" id="L47">			words[word(i)] |= bit(i);</span>
-<span class="fc" id="L48">		}</span>
-<span class="fc" id="L49">		return new ImmutableBitmap(size, words);</span>
+<span class="fc" id="L44">		checkSize(size);</span>
+<span class="fc" id="L45">		long[] words = new long[wordsNum(size)];</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		for (int i : foreach(ones)) {</span>
+<span class="fc" id="L47">			checkIdx(i, size);</span>
+<span class="fc" id="L48">			words[word(i)] |= bit(i);</span>
+<span class="fc" id="L49">		}</span>
+<span class="fc" id="L50">		return new ImmutableBitmap(size, words);</span>
 	}
 
 	@Override
 	public int hashCode() {
-<span class="fc bfc" id="L54" title="All 2 branches covered.">		if (hashCode == 0)</span>
-<span class="fc" id="L55">			hashCode = 1 + 31 * size + Arrays.hashCode(words);</span>
-<span class="fc" id="L56">		return hashCode;</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		if (hashCode == 0)</span>
+<span class="fc" id="L56">			hashCode = 1 + 31 * size + Arrays.hashCode(words);</span>
+<span class="fc" id="L57">		return hashCode;</span>
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-<span class="fc bfc" id="L61" title="All 2 branches covered.">		if (obj == this)</span>
-<span class="fc" id="L62">			return true;</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">		if (!(obj instanceof ImmutableBitmap))</span>
-<span class="fc" id="L64">			return false;</span>
-<span class="fc" id="L65">		ImmutableBitmap o = (ImmutableBitmap) obj;</span>
-<span class="pc bpc" id="L66" title="1 of 6 branches missed.">		return hashCode() == o.hashCode() &amp;&amp; size == o.size &amp;&amp; Arrays.equals(words, o.words);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		if (obj == this)</span>
+<span class="fc" id="L63">			return true;</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		if (!(obj instanceof ImmutableBitmap))</span>
+<span class="fc" id="L65">			return false;</span>
+<span class="fc" id="L66">		ImmutableBitmap o = (ImmutableBitmap) obj;</span>
+<span class="pc bpc" id="L67" title="1 of 6 branches missed.">		return hashCode() == o.hashCode() &amp;&amp; size == o.size &amp;&amp; Arrays.equals(words, o.words);</span>
 	}
 
 }
