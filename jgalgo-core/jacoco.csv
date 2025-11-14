@@ -52,7 +52,7 @@ JGAlgo - Core,com.jgalgo.internal.ds,ReferenceableHeap,0,4,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo.internal.ds,RmqStaticCartesianTrees,4,16,1,1,1,4,1,2,0,2
 JGAlgo - Core,com.jgalgo.internal.ds,BinarySearchTrees.Node,0,61,0,14,0,10,0,15,0,8
 JGAlgo - Core,com.jgalgo.internal.ds,BitsLookupTable.Ith,21,170,6,16,3,27,6,8,0,3
-JGAlgo - Core,com.jgalgo.internal.ds,BinarySearchTrees.NeighborType,0,34,0,0,0,4,0,1,0,1
+JGAlgo - Core,com.jgalgo.internal.ds,BinarySearchTrees.NeighborType,0,21,0,0,0,4,0,1,0,1
 JGAlgo - Core,com.jgalgo.internal.ds,RedBlackTreeExtension.Obj,0,23,0,0,0,6,0,4,0,4
 JGAlgo - Core,com.jgalgo.internal.ds,IntIntBinomialHeap.Itr,0,61,0,8,0,13,0,7,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,IntIntPairingHeap,20,453,9,41,0,135,9,33,0,17
@@ -203,7 +203,7 @@ JGAlgo - Core,com.jgalgo.alg.flow,MinimumCostFlowAbstractBasedSupply,80,308,20,2
 JGAlgo - Core,com.jgalgo.alg.flow,MaximumFlowAbstractWithResidualNet.Worker,226,533,42,60,26,95,24,36,0,9
 JGAlgo - Core,com.jgalgo.alg.flow,MaximumFlowPushRelabelDynamicTrees.WorkerDouble.Vertex,0,8,0,0,0,3,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg.flow,MaximumFlowPushRelabelDynamicTrees.WorkerInt.Vertex,0,8,0,0,0,3,0,1,0,1
-JGAlgo - Core,com.jgalgo.alg.flow,MaximumFlowPushRelabel.DischargePolicy,0,24,0,0,0,3,0,1,0,1
+JGAlgo - Core,com.jgalgo.alg.flow,MaximumFlowPushRelabel.DischargePolicy,0,15,0,0,0,3,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg.flow,MaximumFlowEdmondsKarp.WorkerInt,44,319,11,31,1,66,11,22,1,11
 JGAlgo - Core,com.jgalgo.alg.flow,MaximumFlowPushRelabel.Worker.DischargePolicyImpl.SingleStepInt,28,440,8,58,0,69,8,30,0,5
 JGAlgo - Core,com.jgalgo.alg.flow,MaximumFlowEdmondsKarp.Worker,21,239,2,34,6,72,2,19,0,3
@@ -217,7 +217,7 @@ JGAlgo - Core,com.jgalgo.alg.flow,MaximumFlowPushRelabel.Worker.ActiveOrderPolic
 JGAlgo - Core,com.jgalgo.alg.flow,IFlow,0,10,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg.flow,MaximumFlowPushRelabelDynamicTrees.WorkerInt,8,354,2,18,0,62,2,21,0,13
 JGAlgo - Core,com.jgalgo.alg.flow,MaximumFlowDinic,0,23,0,0,0,3,0,3,0,3
-JGAlgo - Core,com.jgalgo.alg.flow,MaximumFlowPushRelabel.ActiveOrderPolicy,0,44,0,0,0,2,0,1,0,1
+JGAlgo - Core,com.jgalgo.alg.flow,MaximumFlowPushRelabel.ActiveOrderPolicy,0,27,0,0,0,2,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg.flow,MinimumCostFlows.AbstractImpl,5,412,7,43,1,74,7,28,0,10
 JGAlgo - Core,com.jgalgo.alg.flow,MaximumFlowDinicDynamicTrees,0,29,0,0,0,4,0,3,0,3
 JGAlgo - Core,com.jgalgo.alg.flow,FlowCirculationAbstract,0,52,0,2,0,13,0,4,0,3
@@ -417,7 +417,7 @@ JGAlgo - Core,com.jgalgo.gen,DifferenceGraphGenerator,4,324,1,41,0,78,1,28,0,8
 JGAlgo - Core,com.jgalgo.gen,GnmGraphGenerator,0,512,0,80,0,120,0,53,0,13
 JGAlgo - Core,com.jgalgo.gen,BarabasiAlbertGraphGenerator,0,496,0,48,0,103,0,36,0,12
 JGAlgo - Core,com.jgalgo.gen,CompleteBipartiteGraphGenerator,0,429,0,46,0,81,0,39,0,16
-JGAlgo - Core,com.jgalgo.gen,BipartiteGenerators.Direction,0,44,0,0,0,5,0,1,0,1
+JGAlgo - Core,com.jgalgo.gen,BipartiteGenerators.Direction,0,27,0,0,0,5,0,1,0,1
 JGAlgo - Core,com.jgalgo.gen,EmptyGraphGenerator,0,143,0,14,0,36,0,16,0,9
 JGAlgo - Core,com.jgalgo.gen,RecursiveMatrixGraphGenerator,14,647,7,81,0,134,7,51,0,14
 JGAlgo - Core,com.jgalgo.gen,SymmetricDifferenceGraphGenerator,4,421,1,53,0,100,1,34,0,8
@@ -522,7 +522,7 @@ JGAlgo - Core,com.jgalgo.graph,WeightFunction,0,87,0,20,0,14,0,20,0,10
 JGAlgo - Core,com.jgalgo.graph,MaskedGraphs.MaskedRenamedIndexGraph.MaskedEdgeSet,0,72,0,10,0,9,0,12,0,7
 JGAlgo - Core,com.jgalgo.graph,IndexIntIdMapImpl,24,564,6,64,0,129,6,49,0,20
 JGAlgo - Core,com.jgalgo.graph,DataContainer.Obj,8,94,2,2,0,22,2,6,0,6
-JGAlgo - Core,com.jgalgo.graph,GraphFactory.Hint,0,34,0,0,0,4,0,1,0,1
+JGAlgo - Core,com.jgalgo.graph,GraphFactory.Hint,0,21,0,0,0,4,0,1,0,1
 JGAlgo - Core,com.jgalgo.graph,IWeightsShort,0,51,0,0,0,12,0,9,0,9
 JGAlgo - Core,com.jgalgo.graph,UndirectedGraphViews.UndirectedViewIntBase.EdgeSetOutOrInBase,0,16,0,0,0,4,0,2,0,2
 JGAlgo - Core,com.jgalgo.graph,WeightsImplChar.IndexMutable,4,78,1,1,0,21,1,9,0,9
@@ -933,7 +933,7 @@ JGAlgo - Core,com.jgalgo.alg.hamilton,HamiltonianPathAlgoAbstractBasedCycle,28,4
 JGAlgo - Core,com.jgalgo.alg.hamilton,HamiltonianPathAlgo,24,237,15,41,7,49,16,18,1,5
 JGAlgo - Core,com.jgalgo.alg.common,VertexPartitions.IntPartitionFromIndexPartition,19,119,1,3,4,21,2,10,1,9
 JGAlgo - Core,com.jgalgo.alg.common,VertexBiPartitions.IndexImpl,102,539,33,69,10,101,28,38,6,9
-JGAlgo - Core,com.jgalgo.alg.common,EdgeDirection,0,34,0,0,0,4,0,1,0,1
+JGAlgo - Core,com.jgalgo.alg.common,EdgeDirection,0,21,0,0,0,4,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg.common,Path,4,268,3,19,0,68,3,17,0,9
 JGAlgo - Core,com.jgalgo.alg.common,IVertexBiPartition,43,215,4,22,7,33,5,28,2,18
 JGAlgo - Core,com.jgalgo.alg.common,VertexBiPartition,48,194,8,22,8,36,8,24,2,15
