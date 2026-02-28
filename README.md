@@ -2,7 +2,7 @@
 [![Coverage](https://github.com/barakugav/JGAlgo/blob/coverage/badges/jacoco.svg?raw=true)](https://github.com/barakugav/JGAlgo/tree/coverage)
 [![Javadoc](https://img.shields.io/badge/JavaDoc-Online-green)](https://barakugav.github.io/JGAlgo)
 [![Benchmarks](https://github.com/barakugav/JGAlgo/actions/workflows/benchmarks.yaml/badge.svg)](https://github.com/barakugav/JGAlgo/actions/workflows/benchmarks.yaml)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.jgalgo/jgalgo/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.jgalgo/jgalgo)
+![Maven Central](https://img.shields.io/maven-central/v/com.jgalgo/jgalgo)
 
 
 # JGAlgo
