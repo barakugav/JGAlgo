@@ -42,7 +42,7 @@
 
     <fastutil.version>8.5.18</fastutil.version>
     <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
-    <junit-jupiter-engine.version>6.0.1</junit-jupiter-engine.version>
+    <junit-jupiter-engine.version>6.0.3</junit-jupiter-engine.version>
     <spotbugs-maven-plugin.version>4.9.8.2</spotbugs-maven-plugin.version>
     <jmh.version>1.37</jmh.version>
 
@@ -58,7 +58,7 @@
     <maven-shade-plugin.version>3.6.1</maven-shade-plugin.version>
     <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
     <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
-    <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+    <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
     <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
     <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
