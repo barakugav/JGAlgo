@@ -66,7 +66,7 @@
     <exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
 
     <com.google.guava.version>33.5.0-jre</com.google.guava.version>
-    <org.jgrapht.version>1.5.2</org.jgrapht.version>
+    <org.jgrapht.version>1.5.3</org.jgrapht.version>
 
     <checkstyle.config.location>etc/checkstyle.xml</checkstyle.config.location>
   </properties>
