@@ -341,7 +341,7 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 <span class="fc" id="L341">							g.addEdge(u, v, edgeBuilder.build(g.edges()));</span>
 <span class="fc" id="L342">					}</span>
 				}
-<span class="pc bpc" id="L344" title="1 of 4 branches missed.">				if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
+<span class="fc bfc" id="L344" title="All 4 branches covered.">				if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
 <span class="fc" id="L345">					g.addEdge(u, u, edgeBuilder.build(g.edges()));</span>
 <span class="fc bfc" id="L346" title="All 2 branches covered.">				for (int vIdx : range(uIdx + 1, n)) {</span>
 <span class="fc" id="L347">					V v = vertices.get(vIdx);</span>
