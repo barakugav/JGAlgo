@@ -39,7 +39,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @param  &lt;E&gt; the edges type
  * @author     Barak Ugav
  */
-public class EmptyGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {
+public final class EmptyGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {
 
 	private final GraphFactory&lt;V, E&gt; factory;
 	private Variant2&lt;List&lt;V&gt;, IntObjectPair&lt;IdBuilder&lt;V&gt;&gt;&gt; vertices;

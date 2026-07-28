@@ -28,7 +28,7 @@ import java.util.Objects;
  *
  * @author Barak Ugav
  */
-class Writer2 {
+final class Writer2 {
 
 	private final Writer writer;
 
