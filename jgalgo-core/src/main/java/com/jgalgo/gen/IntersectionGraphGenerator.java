@@ -64,7 +64,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
  * @param  <E> the edges type
  * @author     Barak Ugav
  */
-public class IntersectionGraphGenerator<V, E> implements GraphGenerator<V, E> {
+public final class IntersectionGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	private final GraphFactory<V, E> factory;
 	private final List<Graph<V, E>> graphs;

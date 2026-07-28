@@ -64,7 +64,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @param  <E> the edges type
  * @author     Barak Ugav
  */
-public class UniformTreeGenerator<V, E> implements GraphGenerator<V, E> {
+public final class UniformTreeGenerator<V, E> implements GraphGenerator<V, E> {
 
 	private final GraphFactory<V, E> factory;
 	private Variant2<List<V>, IntObjectPair<IdBuilder<V>>> vertices;

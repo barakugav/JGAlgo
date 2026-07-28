@@ -345,4 +345,167 @@
     </Or>
     <Bug pattern="CT_CONSTRUCTOR_THROW" />
   </Match>
+  <Match>
+    <!-- All classes below are non-public, nested, or package-private implementation classes
+    (result/measure views, index<->id adapters, graph views, iterators, internal data
+    structures). None are publicly subclassable, so a malicious finalize() override is
+    impossible. -->
+    <Or>
+      <Class name="com.jgalgo.alg.common.Paths$IntPathFromIndexPath" />
+      <Class name="com.jgalgo.alg.common.Paths$ObjPathFromIndexPath" />
+      <Class name="com.jgalgo.alg.common.VertexPartitions$IndexImpl" />
+      <Class name="com.jgalgo.alg.connect.BiConnectedComponentsAlgoAbstract$IndexResult" />
+      <Class name="com.jgalgo.alg.connect.BiConnectedComponentsAlgoAbstract$IntResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.connect.BiConnectedComponentsAlgoAbstract$ObjResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.cores.CoresAlgos$IndexResult" />
+      <Class name="com.jgalgo.alg.cores.CoresAlgos$IntResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.cores.CoresAlgos$ObjResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.dag.TopologicalOrderAlgoAbstract$IntResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.dag.TopologicalOrderAlgoAbstract$ObjResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.distancemeasures.DistanceMeasuresImpl$IndexImpl" />
+      <Class name="com.jgalgo.alg.distancemeasures.DistanceMeasuresImpl$IntMeasuresFromIndexMeasures" />
+      <Class name="com.jgalgo.alg.distancemeasures.DistanceMeasuresImpl$ObjMeasuresFromIndexMeasures" />
+      <Class name="com.jgalgo.alg.flow.Flows$ResidualGraph$Builder" />
+      <Class name="com.jgalgo.alg.flow.MaximumFlowPushRelabel" />
+      <Class name="com.jgalgo.alg.flow.MaximumFlowPushRelabel$Worker$ActiveOrderPolicyImpl" />
+      <Class name="com.jgalgo.alg.flow.MaximumFlowPushRelabel$Worker$DischargePolicyImpl" />
+      <Class name="com.jgalgo.alg.match.MatchingAlgoAbstract$IntMatchingFromIndexMatching" />
+      <Class name="com.jgalgo.alg.match.MatchingAlgoAbstract$ObjMatchingFromIndexMatching" />
+      <Class name="com.jgalgo.alg.match.Matchings$SuperImpl" />
+      <Class name="com.jgalgo.alg.shortestpath.ShortestPathAllPairsAbstract$IntResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.shortestpath.ShortestPathAllPairsAbstract$ObjResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.shortestpath.ShortestPathSingleSourceAbstract$IntResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.shortestpath.ShortestPathSingleSourceAbstract$ObjResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.shortestpath.VoronoiAlgoAbstract$IndexResult" />
+      <Class name="com.jgalgo.alg.shortestpath.VoronoiAlgoAbstract$IntResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.shortestpath.VoronoiAlgoAbstract$ObjResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.span.MinimumSpanningTrees$IndexResult" />
+      <Class name="com.jgalgo.alg.span.MinimumSpanningTrees$IntResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.span.MinimumSpanningTrees$ObjResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.span.SteinerTreeAlgoAbstract$IndexResult" />
+      <Class name="com.jgalgo.alg.span.SteinerTreeAlgoAbstract$IntResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.span.SteinerTreeAlgoAbstract$ObjResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.traversal.BfsIterImpl$IntBfsFromIndexBfs" />
+      <Class name="com.jgalgo.alg.traversal.BfsIterImpl$ObjBfsFromIndexBfs" />
+      <Class name="com.jgalgo.alg.traversal.DfsIterImpl$IntDfsFromIndexDfs" />
+      <Class name="com.jgalgo.alg.traversal.DfsIterImpl$ObjDfsFromIndexDfs" />
+      <Class name="com.jgalgo.alg.traversal.NeighborSamplers$IntImpl" />
+      <Class name="com.jgalgo.alg.traversal.NeighborSamplers$ObjImpl" />
+      <Class name="com.jgalgo.alg.traversal.RandomWalkIters$IndexIter" />
+      <Class name="com.jgalgo.alg.traversal.RandomWalkIters$IntIterFromIndexIter" />
+      <Class name="com.jgalgo.alg.traversal.RandomWalkIters$ObjIterFromIndexIter" />
+      <Class name="com.jgalgo.alg.tree.LowestCommonAncestorOfflineAbstract$IntResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.tree.LowestCommonAncestorOfflineAbstract$ObjResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.tree.LowestCommonAncestorStaticAbstract$IntDsFromIndexDs" />
+      <Class name="com.jgalgo.alg.tree.LowestCommonAncestorStaticAbstract$ObjDsFromIndexDs" />
+      <Class name="com.jgalgo.alg.tree.TreePathMaximaAbstract$IntResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.tree.TreePathMaximaAbstract$ObjResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.unstable.VertexScoringImpl$IntResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.unstable.VertexScoringImpl$ObjResultFromIndexResult" />
+      <Class name="com.jgalgo.graph.AbstractGraphImpl" />
+      <Class name="com.jgalgo.graph.DataContainer" />
+      <Class name="com.jgalgo.graph.DataContainer$Int" />
+      <Class name="com.jgalgo.graph.DataContainer$Long" />
+      <Class name="com.jgalgo.graph.DataContainer$Obj" />
+      <Class name="com.jgalgo.graph.GraphViews$GraphViewBase" />
+      <Class name="com.jgalgo.graph.IdentityIndexIdMap" />
+      <Class name="com.jgalgo.graph.ImmutableGraphViews$ImmutableEdgeIter" />
+      <Class name="com.jgalgo.graph.ImmutableGraphViews$ImmutableEdgeSet" />
+      <Class name="com.jgalgo.graph.ImmutableGraphViews$ImmutableGraphView" />
+      <Class name="com.jgalgo.graph.ImmutableGraphViews$ImmutableIEdgeIter" />
+      <Class name="com.jgalgo.graph.ImmutableGraphViews$ImmutableIEdgeSet" />
+      <Class name="com.jgalgo.graph.ImmutableGraphViews$ImmutableIntGraphViewBase" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IdToIndexCollection" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IdToIndexIterator" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IdToIndexList" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IdToIndexSet" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IdToIndexWeights" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IndexToIdCollection" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IndexToIdIterator" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IndexToIdList" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IndexToIdSet" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IndexToIntIdCollection" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IndexToIntIdEdgeSet" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IndexToIntIdIterator" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IndexToIntIdList" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IndexToIntIdSet" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IntIdToIndexCollection" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IntIdToIndexIterator" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IntIdToIndexList" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IntIdToIndexSet" />
+      <Class name="com.jgalgo.graph.IndexIdMaps$IntIdToIndexWeights" />
+      <Class name="com.jgalgo.graph.MaskedGraphs$MaskedGraphBase" />
+      <Class name="com.jgalgo.graph.MaskedGraphs$MaskedIntGraph$MaskedEdgeIter" />
+      <Class name="com.jgalgo.graph.MaskedGraphs$MaskedIntGraph$MaskedIterator" />
+      <Class name="com.jgalgo.graph.MaskedGraphs$MaskedObjGraph$MaskedEdgeIter" />
+      <Class name="com.jgalgo.graph.MaskedGraphs$MaskedObjGraph$MaskedIterator" />
+      <Class name="com.jgalgo.graph.ReverseGraphViews$ReversedEdgeSet" />
+      <Class name="com.jgalgo.graph.ReverseGraphViews$ReversedIEdgeSet" />
+      <Class name="com.jgalgo.graph.WeightsImpl$ImmutableView" />
+      <Class name="com.jgalgo.graph.WeightsImpl$IndexImmutable$Builder" />
+      <Class name="com.jgalgo.graph.WeightsImpl$IntMapped" />
+      <Class name="com.jgalgo.graph.WeightsImpl$ObjMapped" />
+      <Class name="com.jgalgo.internal.ds.DynamicTreeSplayExtended$SplayImplWithExtensions" />
+      <Class name="com.jgalgo.internal.ds.DynamicTreeSplayIntExtended$SplayImplWithExtensions" />
+      <Class name="com.jgalgo.internal.ds.IndexPairingHeap" />
+      <Class name="com.jgalgo.internal.util.IntAdapters$IntCollectionWrapper" />
+      <Class name="com.jgalgo.internal.util.IntAdapters$IntIterableWrapper" />
+      <Class name="com.jgalgo.internal.util.IntAdapters$IntIteratorWrapper" />
+      <Class name="com.jgalgo.internal.util.IntAdapters$IntListIteratorWrapper" />
+      <Class name="com.jgalgo.internal.util.IntAdapters$IntListWrapper" />
+      <Class name="com.jgalgo.internal.util.IntAdapters$IntSetWrapper" />
+      <Class name="com.jgalgo.internal.util.IterTools$IntIter$4" />
+      <Class name="com.jgalgo.internal.util.IterTools$IterMapIntInt" />
+      <Class name="com.jgalgo.internal.util.IterTools$IterMapIntObj" />
+      <Class name="com.jgalgo.internal.util.IterTools$IterMapObjObj" />
+      <Class name="com.jgalgo.internal.util.IterTools$PeekImpl" />
+      <Class name="com.jgalgo.internal.util.IterTools$PeekImpl$Int" />
+      <Class name="com.jgalgo.internal.util.JGAlgoUtils$Variant" />
+    </Or>
+    <Bug pattern="CT_CONSTRUCTOR_THROW" />
+  </Match>
+  <Match>
+    <!-- Every return flagged below is
+    by-design: either the input graph / index-id map (not internal state), an immutable or
+    unmodifiable view (edges/vertices/blockVertices/crossEdges/center/periphery/
+    shortestPathTree/edgePath), the cached immutable graph returned by a builder's build(),
+    the live GraphElementSet a graph/builder exposes as its vertices()/edges(), or an
+    intentional internal-DS node reference (getParent, foreach iterator wrapper). These are
+    all internal implementation classes. -->
+    <Or>
+      <Class name="com.jgalgo.alg.common.Paths$IndexPath" />
+      <Class name="com.jgalgo.alg.common.Paths$IntPathFromIndexPath" />
+      <Class name="com.jgalgo.alg.common.Paths$ObjPathFromIndexPath" />
+      <Class name="com.jgalgo.alg.common.VertexBiPartitions$IndexImpl" />
+      <Class name="com.jgalgo.alg.common.VertexPartitions$IndexImpl" />
+      <Class name="com.jgalgo.alg.common.VertexPartitions$IntPartitionFromIndexPartition" />
+      <Class name="com.jgalgo.alg.common.VertexPartitions$ObjPartitionFromIndexPartition" />
+      <Class name="com.jgalgo.alg.distancemeasures.DistanceMeasuresImpl$IndexImpl" />
+      <Class name="com.jgalgo.alg.isomorphism.IsomorphismTesterAbstract$IntMappingFromIndexMapping" />
+      <Class name="com.jgalgo.alg.isomorphism.IsomorphismTesterAbstract$ObjMappingFromIndexMapping" />
+      <Class name="com.jgalgo.alg.shortestpath.ShortestPathSingleSourceAbstract$IntResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.shortestpath.ShortestPathSingleSourceAbstract$ObjResultFromIndexResult" />
+      <Class name="com.jgalgo.alg.span.MinimumSpanningTrees$IndexResult" />
+      <Class name="com.jgalgo.alg.traversal.DfsIterImpl" />
+      <Class name="com.jgalgo.alg.traversal.NeighborSamplers$IntImpl" />
+      <Class name="com.jgalgo.alg.traversal.NeighborSamplers$ObjImpl" />
+      <Class name="com.jgalgo.alg.traversal.NeighborSamplers$SamplerBase" />
+      <Class name="com.jgalgo.alg.tree.LowestCommonAncestorDynamicGabowInts$Vertex2" />
+      <Class name="com.jgalgo.alg.tree.LowestCommonAncestorDynamicGabowLongs$Vertex2" />
+      <Class name="com.jgalgo.alg.tree.LowestCommonAncestorDynamicGabowSimple$VertexImpl" />
+      <Class name="com.jgalgo.graph.AbstractGraphImpl" />
+      <Class name="com.jgalgo.graph.GraphBuilderImpl" />
+      <Class name="com.jgalgo.graph.GraphImpl" />
+      <Class name="com.jgalgo.graph.IndexGraphBuilderImpl" />
+      <Class name="com.jgalgo.graph.IntGraphBuilderImpl" />
+      <Class name="com.jgalgo.graph.IntGraphImpl" />
+      <Class name="com.jgalgo.graph.MaskedGraphs$MaskedIntGraph" />
+      <Class name="com.jgalgo.graph.MaskedGraphs$MaskedObjGraph" />
+      <Class name="com.jgalgo.internal.ds.DynamicTreeSplay$SplayNode" />
+      <Class name="com.jgalgo.internal.ds.DynamicTreeSplayInt$SplayNode" />
+      <Class name="com.jgalgo.internal.ds.SubtreeMergeFindMinImpl$NodeImpl" />
+      <Class name="com.jgalgo.internal.util.IterTools$1" />
+    </Or>
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
 </FindBugsFilter>

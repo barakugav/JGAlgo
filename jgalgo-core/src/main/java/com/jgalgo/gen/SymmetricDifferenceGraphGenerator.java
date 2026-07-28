@@ -45,7 +45,7 @@ import com.jgalgo.graph.IntGraphFactory;
  * @param  <E> the edges type
  * @author     Barak Ugav
  */
-public class SymmetricDifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
+public final class SymmetricDifferenceGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	private final GraphFactory<V, E> factory;
 	private Graph<V, E> graph1, graph2;

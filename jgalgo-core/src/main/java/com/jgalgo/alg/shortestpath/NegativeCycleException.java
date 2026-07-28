@@ -33,7 +33,7 @@ import com.jgalgo.graph.Graph;
  * @see    ShortestPathAllPairs
  * @author Barak Ugav
  */
-public class NegativeCycleException extends RuntimeException {
+public final class NegativeCycleException extends RuntimeException {
 
 	private static final long serialVersionUID = 2383699177200213877L;
 

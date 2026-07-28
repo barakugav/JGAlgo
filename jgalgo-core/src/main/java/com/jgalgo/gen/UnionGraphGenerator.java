@@ -87,7 +87,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
  * @param  <E> the edges type
  * @author     Barak Ugav
  */
-public class UnionGraphGenerator<V, E> implements GraphGenerator<V, E> {
+public final class UnionGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	private final GraphFactory<V, E> factory;
 	private final List<Graph<V, E>> graphs;

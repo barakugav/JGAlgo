@@ -87,7 +87,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @param  <E> the edges type
  * @author     Barak Ugav
  */
-public class GnpBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
+public final class GnpBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	private final GraphFactory<V, E> factory;
 	private Variant2<List<V>[], Pair<IntIntPair, IdBuilder<V>>> vertices;
