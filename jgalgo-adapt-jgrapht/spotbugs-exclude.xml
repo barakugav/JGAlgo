@@ -28,12 +28,26 @@
     </Or>
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
+  <Match>
+    <!-- vertices()/edges() return the wrapper's index-graph element sets (graph API contract),
+    and edgesWeights() returns the weights the user is meant to modify (same rationale as the
+    outer JGraphTWrapper.edgesWeights above) -->
+    <Class name="com.jgalgo.adapt.jgrapht.JGraphTWrapper$IndexGraphImpl" />
+    <Or>
+      <Method name="vertices" />
+      <Method name="edges" />
+      <Method name="edgesWeights" />
+    </Or>
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
 
   <Match>
     <!-- TODO: no good reason to exclude these errors, hopefully finalize() will be removed -->
     <Or>
       <Class name="com.jgalgo.adapt.jgrapht.JGraphTAdapter" />
       <Class name="com.jgalgo.adapt.jgrapht.JGraphTWrapper" />
+      <Class name="com.jgalgo.adapt.jgrapht.JGraphTWrapper$BaseEdgeSet" />
+      <Class name="com.jgalgo.adapt.jgrapht.JGraphTWrapper$IndexGraphImpl$EdgeSetBase" />
     </Or>
     <Bug pattern="CT_CONSTRUCTOR_THROW" />
   </Match>

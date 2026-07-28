@@ -20,6 +20,16 @@
     </Or>
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
+  <Match>
+    <!-- vertices()/edges() return the wrapper's index-graph element sets, as required by the
+    graph API contract (same by-design exposure used throughout jgalgo-core) -->
+    <Class name="com.jgalgo.adapt.guava.GuavaNetworkWrapper$IndexGraphImpl" />
+    <Or>
+      <Method name="vertices" />
+      <Method name="edges" />
+    </Or>
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
 
   <Match>
     <!-- TODO: no good reason to exclude these errors, hopefully finalize() will be removed -->
@@ -27,7 +37,10 @@
       <Class name="com.jgalgo.adapt.guava.GuavaGraphAdapter" />
       <Class name="com.jgalgo.adapt.guava.GuavaMutableGraphAdapter" />
       <Class name="com.jgalgo.adapt.guava.GuavaMutableValueGraphAdapter" />
+      <Class name="com.jgalgo.adapt.guava.GuavaNetworkAdapter" />
+      <Class name="com.jgalgo.adapt.guava.GuavaMutableNetworkAdapter" />
       <Class name="com.jgalgo.adapt.guava.GuavaNetworkWrapper" />
+      <Class name="com.jgalgo.adapt.guava.GuavaNetworkWrapper$IndexGraphImpl$EdgeSetBase" />
       <Class name="com.jgalgo.adapt.guava.GuavaValueGraphAdapter" />
     </Or>
     <Bug pattern="CT_CONSTRUCTOR_THROW" />

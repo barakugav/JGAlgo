@@ -64,7 +64,7 @@ import com.jgalgo.graph.WeightsObj;
  * @param  <E> the edges type
  * @author     Barak Ugav
  */
-public class LineGraphGenerator<V, E> implements GraphGenerator<V, E> {
+public final class LineGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	private final GraphFactory<V, E> factory;
 	private Graph<Object, V> graph;

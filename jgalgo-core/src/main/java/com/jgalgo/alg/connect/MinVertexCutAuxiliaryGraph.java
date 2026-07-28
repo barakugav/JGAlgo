@@ -23,7 +23,7 @@ import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 
-class MinVertexCutAuxiliaryGraph {
+final class MinVertexCutAuxiliaryGraph {
 
 	final IndexGraph graph;
 	final IWeightFunction weights;

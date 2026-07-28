@@ -78,7 +78,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see        BipartiteGraphs
  * @author     Barak Ugav
  */
-public class CompleteBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
+public final class CompleteBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	private final GraphFactory<V, E> factory;
 	private Variant2<List<V>[], Pair<IntIntPair, IdBuilder<V>>> vertices;

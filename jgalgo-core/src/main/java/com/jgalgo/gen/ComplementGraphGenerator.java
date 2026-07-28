@@ -54,7 +54,7 @@ import com.jgalgo.internal.util.Bitmap;
  * @param  <E> the edges type
  * @author     Barak Ugav
  */
-public class ComplementGraphGenerator<V, E> implements GraphGenerator<V, E> {
+public final class ComplementGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 	private final GraphFactory<V, E> factory;
 	private Graph<V, Object> graph;
