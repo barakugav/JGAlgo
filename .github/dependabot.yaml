@@ -19,7 +19,7 @@ updates:
     schedule:
       interval: monthly
     groups:
-      rust-patch-updates:
+      maven-patch-updates:
         update-types:
           - patch
   - package-ecosystem: github-actions
